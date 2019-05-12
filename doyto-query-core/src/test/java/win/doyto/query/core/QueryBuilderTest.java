@@ -3,6 +3,8 @@ package win.doyto.query.core;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.user.UserQuery;
 
+import java.util.LinkedList;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -40,5 +42,14 @@ public class QueryBuilderTest {
         UserQuery userQuery = UserQuery.builder().account("test").build();
         assertEquals("SELECT * FROM user WHERE (username = #{account} OR email = #{account} OR mobile = #{account})",
                      queryBuilder.buildSelect(userQuery));
+    }
+
+    @Test
+    public void buildSelectWithArgs() {
+        UserQuery userQuery = UserQuery.builder().username("test").build();
+        LinkedList<Object> argList = new LinkedList<>();
+        assertEquals("SELECT * FROM user WHERE username = ?",
+                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+        assertEquals("test", argList.get(0));
     }
 }
