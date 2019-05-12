@@ -12,10 +12,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class QueryBuilderTest {
 
+    private QueryBuilder queryBuilder = new QueryBuilder();
+
     @Test
     public void buildSelect() {
         UserQuery userQuery = UserQuery.builder().build();
-        QueryBuilder queryBuilder = new QueryBuilder();
         assertEquals("SELECT * FROM user", queryBuilder.buildSelect(userQuery));
+    }
+
+    @Test
+    public void buildSelectWithWhere() {
+        UserQuery userQuery = UserQuery.builder().username("test").build();
+        assertEquals("SELECT * FROM user WHERE username = #{username}", queryBuilder.buildSelect(userQuery));
     }
 }

@@ -1,6 +1,8 @@
 package win.doyto.query.core;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * UserQuery
@@ -8,7 +10,10 @@ import lombok.Builder;
  * @author f0rb
  * @date 2019-05-12
  */
+@Getter
+@Setter
 @Builder
 @QueryTable(table = "user")
 public class UserQuery {
+    private String username;
 }
