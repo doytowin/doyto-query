@@ -23,7 +23,13 @@ public class QueryBuilder {
         LinkedList<Object> whereList = new LinkedList<>();
         for (Field field : query.getClass().getDeclaredFields()) {
             Object value = readField(field, query);
-            if (value != null) {
+            if (value == null) {
+                continue;
+            }
+            QueryField queryField = field.getAnnotation(QueryField.class);
+            if (queryField != null) {
+                whereList.add(queryField.and());
+            } else {
                 whereList.add(field.getName() + " = " + "#{" + field.getName() + "}");
             }
         }

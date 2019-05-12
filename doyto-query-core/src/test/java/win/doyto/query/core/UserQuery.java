@@ -16,4 +16,7 @@ import lombok.Setter;
 @QueryTable(table = "user")
 public class UserQuery extends PageQuery {
     private String username;
+
+    @QueryField(and = "(username = #{account} OR email = #{account} OR mobile = #{account})")
+    private String account;
 }

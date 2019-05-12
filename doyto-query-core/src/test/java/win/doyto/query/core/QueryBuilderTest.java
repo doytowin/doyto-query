@@ -33,4 +33,11 @@ public class QueryBuilderTest {
         assertEquals("SELECT * FROM user WHERE username = #{username} LIMIT 10 OFFSET 30",
                      queryBuilder.buildSelect(userQuery));
     }
+
+    @Test
+    public void buildSelectWithCustomWhere() {
+        UserQuery userQuery = UserQuery.builder().account("test").build();
+        assertEquals("SELECT * FROM user WHERE (username = #{account} OR email = #{account} OR mobile = #{account})",
+                     queryBuilder.buildSelect(userQuery));
+    }
 }
