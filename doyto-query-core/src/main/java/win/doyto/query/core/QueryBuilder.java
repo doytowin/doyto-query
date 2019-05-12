@@ -29,7 +29,13 @@ public class QueryBuilder {
         }
         if (!whereList.isEmpty()) {
             String where = " WHERE " + StringUtils.join(whereList, " and ");
-            return select + where;
+            select += where;
+        }
+        if (query instanceof PageQuery) {
+            PageQuery pageQuery = (PageQuery) query;
+            if (pageQuery.needPaging()) {
+                select += " LIMIT " + pageQuery.getPageSize() + " OFFSET " + pageQuery.getOffset();
+            }
         }
 
         return select;

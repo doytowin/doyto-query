@@ -14,6 +14,6 @@ import lombok.Setter;
 @Setter
 @Builder
 @QueryTable(table = "user")
-public class UserQuery {
+public class UserQuery extends PageQuery {
     private String username;
 }
