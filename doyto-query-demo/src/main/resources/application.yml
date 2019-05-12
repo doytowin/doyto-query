@@ -1,0 +1,9 @@
+spring:
+  jpa:
+    generate-ddl: true
+    show-sql: true
+    open-in-view: false
+
+logging:
+  level:
+    root: info

@@ -17,6 +17,7 @@
 
     <modules>
         <module>../doyto-query-core</module>
+        <module>../doyto-query-demo</module>
     </modules>
 
     <dependencies>
