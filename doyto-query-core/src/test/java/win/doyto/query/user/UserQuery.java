@@ -1,8 +1,11 @@
-package win.doyto.query.core;
+package win.doyto.query.user;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.QueryField;
+import win.doyto.query.core.QueryTable;
 
 /**
  * UserQuery

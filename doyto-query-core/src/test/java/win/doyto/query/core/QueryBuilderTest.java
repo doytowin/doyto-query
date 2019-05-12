@@ -1,6 +1,7 @@
 package win.doyto.query.core;
 
 import org.junit.jupiter.api.Test;
+import win.doyto.query.user.UserQuery;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
