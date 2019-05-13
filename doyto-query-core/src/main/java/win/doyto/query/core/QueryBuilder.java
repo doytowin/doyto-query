@@ -7,6 +7,8 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * QueryBuilder
@@ -36,6 +38,8 @@ public class QueryBuilder {
         return select;
     }
 
+    static final Pattern PLACE_HOLDER_PTN = Pattern.compile("#\\{\\w+}");
+
     private String buildWhere(Object query, List<Object> argList) {
         LinkedList<Object> whereList = new LinkedList<>();
         for (Field field : query.getClass().getDeclaredFields()) {
@@ -44,19 +48,21 @@ public class QueryBuilder {
                 continue;
             }
             QueryField queryField = field.getAnnotation(QueryField.class);
+            String andSQL;
             if (queryField != null) {
-                whereList.add(queryField.and());
-                if (argList != null) {
-                    argList.add(value);
-                }
+                andSQL = queryField.and();
             } else {
-                if (argList != null) {
-                    argList.add(value);
-                    whereList.add(field.getName() + " = ?");
-                } else {
-                    whereList.add(field.getName() + " = " + "#{" + field.getName() + "}");
-                }
+                andSQL = field.getName() + " = " + "#{" + field.getName() + "}";
             }
+
+            if (argList != null) {
+                Matcher matcher = PLACE_HOLDER_PTN.matcher(andSQL);
+                while (matcher.find()) {
+                    argList.add(value);
+                }
+                andSQL = matcher.replaceAll("?");
+            }
+            whereList.add(andSQL);
         }
         String where = "";
         if (!whereList.isEmpty()) {

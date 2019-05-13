@@ -52,4 +52,15 @@ public class QueryBuilderTest {
                      queryBuilder.buildSelectAndArgs(userQuery, argList));
         assertEquals("test", argList.get(0));
     }
+
+    @Test
+    public void buildSelectAndArgsWithCustomWhere() {
+        LinkedList<Object> argList = new LinkedList<>();
+
+        UserQuery userQuery = UserQuery.builder().account("test").build();
+        assertEquals("SELECT * FROM user WHERE (username = ? OR email = ? OR mobile = ?)",
+                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+        assertEquals(3, argList.size());
+    }
+
 }
