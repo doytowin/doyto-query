@@ -2,10 +2,9 @@ package win.doyto.query.menu;
 
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.entity.IntegerId;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
@@ -18,11 +17,7 @@ import javax.persistence.Table;
 @Setter
 @Entity
 @Table(name = MenuEntity.TABLE)
-class MenuEntity {
+class MenuEntity extends IntegerId {
     public static final String TABLE = "menu";
-
-    @Id
-    @GeneratedValue
-    protected Integer id;
 
 }

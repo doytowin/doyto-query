@@ -3,7 +3,7 @@ package win.doyto.query.user;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.jpa.domain.AbstractPersistable;
+import win.doyto.query.entity.IntegerId;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -19,7 +19,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "user")
 @EqualsAndHashCode(callSuper = true)
-class UserEntity extends AbstractPersistable<Integer> {
+class UserEntity extends IntegerId {
     private String username;
     private String password;
     private String mobile;
