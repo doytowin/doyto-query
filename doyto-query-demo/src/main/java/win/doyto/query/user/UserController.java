@@ -33,4 +33,9 @@ class UserController {
         return userService.page(userQuery);
     }
 
+    @GetMapping("get")
+    public UserEntity get(Integer id) {
+        return userService.get(id);
+    }
+
 }

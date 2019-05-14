@@ -23,4 +23,9 @@ class MenuController {
     public PageList<MenuEntity> page(MenuQuery menuQuery) {
         return menuService.page(menuQuery);
     }
+
+    @GetMapping("get")
+    public MenuEntity get(Integer id) {
+        return menuService.get(id);
+    }
 }

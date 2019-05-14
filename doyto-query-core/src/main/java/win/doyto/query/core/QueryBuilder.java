@@ -19,6 +19,14 @@ import java.util.regex.Pattern;
 @Slf4j
 public class QueryBuilder {
 
+    private static class Singleton {
+        private static QueryBuilder instance = new QueryBuilder();
+    }
+
+    public static QueryBuilder instance() {
+        return Singleton.instance;
+    }
+
     public String buildSelect(Object query) {
         return buildSelectAndArgs(query, null);
     }

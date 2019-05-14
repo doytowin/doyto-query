@@ -35,6 +35,7 @@ class DemoApplicationTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
     }
 
+    /*=============== user ==================*/
     @Test
     public void queryByUsername() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/user/query?username=f0rb"))
@@ -62,11 +63,27 @@ class DemoApplicationTest {
     }
 
     @Test
+    public void getUserById() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/get?id=1"))
+               .andExpect(jsonPath("$.username").value("f0rb"))
+               .andExpect(jsonPath("$.nickname").value("测试1"))
+        ;
+    }
+
+    /*=============== menu ==================*/
+    @Test
     public void pageMenu() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/menu/page?pageNumber=1&pageSize=2"))
                .andExpect(jsonPath("$.list").isArray())
                .andExpect(jsonPath("$.list[0]").doesNotExist())
                .andExpect(jsonPath("$.total").value(1))
+        ;
+    }
+
+    @Test
+    public void getMenuById() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/menu/get?id=1"))
+               .andExpect(jsonPath("$.id").value("1"))
         ;
     }
 }

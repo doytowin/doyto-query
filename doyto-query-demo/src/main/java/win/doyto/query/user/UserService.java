@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import win.doyto.query.jpa2.AbstractJpa2Service;
 
-import javax.annotation.Resource;
-
 /**
  * UserService
  *
@@ -14,9 +12,10 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Service
-class UserService extends AbstractJpa2Service {
+class UserService extends AbstractJpa2Service<UserEntity, Integer, UserQuery> {
 
-    @Resource
-    private UserRepository userRepository;
+    public UserService(UserRepository crudRepository) {
+        super(crudRepository);
+    }
 
 }

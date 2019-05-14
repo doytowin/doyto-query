@@ -10,6 +10,6 @@ import win.doyto.query.mybatis.QueryMapper;
  * @date 2019-05-12
  */
 @Mapper
-public interface UserMapper extends QueryMapper<UserEntity, UserQuery> {
+public interface UserMapper extends QueryMapper<UserEntity, Integer, UserQuery> {
 
 }
