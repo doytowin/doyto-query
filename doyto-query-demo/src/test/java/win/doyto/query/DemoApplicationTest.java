@@ -60,4 +60,13 @@ class DemoApplicationTest {
                .andExpect(jsonPath("$.total").value(1))
         ;
     }
+
+    @Test
+    public void pageMenu() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/menu/page?pageNumber=1&pageSize=2"))
+               .andExpect(jsonPath("$.list").isArray())
+               .andExpect(jsonPath("$.list[0]").doesNotExist())
+               .andExpect(jsonPath("$.total").value(1))
+        ;
+    }
 }

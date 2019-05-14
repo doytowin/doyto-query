@@ -77,4 +77,11 @@ public class QueryBuilderTest {
                      queryBuilder.buildCountAndArgs(userQuery, countArgList));
     }
 
+    @Test
+    public void buildCountWithWhere() {
+        UserQuery userQuery = UserQuery.builder().username("test").build();
+        assertEquals("SELECT count(*) FROM user WHERE username = #{username}",
+                     queryBuilder.buildCount(userQuery));
+    }
+
 }

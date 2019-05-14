@@ -27,11 +27,15 @@ public class QueryBuilder {
         return build(DatabaseOperation.SELECT, query, argList);
     }
 
+    public String buildCount(Object query) {
+        return buildCountAndArgs(query, null);
+    }
+
     public String buildCountAndArgs(Object query, List<Object> argList) {
         return build(DatabaseOperation.COUNT, query, argList);
     }
 
-    private String build(DatabaseOperation operation, Object query, List<Object> argList) {
+    private static String build(DatabaseOperation operation, Object query, List<Object> argList) {
         QueryTable queryTable = query.getClass().getAnnotation(QueryTable.class);
         String table = queryTable.table();
         String sql;
@@ -48,12 +52,13 @@ public class QueryBuilder {
                 sql += " LIMIT " + pageQuery.getPageSize() + " OFFSET " + pageQuery.getOffset();
             }
         }
+        log.info("SQL: {}", sql);
         return sql;
     }
 
     static final Pattern PLACE_HOLDER_PTN = Pattern.compile("#\\{\\w+}");
 
-    private String buildWhere(Object query, List<Object> argList) {
+    private static String buildWhere(Object query, List<Object> argList) {
         LinkedList<Object> whereList = new LinkedList<>();
         for (Field field : query.getClass().getDeclaredFields()) {
             Object value = readField(field, query);

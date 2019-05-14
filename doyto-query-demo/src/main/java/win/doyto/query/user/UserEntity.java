@@ -1,11 +1,11 @@
 package win.doyto.query.user;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
@@ -18,10 +18,8 @@ import javax.persistence.Table;
 @Setter
 @Entity
 @Table(name = "user")
-class UserEntity {
-    @Id
-    @GeneratedValue
-    protected Integer id;
+@EqualsAndHashCode(callSuper = true)
+class UserEntity extends AbstractPersistable<Integer> {
     private String username;
     private String password;
     private String mobile;

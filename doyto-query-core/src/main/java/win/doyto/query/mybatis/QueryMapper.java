@@ -14,4 +14,7 @@ import java.util.List;
 public interface QueryMapper<E, Q> {
     @SelectProvider(type = QueryBuilder.class, method = "buildSelect")
     List<E> query(Q query);
+
+    @SelectProvider(type = QueryBuilder.class, method = "buildCount")
+    long count(Q query);
 }
