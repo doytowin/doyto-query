@@ -1,10 +1,7 @@
 package win.doyto.query.menu;
 
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import win.doyto.query.core.PageList;
-
-import java.util.List;
+import win.doyto.query.mybatis.AbstractMyBatisService;
 
 /**
  * MenuService
@@ -13,21 +10,10 @@ import java.util.List;
  * @date 2019-05-13
  */
 @Service
-@AllArgsConstructor
-class MenuService {
+class MenuService extends AbstractMyBatisService<MenuEntity, MenuQuery> {
 
-    MenuMapper menuMapper;
-
-    public List<MenuEntity> query(MenuQuery menuQuery) {
-        return menuMapper.query(menuQuery);
-    }
-
-    public Long count(MenuQuery menuQuery) {
-        return menuMapper.count(menuQuery);
-    }
-
-    public PageList<MenuEntity> page(MenuQuery menuQuery) {
-        return new PageList<>(query(menuQuery), count(menuQuery));
+    public MenuService(MenuMapper menuMapper) {
+        super(menuMapper);
     }
 
 }

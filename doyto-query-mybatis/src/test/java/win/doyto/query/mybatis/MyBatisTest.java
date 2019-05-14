@@ -5,10 +5,7 @@ import org.apache.ibatis.jdbc.ScriptRunner;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import win.doyto.query.user.UserEntity;
 import win.doyto.query.user.UserMapper;
 import win.doyto.query.user.UserQuery;
@@ -63,6 +60,6 @@ public class MyBatisTest {
         UserQuery userQuery = UserQuery.builder().username("f0rb").build();
         List<UserEntity> list = userMapper.query(userQuery);
         assertEquals(1, list.size());
-        assertEquals("f0rb@163.com", list.get(0).getEmail());
+        Assertions.assertEquals("f0rb@163.com", list.get(0).getEmail());
     }
 }
