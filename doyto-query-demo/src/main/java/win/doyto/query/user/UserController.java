@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import win.doyto.query.core.PageList;
 
 import java.util.List;
 import javax.annotation.Resource;
@@ -17,7 +18,7 @@ import javax.annotation.Resource;
 @Slf4j
 @RestController
 @RequestMapping("user")
-public class UserController {
+class UserController {
 
     @Resource
     UserService userService;
@@ -25,6 +26,11 @@ public class UserController {
     @GetMapping("query")
     public List<UserEntity> query(UserQuery userQuery) {
         return userService.query(userQuery);
+    }
+
+    @GetMapping("page")
+    public PageList<UserEntity> page(UserQuery userQuery) {
+        return userService.page(userQuery);
     }
 
 }

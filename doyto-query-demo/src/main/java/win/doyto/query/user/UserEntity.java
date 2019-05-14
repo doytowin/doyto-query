@@ -18,7 +18,7 @@ import javax.persistence.Table;
 @Setter
 @Entity
 @Table(name = "user")
-public class UserEntity {
+class UserEntity {
     @Id
     @GeneratedValue
     protected Integer id;

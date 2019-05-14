@@ -50,6 +50,7 @@ public class QueryBuilderTest {
         LinkedList<Object> argList = new LinkedList<>();
         assertEquals("SELECT * FROM user WHERE username = ?",
                      queryBuilder.buildSelectAndArgs(userQuery, argList));
+        assertEquals(1, argList.size());
         assertEquals("test", argList.get(0));
     }
 
@@ -61,6 +62,19 @@ public class QueryBuilderTest {
         assertEquals("SELECT * FROM user WHERE (username = ? OR email = ? OR mobile = ?)",
                      queryBuilder.buildSelectAndArgs(userQuery, argList));
         assertEquals(3, argList.size());
+    }
+
+    @Test
+    public void buildCountAndArgsWithWhere() {
+        UserQuery userQuery = UserQuery.builder().username("test").build();
+        userQuery.setPageNumber(2).setPageSize(10);
+        LinkedList<Object> argList = new LinkedList<>();
+        assertEquals("SELECT * FROM user WHERE username = ? LIMIT 10 OFFSET 20",
+                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+
+        LinkedList<Object> countArgList = new LinkedList<>();
+        assertEquals("SELECT count(*) FROM user WHERE username = ?",
+                     queryBuilder.buildCountAndArgs(userQuery, countArgList));
     }
 
 }

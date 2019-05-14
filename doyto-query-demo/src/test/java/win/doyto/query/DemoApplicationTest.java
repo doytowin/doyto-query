@@ -42,4 +42,22 @@ class DemoApplicationTest {
                .andExpect(jsonPath("$[0].nickname").value("测试1"))
         ;
     }
+
+    @Test
+    public void queryByAccount() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/query?account=17778888882"))
+               .andExpect(jsonPath("$").isArray())
+               .andExpect(jsonPath("$[0].nickname").value("测试2"))
+               .andExpect(jsonPath("$[1]").doesNotExist())
+        ;
+    }
+
+    @Test
+    public void pageByAccount() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/page?account=17778888882&pageNumber=0&pageSize=5"))
+               .andExpect(jsonPath("$.list").isArray())
+               .andExpect(jsonPath("$.list[0].nickname").value("测试2"))
+               .andExpect(jsonPath("$.total").value(1))
+        ;
+    }
 }

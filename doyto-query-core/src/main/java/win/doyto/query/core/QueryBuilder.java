@@ -24,18 +24,31 @@ public class QueryBuilder {
     }
 
     public String buildSelectAndArgs(Object query, List<Object> argList) {
+        return build(DatabaseOperation.SELECT, query, argList);
+    }
+
+    public String buildCountAndArgs(Object query, List<Object> argList) {
+        return build(DatabaseOperation.COUNT, query, argList);
+    }
+
+    private String build(DatabaseOperation operation, Object query, List<Object> argList) {
         QueryTable queryTable = query.getClass().getAnnotation(QueryTable.class);
         String table = queryTable.table();
-        String select = "SELECT * FROM " + table;
+        String sql;
+        if (operation == DatabaseOperation.COUNT) {
+            sql = "SELECT count(*) FROM " + table;
+        } else {
+            sql = "SELECT * FROM " + table;
+        }
 
-        select += buildWhere(query, argList);
-        if (query instanceof PageQuery) {
+        sql += buildWhere(query, argList);
+        if (operation == DatabaseOperation.SELECT && query instanceof PageQuery) {
             PageQuery pageQuery = (PageQuery) query;
             if (pageQuery.needPaging()) {
-                select += " LIMIT " + pageQuery.getPageSize() + " OFFSET " + pageQuery.getOffset();
+                sql += " LIMIT " + pageQuery.getPageSize() + " OFFSET " + pageQuery.getOffset();
             }
         }
-        return select;
+        return sql;
     }
 
     static final Pattern PLACE_HOLDER_PTN = Pattern.compile("#\\{\\w+}");
@@ -78,5 +91,9 @@ public class QueryBuilder {
             log.error("FieldUtils.readField failed: {}", e.getMessage());
         }
         return null;
+    }
+
+    private enum DatabaseOperation {
+        SELECT, COUNT
     }
 }
