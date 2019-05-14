@@ -1,5 +1,8 @@
 package win.doyto.query.mybatis;
 
+import org.apache.ibatis.annotations.Lang;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.QueryBuilder;
@@ -20,6 +23,8 @@ public interface QueryMapper<E, I, Q> extends DataAccess<E, I, Q> {
     @SelectProvider(type = QueryBuilder.class, method = "buildCount")
     long count(Q query);
 
-    E get(I id);
+    @Lang(MapperTableDriver.class)
+    @Select("SELECT * FROM @{table} WHERE id = #{id}")
+    E get(@Param("id") I id);
 
 }

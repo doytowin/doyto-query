@@ -15,8 +15,9 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Entity
-@Table(name = "user")
+@Table(name = UserEntity.TABLE)
 public class UserEntity {
+    public static final String TABLE = "user";
     private Integer id;
     private String username;
     private String password;

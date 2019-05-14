@@ -16,7 +16,7 @@ import win.doyto.query.core.QueryTable;
 @Getter
 @Setter
 @Builder
-@QueryTable(table = "user", entityClass = UserEntity.class)
+@QueryTable(table = UserEntity.TABLE, entityClass = UserEntity.class)
 public class UserQuery extends PageQuery {
     private String username;
 
