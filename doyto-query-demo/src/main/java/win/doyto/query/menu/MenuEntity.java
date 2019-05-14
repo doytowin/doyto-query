@@ -20,4 +20,12 @@ import javax.persistence.Table;
 class MenuEntity extends IntegerId {
     public static final String TABLE = "menu";
 
+    private Integer parentId;
+
+    private String menuName;
+
+    private String memo;
+
+    private Boolean valid;
+
 }

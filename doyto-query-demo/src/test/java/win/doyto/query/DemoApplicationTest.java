@@ -57,6 +57,7 @@ class DemoApplicationTest {
         mockMvc.perform(get("/user/query?account=17778888882"))
                .andExpect(jsonPath("$").isArray())
                .andExpect(jsonPath("$[0].nickname").value("测试2"))
+               .andExpect(jsonPath("$[0].password").doesNotExist())
                .andExpect(jsonPath("$[1]").doesNotExist())
         ;
     }
@@ -66,6 +67,7 @@ class DemoApplicationTest {
         mockMvc.perform(get("/user/page?account=17778888882&pageNumber=0&pageSize=5"))
                .andExpect(jsonPath("$.list").isArray())
                .andExpect(jsonPath("$.list[0].nickname").value("测试2"))
+               .andExpect(jsonPath("$.list[0].password").doesNotExist())
                .andExpect(jsonPath("$.total").value(1))
         ;
     }
@@ -75,6 +77,7 @@ class DemoApplicationTest {
         mockMvc.perform(get("/user/get?id=1"))
                .andExpect(jsonPath("$.username").value("f0rb"))
                .andExpect(jsonPath("$.nickname").value("测试1"))
+               .andExpect(jsonPath("$.password").doesNotExist())
         ;
     }
 
@@ -114,7 +117,7 @@ class DemoApplicationTest {
         mockMvc.perform(get("/menu/page?pageNumber=1&pageSize=2"))
                .andExpect(jsonPath("$.list").isArray())
                .andExpect(jsonPath("$.list[0]").doesNotExist())
-               .andExpect(jsonPath("$.total").value(1))
+               .andExpect(jsonPath("$.total").value(2))
         ;
     }
 
@@ -122,6 +125,7 @@ class DemoApplicationTest {
     public void getMenuById() throws Exception {
         mockMvc.perform(get("/menu/get?id=1"))
                .andExpect(jsonPath("$.id").value("1"))
+               .andExpect(jsonPath("$.menuName").value("root"))
         ;
     }
 }

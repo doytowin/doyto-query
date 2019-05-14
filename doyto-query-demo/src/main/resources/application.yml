@@ -1,3 +1,8 @@
+logging:
+  level:
+    root: info
+    win.doyto.query: debug
+
 spring:
   jpa:
     generate-ddl: true
@@ -6,6 +11,6 @@ spring:
     hibernate:
       use-new-id-generator-mappings: false
 
-logging:
-  level:
-    root: info
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true

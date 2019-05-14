@@ -22,18 +22,18 @@ class UserController {
     UserService userService;
 
     @GetMapping("query")
-    public List<UserEntity> query(UserQuery userQuery) {
-        return userService.query(userQuery);
+    public List<UserResponse> query(UserQuery userQuery) {
+        return userService.query(userQuery, UserResponse::of);
     }
 
     @GetMapping("page")
-    public PageList<UserEntity> page(UserQuery userQuery) {
-        return userService.page(userQuery);
+    public PageList<UserResponse> page(UserQuery userQuery) {
+        return userService.page(userQuery, UserResponse::of);
     }
 
     @GetMapping("get")
-    public UserEntity get(Integer id) {
-        return userService.get(id);
+    public UserResponse get(Integer id) {
+        return UserResponse.of(userService.get(id));
     }
 
     @PostMapping("save")

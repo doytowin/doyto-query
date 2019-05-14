@@ -20,12 +20,12 @@ class MenuController {
     MenuService menuService;
 
     @GetMapping("page")
-    public PageList<MenuEntity> page(MenuQuery menuQuery) {
-        return menuService.page(menuQuery);
+    public PageList<MenuResponse> page(MenuQuery menuQuery) {
+        return menuService.page(menuQuery, MenuResponse::of);
     }
 
     @GetMapping("get")
-    public MenuEntity get(Integer id) {
-        return menuService.get(id);
+    public MenuResponse get(Integer id) {
+        return MenuResponse.of(menuService.get(id));
     }
 }
