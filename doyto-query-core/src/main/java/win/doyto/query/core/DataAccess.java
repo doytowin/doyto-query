@@ -16,4 +16,10 @@ public interface DataAccess<E, I, Q> {
 
     E get(I id);
 
+    void delete(I id);
+
+    void create(E e);
+
+    void update(E e);
+
 }

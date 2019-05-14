@@ -25,5 +25,5 @@ class UserEntity extends IntegerId {
     private String mobile;
     private String email;
     private String nickname;
-    private String valid;
+    private Boolean valid;
 }

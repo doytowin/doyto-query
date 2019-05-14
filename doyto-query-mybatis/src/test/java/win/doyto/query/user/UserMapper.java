@@ -1,8 +1,8 @@
 package win.doyto.query.user;
 
 import org.apache.ibatis.annotations.Mapper;
+import win.doyto.query.mybatis.CrudMapper;
 import win.doyto.query.mybatis.MapperTable;
-import win.doyto.query.mybatis.QueryMapper;
 
 /**
  * UserMapper
@@ -12,6 +12,6 @@ import win.doyto.query.mybatis.QueryMapper;
  */
 @Mapper
 @MapperTable(UserEntity.TABLE)
-public interface UserMapper extends QueryMapper<UserEntity, Integer, UserQuery> {
+public interface UserMapper extends CrudMapper<UserEntity, Integer, UserQuery> {
 
 }

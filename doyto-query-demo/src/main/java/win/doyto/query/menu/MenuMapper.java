@@ -1,8 +1,8 @@
 package win.doyto.query.menu;
 
 import org.apache.ibatis.annotations.Mapper;
+import win.doyto.query.mybatis.CrudMapper;
 import win.doyto.query.mybatis.MapperTable;
-import win.doyto.query.mybatis.QueryMapper;
 
 /**
  * MenuMapper
@@ -12,6 +12,6 @@ import win.doyto.query.mybatis.QueryMapper;
  */
 @Mapper
 @MapperTable(MenuEntity.TABLE)
-interface MenuMapper extends QueryMapper<MenuEntity, Integer, MenuQuery> {
+interface MenuMapper extends CrudMapper<MenuEntity, Integer, MenuQuery> {
 
 }

@@ -60,4 +60,19 @@ public class Jpa2DataAccess<E, I, Q> implements DataAccess<E, I, Q> {
         return crudRepository.findById(id).orElse(null);
     }
 
+    @Override
+    public void delete(I id) {
+        crudRepository.deleteById(id);
+    }
+
+    @Override
+    public void create(E e) {
+        crudRepository.save(e);
+    }
+
+    @Override
+    public void update(E e) {
+        crudRepository.save(e);
+    }
+
 }
