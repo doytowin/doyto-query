@@ -1,5 +1,7 @@
 package win.doyto.query.menu;
 
+import win.doyto.query.mybatis.AbstractMockMapper;
+
 /**
  * MockMenuMapper
  *

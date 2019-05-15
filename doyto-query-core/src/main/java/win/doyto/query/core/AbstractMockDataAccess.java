@@ -1,8 +1,7 @@
-package win.doyto.query.menu;
+package win.doyto.query.core;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import win.doyto.query.core.DataAccess;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
@@ -12,24 +11,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import javax.persistence.Id;
 
+import static win.doyto.query.core.QueryBuilder.ignoreField;
+import static win.doyto.query.core.QueryBuilder.readField;
+
 /**
- * AbstractMockMapper
+ * AbstractMockDataAccess
  *
  * @author f0rb
  * @date 2019-05-15
  */
 @Slf4j
-public abstract class AbstractMockMapper<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
-
+public abstract class AbstractMockDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
     protected static final Map<String, Map> tableMap = new ConcurrentHashMap<>();
-
+    protected final Map<I, E> entitiesMap = new ConcurrentHashMap<>();
     private final AtomicLong idGenerator = new AtomicLong(0);
 
-    protected final Map<I, E> entitiesMap = new ConcurrentHashMap<>();
-
-    public AbstractMockMapper(String table) {
+    public AbstractMockDataAccess(String table) {
         tableMap.put(table, entitiesMap);
     }
 
@@ -77,14 +77,49 @@ public abstract class AbstractMockMapper<E extends Persistable<I>, I extends Ser
         entitiesMap.remove(id);
     }
 
+    protected boolean filterByQuery(Q query, E entity) {
+        for (Field field : query.getClass().getDeclaredFields()) {
+            if (!ignoreField(field)) {
+                Object value = readField(field, query);
+                if (value != null) {
+                    Object v2 = null;
+                    try {
+                        v2 = FieldUtils.readField(entity, field.getName(), true);
+                    } catch (IllegalAccessException e) {
+                        log.error("FieldUtils.readField failed: {}", e.getMessage());
+                    }
+                    if (!value.equals(v2)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
     @Override
     public List<E> query(Q query) {
-        return new ArrayList<>(entitiesMap.values());
+        List<E> queryList = entitiesMap
+            .values().stream()
+            .filter(item -> filterByQuery(query, item))
+            .collect(Collectors.toList());
+
+        if (query instanceof PageQuery) {
+            PageQuery pageQuery = (PageQuery) query;
+            if (pageQuery.needPaging()) {
+                int from = pageQuery.getPageNumber() * pageQuery.getPageSize();
+                int end = Math.min(queryList.size(), from + pageQuery.getPageSize());
+                if (from <= end) {
+                    queryList = new ArrayList<>(queryList.subList(from, end));
+                }
+            }
+        }
+
+        return queryList;
     }
 
     @Override
     public long count(Q query) {
         return entitiesMap.size();
     }
-
 }

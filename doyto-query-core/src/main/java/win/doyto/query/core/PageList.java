@@ -14,6 +14,6 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class PageList<T> {
-    public final List<T> list;
-    public final long total;
+    private final List<T> list;
+    private final long total;
 }

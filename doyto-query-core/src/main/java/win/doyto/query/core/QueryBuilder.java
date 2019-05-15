@@ -5,10 +5,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.persistence.Id;
 
 /**
  * QueryBuilder
@@ -103,13 +105,20 @@ public class QueryBuilder {
         whereList.add(andSQL);
     }
 
-    private static Object readField(Field field, Object query) {
+    public static Object readField(Field field, Object query) {
         try {
             return FieldUtils.readField(field, query, true);
         } catch (IllegalAccessException e) {
             log.error("FieldUtils.readField failed: {}", e.getMessage());
         }
         return null;
+    }
+
+    public static boolean ignoreField(Field field) {
+        return field.getName().startsWith("$")          // $jacocoData
+            || Modifier.isStatic(field.getModifiers())  // static field
+            || field.isAnnotationPresent(Id.class)      // id
+            ;
     }
 
     private enum DatabaseOperation {

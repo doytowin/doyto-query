@@ -1,11 +1,11 @@
 package win.doyto.query.user;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import win.doyto.query.core.PageList;
 
 import java.util.List;
-import javax.annotation.Resource;
 
 /**
  * UserController
@@ -16,9 +16,9 @@ import javax.annotation.Resource;
 @Slf4j
 @RestController
 @RequestMapping("user")
+@AllArgsConstructor
 class UserController {
 
-    @Resource
     UserService userService;
 
     @GetMapping("query")
@@ -41,4 +41,8 @@ class UserController {
         userService.save(userRequest.toEntity());
     }
 
+    @PostMapping("delete")
+    public void delete(int id) {
+        userService.delete(id);
+    }
 }

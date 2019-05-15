@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.*;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.QueryBuilder;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -12,7 +13,7 @@ import java.util.List;
  * @author f0rb
  * @date 2019-05-12
  */
-public interface CrudMapper<E, I, Q> extends DataAccess<E, I, Q> {
+public interface CrudMapper<E, I extends Serializable, Q> extends DataAccess<E, I, Q> {
 
     @SelectProvider(type = QueryBuilder.class, method = "buildSelect")
     List<E> query(Q query);

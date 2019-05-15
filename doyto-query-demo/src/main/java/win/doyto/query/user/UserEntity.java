@@ -17,9 +17,10 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Entity
-@Table(name = "user")
+@Table(name = UserEntity.TABLE)
 @EqualsAndHashCode(callSuper = true)
 class UserEntity extends IntegerId {
+    public static final String TABLE = "user";
     private String username;
     private String password;
     private String mobile;

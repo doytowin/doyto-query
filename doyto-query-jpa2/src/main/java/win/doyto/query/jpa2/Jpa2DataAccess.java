@@ -3,8 +3,10 @@ package win.doyto.query.jpa2;
 import org.springframework.data.repository.CrudRepository;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.QueryBuilder;
+import win.doyto.query.core.QueryService;
 import win.doyto.query.core.QueryTable;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,7 +19,7 @@ import javax.persistence.Query;
  * @author f0rb
  * @date 2019-05-14
  */
-public class Jpa2DataAccess<E, I, Q> implements DataAccess<E, I, Q> {
+public class Jpa2DataAccess<E, I extends Serializable, Q> implements DataAccess<E, I, Q> {
 
     QueryBuilder queryBuilder = QueryBuilder.instance();
 
@@ -35,6 +37,9 @@ public class Jpa2DataAccess<E, I, Q> implements DataAccess<E, I, Q> {
 
     @SuppressWarnings("unchecked")
     public List<E> query(Q q) {
+        if (crudRepository instanceof QueryService) {
+            return ((QueryService) crudRepository).query(q);
+        }
         QueryTable queryTable = q.getClass().getAnnotation(QueryTable.class);
         List<Object> argList = new LinkedList<>();
         Query query = em.createNativeQuery(queryBuilder.buildSelectAndArgs(q, argList), queryTable.entityClass());
@@ -45,7 +50,11 @@ public class Jpa2DataAccess<E, I, Q> implements DataAccess<E, I, Q> {
         return query.getResultList();
     }
 
+    @SuppressWarnings("unchecked")
     public long count(Q q) {
+        if (crudRepository instanceof QueryService) {
+            return ((QueryService) crudRepository).count(q);
+        }
         List<Object> argList = new LinkedList<>();
         Query query = em.createNativeQuery(queryBuilder.buildCountAndArgs(q, argList));
         Object[] args = argList.toArray();
