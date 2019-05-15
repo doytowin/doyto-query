@@ -20,7 +20,7 @@ public class MenuRequest {
 
     private String memo;
 
-    private Boolean valid;
+    private Boolean valid = true;
 
     public MenuEntity toEntity() {
         MenuEntity menuEntity = new MenuEntity();
