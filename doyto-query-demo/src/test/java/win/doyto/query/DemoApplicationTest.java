@@ -5,10 +5,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * DemoApplicationTest
@@ -137,6 +140,20 @@ class DemoApplicationTest {
         mockMvc.perform(get("/menu/get?id=1"))
                .andExpect(jsonPath("$.id").value("1"))
                .andExpect(jsonPath("$.menuName").value("root"))
+        ;
+    }
+
+    /*=============== login ==================*/
+    @Test
+    void login() throws Exception {
+        MockHttpServletRequestBuilder loginRequest = post("/login")
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .content("{\"account\":\"f0rb\",\"password\":\"123456\"}");
+        MvcResult mvcResult = mockMvc.perform(loginRequest).andExpect(status().is(200)).andReturn();
+        MockHttpSession session = (MockHttpSession) mvcResult.getRequest().getSession();
+        mockMvc.perform(get("/account").session(session))
+               .andExpect(jsonPath("$.id").value("1"))
+               .andExpect(jsonPath("$.nickname").value("测试1"))
         ;
     }
 }

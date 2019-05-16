@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import win.doyto.query.core.PageList;
+import win.doyto.query.exception.ServiceException;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * UserController
@@ -17,7 +19,8 @@ import java.util.List;
 @RestController
 @RequestMapping("user")
 @AllArgsConstructor
-class UserController {
+@SuppressWarnings("squid:S4529")
+public class UserController implements UserApi {
 
     UserService userService;
 
@@ -44,5 +47,21 @@ class UserController {
     @PostMapping("delete")
     public void delete(int id) {
         userService.delete(id);
+    }
+
+    @Override
+    public UserResponse auth(String account, String password) {
+        UserEntity userEntity = userService.get(UserQuery.builder().account(account).build());
+        if (userEntity == null) {
+            throw new ServiceException("账号不存在");
+        }
+        if (!userEntity.isValid()) {
+            throw new ServiceException("账号被禁用");
+        }
+
+        if (!Objects.equals(userEntity.getPassword(), password)) {
+            throw new ServiceException("密码错误");
+        }
+        return UserResponse.of(userEntity);
     }
 }

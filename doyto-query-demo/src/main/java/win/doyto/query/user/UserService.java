@@ -14,8 +14,8 @@ import win.doyto.query.jpa2.AbstractJpa2Service;
 @Service
 class UserService extends AbstractJpa2Service<UserEntity, Integer, UserQuery> {
 
-    public UserService(UserRepository crudRepository) {
-        super(crudRepository);
+    public UserService(UserRepository userRepository) {
+        super(userRepository);
     }
 
 }

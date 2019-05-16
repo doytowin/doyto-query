@@ -16,6 +16,7 @@ import win.doyto.query.core.PageList;
 @RestController
 @RequestMapping("menu")
 @AllArgsConstructor
+@SuppressWarnings("squid:S4529")
 class MenuController {
 
     MenuService menuService;

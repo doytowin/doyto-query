@@ -15,13 +15,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author f0rb
  * @date 2019-05-15
  */
-class UserControllerTest {
+public class UserControllerTest {
     public static final int INIT_SIZE = 5;
-    private final UserService userService = new UserService(new MockUserRepository());
-    UserController userController = new UserController(userService);
+    private static final MockUserRepository userRepository = new MockUserRepository();
+    private static final UserService userService = new UserService(userRepository);
+    public static UserController userController = new UserController(userService);
 
-    @BeforeEach
-    void setUp() {
+    static {
+        initData();
+    }
+
+    private static void initData() {
         LinkedList<UserEntity> userEntities = new LinkedList<>();
         for (int i = 1; i < INIT_SIZE; i++) {
             UserEntity userEntity = new UserEntity();
@@ -33,11 +37,19 @@ class UserControllerTest {
         }
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername("f0rb");
+        userEntity.setNickname("自在");
         userEntity.setPassword("123456");
         userEntity.setEmail("f0rb@163.com");
         userEntity.setMobile("17778888880");
+        userEntity.setValid(true);
         userEntities.add(userEntity);
         userService.save(userEntities);
+    }
+
+    @BeforeEach
+    void setUp() {
+        userRepository.reset();
+        initData();
     }
 
     @Test

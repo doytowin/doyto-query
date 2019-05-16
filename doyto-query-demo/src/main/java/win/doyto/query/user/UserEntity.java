@@ -1,6 +1,5 @@
 package win.doyto.query.user;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.entity.IntegerId;
@@ -18,7 +17,7 @@ import javax.persistence.Table;
 @Setter
 @Entity
 @Table(name = UserEntity.TABLE)
-@EqualsAndHashCode(callSuper = true)
+//@EqualsAndHashCode(callSuper = true)
 class UserEntity extends IntegerId {
     public static final String TABLE = "user";
     private String username;
@@ -26,5 +25,5 @@ class UserEntity extends IntegerId {
     private String mobile;
     private String email;
     private String nickname;
-    private Boolean valid;
+    private boolean valid;
 }
