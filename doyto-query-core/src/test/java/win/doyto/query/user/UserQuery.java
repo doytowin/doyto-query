@@ -7,6 +7,8 @@ import win.doyto.query.core.PageQuery;
 import win.doyto.query.core.QueryField;
 import win.doyto.query.core.QueryTable;
 
+import java.util.List;
+
 /**
  * UserQuery
  *
@@ -18,6 +20,8 @@ import win.doyto.query.core.QueryTable;
 @Builder
 @QueryTable(table = "user", entityClass = UserEntity.class)
 public class UserQuery extends PageQuery {
+    private List<Integer> idIn;
+
     private String username;
 
     @QueryField(and = "(username = #{account} OR email = #{account} OR mobile = #{account})")
