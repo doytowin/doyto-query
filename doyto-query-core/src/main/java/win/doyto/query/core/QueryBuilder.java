@@ -3,8 +3,10 @@ package win.doyto.query.core;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 import java.util.List;
@@ -74,7 +76,7 @@ public class QueryBuilder {
             if (field.getName().startsWith("$")) {
                 continue;
             }
-            Object value = readField(field, query);
+            Object value = readFieldGetter(field, query);
             if (value != null) {
                 processField(value, field, whereList, argList);
             }
@@ -92,7 +94,12 @@ public class QueryBuilder {
         if (queryField != null) {
             andSQL = queryField.and();
         } else {
-            andSQL = field.getName() + " = " + "#{" + field.getName() + "}";
+            String fieldName = field.getName();
+            if (fieldName.endsWith("Like")) {
+                andSQL = fieldName.substring(0, fieldName.length() - 4) + " LIKE " + "#{" + fieldName + "}";
+            } else {
+                andSQL = fieldName + " = " + "#{" + fieldName + "}";
+            }
         }
 
         if (argList != null) {
@@ -105,9 +112,31 @@ public class QueryBuilder {
         whereList.add(andSQL);
     }
 
+    public static Object readFieldGetter(Field field, Object query) {
+        Object value = null;
+        try {
+            String fieldName = field.getName();
+            String prefix = field.getType().isAssignableFrom(boolean.class) ? "is" : "get";
+            value = MethodUtils.invokeMethod(query, true, prefix + StringUtils.capitalize(fieldName));
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            log.warn("is/get调用异常 : {}-{}", e.getClass().getName(), e.getMessage());
+            value = readField(field, query);
+        }
+        return value;
+    }
+
     public static Object readField(Field field, Object query) {
         try {
             return FieldUtils.readField(field, query, true);
+        } catch (IllegalAccessException e) {
+            log.warn("字段读取异常 : {}-{}", e.getClass().getName(), e.getMessage());
+        }
+        return null;
+    }
+
+    public static Object readField(Object target, String fieldName) {
+        try {
+            return FieldUtils.readField(target, fieldName, true);
         } catch (IllegalAccessException e) {
             log.error("FieldUtils.readField failed: {}", e.getMessage());
         }

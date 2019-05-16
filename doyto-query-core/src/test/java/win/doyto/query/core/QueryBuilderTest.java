@@ -84,4 +84,11 @@ public class QueryBuilderTest {
                      queryBuilder.buildCount(userQuery));
     }
 
+    @Test
+    public void supportLikeSuffix() {
+        UserQuery userQuery = UserQuery.builder().usernameLike("test").build();
+        assertEquals("SELECT * FROM user WHERE username LIKE #{usernameLike}",
+                     queryBuilder.buildSelect(userQuery));
+    }
+
 }

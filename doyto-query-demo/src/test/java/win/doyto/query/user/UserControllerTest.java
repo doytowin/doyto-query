@@ -23,7 +23,7 @@ class UserControllerTest {
     @BeforeEach
     void setUp() {
         LinkedList<UserEntity> userEntities = new LinkedList<>();
-        for (int i = 1; i <= INIT_SIZE; i++) {
+        for (int i = 1; i < INIT_SIZE; i++) {
             UserEntity userEntity = new UserEntity();
             userEntity.setUsername("username" + i);
             userEntity.setPassword("password" + i);
@@ -31,6 +31,12 @@ class UserControllerTest {
             userEntity.setMobile("1777888888" + i);
             userEntities.add(userEntity);
         }
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername("f0rb");
+        userEntity.setPassword("123456");
+        userEntity.setEmail("f0rb@163.com");
+        userEntity.setMobile("17778888880");
+        userEntities.add(userEntity);
         userService.save(userEntities);
     }
 
@@ -44,11 +50,20 @@ class UserControllerTest {
     }
 
     @Test
-    void page() {
+    void pageUser() {
         UserQuery userQuery = UserQuery.builder().build();
         userQuery.setPageNumber(0).setPageSize(2);
         PageList<UserResponse> page = userController.page(userQuery);
         assertEquals(INIT_SIZE, page.getTotal());
+        assertEquals(2, page.getList().size());
+    }
+
+    @Test
+    void pageUserWithCriteria() {
+        UserQuery userQuery = UserQuery.builder().usernameLike("username").build();
+        userQuery.setPageNumber(1).setPageSize(2);
+        PageList<UserResponse> page = userController.page(userQuery);
+        assertEquals(4, page.getTotal());
         assertEquals(2, page.getList().size());
     }
 

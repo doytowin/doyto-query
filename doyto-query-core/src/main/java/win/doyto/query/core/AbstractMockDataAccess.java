@@ -1,6 +1,7 @@
 package win.doyto.query.core;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.entity.Persistable;
 
@@ -80,21 +81,26 @@ public abstract class AbstractMockDataAccess<E extends Persistable<I>, I extends
     protected boolean filterByQuery(Q query, E entity) {
         for (Field field : query.getClass().getDeclaredFields()) {
             if (!ignoreField(field)) {
-                Object value = readField(field, query);
-                if (value != null) {
-                    Object v2 = null;
-                    try {
-                        v2 = FieldUtils.readField(entity, field.getName(), true);
-                    } catch (IllegalAccessException e) {
-                        log.error("FieldUtils.readField failed: {}", e.getMessage());
-                    }
-                    if (!value.equals(v2)) {
-                        return false;
-                    }
+                Object v1 = readField(field, query);
+                if (v1 != null && unsatisfied(entity, field, v1)) {
+                    return false;
                 }
             }
         }
         return true;
+    }
+
+    private boolean unsatisfied(E entity, Field field, Object v1) {
+        Object v2;
+        String fieldName = field.getName();
+        if (fieldName.endsWith("Like")) {
+            fieldName = fieldName.substring(0, fieldName.length() - 4);
+            v2 = readField(entity, fieldName);
+            return v2 != null && !StringUtils.contains(v2.toString(), v1.toString());
+        } else {
+            v2 = readField(entity, fieldName);
+            return !v1.equals(v2);
+        }
     }
 
     @Override
@@ -120,6 +126,7 @@ public abstract class AbstractMockDataAccess<E extends Persistable<I>, I extends
 
     @Override
     public long count(Q query) {
-        return entitiesMap.size();
+        return entitiesMap.values().stream()
+                          .filter(item -> filterByQuery(query, item)).count();
     }
 }
