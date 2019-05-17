@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import win.doyto.query.user.UserQuery;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -106,6 +107,71 @@ public class QueryBuilderTest {
                      queryBuilder.buildSelectAndArgs(userQuery, argList));
         assertThat(argList).containsExactly(1, 2, 3);
 
+    }
+
+    @Test
+    public void supportNotInSuffix() {
+        List<Integer> ids = Arrays.asList(1, 2, 3);
+        UserQuery userQuery = UserQuery.builder().idNotIn(ids).build();
+        assertEquals("SELECT * FROM user WHERE id NOT IN (#{idNotIn[0]}, #{idNotIn[1]}, #{idNotIn[2]})",
+                     queryBuilder.buildSelect(userQuery));
+
+        LinkedList<Object> argList = new LinkedList<>();
+        assertEquals("SELECT * FROM user WHERE id NOT IN (?, ?, ?)",
+                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+        assertThat(argList).containsExactly(1, 2, 3);
+    }
+
+    @Test
+    public void supportGtSuffix() {
+        Date createTimeGt = new Date();
+        UserQuery userQuery = UserQuery.builder().username("test").createTimeGt(createTimeGt).build();
+        assertEquals("SELECT * FROM user WHERE username = #{username} AND createTime > #{createTimeGt}",
+                     queryBuilder.buildSelect(userQuery));
+
+        LinkedList<Object> argList = new LinkedList<>();
+        assertEquals("SELECT * FROM user WHERE username = ? AND createTime > ?",
+                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+        assertThat(argList).containsExactly("test", createTimeGt);
+    }
+
+    @Test
+    public void supportGeSuffix() {
+        Date date = new Date();
+        UserQuery userQuery = UserQuery.builder().username("test").createTimeGe(date).build();
+        assertEquals("SELECT * FROM user WHERE username = #{username} AND createTime >= #{createTimeGe}",
+                     queryBuilder.buildSelect(userQuery));
+
+        LinkedList<Object> argList = new LinkedList<>();
+        assertEquals("SELECT * FROM user WHERE username = ? AND createTime >= ?",
+                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+        assertThat(argList).containsExactly("test", date);
+    }
+
+    @Test
+    public void supportLtSuffix() {
+        Date date = new Date();
+        UserQuery userQuery = UserQuery.builder().username("test").createTimeLt(date).build();
+        assertEquals("SELECT * FROM user WHERE username = #{username} AND createTime < #{createTimeLt}",
+                     queryBuilder.buildSelect(userQuery));
+
+        LinkedList<Object> argList = new LinkedList<>();
+        assertEquals("SELECT * FROM user WHERE username = ? AND createTime < ?",
+                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+        assertThat(argList).containsExactly("test", date);
+    }
+
+    @Test
+    public void supportLeSuffix() {
+        Date date = new Date();
+        UserQuery userQuery = UserQuery.builder().username("test").createTimeLe(date).build();
+        assertEquals("SELECT * FROM user WHERE username = #{username} AND createTime <= #{createTimeLe}",
+                     queryBuilder.buildSelect(userQuery));
+
+        LinkedList<Object> argList = new LinkedList<>();
+        assertEquals("SELECT * FROM user WHERE username = ? AND createTime <= ?",
+                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+        assertThat(argList).containsExactly("test", date);
     }
 
 }

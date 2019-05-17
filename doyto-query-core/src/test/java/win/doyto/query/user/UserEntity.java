@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.entity.IntegerId;
 
+import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -24,4 +25,5 @@ public class UserEntity extends IntegerId {
     private String email;
     private String nickname;
     private String valid;
+    private Date createTime;
 }

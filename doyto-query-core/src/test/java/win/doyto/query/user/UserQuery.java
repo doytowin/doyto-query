@@ -7,6 +7,7 @@ import win.doyto.query.core.PageQuery;
 import win.doyto.query.core.QueryField;
 import win.doyto.query.core.QueryTable;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,6 +22,7 @@ import java.util.List;
 @QueryTable(table = "user", entityClass = UserEntity.class)
 public class UserQuery extends PageQuery {
     private List<Integer> idIn;
+    private List<Integer> idNotIn;
 
     private String username;
 
@@ -28,4 +30,9 @@ public class UserQuery extends PageQuery {
     private String account;
 
     private String usernameLike;
+
+    private Date createTimeGt;
+    private Date createTimeGe;
+    private Date createTimeLt;
+    private Date createTimeLe;
 }

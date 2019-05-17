@@ -8,13 +8,10 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javax.persistence.Id;
 
 /**
@@ -86,7 +83,7 @@ public class QueryBuilder {
         }
         String where = "";
         if (!whereList.isEmpty()) {
-            where = " WHERE " + StringUtils.join(whereList, " and ");
+            where = " WHERE " + StringUtils.join(whereList, " AND ");
         }
         return where;
     }
@@ -98,27 +95,7 @@ public class QueryBuilder {
             andSQL = replaceArgs(value, argList, queryField.and());
         } else {
             String fieldName = field.getName();
-            String columnName = fieldName;
-            String op = " = ";
-            String ex = argList != null ? "?" : "#{" + fieldName + "}";
-
-            if (fieldName.endsWith("Like")) {
-                columnName = fieldName.substring(0, fieldName.length() - 4);
-                op = " LIKE ";
-            } else if (fieldName.endsWith("In")) {
-                columnName = fieldName.substring(0, fieldName.length() - 2);
-                op = " IN ";
-                ex = "(null)";
-                Collection collection = (Collection) value;
-                if (!collection.isEmpty()) {
-                    List<Object> inList = IntStream.range(0, collection.size()).
-                        mapToObj(i -> argList != null ? "?" : String.format("#{%s[%d]}", fieldName, i)).collect(Collectors.toList());
-                    ex = "(" + StringUtils.join(inList, ", ") + ")";
-                }
-            }
-            andSQL = columnName + op + ex;
-            appendArgs(value, argList);
-
+            andSQL = QuerySuffix.buildAndSql(fieldName, value, argList);
         }
         whereList.add(andSQL);
     }
@@ -134,18 +111,8 @@ public class QueryBuilder {
         return andSQL;
     }
 
-    private static void appendArgs(Object value, List<Object> argList) {
-        if (argList != null) {
-            if (value instanceof Collection) {
-                argList.addAll((Collection) value);
-            } else {
-                argList.add(value);
-            }
-        }
-    }
-
     public static Object readFieldGetter(Field field, Object query) {
-        Object value = null;
+        Object value;
         try {
             String fieldName = field.getName();
             String prefix = field.getType().isAssignableFrom(boolean.class) ? "is" : "get";
