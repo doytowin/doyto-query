@@ -8,5 +8,5 @@ import org.springframework.data.repository.CrudRepository;
  * @author f0rb
  * @date 2019-05-12
  */
-interface UserRepository extends CrudRepository<UserEntity, Integer> {
+interface UserRepository extends CrudRepository<UserEntity, Long> {
 }

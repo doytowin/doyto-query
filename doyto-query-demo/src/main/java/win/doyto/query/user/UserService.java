@@ -12,7 +12,7 @@ import win.doyto.query.jpa2.AbstractJpa2Service;
  */
 @Slf4j
 @Service
-class UserService extends AbstractJpa2Service<UserEntity, Integer, UserQuery> {
+class UserService extends AbstractJpa2Service<UserEntity, Long, UserQuery> {
 
     public UserService(UserRepository userRepository) {
         super(userRepository);

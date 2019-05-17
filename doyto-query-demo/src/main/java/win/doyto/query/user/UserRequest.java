@@ -14,7 +14,7 @@ import org.springframework.beans.BeanUtils;
 @Setter
 public class UserRequest {
 
-    private Integer id;
+    private Long id;
     private String username;
     private String password;
     private String mobile;

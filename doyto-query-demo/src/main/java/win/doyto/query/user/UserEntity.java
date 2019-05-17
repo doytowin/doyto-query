@@ -2,7 +2,7 @@ package win.doyto.query.user;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.entity.IntegerId;
+import win.doyto.query.entity.LongId;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -18,7 +18,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = UserEntity.TABLE)
 //@EqualsAndHashCode(callSuper = true)
-class UserEntity extends IntegerId {
+class UserEntity extends LongId {
     public static final String TABLE = "user";
     private String username;
     private String password;

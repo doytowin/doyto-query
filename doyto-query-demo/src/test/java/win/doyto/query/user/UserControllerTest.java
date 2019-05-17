@@ -54,9 +54,11 @@ public class UserControllerTest {
 
     @Test
     void query() {
-        assertThat(userController.query(UserQuery.builder().username("username1").build())).hasSize(1)
+        UserQuery userQuery = UserQuery.builder().username("username1").build();
+        assertThat(userController.query(userQuery))
+            .hasSize(1)
             .first()
-            .hasFieldOrPropertyWithValue("id", 1)
+            .hasFieldOrPropertyWithValue("id", 1L)
             .hasFieldOrPropertyWithValue("username", "username1")
         ;
     }
@@ -81,15 +83,15 @@ public class UserControllerTest {
 
     @Test
     void get() {
-        assertThat(userController.get(1))
-            .hasFieldOrPropertyWithValue("id", 1)
+        assertThat(userController.get(1L))
+            .hasFieldOrPropertyWithValue("id", 1L)
             .hasFieldOrPropertyWithValue("username", "username1")
         ;
     }
 
     @Test
     void delete() {
-        userController.delete(1);
+        userController.delete(1L);
         assertThat(userController.page(UserQuery.builder().build()).getTotal()).isEqualTo(4);
     }
 }

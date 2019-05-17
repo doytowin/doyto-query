@@ -35,7 +35,7 @@ public class UserController implements UserApi {
     }
 
     @GetMapping("get")
-    public UserResponse get(Integer id) {
+    public UserResponse get(Long id) {
         return UserResponse.of(userService.get(id));
     }
 
@@ -45,7 +45,7 @@ public class UserController implements UserApi {
     }
 
     @PostMapping("delete")
-    public void delete(int id) {
+    public void delete(Long id) {
         userService.delete(id);
     }
 
