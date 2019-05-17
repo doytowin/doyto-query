@@ -128,6 +128,9 @@ public abstract class AbstractMockDataAccess<E extends Persistable<I>, I extends
 
         if (query instanceof PageQuery) {
             PageQuery pageQuery = (PageQuery) query;
+            if (pageQuery.getSort() != null) {
+                doSort(queryList, pageQuery.getSort());
+            }
             if (pageQuery.needPaging()) {
                 int from = pageQuery.getPageNumber() * pageQuery.getPageSize();
                 int end = Math.min(queryList.size(), from + pageQuery.getPageSize());
@@ -138,6 +141,10 @@ public abstract class AbstractMockDataAccess<E extends Persistable<I>, I extends
         }
 
         return queryList;
+    }
+
+    @SuppressWarnings("unused")
+    protected void doSort(List<E> queryList, String sort) {
     }
 
     @Override

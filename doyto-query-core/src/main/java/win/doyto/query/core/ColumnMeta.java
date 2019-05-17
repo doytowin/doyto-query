@@ -46,10 +46,11 @@ class ColumnMeta {
         return columnName.split("Or(?=[A-Z])");
     }
 
+    @SuppressWarnings("unchecked")
     private static void appendArgs(Object value, List<Object> argList) {
         if (argList != null) {
             if (value instanceof Collection) {
-                argList.addAll((Collection) value);
+                argList.addAll((Collection<Object>) value);
             } else {
                 argList.add(value);
             }

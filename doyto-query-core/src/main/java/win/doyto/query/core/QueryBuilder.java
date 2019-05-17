@@ -58,6 +58,13 @@ public class QueryBuilder {
         }
 
         sql += buildWhere(query, argList);
+
+        if (operation == DatabaseOperation.SELECT && query instanceof PageQuery) {
+            PageQuery pageQuery = (PageQuery) query;
+            if (pageQuery.getSort() != null) {
+                sql += " ORDER BY " + pageQuery.getSort().replaceAll(",", " ").replaceAll(";", ", ");
+            }
+        }
         if (operation == DatabaseOperation.SELECT && query instanceof PageQuery) {
             PageQuery pageQuery = (PageQuery) query;
             if (pageQuery.needPaging()) {

@@ -199,4 +199,12 @@ public class QueryBuilderTest {
         assertThat(argList).containsExactly("test", "test", "test");
 
     }
+
+    @Test
+    public void supportSort() {
+        UserQuery userQuery = UserQuery.builder().usernameLike("test").build();
+        userQuery.setPageNumber(5).setPageSize(10).setSort("id,desc;createTime,asc");
+        assertEquals("SELECT * FROM user WHERE username LIKE #{usernameLike} ORDER BY id desc, createTime asc LIMIT 10 OFFSET 50",
+                     queryBuilder.buildSelect(userQuery));
+    }
 }

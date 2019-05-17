@@ -1,7 +1,11 @@
 package win.doyto.query.core;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import javax.validation.constraints.Pattern;
 
 /**
  * PageQuery
@@ -16,6 +20,11 @@ public class PageQuery {
     private Integer pageNumber;
 
     private Integer pageSize;
+
+    @ApiModelProperty(value = "Sorting field, format: field1,desc;field2,asc")
+    @Pattern(regexp = "([_\\w]+,(asc|desc);)*[_\\w]+,(asc|desc)", message = "Sorting field format error")
+    @Getter
+    private String sort;
 
     public Integer getPageNumber() {
         return getDefault(pageNumber, 0);
