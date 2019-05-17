@@ -16,7 +16,7 @@ public class MockUserRepository extends AbstractMockRepository<UserEntity, Long,
 
     @Override
     protected boolean unsatisfied(UserEntity entity, String fieldName, Object v1) {
-        if (fieldName.equals("account")) {
+        if (fieldName.equals("usernameOrEmailOrMobile")) {
             String account = v1.toString();
             if (!StringUtils.equals(entity.getUsername(), account) &&
                 !StringUtils.equals(entity.getEmail(), account) &&

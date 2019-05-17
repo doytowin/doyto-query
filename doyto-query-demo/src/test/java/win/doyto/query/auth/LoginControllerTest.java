@@ -21,19 +21,18 @@ import static org.junit.jupiter.api.Assertions.fail;
 @Slf4j
 class LoginControllerTest {
 
-    LoginController loginController = new LoginController();
+    LoginController loginController;
     HttpServletRequest httpRequest;
 
     @BeforeEach
     void setUp() {
+        loginController = new LoginController(UserControllerTest.userController);
         httpRequest = new MockHttpServletRequest();
         loginController.userApi = UserControllerTest.userController;
     }
 
     @Test
     void login() {
-        LoginController loginController = new LoginController();
-        loginController.userApi = UserControllerTest.userController;
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setAccount("f0rb");
         loginRequest.setPassword("123456");
@@ -59,8 +58,6 @@ class LoginControllerTest {
 
     @Test
     void loginWithWrongAccount() {
-        LoginController loginController = new LoginController();
-        loginController.userApi = UserControllerTest.userController;
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setAccount("none");
         loginRequest.setPassword("123456");

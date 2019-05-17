@@ -29,6 +29,8 @@ public class UserQuery extends PageQuery {
     @QueryField(and = "(username = #{account} OR email = #{account} OR mobile = #{account})")
     private String account;
 
+    private String usernameOrEmailOrMobile;
+
     private String usernameLike;
 
     private Date createTimeGt;

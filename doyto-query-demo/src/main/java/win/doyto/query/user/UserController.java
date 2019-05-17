@@ -51,7 +51,7 @@ public class UserController implements UserApi {
 
     @Override
     public UserResponse auth(String account, String password) {
-        UserEntity userEntity = userService.get(UserQuery.builder().account(account).build());
+        UserEntity userEntity = userService.get(UserQuery.builder().usernameOrEmailOrMobile(account).build());
         if (userEntity == null) {
             throw new ServiceException("账号不存在");
         }

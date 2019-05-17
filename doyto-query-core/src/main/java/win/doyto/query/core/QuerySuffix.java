@@ -1,6 +1,5 @@
 package win.doyto.query.core;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +32,7 @@ enum QuerySuffix {
 
     private final String op;
 
-    private static final Pattern SUFFIX_PTN;
+    static final Pattern SUFFIX_PTN;
 
     private static final Map<QuerySuffix, Function<ColumnMeta, String>> sqlFuncMap = new EnumMap<>(QuerySuffix.class);
 
@@ -51,24 +50,12 @@ enum QuerySuffix {
     }
 
     static String buildAndSql(String fieldName, @NonNull Object value, List<Object> argList) {
-        appendArgs(value, argList);
-
         QuerySuffix querySuffix = QuerySuffix.NONE;
         Matcher matcher = SUFFIX_PTN.matcher(fieldName);
         if (matcher.find()) {
             querySuffix = QuerySuffix.valueOf(matcher.group());
         }
-        return sqlFuncMap.get(querySuffix).apply(new ColumnMeta(fieldName, argList, value));
-    }
-
-    private static void appendArgs(Object value, List<Object> argList) {
-        if (argList != null) {
-            if (value instanceof Collection) {
-                argList.addAll((Collection) value);
-            } else {
-                argList.add(value);
-            }
-        }
+        return sqlFuncMap.get(querySuffix).apply(new ColumnMeta(fieldName, value, argList));
     }
 
     private static String buildSqlForCollection(ColumnMeta columnMeta, QuerySuffix querySuffix) {
@@ -82,24 +69,4 @@ enum QuerySuffix {
         return columnMeta.defaultSql(querySuffix, ex);
     }
 
-    @AllArgsConstructor
-    private static class ColumnMeta {
-        final String fieldName;
-        final List<Object> argList;
-        final Object value;
-
-        private static String resolveColumnName(String fieldName, String suffix) {
-            return fieldName.endsWith(suffix) ? fieldName.substring(0, fieldName.length() - suffix.length()) : fieldName;
-        }
-
-        private String defaultSql(QuerySuffix querySuffix) {
-            String ex = argList != null ? "?" : "#{" + fieldName + "}";
-            return defaultSql(querySuffix, ex);
-        }
-
-        private String defaultSql(QuerySuffix querySuffix, String ex) {
-            return resolveColumnName(fieldName, querySuffix.name()) + " " + querySuffix.getOp() + " " + ex;
-        }
-
-    }
 }

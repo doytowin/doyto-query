@@ -174,4 +174,16 @@ public class QueryBuilderTest {
         assertThat(argList).containsExactly("test", date);
     }
 
+    @Test
+    void supportOr() {
+        UserQuery userQuery = UserQuery.builder().usernameOrEmailOrMobile("test").build();
+        assertEquals("SELECT * FROM user WHERE (username = #{usernameOrEmailOrMobile} OR email = #{usernameOrEmailOrMobile} OR mobile = #{usernameOrEmailOrMobile})",
+                     queryBuilder.buildSelect(userQuery));
+
+        LinkedList<Object> argList = new LinkedList<>();
+        assertEquals("SELECT * FROM user WHERE (username = ? OR email = ? OR mobile = ?)",
+                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+        assertThat(argList).containsExactly("test", "test", "test");
+
+    }
 }
