@@ -3,6 +3,7 @@ package win.doyto.query.user;
 import lombok.*;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.core.QueryTable;
+import win.doyto.query.util.ColumnUtil;
 
 /**
  * UserQuery
@@ -27,7 +28,7 @@ public class UserQuery extends PageQuery {
     private String usernameLike;
 
     public String getUsernameLike() {
-        return usernameLike == null ? null : "%" + usernameLike + "%";
+        return ColumnUtil.escapeLike(usernameLike);
     }
 
     public void setAccount(String account) {
