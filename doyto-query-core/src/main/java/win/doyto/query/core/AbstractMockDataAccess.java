@@ -7,9 +7,7 @@ import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -17,6 +15,7 @@ import javax.persistence.Id;
 
 import static win.doyto.query.core.QueryBuilder.ignoreField;
 import static win.doyto.query.core.QueryBuilder.readField;
+import static win.doyto.query.core.QuerySuffix.*;
 
 /**
  * AbstractMockDataAccess
@@ -25,9 +24,10 @@ import static win.doyto.query.core.QueryBuilder.readField;
  * @date 2019-05-15
  */
 @Slf4j
+@SuppressWarnings("unchecked")
 public abstract class AbstractMockDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
     protected static final Map<String, Map> tableMap = new ConcurrentHashMap<>();
-    private static final String SUFFIX_LIKE = "Like";
+
     protected final Map<I, E> entitiesMap = new ConcurrentHashMap<>();
     private final AtomicLong idGenerator = new AtomicLong(0);
 
@@ -83,7 +83,7 @@ public abstract class AbstractMockDataAccess<E extends Persistable<I>, I extends
         for (Field field : query.getClass().getDeclaredFields()) {
             if (!ignoreField(field)) {
                 Object v1 = readField(field, query);
-                if (v1 != null && unsatisfied(entity, field.getName(), v1)) {
+                if (v1 != null && unsatisfied(entity, query)) {
                     return false;
                 }
             }
@@ -91,26 +91,32 @@ public abstract class AbstractMockDataAccess<E extends Persistable<I>, I extends
         return true;
     }
 
-    protected boolean unsatisfied(E entity, String fieldName, Object v1) {
-        Object v2;
+    protected boolean unsatisfied(E entity, Q query) {
+        Field[] fields = query.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            String fieldName = field.getName();
+            Object queryFieldValue = readField(query, fieldName);
+            if (queryFieldValue == null) {
+                continue;
+            }
 
-        String suffix = "";
-        if (fieldName.endsWith(SUFFIX_LIKE)) {
-            fieldName = fieldName.substring(0, fieldName.length() - 4);
-            suffix = SUFFIX_LIKE;
-        }
+            QuerySuffix querySuffix = resolve(fieldName);
+            String columnName = querySuffix.resolveColumnName(fieldName);
+            FilterExecutor filterExecutor = filterExecutorMap.get(querySuffix);
 
-        // only do filter when there is a corresponding field in the entity
-        if (FieldUtils.getField(entity.getClass(), fieldName, true) != null) {
-            if (suffix.equals(SUFFIX_LIKE)) {
-                v2 = readField(entity, fieldName);
-                return v2 != null && !StringUtils.contains(v2.toString(), v1.toString());
+            if (columnName.contains("Or")) {
+                String[] names = ColumnMeta.splitByOr(columnName);
+                return Arrays.stream(names)
+                             .map(name -> readField(entity, ColumnMeta.camelize(name)))
+                             .noneMatch(entityFieldValue -> filterExecutor.filter(queryFieldValue, entityFieldValue));
             } else {
-                v2 = readField(entity, fieldName);
-                return !v1.equals(v2);
+                Object entityFieldValue = readField(entity, columnName);
+                if (filterExecutor.filter(queryFieldValue, entityFieldValue)) {
+                    return false;
+                }
             }
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -136,12 +142,53 @@ public abstract class AbstractMockDataAccess<E extends Persistable<I>, I extends
 
     @Override
     public long count(Q query) {
-        return entitiesMap.values().stream()
-                          .filter(item -> filterByQuery(query, item)).count();
+        return entitiesMap.values().stream().filter(item -> filterByQuery(query, item)).count();
     }
 
     public void reset() {
         entitiesMap.clear();
         idGenerator.set(0);
+    }
+
+    interface FilterExecutor {
+        /**
+         * 实体对象筛选
+         *
+         * @param queryFieldValue  查询对象字段值
+         * @param entityFieldValue 实体对象字段值
+         * @return true 符合过滤条件
+         */
+        boolean filter(Object queryFieldValue, Object entityFieldValue);
+    }
+
+    static final Map<QuerySuffix, FilterExecutor> filterExecutorMap = new EnumMap<>(QuerySuffix.class);
+
+    static {
+        filterExecutorMap.put(Like, (queryFieldValue, entityFieldValue) ->
+            entityFieldValue instanceof String && StringUtils.contains(((String) entityFieldValue), (String) queryFieldValue));
+
+        filterExecutorMap.put(In, (queryFieldValue, entityFieldValue) ->
+            queryFieldValue instanceof Collection && ((Collection) queryFieldValue).contains(entityFieldValue));
+
+        filterExecutorMap.put(NotIn, (queryFieldValue, entityFieldValue) ->
+            queryFieldValue instanceof Collection && !((Collection) queryFieldValue).contains(entityFieldValue));
+
+        filterExecutorMap.put(Gt, (queryFieldValue, entityFieldValue) ->
+            !(queryFieldValue instanceof Comparable) || !(entityFieldValue instanceof Comparable) ||
+                ((Comparable) entityFieldValue).compareTo(queryFieldValue) > 0);
+
+        filterExecutorMap.put(Lt, (queryFieldValue, entityFieldValue) ->
+            !(queryFieldValue instanceof Comparable) || !(entityFieldValue instanceof Comparable) ||
+                ((Comparable) entityFieldValue).compareTo(queryFieldValue) < 0);
+
+        filterExecutorMap.put(Ge, (queryFieldValue, entityFieldValue) ->
+            !(queryFieldValue instanceof Comparable) || !(entityFieldValue instanceof Comparable) ||
+                ((Comparable) entityFieldValue).compareTo(queryFieldValue) >= 0);
+
+        filterExecutorMap.put(Le, (queryFieldValue, entityFieldValue) ->
+            !(queryFieldValue instanceof Comparable) || !(entityFieldValue instanceof Comparable) ||
+                ((Comparable) entityFieldValue).compareTo(queryFieldValue) <= 0);
+
+        filterExecutorMap.put(NONE, Object::equals);
     }
 }

@@ -101,14 +101,14 @@ public class QueryBuilder {
     }
 
     private static String replaceArgs(Object value, List<Object> argList, String andSQL) {
-        if (argList != null) {
-            Matcher matcher = PLACE_HOLDER_PTN.matcher(andSQL);
-            while (matcher.find()) {
-                argList.add(value);
-            }
-            andSQL = matcher.replaceAll("?");
+        if (argList == null) {
+            return andSQL;
         }
-        return andSQL;
+        Matcher matcher = PLACE_HOLDER_PTN.matcher(andSQL);
+        while (matcher.find()) {
+            argList.add(value);
+        }
+        return matcher.replaceAll("?");
     }
 
     public static Object readFieldGetter(Field field, Object query) {

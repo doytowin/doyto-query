@@ -50,12 +50,17 @@ enum QuerySuffix {
     }
 
     static String buildAndSql(String fieldName, @NonNull Object value, List<Object> argList) {
+        QuerySuffix querySuffix = resolve(fieldName);
+        return sqlFuncMap.get(querySuffix).apply(new ColumnMeta(fieldName, value, argList));
+    }
+
+    static QuerySuffix resolve(String fieldName) {
         QuerySuffix querySuffix = QuerySuffix.NONE;
         Matcher matcher = SUFFIX_PTN.matcher(fieldName);
         if (matcher.find()) {
             querySuffix = QuerySuffix.valueOf(matcher.group());
         }
-        return sqlFuncMap.get(querySuffix).apply(new ColumnMeta(fieldName, value, argList));
+        return querySuffix;
     }
 
     private static String buildSqlForCollection(ColumnMeta columnMeta, QuerySuffix querySuffix) {
@@ -69,4 +74,8 @@ enum QuerySuffix {
         return columnMeta.defaultSql(querySuffix, ex);
     }
 
+    String resolveColumnName(String fieldName) {
+        String suffix = this.name();
+        return fieldName.endsWith(suffix) ? fieldName.substring(0, fieldName.length() - suffix.length()) : fieldName;
+    }
 }

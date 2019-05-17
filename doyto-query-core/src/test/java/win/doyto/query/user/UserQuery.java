@@ -23,6 +23,8 @@ import java.util.List;
 public class UserQuery extends PageQuery {
     private List<Integer> idIn;
     private List<Integer> idNotIn;
+    private Integer idLt;
+    private Integer idLe;
 
     private String username;
 
@@ -30,6 +32,8 @@ public class UserQuery extends PageQuery {
     private String account;
 
     private String usernameOrEmailOrMobile;
+
+    private String usernameOrEmailOrMobileLike;
 
     private String usernameLike;
 

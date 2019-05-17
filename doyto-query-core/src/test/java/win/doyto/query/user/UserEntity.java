@@ -17,13 +17,14 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Entity
-@Table(name = "user")
+@Table(name = UserEntity.TABLE)
 public class UserEntity extends IntegerId {
+    protected static final String TABLE = "user";
     private String username;
     private String password;
     private String mobile;
     private String email;
     private String nickname;
-    private String valid;
+    private boolean valid = true;
     private Date createTime;
 }
