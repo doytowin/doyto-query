@@ -6,9 +6,9 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.jupiter.api.*;
-import win.doyto.query.user.UserEntity;
-import win.doyto.query.user.UserMapper;
-import win.doyto.query.user.UserQuery;
+import win.doyto.query.module.user.UserEntity;
+import win.doyto.query.module.user.UserMapper;
+import win.doyto.query.module.user.UserQuery;
 
 import java.io.Reader;
 import java.sql.Connection;
