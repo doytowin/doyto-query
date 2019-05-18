@@ -1,7 +1,7 @@
 package win.doyto.query.jpa2;
 
 import org.springframework.data.repository.CrudRepository;
-import win.doyto.query.core.AbstractService;
+import win.doyto.query.core.AbstractCrudService;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
@@ -14,7 +14,7 @@ import javax.persistence.EntityManager;
  * @author f0rb
  * @date 2019-05-14
  */
-public class AbstractJpa2Service<E extends Persistable<I>, I extends Serializable, Q> extends AbstractService<E, I, Q> {
+public class AbstractJpa2Service<E extends Persistable<I>, I extends Serializable, Q> extends AbstractCrudService<E, I, Q> {
 
     public AbstractJpa2Service(CrudRepository<E, I> crudRepository) {
         super(new Jpa2DataAccess<>(crudRepository));

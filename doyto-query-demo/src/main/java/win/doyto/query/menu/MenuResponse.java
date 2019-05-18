@@ -2,7 +2,7 @@ package win.doyto.query.menu;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.BeanUtils;
+import win.doyto.query.common.BeanUtil;
 
 /**
  * MenuResponse
@@ -24,9 +24,11 @@ public class MenuResponse {
 
     private Boolean valid;
 
+    private Long createUserId;
+
+    private Long updateUserId;
+
     public static MenuResponse of(MenuEntity menuEntity) {
-        MenuResponse menuResponse = new MenuResponse();
-        BeanUtils.copyProperties(menuEntity, menuResponse);
-        return menuResponse;
+        return BeanUtil.copyFields(menuEntity, MenuResponse.class);
     }
 }

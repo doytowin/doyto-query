@@ -32,6 +32,7 @@ public class LoginController {
     public void login(@RequestBody @Valid LoginRequest loginRequest, HttpServletRequest request) {
         UserResponse userResponse = userApi.auth(loginRequest.getAccount(), loginRequest.getPassword());
         request.getSession().setAttribute("user", userResponse);
+        request.getSession().setAttribute("userId", userResponse.getId());
     }
 
     @GetMapping("account")

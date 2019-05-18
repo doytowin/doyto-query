@@ -2,7 +2,7 @@ package win.doyto.query.menu;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.entity.IntegerId;
+import win.doyto.query.entity.CommonEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @Setter
 @Entity
 @Table(name = MenuEntity.TABLE)
-class MenuEntity extends IntegerId {
+class MenuEntity extends CommonEntity<Integer, Long> {
     public static final String TABLE = "menu";
 
     private Integer parentId;

@@ -11,7 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -40,10 +40,23 @@ class DemoApplicationTest {
     @Resource
     protected WebApplicationContext wac;
     private MockMvc mockMvc;
+    private MockHttpSession session;
+
+
+    private ResultActions postJson(String url, String content, MockHttpSession session) throws Exception {
+        return mockMvc.perform(post(url).content(content).contentType(MediaType.APPLICATION_JSON_UTF8).session(session));
+    }
+
+    private ResultActions postJson(String url, String content) throws Exception {
+        return postJson(url, content, new MockHttpSession());
+    }
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws Exception {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+
+        MvcResult mvcResult = postJson("/login", "{\"account\":\"f0rb\",\"password\":\"123456\"}").andExpect(status().is(200)).andReturn();
+        session = (MockHttpSession) mvcResult.getRequest().getSession();
     }
 
     /*=============== user ==================*/
@@ -97,10 +110,7 @@ class DemoApplicationTest {
 
     @Test
     public void createUser() throws Exception {
-        MockHttpServletRequestBuilder requestBuilder = post("/user/save")
-            .contentType(MediaType.APPLICATION_JSON_UTF8)
-            .content("{\"username\": \"test\"}");
-        mockMvc.perform(requestBuilder);
+        postJson("/user/save", "{\"username\": \"test\"}");
 
         mockMvc.perform(get("/user/page"))
                .andDo(print())
@@ -113,10 +123,7 @@ class DemoApplicationTest {
     public void updateUser() throws Exception {
         String result = mockMvc.perform(get("/user/get?id=1")).andReturn().getResponse().getContentAsString();
 
-        MockHttpServletRequestBuilder requestBuilder = post("/user/save")
-            .contentType(MediaType.APPLICATION_JSON_UTF8)
-            .content(result.replace("f0rb", "test"));
-        mockMvc.perform(requestBuilder);
+        postJson("/user/save", result.replace("f0rb", "test"));
 
         mockMvc.perform(get("/user/page"))
                .andDo(print())
@@ -143,13 +150,21 @@ class DemoApplicationTest {
         ;
     }
 
+    @Test
+    public void saveMenu() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/menu/get?id=1"))
+                                     .andExpect(jsonPath("$.updateUserId").doesNotExist())
+                                     .andReturn();
+        String json = mvcResult.getResponse().getContentAsString();
+        postJson("/menu/save", json, session);
+        mockMvc.perform(get("/menu/get?id=1"))
+               .andExpect(jsonPath("$.updateUserId").value("1"));
+    }
+
     /*=============== login ==================*/
     @Test
     void login() throws Exception {
-        MockHttpServletRequestBuilder loginRequest = post("/login")
-            .contentType(MediaType.APPLICATION_JSON_UTF8)
-            .content("{\"account\":\"f0rb\",\"password\":\"123456\"}");
-        MvcResult mvcResult = mockMvc.perform(loginRequest).andExpect(status().is(200)).andReturn();
+        MvcResult mvcResult = postJson("/login", "{\"account\":\"f0rb\",\"password\":\"123456\"}").andExpect(status().is(200)).andReturn();
         MockHttpSession session = (MockHttpSession) mvcResult.getRequest().getSession();
         mockMvc.perform(get("/account").session(session))
                .andExpect(jsonPath("$.id").value("1"))

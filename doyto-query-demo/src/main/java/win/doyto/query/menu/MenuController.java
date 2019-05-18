@@ -1,10 +1,7 @@
 package win.doyto.query.menu;
 
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import win.doyto.query.core.PageList;
 
 /**
@@ -32,7 +29,7 @@ class MenuController {
     }
 
     @PostMapping("save")
-    public void save(MenuRequest menuRequest) {
+    public void save(@RequestBody MenuRequest menuRequest) {
         menuService.save(menuRequest.toEntity());
     }
 }
