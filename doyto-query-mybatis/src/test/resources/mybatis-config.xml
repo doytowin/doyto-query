@@ -54,7 +54,7 @@
     </environments>
 
     <mappers>
-        <mapper class="win.doyto.query.module.user.UserMapper"/>
+        <mapper class="win.doyto.query.mybatis.UserMapper"/>
     </mappers>
 
 </configuration>

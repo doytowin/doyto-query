@@ -1,6 +1,7 @@
 package win.doyto.query.core;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.entity.Persistable;
@@ -61,6 +62,12 @@ public abstract class AbstractMockDataAccess<E extends Persistable<I>, I extends
     @Override
     public E get(I id) {
         return entitiesMap.get(id);
+    }
+
+    @Override
+    public E fetch(I id) {
+        E e = entitiesMap.get(id);
+        return SerializationUtils.<E>clone(e);
     }
 
     @Override

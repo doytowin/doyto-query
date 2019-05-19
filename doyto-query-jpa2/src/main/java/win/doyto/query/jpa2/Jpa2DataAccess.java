@@ -69,6 +69,11 @@ public class Jpa2DataAccess<E, I extends Serializable, Q> implements DataAccess<
         return crudRepository.findById(id).orElse(null);
     }
 
+    public E fetch(I id) {
+        crudRepository.findById(id).ifPresent(em::detach);
+        return get(id);
+    }
+
     @Override
     public void delete(I id) {
         crudRepository.deleteById(id);

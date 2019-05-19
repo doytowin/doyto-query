@@ -1,4 +1,4 @@
-package win.doyto.query.module.user;
+package win.doyto.query.test.user;
 
 import lombok.Getter;
 import lombok.Setter;

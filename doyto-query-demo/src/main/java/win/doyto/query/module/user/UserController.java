@@ -50,7 +50,10 @@ public class UserController implements UserApi {
 
     @PostMapping("delete")
     public void delete(Long id) {
-        userService.delete(id);
+        UserEntity userEntity = userService.delete(id);
+        if (userEntity == null) {
+            throw new ServiceException("User not found");
+        }
     }
 
     @Override

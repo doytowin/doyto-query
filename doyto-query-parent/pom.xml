@@ -26,6 +26,7 @@
         <module>../doyto-query-mybatis</module>
         <module>../doyto-query-jpa2</module>
         <module>../doyto-query-demo</module>
+        <module>../doyto-query-test</module>
     </modules>
 
     <dependencies>

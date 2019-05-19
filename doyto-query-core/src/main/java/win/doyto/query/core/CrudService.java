@@ -25,6 +25,8 @@ public interface CrudService<E extends Persistable<I>, I extends Serializable, Q
         save(e);
     }
 
+    E fetch(I id);
+
     E save(E e);
 
     @Transactional
@@ -40,5 +42,5 @@ public interface CrudService<E extends Persistable<I>, I extends Serializable, Q
         }
     }
 
-    void delete(I id);
+    E delete(I id);
 }

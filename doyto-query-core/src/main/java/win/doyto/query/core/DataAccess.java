@@ -23,4 +23,10 @@ public interface DataAccess<E, I extends Serializable, Q> {
 
     void update(E e);
 
+    /**
+     * force to get a new entity object from database
+     *
+     * @return a new entity object
+     */
+    E fetch(I id);
 }

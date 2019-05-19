@@ -6,15 +6,14 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.jupiter.api.*;
-import win.doyto.query.module.user.UserEntity;
-import win.doyto.query.module.user.UserMapper;
-import win.doyto.query.module.user.UserQuery;
+import win.doyto.query.test.user.UserEntity;
+import win.doyto.query.test.user.UserQuery;
 
 import java.io.Reader;
 import java.sql.Connection;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * MyBatisTest
@@ -34,9 +33,12 @@ public class MyBatisTest {
             try (
                 SqlSession session = sqlSessionFactory.openSession();
                 Connection conn = session.getConnection();
-                Reader schema = Resources.getResourceAsReader("schema.sql")
+                Reader schema = Resources.getResourceAsReader("schema.sql");
+                Reader data = Resources.getResourceAsReader("import.sql")
             ) {
-                new ScriptRunner(conn).runScript(schema);
+                ScriptRunner scriptRunner = new ScriptRunner(conn);
+                scriptRunner.runScript(schema);
+                scriptRunner.runScript(data);
             }
         }
     }
@@ -61,5 +63,15 @@ public class MyBatisTest {
         List<UserEntity> list = userMapper.query(userQuery);
         assertEquals(1, list.size());
         Assertions.assertEquals("f0rb@163.com", list.get(0).getEmail());
+    }
+
+    @Test
+    public void fetch() {
+        UserEntity u1 = userMapper.get(1);
+        UserEntity u2 = userMapper.get(1);
+        assertSame(u1, u2);
+
+        UserEntity f1 = userMapper.fetch(1);
+        assertNotSame(u1, f1);
     }
 }

@@ -25,6 +25,12 @@ public interface CrudMapper<E, I extends Serializable, Q> extends DataAccess<E, 
     @Select("SELECT * FROM @{table} WHERE id = #{id}")
     E get(@Param("id") I id);
 
+    @Override
+    @Lang(MapperTableDriver.class)
+    @Select("SELECT * FROM @{table} WHERE id = #{id}")
+    @Options(useCache = false)
+    E fetch(@Param("id") I id);
+
     @Lang(MapperTableDriver.class)
     @Select("DELETE FROM @{table} WHERE id = #{id}")
     void delete(I id);

@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * AbstractMockDataAccessTest
@@ -91,6 +91,16 @@ class AbstractMockDataAccessTest {
     void filterByLe() {
         UserQuery userQuery = UserQuery.builder().idLe(3).build();
         assertEquals(3, mockUserDataAccess.query(userQuery).size());
+    }
+
+    @Test
+    public void fetch() {
+        UserEntity u1 = mockUserDataAccess.get(1);
+        UserEntity u2 = mockUserDataAccess.get(1);
+        assertSame(u1, u2);
+
+        UserEntity f1 = mockUserDataAccess.fetch(1);
+        assertNotSame(u1, f1);
     }
 
 }

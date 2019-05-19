@@ -1,8 +1,8 @@
-package win.doyto.query.module.user;
+package win.doyto.query.mybatis;
 
 import org.apache.ibatis.annotations.Mapper;
-import win.doyto.query.mybatis.CrudMapper;
-import win.doyto.query.mybatis.MapperTable;
+import win.doyto.query.test.user.UserEntity;
+import win.doyto.query.test.user.UserQuery;
 
 /**
  * UserMapper

@@ -13,6 +13,7 @@ Do single-table query without writing one line SQL.
 ### Features
 - Generate SQL by a query object
 - Support cache
+- Support extension via EntityAspect
 
 ### Usage
 Fields in query object with different suffix lead to different SQL clauses which combined by AND.
