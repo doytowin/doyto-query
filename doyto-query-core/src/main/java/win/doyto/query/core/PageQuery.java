@@ -7,6 +7,8 @@ import lombok.experimental.Accessors;
 
 import javax.validation.constraints.Pattern;
 
+import static java.lang.Math.max;
+
 /**
  * PageQuery
  *
@@ -27,26 +29,29 @@ public class PageQuery {
     private String sort;
 
     public Integer getPageNumber() {
-        return getDefault(pageNumber, 0);
+        return getDefault(pageNumber, 0, pageSize == null);
     }
 
     public Integer getPageSize() {
-        return getDefault(pageSize, 10);
+        return getDefault(pageSize, 10, pageNumber == null);
     }
 
-    private Integer getDefault(Integer pageSize, int i) {
-        if (pageSize == null) {
-            return null;
-        } else {
-            return pageSize < 0 ? i : pageSize;
+    private Integer getDefault(Integer number, int defaultValue, boolean canBeNull) {
+        if (number == null) {
+            if (canBeNull) {
+                return null;
+            } else {
+                number = defaultValue;
+            }
         }
+        return max(0, number);
     }
 
     public int getOffset() {
-        return getPageSize() * getPageNumber();
+        return needPaging() ? getPageSize() * getPageNumber() : 0;
     }
 
     public boolean needPaging() {
-        return getPageNumber() != null && getPageSize() != null;
+        return getPageNumber() != null;
     }
 }
