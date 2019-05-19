@@ -23,10 +23,17 @@ class AbstractMockDataAccessTest {
     MockUserDataAccess mockUserDataAccess;
 
     private static final int INIT_SIZE = 5;
-    LinkedList<UserEntity> userEntities = new LinkedList<>();
 
     @BeforeEach
     void setUp() {
+        mockUserDataAccess = new MockUserDataAccess();
+        for (UserEntity entity : initUserEntities()) {
+            mockUserDataAccess.create(entity);
+        }
+    }
+
+    static LinkedList<UserEntity> initUserEntities() {
+        LinkedList<UserEntity> userEntities = new LinkedList<>();
 
         for (int i = 1; i < INIT_SIZE; i++) {
             UserEntity userEntity = new UserEntity();
@@ -46,11 +53,7 @@ class AbstractMockDataAccessTest {
         userEntity.setMobile("17778888880");
         userEntity.setValid(true);
         userEntities.add(userEntity);
-
-        mockUserDataAccess = new MockUserDataAccess();
-        for (UserEntity entity : userEntities) {
-            mockUserDataAccess.create(entity);
-        }
+        return userEntities;
     }
 
     @Test

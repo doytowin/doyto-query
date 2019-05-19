@@ -3,6 +3,7 @@ package win.doyto.query.module.menu;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import win.doyto.query.core.PageList;
+import win.doyto.query.exception.ServiceException;
 
 /**
  * MenuController
@@ -25,7 +26,11 @@ class MenuController {
 
     @GetMapping("get")
     public MenuResponse get(Integer id) {
-        return MenuResponse.of(menuService.get(id));
+        MenuEntity menuEntity = menuService.get(id);
+        if (menuEntity == null) {
+            throw new ServiceException("菜单不存在");
+        }
+        return MenuResponse.of(menuEntity);
     }
 
     @PostMapping("save")

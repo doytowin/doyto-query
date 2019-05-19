@@ -13,3 +13,21 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
+  http:
+    encoding:
+      enabled: true
+      charset: UTF-8
+      force: true
+  redis:
+    timeout: 1000ms
+    lettuce:
+      shutdown-timeout: 100ms
+      pool:
+        max-active: 20
+        max-idle: 20
+        min-idle: 2
+        max-wait: 1s
+  cache:
+    type: redis
+    redis:
+      time-to-live: 1m

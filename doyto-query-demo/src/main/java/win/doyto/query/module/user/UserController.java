@@ -36,7 +36,11 @@ public class UserController implements UserApi {
 
     @GetMapping("get")
     public UserResponse get(Long id) {
-        return UserResponse.of(userService.get(id));
+        UserEntity userEntity = userService.get(id);
+        if (userEntity == null) {
+            throw new ServiceException("账号不存在");
+        }
+        return UserResponse.of(userEntity);
     }
 
     @PostMapping("save")

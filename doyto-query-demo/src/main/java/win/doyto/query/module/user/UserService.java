@@ -18,4 +18,8 @@ class UserService extends AbstractJpa2Service<UserEntity, Long, UserQuery> {
         super(userRepository);
     }
 
+    @Override
+    protected String getCacheName() {
+        return "module:user";
+    }
 }

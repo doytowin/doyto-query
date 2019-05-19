@@ -16,4 +16,8 @@ class MenuService extends AbstractMyBatisService<MenuEntity, Integer, MenuQuery>
         super(menuMapper);
     }
 
+    @Override
+    protected String getCacheName() {
+        return "module:menu";
+    }
 }
