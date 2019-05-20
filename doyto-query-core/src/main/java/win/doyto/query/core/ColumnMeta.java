@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import static win.doyto.query.core.GlobalConfiguration.convertColumn;
+
 /**
  * ColumnMeta
  *
@@ -27,14 +29,14 @@ class ColumnMeta {
         if (columnName.contains("Or")) {
             LinkedList<String> objects = new LinkedList<>();
             for (String or : splitByOr(columnName)) {
-                objects.add(camelize(or) + " " + querySuffix.getOp() + " " + ex);
+                objects.add(convertColumn(camelize(or)) + " " + querySuffix.getOp() + " " + ex);
                 appendArgs(value, argList);
             }
             return "(" + StringUtils.join(objects, " OR ") + ")";
         }
 
         appendArgs(value, argList);
-        return columnName + " " + querySuffix.getOp() + " " + ex;
+        return convertColumn(columnName) + " " + querySuffix.getOp() + " " + ex;
     }
 
     static String camelize(String or) {

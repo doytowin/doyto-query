@@ -1,5 +1,6 @@
 package win.doyto.query.core;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.user.UserQuery;
 
@@ -19,6 +20,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class QueryBuilderTest {
 
     private QueryBuilder queryBuilder = new QueryBuilder();
+
+    @BeforeEach
+    void setUp() {
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
+    }
 
     @Test
     public void buildSelect() {
@@ -205,5 +211,20 @@ public class QueryBuilderTest {
         userQuery.setPageNumber(5).setPageSize(10).setSort("id,desc;createTime,asc");
         assertEquals("SELECT * FROM user WHERE username LIKE #{usernameLike} ORDER BY id desc, createTime asc LIMIT 10 OFFSET 50",
                      queryBuilder.buildSelect(userQuery));
+    }
+
+    @Test
+    public void supportMapFieldToUnderscore() {
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
+
+        Date date = new Date();
+        UserQuery userQuery = UserQuery.builder().userNameOrUserCodeLike("test").createTimeLt(date).build();
+        assertEquals("SELECT * FROM user WHERE (user_name LIKE #{userNameOrUserCodeLike} OR user_code LIKE #{userNameOrUserCodeLike}) AND create_time < #{createTimeLt}",
+                     queryBuilder.buildSelect(userQuery));
+
+        LinkedList<Object> argList = new LinkedList<>();
+        assertEquals("SELECT * FROM user WHERE (user_name LIKE ? OR user_code LIKE ?) AND create_time < ?",
+                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+        assertThat(argList).containsExactly("test", "test", date);
     }
 }
