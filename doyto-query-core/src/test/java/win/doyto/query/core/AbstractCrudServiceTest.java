@@ -17,7 +17,6 @@ import static win.doyto.query.core.AbstractMockDataAccessTest.initUserEntities;
  * AbstractCrudServiceTest
  *
  * @author f0rb
- * @date 2019-05-18
  */
 class AbstractCrudServiceTest {
     UserService userService;

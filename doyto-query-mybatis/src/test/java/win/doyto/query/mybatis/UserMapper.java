@@ -8,7 +8,6 @@ import win.doyto.query.test.user.UserQuery;
  * UserMapper
  *
  * @author f0rb
- * @date 2019-05-12
  */
 @Mapper
 @MapperTable(UserEntity.TABLE)

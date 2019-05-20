@@ -9,7 +9,6 @@ import win.doyto.query.util.ColumnUtil;
  * UserQuery
  *
  * @author f0rb
- * @date 2019-05-12
  */
 @Getter
 @Setter

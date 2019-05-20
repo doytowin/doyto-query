@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  * CollectionUtilTest
  *
  * @author f0rb
- * @date 2019-05-14
  */
 class CollectionUtilTest {
 

@@ -6,7 +6,6 @@ import org.springframework.cache.Cache;
  * CacheWrapper
  *
  * @author f0rb
- * @date 2019-05-18
  */
 public interface CacheWrapper<T> {
     @SuppressWarnings("unchecked")

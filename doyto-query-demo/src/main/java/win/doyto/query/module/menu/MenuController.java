@@ -9,7 +9,6 @@ import win.doyto.query.exception.ServiceException;
  * MenuController
  *
  * @author f0rb
- * @date 2019-05-13
  */
 @RestController
 @RequestMapping("menu")

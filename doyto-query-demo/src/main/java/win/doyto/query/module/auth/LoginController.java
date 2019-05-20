@@ -18,7 +18,6 @@ import javax.validation.Valid;
  * LoginController
  *
  * @author f0rb
- * @date 2019-05-16
  */
 @Slf4j
 @RestController

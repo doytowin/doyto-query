@@ -8,7 +8,6 @@ import win.doyto.query.test.user.UserQuery;
  * UserService
  *
  * @author f0rb
- * @date 2019-05-19
  */
 @Service
 public class UserService extends AbstractJpa2Service<UserEntity, Integer, UserQuery> {

@@ -7,7 +7,6 @@ import java.io.Serializable;
  * Persistable
  *
  * @author f0rb
- * @date 2019-05-14
  */
 public interface Persistable<I> extends Serializable {
     I getId();

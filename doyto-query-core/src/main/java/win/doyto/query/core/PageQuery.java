@@ -13,7 +13,6 @@ import static java.lang.Math.max;
  * PageQuery
  *
  * @author f0rb
- * @date 2019-05-12
  */
 @Setter
 @Accessors(chain = true)

@@ -8,7 +8,6 @@ import win.doyto.query.mybatis.MapperTable;
  * MenuMapper
  *
  * @author f0rb
- * @date 2019-05-13
  */
 @Mapper
 @MapperTable(MenuEntity.TABLE)

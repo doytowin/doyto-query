@@ -12,7 +12,6 @@ import javax.persistence.MappedSuperclass;
  * IntegerId
  *
  * @author f0rb
- * @date 2019-05-14
  */
 @Getter
 @Setter

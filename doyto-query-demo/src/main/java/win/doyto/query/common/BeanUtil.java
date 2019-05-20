@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSON;
  * BeanUtil
  *
  * @author f0rb
- * @date 2019-05-18
  */
 public class BeanUtil {
     private BeanUtil() {

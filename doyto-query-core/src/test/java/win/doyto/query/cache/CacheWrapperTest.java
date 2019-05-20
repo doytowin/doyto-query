@@ -10,7 +10,6 @@ import static org.mockito.Mockito.*;
  * CacheWrapperTest
  *
  * @author f0rb
- * @date 2019-05-18
  */
 public class CacheWrapperTest {
 

@@ -8,7 +8,6 @@ import win.doyto.query.jpa2.AbstractJpa2Service;
  * UserService
  *
  * @author f0rb
- * @date 2019-05-12
  */
 @Slf4j
 @Service

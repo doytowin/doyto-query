@@ -14,7 +14,6 @@ import java.util.List;
  * UserQuery
  *
  * @author f0rb
- * @date 2019-05-12
  */
 @Getter
 @Setter

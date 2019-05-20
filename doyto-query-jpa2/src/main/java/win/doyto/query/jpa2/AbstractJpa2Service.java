@@ -12,7 +12,6 @@ import javax.persistence.EntityManager;
  * AbstractJpa2Service
  *
  * @author f0rb
- * @date 2019-05-14
  */
 public class AbstractJpa2Service<E extends Persistable<I>, I extends Serializable, Q> extends AbstractCrudService<E, I, Q> {
 

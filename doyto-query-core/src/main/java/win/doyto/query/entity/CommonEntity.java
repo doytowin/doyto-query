@@ -13,7 +13,6 @@ import javax.persistence.MappedSuperclass;
  * CommonEntity
  *
  * @author f0rb
- * @date 2019-05-18
  */
 @Getter
 @Setter

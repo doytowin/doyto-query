@@ -10,7 +10,6 @@ import java.util.Iterator;
  * CollectionUtil
  *
  * @author f0rb
- * @date 2019-05-14
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

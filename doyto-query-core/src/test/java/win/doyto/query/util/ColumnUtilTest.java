@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * ColumnUtilTest
  *
  * @author f0rb
- * @date 2019-05-17
  */
 class ColumnUtilTest {
 

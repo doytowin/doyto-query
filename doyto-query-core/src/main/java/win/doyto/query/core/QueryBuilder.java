@@ -18,7 +18,6 @@ import javax.persistence.Id;
  * QueryBuilder
  *
  * @author f0rb
- * @date 2019-05-12
  */
 @Slf4j
 public class QueryBuilder {

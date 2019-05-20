@@ -11,7 +11,6 @@ import java.util.List;
  * CrudMapper
  *
  * @author f0rb
- * @date 2019-05-12
  */
 public interface CrudMapper<E, I extends Serializable, Q> extends DataAccess<E, I, Q> {
 

@@ -11,7 +11,6 @@ import win.doyto.query.core.QueryTable;
  * UserQuery
  *
  * @author f0rb
- * @date 2019-05-12
  */
 @Getter
 @Setter

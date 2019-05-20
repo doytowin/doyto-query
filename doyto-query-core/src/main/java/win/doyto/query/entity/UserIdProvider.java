@@ -7,7 +7,6 @@ import java.util.Date;
  * UserIdProvider
  *
  * @author f0rb
- * @date 2019-05-17
  */
 public interface UserIdProvider<I extends Serializable> {
 

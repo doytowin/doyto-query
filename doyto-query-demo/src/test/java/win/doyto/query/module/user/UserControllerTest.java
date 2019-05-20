@@ -13,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * UserControllerTest
  *
  * @author f0rb
- * @date 2019-05-15
  */
 public class UserControllerTest {
     public static final int INIT_SIZE = 5;

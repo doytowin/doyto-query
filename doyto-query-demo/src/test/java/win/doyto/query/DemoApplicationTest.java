@@ -28,7 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * DemoApplicationTest
  *
  * @author f0rb
- * @date 2019-05-12
  */
 @Transactional
 @Rollback

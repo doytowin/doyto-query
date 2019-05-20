@@ -4,7 +4,6 @@ package win.doyto.query.entity;
  * EntityAspect
  *
  * @author f0rb
- * @date 2019-05-19
  */
 public interface EntityAspect<E> {
 

@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * CrudBuilderTest
  *
  * @author f0rb
- * @date 2019-05-14
  */
 class CrudBuilderTest {
 

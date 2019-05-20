@@ -7,7 +7,6 @@ import win.doyto.query.test.user.UserEntity;
  * UserRepository
  *
  * @author f0rb
- * @date 2019-05-19
  */
 public interface UserRepository extends CrudRepository<UserEntity, Integer> {
 }

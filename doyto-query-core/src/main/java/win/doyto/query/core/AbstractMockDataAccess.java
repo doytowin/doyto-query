@@ -22,7 +22,6 @@ import static win.doyto.query.core.QuerySuffix.*;
  * AbstractMockDataAccess
  *
  * @author f0rb
- * @date 2019-05-15
  */
 @Slf4j
 @SuppressWarnings("unchecked")

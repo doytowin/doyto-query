@@ -12,6 +12,10 @@
 
     <artifactId>doyto-query-test</artifactId>
 
+    <properties>
+        <skipDeploy>true</skipDeploy>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>win.doyto.query</groupId>

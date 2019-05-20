@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * MenuControllerTest
  *
  * @author f0rb
- * @date 2019-05-15
  */
 class MenuControllerTest {
 

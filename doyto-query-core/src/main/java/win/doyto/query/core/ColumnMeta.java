@@ -11,7 +11,6 @@ import java.util.List;
  * ColumnMeta
  *
  * @author f0rb
- * @date 2019-05-17
  */
 @AllArgsConstructor
 class ColumnMeta {

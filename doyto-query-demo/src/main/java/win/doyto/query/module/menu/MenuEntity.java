@@ -11,7 +11,6 @@ import javax.persistence.Table;
  * MenuEntity
  *
  * @author f0rb
- * @date 2019-05-13
  */
 @Getter
 @Setter

@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
  * QueryService
  *
  * @author f0rb
- * @date 2019-05-14
  */
 public interface QueryService<E, Q> {
 

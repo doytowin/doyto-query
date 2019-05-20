@@ -13,7 +13,6 @@ import javax.persistence.Table;
  * CrudBuilder
  *
  * @author f0rb
- * @date 2019-05-14
  */
 @Slf4j
 public class CrudBuilder extends QueryBuilder {

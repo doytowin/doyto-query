@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  * Jpa2DataAccessTest
  *
  * @author f0rb
- * @date 2019-05-19
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Jpa2App.class)

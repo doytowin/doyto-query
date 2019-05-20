@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * PageQueryTest
  *
  * @author f0rb
- * @date 2019-05-19
  */
 class PageQueryTest {
 

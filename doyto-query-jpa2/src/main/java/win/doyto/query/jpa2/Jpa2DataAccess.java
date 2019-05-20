@@ -17,7 +17,6 @@ import javax.persistence.Query;
  * Jpa2DataAccess
  *
  * @author f0rb
- * @date 2019-05-14
  */
 public class Jpa2DataAccess<E, I extends Serializable, Q> implements DataAccess<E, I, Q> {
 

@@ -4,6 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
     <groupId>win.doyto.query</groupId>
     <artifactId>doyto-query-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -18,6 +24,7 @@
         <sonar.jacoco.reportPaths>../doyto-query-parent/target/jacoco.exec</sonar.jacoco.reportPaths>
         <jacoco.path>../doyto-query-parent/target/</jacoco.path>
 
+        <skipDeploy>false</skipDeploy>
     </properties>
     <packaging>pom</packaging>
 
@@ -98,6 +105,49 @@
                     <append>true</append>
                 </configuration>
             </plugin>
+            <!-- deploy source -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
+                <configuration>
+                    <skip>${skipDeploy}</skip>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <tag>master</tag>
+        <url>git@github.com:f0rb/doyto-query.git</url>
+        <connection>scm:git:git@github.com:f0rb/doyto-query.git</connection>
+        <developerConnection>scm:git:git@github.com:f0rb/doyto-query.git</developerConnection>
+    </scm>
+    <developers>
+        <developer>
+            <name>f0rb</name>
+            <email>f0rb@163.com</email>
+            <organization>doyto.win</organization>
+        </developer>
+    </developers>
 </project>

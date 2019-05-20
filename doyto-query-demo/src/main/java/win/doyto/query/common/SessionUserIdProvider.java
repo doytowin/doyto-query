@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
  * SessionUserIdProvider
  *
  * @author f0rb
- * @date 2019-05-18
  */
 @Component
 public class SessionUserIdProvider implements UserIdProvider<Long> {

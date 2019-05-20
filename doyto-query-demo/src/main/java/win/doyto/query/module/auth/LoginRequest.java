@@ -9,7 +9,6 @@ import javax.validation.constraints.NotNull;
  * LoginRequest
  *
  * @author f0rb
- * @date 2019-05-16
  */
 @Getter
 @Setter

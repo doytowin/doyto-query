@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * Jpa2App
  *
  * @author f0rb
- * @date 2019-05-19
  */
 @SpringBootApplication
 public class Jpa2App {

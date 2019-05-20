@@ -11,7 +11,6 @@ import javax.persistence.Table;
  * UserEntity
  *
  * @author f0rb
- * @date 2019-05-12
  */
 @Getter
 @Setter

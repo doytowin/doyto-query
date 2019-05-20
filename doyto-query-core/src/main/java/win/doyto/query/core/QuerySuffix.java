@@ -15,7 +15,6 @@ import java.util.stream.IntStream;
  * QuerySuffix
  *
  * @author f0rb
- * @date 2019-05-16
  */
 @SuppressWarnings("squid:S00115")
 @Getter

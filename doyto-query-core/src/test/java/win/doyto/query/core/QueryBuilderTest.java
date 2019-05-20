@@ -14,8 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * QueryBuilderTest
  *
- * @author f0rb
- * @date 2019-05-12
+ * @author f0rb 2019-05-12
  */
 public class QueryBuilderTest {
 

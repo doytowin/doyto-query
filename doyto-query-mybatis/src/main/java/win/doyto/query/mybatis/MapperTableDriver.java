@@ -13,7 +13,6 @@ import java.util.Set;
  * MapperTableDriver
  *
  * @author f0rb
- * @date 2019-01-29
  */
 @Slf4j
 public class MapperTableDriver extends XMLLanguageDriver {

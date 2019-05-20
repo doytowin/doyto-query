@@ -8,7 +8,6 @@ import win.doyto.query.common.BeanUtil;
  * MenuResponse
  *
  * @author f0rb
- * @date 2019-05-14
  */
 @Getter
 @Setter

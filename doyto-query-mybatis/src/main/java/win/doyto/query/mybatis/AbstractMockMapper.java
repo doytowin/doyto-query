@@ -10,7 +10,6 @@ import java.io.Serializable;
  * AbstractMockMapper
  *
  * @author f0rb
- * @date 2019-05-15
  */
 @Slf4j
 public abstract class AbstractMockMapper<E extends Persistable<I>, I extends Serializable, Q> extends AbstractMockDataAccess<E, I, Q> {

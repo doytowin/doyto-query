@@ -8,7 +8,6 @@ import org.springframework.cache.annotation.EnableCaching;
  * DemoApplication
  *
  * @author f0rb
- * @date 2019-05-12
  */
 @SpringBootApplication
 @EnableCaching(proxyTargetClass = true)

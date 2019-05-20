@@ -10,7 +10,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * MapperTable
  *
  * @author f0rb
- * @date 2019-01-25
  */
 @Target(TYPE)
 @Retention(RUNTIME)

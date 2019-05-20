@@ -15,7 +15,6 @@ import java.util.List;
  * AbstractCrudService
  *
  * @author f0rb
- * @date 2019-05-14
  */
 public abstract class AbstractCrudService<E extends Persistable<I>, I extends Serializable, Q> implements CrudService<E, I, Q> {
 

@@ -12,7 +12,6 @@ import java.util.Optional;
  * AbstractMockRepository
  *
  * @author f0rb
- * @date 2019-05-15
  */
 public class AbstractMockRepository<E extends Persistable<I>, I extends Serializable, Q>
     extends AbstractMockDataAccess<E, I, Q>

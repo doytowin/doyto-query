@@ -7,7 +7,6 @@ import win.doyto.query.core.QueryTable;
  * MenuQuery
  *
  * @author f0rb
- * @date 2019-05-13
  */
 @QueryTable(table = MenuEntity.TABLE, entityClass = MenuEntity.class)
 public class MenuQuery extends PageQuery {

@@ -13,7 +13,6 @@ import java.util.Objects;
  * UserController
  *
  * @author f0rb
- * @date 2019-05-12
  */
 @Slf4j
 @RestController

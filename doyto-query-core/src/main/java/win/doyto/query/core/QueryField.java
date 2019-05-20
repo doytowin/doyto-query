@@ -10,7 +10,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * QueryField
  *
  * @author f0rb
- * @date 2019-05-12
  */
 @Target(FIELD)
 @Retention(RUNTIME)

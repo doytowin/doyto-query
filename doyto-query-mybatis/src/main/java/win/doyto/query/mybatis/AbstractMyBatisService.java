@@ -9,7 +9,6 @@ import java.io.Serializable;
  * AbstractMyBatisService
  *
  * @author f0rb
- * @date 2019-05-14
  */
 public abstract class AbstractMyBatisService<E extends Persistable<I>, I extends Serializable, Q> extends AbstractCrudService<E, I, Q> {
 

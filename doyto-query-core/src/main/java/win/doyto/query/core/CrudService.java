@@ -11,7 +11,6 @@ import java.util.List;
  * CrudService
  *
  * @author f0rb
- * @date 2019-05-19
  */
 public interface CrudService<E extends Persistable<I>, I extends Serializable, Q> extends QueryService<E, Q> {
 

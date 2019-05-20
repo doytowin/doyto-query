@@ -7,7 +7,6 @@ import java.util.List;
  * DataAccess
  *
  * @author f0rb
- * @date 2019-05-14
  */
 public interface DataAccess<E, I extends Serializable, Q> {
 
@@ -26,6 +25,7 @@ public interface DataAccess<E, I extends Serializable, Q> {
     /**
      * force to get a new entity object from database
      *
+     * @param id entity id
      * @return a new entity object
      */
     E fetch(I id);

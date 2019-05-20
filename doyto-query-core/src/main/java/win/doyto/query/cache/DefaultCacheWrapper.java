@@ -9,7 +9,6 @@ import org.springframework.cache.support.NoOpCache;
  * DefaultCacheWrapper
  *
  * @author f0rb
- * @date 2019-05-18
  */
 @Getter
 @Setter

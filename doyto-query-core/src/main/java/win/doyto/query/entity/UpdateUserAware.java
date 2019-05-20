@@ -7,7 +7,6 @@ import java.util.Date;
  * UpdateUserAware
  *
  * @author f0rb
- * @date 2019-05-17
  */
 public interface UpdateUserAware<I extends Serializable> {
 

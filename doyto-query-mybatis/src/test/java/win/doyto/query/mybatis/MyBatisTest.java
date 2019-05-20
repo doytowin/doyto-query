@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * MyBatisTest
  *
  * @author f0rb
- * @date 2019-05-12
  */
 public class MyBatisTest {
 

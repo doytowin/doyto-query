@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.fail;
  * LoginControllerTest
  *
  * @author f0rb
- * @date 2019-05-16
  */
 @Slf4j
 class LoginControllerTest {

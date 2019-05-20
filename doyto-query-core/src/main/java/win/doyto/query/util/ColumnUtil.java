@@ -6,7 +6,6 @@ import org.apache.commons.lang3.StringUtils;
  * ColumnUtil
  *
  * @author f0rb
- * @date 2019-05-17
  */
 public class ColumnUtil {
     private ColumnUtil() {
