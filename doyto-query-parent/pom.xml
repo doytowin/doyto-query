@@ -12,7 +12,7 @@
 
     <groupId>win.doyto.query</groupId>
     <artifactId>doyto-query-parent</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1-RELEASE</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -104,6 +104,14 @@
                     <outputDirectory>${jacoco.path}jacoco-report</outputDirectory>
                     <append>true</append>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>agent-for-ut</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <!-- deploy source -->
             <plugin>

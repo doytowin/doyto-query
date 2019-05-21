@@ -5,7 +5,7 @@
     <parent>
         <artifactId>doyto-query-parent</artifactId>
         <groupId>win.doyto.query</groupId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1-RELEASE</version>
         <relativePath>../doyto-query-parent/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -22,14 +22,14 @@
         <dependency>
             <groupId>win.doyto.query</groupId>
             <artifactId>doyto-query-test</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1-RELEASE</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>win.doyto.query</groupId>
             <artifactId>doyto-query-core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1-RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.mybatis</groupId>
