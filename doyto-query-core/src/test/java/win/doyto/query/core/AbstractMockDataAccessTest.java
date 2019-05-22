@@ -41,6 +41,7 @@ class AbstractMockDataAccessTest {
             userEntity.setPassword("password" + i);
             userEntity.setEmail("test" + i + "@163.com");
             userEntity.setMobile("1777888888" + i);
+            userEntity.setValid(i % 2 == 0);
             userEntities.add(userEntity);
         }
         UserEntity userEntity = new UserEntity();
@@ -100,6 +101,13 @@ class AbstractMockDataAccessTest {
 
         UserEntity f1 = mockUserDataAccess.fetch(1);
         assertNotSame(u1, f1);
+    }
+
+    @Test
+    void filterByMultiConditions() {
+        UserQuery userQuery = UserQuery.builder().valid(true).usernameOrEmailOrMobileLike("username").build();
+        List<UserEntity> userEntities = mockUserDataAccess.query(userQuery);
+        assertEquals(2, userEntities.size());
     }
 
 }

@@ -66,7 +66,7 @@ public abstract class AbstractMockDataAccess<E extends Persistable<I>, I extends
     @Override
     public E fetch(I id) {
         E e = entitiesMap.get(id);
-        return SerializationUtils.<E>clone(e);
+        return SerializationUtils.clone(e);
     }
 
     @Override
@@ -85,44 +85,42 @@ public abstract class AbstractMockDataAccess<E extends Persistable<I>, I extends
         entitiesMap.remove(id);
     }
 
+    /**
+     * 根据Query对象筛选符合条件的Entity对象
+     *
+     * @param query Query
+     * @param entity Entity
+     * @return true, Entity符合条件需要保留; false, Entity不符合条件需要过滤掉
+     */
     protected boolean filterByQuery(Q query, E entity) {
         for (Field field : query.getClass().getDeclaredFields()) {
             if (!ignoreField(field)) {
                 Object v1 = readField(field, query);
-                if (v1 != null && unsatisfied(entity, query)) {
-                    return false;
+                if (v1 != null) {
+                    boolean shouldNotRemain = unsatisfied(entity, field.getName(), v1);
+                    if (shouldNotRemain) {
+                        return false;
+                    }
                 }
             }
         }
         return true;
     }
 
-    protected boolean unsatisfied(E entity, Q query) {
-        Field[] fields = query.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            String fieldName = field.getName();
-            Object queryFieldValue = readField(query, fieldName);
-            if (queryFieldValue == null) {
-                continue;
-            }
+    protected Boolean unsatisfied(E entity, String queryFieldName, Object queryFieldValue) {
+        QuerySuffix querySuffix = resolve(queryFieldName);
+        String columnName = querySuffix.resolveColumnName(queryFieldName);
+        FilterExecutor filterExecutor = filterExecutorMap.get(querySuffix);
 
-            QuerySuffix querySuffix = resolve(fieldName);
-            String columnName = querySuffix.resolveColumnName(fieldName);
-            FilterExecutor filterExecutor = filterExecutorMap.get(querySuffix);
-
-            if (columnName.contains("Or")) {
-                String[] names = ColumnMeta.splitByOr(columnName);
-                return Arrays.stream(names)
-                             .map(name -> readField(entity, ColumnMeta.camelize(name)))
-                             .noneMatch(entityFieldValue -> filterExecutor.filter(queryFieldValue, entityFieldValue));
-            } else {
-                Object entityFieldValue = readField(entity, columnName);
-                if (filterExecutor.filter(queryFieldValue, entityFieldValue)) {
-                    return false;
-                }
-            }
+        if (columnName.contains("Or")) {
+            String[] names = ColumnMeta.splitByOr(columnName);
+            return Arrays.stream(names).
+                map(name -> readField(entity, ColumnMeta.camelize(name))).
+                noneMatch(entityFieldValue -> filterExecutor.match(queryFieldValue, entityFieldValue));
+        } else {
+            Object entityFieldValue = readField(entity, columnName);
+            return !filterExecutor.match(queryFieldValue, entityFieldValue);
         }
-        return true;
     }
 
     @Override
@@ -171,7 +169,7 @@ public abstract class AbstractMockDataAccess<E extends Persistable<I>, I extends
          * @param entityFieldValue 实体对象字段值
          * @return true 符合过滤条件
          */
-        boolean filter(Object queryFieldValue, Object entityFieldValue);
+        boolean match(Object queryFieldValue, Object entityFieldValue);
     }
 
     static final Map<QuerySuffix, FilterExecutor> filterExecutorMap = new EnumMap<>(QuerySuffix.class);

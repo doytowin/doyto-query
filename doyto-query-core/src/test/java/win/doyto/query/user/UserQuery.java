@@ -42,4 +42,7 @@ public class UserQuery extends PageQuery {
     private Date createTimeGe;
     private Date createTimeLt;
     private Date createTimeLe;
+
+    private Boolean valid;
+
 }
