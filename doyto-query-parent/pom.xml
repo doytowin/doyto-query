@@ -12,8 +12,12 @@
 
     <groupId>win.doyto.query</groupId>
     <artifactId>doyto-query-parent</artifactId>
-    <version>0.0.1-RELEASE</version>
+    <packaging>pom</packaging>
+    <version>${revision}</version>
+
     <properties>
+        <revision>0.0.2-SNAPSHOT</revision>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -26,7 +30,6 @@
 
         <skipDeploy>false</skipDeploy>
     </properties>
-    <packaging>pom</packaging>
 
     <modules>
         <module>../doyto-query-core</module>
@@ -135,6 +138,40 @@
                 <configuration>
                     <skip>${skipDeploy}</skip>
                 </configuration>
+            </plugin>
+
+            <!-- 更新pom版本号-->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.1.0</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>bom</flattenMode>
+                    <flattenedPomFilename>target/${project.artifactId}.pom.xml</flattenedPomFilename>
+                    <pomElements>
+                        <version>resolve</version>
+                        <properties>resolve</properties>
+                        <dependencies>resolve</dependencies>
+                        <pluginManagement>resolve</pluginManagement>
+                    </pomElements>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
