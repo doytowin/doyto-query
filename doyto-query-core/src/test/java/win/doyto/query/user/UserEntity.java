@@ -19,7 +19,7 @@ import javax.persistence.Transient;
 @Entity
 @Table(name = UserEntity.TABLE)
 public class UserEntity extends IntegerId {
-    protected static final String TABLE = "user";
+    public static final String TABLE = "user";
     private String username;
     private String password;
     private String mobile;

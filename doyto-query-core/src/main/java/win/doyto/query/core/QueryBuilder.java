@@ -57,7 +57,7 @@ public class QueryBuilder {
             sql = "SELECT * FROM " + table;
         }
 
-        sql += buildWhere(query, argList);
+        sql = buildWhere(sql, query, argList);
 
         if (operation == DatabaseOperation.SELECT && query instanceof PageQuery) {
             PageQuery pageQuery = (PageQuery) query;
@@ -77,22 +77,27 @@ public class QueryBuilder {
 
     static final Pattern PLACE_HOLDER_PTN = Pattern.compile("#\\{\\w+}");
 
-    private static String buildWhere(Object query, List<Object> argList) {
+    private static String buildWhere(String sql, Object query, List<Object> argList) {
         LinkedList<Object> whereList = new LinkedList<>();
         for (Field field : query.getClass().getDeclaredFields()) {
-            if (field.getName().startsWith("$")) {
+            String fieldName = field.getName();
+            if (fieldName.startsWith("$")) {
                 continue;
             }
             Object value = readFieldGetter(field, query);
             if (value != null) {
-                processField(value, field, whereList, argList);
+                if (sql.contains("${" + fieldName + "}")) {
+                    sql = sql.replaceAll("\\$\\{" + fieldName + "}", String.valueOf(value));
+                } else {
+                    processField(value, field, whereList, argList);
+                }
             }
         }
         String where = "";
         if (!whereList.isEmpty()) {
             where = " WHERE " + StringUtils.join(whereList, " AND ");
         }
-        return where;
+        return sql + where;
     }
 
     private static void processField(Object value, Field field, LinkedList<Object> whereList, List<Object> argList) {

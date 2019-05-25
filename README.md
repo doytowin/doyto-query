@@ -14,6 +14,7 @@ Do single-table query without writing one line SQL.
 - Generate SQL by a query object
 - Support cache
 - Support extension via EntityAspect
+- Support query for dynamic table name
 
 ### Usage
 Fields in query object with different suffix lead to different SQL clauses which combined by AND.

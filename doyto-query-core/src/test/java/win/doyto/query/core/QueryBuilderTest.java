@@ -227,4 +227,18 @@ public class QueryBuilderTest {
                      queryBuilder.buildSelectAndArgs(userQuery, argList));
         assertThat(argList).containsExactly("test", "test", date);
     }
+
+    @Test
+    public void supportDynamicTableName() {
+        DynamicQuery dynamicQuery = DynamicQuery.builder().user("f0rb").project("i18n").scoreLt(100).build();
+
+        assertEquals("SELECT * FROM t_dynamic_f0rb_i18n WHERE score < #{scoreLt}",
+                     queryBuilder.buildSelect(dynamicQuery));
+
+        LinkedList<Object> argList = new LinkedList<>();
+        assertEquals("SELECT * FROM t_dynamic_f0rb_i18n WHERE score < ?",
+                     queryBuilder.buildSelectAndArgs(dynamicQuery, argList));
+        assertThat(argList).containsExactly(100);
+    }
+
 }
