@@ -15,6 +15,4 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface QueryTable {
     String table();
-
-    Class<?> entityClass();
 }

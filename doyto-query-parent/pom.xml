@@ -16,7 +16,7 @@
     <version>${revision}</version>
 
     <properties>
-        <revision>0.0.2-SNAPSHOT</revision>
+        <revision>0.1.0-SNAPSHOT</revision>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -33,10 +33,7 @@
 
     <modules>
         <module>../doyto-query-core</module>
-        <module>../doyto-query-mybatis</module>
-        <module>../doyto-query-jpa2</module>
         <module>../doyto-query-demo</module>
-        <module>../doyto-query-test</module>
     </modules>
 
     <dependencies>

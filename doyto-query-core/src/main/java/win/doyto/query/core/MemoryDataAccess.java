@@ -19,19 +19,19 @@ import static win.doyto.query.core.QueryBuilder.readField;
 import static win.doyto.query.core.QuerySuffix.*;
 
 /**
- * AbstractMockDataAccess
+ * MemoryDataAccess
  *
  * @author f0rb
  */
 @Slf4j
 @SuppressWarnings("unchecked")
-public abstract class AbstractMockDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
-    protected static final Map<String, Map> tableMap = new ConcurrentHashMap<>();
+public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
+    protected static final Map<Object, Map> tableMap = new ConcurrentHashMap<>();
 
     protected final Map<I, E> entitiesMap = new ConcurrentHashMap<>();
     private final AtomicLong idGenerator = new AtomicLong(0);
 
-    public AbstractMockDataAccess(String table) {
+    public MemoryDataAccess(Object table) {
         tableMap.put(table, entitiesMap);
     }
 
@@ -81,8 +81,8 @@ public abstract class AbstractMockDataAccess<E extends Persistable<I>, I extends
     }
 
     @Override
-    public void delete(I id) {
-        entitiesMap.remove(id);
+    public int delete(I id) {
+        return entitiesMap.remove(id) == null ? 0 : 1;
     }
 
     /**
@@ -149,6 +149,7 @@ public abstract class AbstractMockDataAccess<E extends Persistable<I>, I extends
 
     @SuppressWarnings("unused")
     protected void doSort(List<E> queryList, String sort) {
+        // support later
     }
 
     @Override

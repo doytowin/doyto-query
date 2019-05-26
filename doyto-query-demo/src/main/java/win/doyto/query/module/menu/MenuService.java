@@ -1,7 +1,7 @@
 package win.doyto.query.module.menu;
 
 import org.springframework.stereotype.Service;
-import win.doyto.query.mybatis.AbstractMyBatisService;
+import win.doyto.query.core.AbstractCrudService;
 
 /**
  * MenuService
@@ -9,11 +9,7 @@ import win.doyto.query.mybatis.AbstractMyBatisService;
  * @author f0rb
  */
 @Service
-class MenuService extends AbstractMyBatisService<MenuEntity, Integer, MenuQuery> {
-
-    public MenuService(MenuMapper menuMapper) {
-        super(menuMapper);
-    }
+class MenuService extends AbstractCrudService<MenuEntity, Integer, MenuQuery> {
 
     @Override
     protected String getCacheName() {

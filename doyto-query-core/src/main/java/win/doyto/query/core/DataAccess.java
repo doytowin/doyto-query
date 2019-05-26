@@ -16,7 +16,7 @@ public interface DataAccess<E, I extends Serializable, Q> {
 
     E get(I id);
 
-    void delete(I id);
+    int delete(I id);
 
     void create(E e);
 

@@ -1,7 +1,7 @@
-package win.doyto.query.mybatis;
+package win.doyto.query.core;
 
 import org.junit.jupiter.api.Test;
-import win.doyto.query.test.user.UserEntity;
+import win.doyto.query.user.UserEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

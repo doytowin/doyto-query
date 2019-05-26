@@ -8,6 +8,6 @@ import win.doyto.query.core.QueryTable;
  *
  * @author f0rb
  */
-@QueryTable(table = MenuEntity.TABLE, entityClass = MenuEntity.class)
+@QueryTable(table = MenuEntity.TABLE)
 public class MenuQuery extends PageQuery {
 }

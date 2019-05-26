@@ -13,8 +13,7 @@ class MenuControllerTest {
 
     @Test
     void get() {
-        MockMenuMapper menuMapper = new MockMenuMapper();
-        MenuController menuController = new MenuController(new MenuService(menuMapper));
+        MenuController menuController = new MenuController(new MenuService());
 
         MenuRequest menuRequest = new MenuRequest();
         menuRequest.setParentId(0);

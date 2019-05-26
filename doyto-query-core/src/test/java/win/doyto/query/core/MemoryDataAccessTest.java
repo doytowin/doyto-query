@@ -2,7 +2,6 @@ package win.doyto.query.core;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import win.doyto.query.user.MockUserDataAccess;
 import win.doyto.query.user.UserEntity;
 import win.doyto.query.user.UserQuery;
 
@@ -13,19 +12,19 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * AbstractMockDataAccessTest
+ * MemoryDataAccessTest
  *
  * @author f0rb
  */
-class AbstractMockDataAccessTest {
+class MemoryDataAccessTest {
 
-    MockUserDataAccess mockUserDataAccess;
+    MemoryDataAccess<UserEntity, Integer, UserQuery> mockUserDataAccess;
 
     private static final int INIT_SIZE = 5;
 
     @BeforeEach
     void setUp() {
-        mockUserDataAccess = new MockUserDataAccess();
+        mockUserDataAccess = new MemoryDataAccess<>(UserEntity.class);
         for (UserEntity entity : initUserEntities()) {
             mockUserDataAccess.create(entity);
         }

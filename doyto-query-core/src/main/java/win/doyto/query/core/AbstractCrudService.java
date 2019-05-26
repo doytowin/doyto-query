@@ -8,8 +8,10 @@ import win.doyto.query.entity.Persistable;
 import win.doyto.query.entity.UserIdProvider;
 
 import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
 import java.util.LinkedList;
 import java.util.List;
+import javax.persistence.EntityManager;
 
 /**
  * AbstractCrudService
@@ -28,8 +30,21 @@ public abstract class AbstractCrudService<E extends Persistable<I>, I extends Se
     @Autowired(required = false)
     protected List<EntityAspect<E>> entityAspects = new LinkedList<>();
 
+    protected Class<E> domainType;
+
+    public AbstractCrudService() {
+        this.domainType = getDomainType();
+        this.dataAccess = new MemoryDataAccess<>(this.domainType);
+    }
+
     public AbstractCrudService(DataAccess<E, I, Q> dataAccess) {
+        this.domainType = getDomainType();
         this.dataAccess = dataAccess;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Class<E> getDomainType() {
+        return (Class<E>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
     @Autowired(required = false)
@@ -38,6 +53,11 @@ public abstract class AbstractCrudService<E extends Persistable<I>, I extends Se
         if (cacheName != null) {
             entityCacheWrapper.setCache(cacheManager.getCache(cacheName));
         }
+    }
+
+    @Autowired(required = false)
+    public void setEntityManager(EntityManager entityManager) {
+        dataAccess = new Jpa2DataAccess<>(domainType, entityManager);
     }
 
     protected String getCacheName() {

@@ -18,7 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-@QueryTable(table = "user", entityClass = UserEntity.class)
+@QueryTable(table = UserEntity.TABLE)
 public class UserQuery extends PageQuery {
     private List<Integer> idIn;
     private List<Integer> idNotIn;

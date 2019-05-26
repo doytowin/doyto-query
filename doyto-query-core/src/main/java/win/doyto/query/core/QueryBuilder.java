@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 /**
  * QueryBuilder
@@ -149,9 +150,10 @@ public class QueryBuilder {
     }
 
     public static boolean ignoreField(Field field) {
-        return field.getName().startsWith("$")          // $jacocoData
-            || Modifier.isStatic(field.getModifiers())  // static field
-            || field.isAnnotationPresent(Id.class)      // id
+        return field.getName().startsWith("$")              // $jacocoData
+            || Modifier.isStatic(field.getModifiers())      // static field
+            || field.isAnnotationPresent(Id.class)          // id
+            || field.isAnnotationPresent(Transient.class)   // Transient field
             ;
     }
 

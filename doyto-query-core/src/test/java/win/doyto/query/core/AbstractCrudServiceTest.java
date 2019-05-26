@@ -4,14 +4,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import win.doyto.query.entity.EntityAspect;
-import win.doyto.query.user.MockUserDataAccess;
 import win.doyto.query.user.UserEntity;
+import win.doyto.query.user.UserQuery;
 import win.doyto.query.user.UserService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.mockito.Mockito.*;
-import static win.doyto.query.core.AbstractMockDataAccessTest.initUserEntities;
+import static win.doyto.query.core.MemoryDataAccessTest.initUserEntities;
 
 /**
  * AbstractCrudServiceTest
@@ -20,11 +20,11 @@ import static win.doyto.query.core.AbstractMockDataAccessTest.initUserEntities;
  */
 class AbstractCrudServiceTest {
     UserService userService;
-    MockUserDataAccess dataAccess;
+    MemoryDataAccess<UserEntity, Integer, UserQuery> dataAccess;
 
     @BeforeEach
     void setUp() {
-        dataAccess = spy(new MockUserDataAccess());
+        dataAccess = spy(new MemoryDataAccess<>(UserEntity.class));
         userService = new UserService(dataAccess);
         userService.save(initUserEntities());
     }

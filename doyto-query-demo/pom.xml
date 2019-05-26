@@ -52,13 +52,12 @@
 
         <dependency>
             <groupId>win.doyto.query</groupId>
-            <artifactId>doyto-query-jpa2</artifactId>
+            <artifactId>doyto-query-core</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>win.doyto.query</groupId>
-            <artifactId>doyto-query-mybatis</artifactId>
-            <version>${revision}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -79,10 +78,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hsqldb</groupId>

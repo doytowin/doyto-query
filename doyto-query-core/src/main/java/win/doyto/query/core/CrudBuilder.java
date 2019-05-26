@@ -1,8 +1,7 @@
-package win.doyto.query.mybatis;
+package win.doyto.query.core;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import win.doyto.query.core.QueryBuilder;
 
 import java.lang.reflect.Field;
 import java.util.*;

@@ -16,15 +16,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class UserControllerTest {
     public static final int INIT_SIZE = 5;
-    private static final MockUserRepository userRepository = new MockUserRepository();
-    private static final UserService userService = new UserService(userRepository);
-    public static UserController userController = new UserController(userService);
+    public static UserController userController;
 
     static {
         initData();
     }
 
     private static void initData() {
+        UserService userService = new UserService();
+        userController = new UserController(userService);
+
         LinkedList<UserEntity> userEntities = new LinkedList<>();
         for (int i = 1; i < INIT_SIZE; i++) {
             UserEntity userEntity = new UserEntity();
@@ -47,7 +48,6 @@ public class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        userRepository.reset();
         initData();
     }
 

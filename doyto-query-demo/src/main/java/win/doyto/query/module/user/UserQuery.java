@@ -15,7 +15,7 @@ import win.doyto.query.util.ColumnUtil;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@QueryTable(table = UserEntity.TABLE, entityClass = UserEntity.class)
+@QueryTable(table = UserEntity.TABLE)
 @SuppressWarnings("unused")
 public class UserQuery extends PageQuery {
     private String username;
