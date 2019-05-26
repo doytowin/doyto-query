@@ -14,6 +14,7 @@
 
     <properties>
         <spring.version>5.1.5.RELEASE</spring.version>
+        <skipDeploy>false</skipDeploy>
     </properties>
 
     <dependencies>

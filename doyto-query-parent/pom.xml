@@ -28,7 +28,7 @@
         <sonar.jacoco.reportPaths>../doyto-query-parent/target/jacoco.exec</sonar.jacoco.reportPaths>
         <jacoco.path>../doyto-query-parent/target/</jacoco.path>
 
-        <skipDeploy>false</skipDeploy>
+        <skipDeploy>true</skipDeploy>
     </properties>
 
     <modules>
@@ -127,6 +127,14 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
+                <configuration>
+                    <skip>${skipDeploy}</skip>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
