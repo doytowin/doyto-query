@@ -16,7 +16,6 @@ import java.util.Objects;
 @Slf4j
 @RestController
 @RequestMapping("user")
-@SuppressWarnings("squid:S4529")
 class UserController extends AbstractRestController<UserEntity, Long, UserQuery, UserRequest, UserResponse> implements UserApi {
 
     public UserController(UserService userService) {

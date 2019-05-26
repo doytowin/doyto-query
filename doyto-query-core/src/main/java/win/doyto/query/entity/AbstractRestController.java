@@ -16,6 +16,7 @@ import java.lang.reflect.Type;
  *
  * @author f0rb on 2019-05-26
  */
+@SuppressWarnings("squid:S4529")
 public class AbstractRestController<E extends Persistable<I>, I extends Serializable, Q extends PageQuery,
     R extends EntityRequest<E>, S extends EntityResponse<E, S>> {
 

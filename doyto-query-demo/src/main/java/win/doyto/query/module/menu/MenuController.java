@@ -12,7 +12,6 @@ import win.doyto.query.entity.AbstractRestController;
  */
 @RestController
 @RequestMapping("menu")
-@SuppressWarnings("squid:S4529")
 class MenuController extends AbstractRestController<MenuEntity, Integer, MenuQuery, MenuRequest, MenuResponse> {
 
     public MenuController(CrudService<MenuEntity, Integer, MenuQuery> crudService) {
