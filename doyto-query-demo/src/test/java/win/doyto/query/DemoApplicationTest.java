@@ -189,7 +189,8 @@ class DemoApplicationTest {
 
         mockMvc.perform(get(menuUri + "?pageNumber=0"))
                .andExpect(statusIs200())
-               .andExpect(jsonPath("$.total").value(2));
+               .andExpect(jsonPath("$.list[1]").exists())
+               .andExpect(jsonPath("$.list[2]").doesNotExist());
     }
 
     private ResultMatcher statusIs200() {

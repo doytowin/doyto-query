@@ -5,6 +5,7 @@ import lombok.Setter;
 import win.doyto.query.entity.IntegerId;
 
 import java.util.Date;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -20,6 +21,7 @@ import javax.persistence.Transient;
 @Table(name = UserEntity.TABLE)
 public class UserEntity extends IntegerId {
     public static final String TABLE = "user";
+    @Column
     private String username;
     private String password;
     private String mobile;

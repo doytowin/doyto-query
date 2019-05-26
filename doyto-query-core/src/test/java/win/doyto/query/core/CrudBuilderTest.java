@@ -44,10 +44,10 @@ class CrudBuilderTest {
 
     @Test
     void createDynamicEntity() {
-        assertEquals("INSERT INTO t_dynamic_f0rb_i18n (score) VALUES (#{score})",
+        assertEquals("INSERT INTO t_dynamic_f0rb_i18n (user_score) VALUES (#{score})",
                      new CrudBuilder<>(DynamicEntity.class).buildCreate(dynamicEntity));
 
-        assertEquals("INSERT INTO t_dynamic_f0rb_i18n (score) VALUES (?)",
+        assertEquals("INSERT INTO t_dynamic_f0rb_i18n (user_score) VALUES (?)",
                      new CrudBuilder<>(DynamicEntity.class).buildCreateAndArgs(dynamicEntity, argList));
         assertThat(argList).containsExactly(100);
     }
@@ -55,10 +55,10 @@ class CrudBuilderTest {
     @Test
     void updateDynamicEntity() {
         dynamicEntity.setId(1);
-        assertEquals("UPDATE t_dynamic_f0rb_i18n SET score = #{score} WHERE id = #{id}",
+        assertEquals("UPDATE t_dynamic_f0rb_i18n SET user_score = #{score} WHERE id = #{id}",
                      new CrudBuilder<>(DynamicEntity.class).buildUpdate(dynamicEntity));
 
-        assertEquals("UPDATE t_dynamic_f0rb_i18n SET score = ? WHERE id = ?",
+        assertEquals("UPDATE t_dynamic_f0rb_i18n SET user_score = ? WHERE id = ?",
                      new CrudBuilder<>(DynamicEntity.class).buildUpdateAndArgs(dynamicEntity, argList));
         assertThat(argList).containsExactly(100, 1);
     }
