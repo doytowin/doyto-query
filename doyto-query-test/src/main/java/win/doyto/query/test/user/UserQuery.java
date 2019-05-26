@@ -1,8 +1,6 @@
 package win.doyto.query.test.user;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.core.QueryField;
 import win.doyto.query.core.QueryTable;
@@ -15,6 +13,8 @@ import win.doyto.query.core.QueryTable;
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @QueryTable(table = UserEntity.TABLE, entityClass = UserEntity.class)
 public class UserQuery extends PageQuery {
     private String username;
