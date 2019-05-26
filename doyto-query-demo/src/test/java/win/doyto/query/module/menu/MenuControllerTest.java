@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author f0rb
  */
 class MenuControllerTest {
+    String platform = "01";
 
     @Test
     void get() {
@@ -18,9 +19,11 @@ class MenuControllerTest {
         MenuRequest menuRequest = new MenuRequest();
         menuRequest.setParentId(0);
         menuRequest.setMenuName("root");
-        menuController.create(menuRequest);
+        menuController.create(menuRequest, platform);
 
-        MenuResponse menuResponse = menuController.get(1);
+        menuRequest.setId(1);
+        menuRequest.setPlatform(platform);
+        MenuResponse menuResponse = menuController.get(menuRequest);
         assertEquals("root", menuResponse.getMenuName());
         assertEquals(0, (int) menuResponse.getParentId());
     }

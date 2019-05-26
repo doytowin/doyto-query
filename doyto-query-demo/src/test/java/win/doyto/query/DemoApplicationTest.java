@@ -12,6 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +56,7 @@ class DemoApplicationTest {
     public void setUp() throws Exception {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 
-        MvcResult mvcResult = requestJson(post("/login"), "{\"account\":\"f0rb\",\"password\":\"123456\"}").andExpect(status().is(200)).andReturn();
+        MvcResult mvcResult = requestJson(post("/login"), "{\"account\":\"f0rb\",\"password\":\"123456\"}").andExpect(statusIs200()).andReturn();
         session = (MockHttpSession) mvcResult.getRequest().getSession();
     }
 
@@ -137,9 +138,13 @@ class DemoApplicationTest {
     }
 
     /*=============== menu ==================*/
+    private String menuUri = "/01/menu/";
+    private String menuUri1 = menuUri + "1";
+
     @Test
     public void pageMenu() throws Exception {
-        mockMvc.perform(get("/menu/?pageNumber=1&pageSize=2"))
+        mockMvc.perform(get(menuUri + "?pageNumber=1&pageSize=2"))
+               .andExpect(statusIs200())
                .andExpect(jsonPath("$.list").isArray())
                .andExpect(jsonPath("$.list[0]").doesNotExist())
                .andExpect(jsonPath("$.total").value(2))
@@ -148,8 +153,9 @@ class DemoApplicationTest {
 
     @Test
     public void getMenuById() throws Exception {
-        mockMvc.perform(get("/menu/1"))
+        mockMvc.perform(get(menuUri1))
                .andDo(print())
+               .andExpect(statusIs200())
                .andExpect(jsonPath("$.id").value("1"))
                .andExpect(jsonPath("$.menuName").value("root"))
         ;
@@ -158,27 +164,42 @@ class DemoApplicationTest {
     @Test
     public void saveMenu() throws Exception {
         MvcResult mvcResult = mockMvc
-            .perform(get("/menu/1"))
+            .perform(get(menuUri1))
+            .andExpect(statusIs200())
             .andExpect(jsonPath("$.updateUserId").doesNotExist())
             .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        requestJson(put("/menu/1"), json, session);
-        mockMvc.perform(get("/menu/1"))
+        requestJson(put(menuUri1), json, session);
+        mockMvc.perform(get(menuUri1))
+               .andExpect(statusIs200())
                .andExpect(jsonPath("$.updateUserId").value("1"));
     }
 
     @Test
     public void createMenu() throws Exception {
-        requestJson(post("/menu/"), "{}", session).andExpect(status().is(200));
-        mockMvc.perform(get("/menu/3"))
+        requestJson(post(menuUri), "{\"platform\":\"01\", \"menuName\":\"Test Menu\"}", session)
+            .andExpect(statusIs200());
+
+        mockMvc.perform(get(menuUri + "3"))
+               .andExpect(statusIs200())
                .andExpect(jsonPath("$.createUserId").value("1"))
                .andExpect(jsonPath("$.updateUserId").doesNotExist());
+
+        mockMvc.perform(delete(menuUri + "3")).andExpect(statusIs200());
+
+        mockMvc.perform(get(menuUri + "?pageNumber=0"))
+               .andExpect(statusIs200())
+               .andExpect(jsonPath("$.total").value(2));
+    }
+
+    private ResultMatcher statusIs200() {
+        return status().is(200);
     }
 
     /*=============== login ==================*/
     @Test
     void login() throws Exception {
-        MvcResult mvcResult = requestJson(post("/login"), "{\"account\":\"f0rb\",\"password\":\"123456\"}").andExpect(status().is(200)).andReturn();
+        MvcResult mvcResult = requestJson(post("/login"), "{\"account\":\"f0rb\",\"password\":\"123456\"}").andExpect(statusIs200()).andReturn();
         MockHttpSession session = (MockHttpSession) mvcResult.getRequest().getSession();
         mockMvc.perform(get("/account").session(session))
                .andExpect(jsonPath("$.id").value("1"))

@@ -16,6 +16,8 @@ public class MenuRequest implements EntityRequest<MenuEntity> {
 
     private Integer id;
 
+    private String platform;
+
     private Integer parentId;
 
     private String menuName;

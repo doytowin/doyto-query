@@ -15,27 +15,33 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.Table;
 
+import static win.doyto.query.core.CrudBuilder.replaceTableName;
+
 /**
  * JdbcDataAccess
  *
  * @author f0rb
  */
 class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
-    private static CrudBuilder crudBuilder = new CrudBuilder();
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<E> rowMapper;
     private final String getById;
     private final String deleteById;
+    private final CrudBuilder<E> crudBuilder;
+    private static final String FMT_GET_BY_ID = "SELECT * FROM %s WHERE id = ?";
+    private static final String FMT_DELETE_BY_ID = "DELETE FROM %s WHERE id = ?";
+    private final String domainTable;
 
     public JdbcDataAccess(JdbcTemplate jdbcTemplate, Class<E> domainType) {
         this.jdbcTemplate = jdbcTemplate;
 
         rowMapper = new BeanPropertyRowMapper<>(domainType);
 
-        String domainTable = domainType.getAnnotation(Table.class).name();
-        getById = String.format("SELECT * FROM %s WHERE id = ?", domainTable);
-        deleteById = String.format("DELETE FROM %s WHERE id = ?", domainTable);
+        domainTable = domainType.getAnnotation(Table.class).name();
+        getById = String.format(FMT_GET_BY_ID, domainTable);
+        deleteById = String.format(FMT_DELETE_BY_ID, domainTable);
+        crudBuilder = new CrudBuilder<>(domainType);
     }
 
     @Override
@@ -63,6 +69,17 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
     public int delete(I id) {
         Assert.notNull(id, "The given id must not be null!");
         return jdbcTemplate.update(deleteById, id);
+    }
+
+    @Override
+    public E get(E e) {
+        String sql = String.format(FMT_GET_BY_ID, replaceTableName(e, domainTable));
+        return jdbcTemplate.queryForObject(sql, rowMapper, e.getId());
+    }
+
+    @Override
+    public int delete(E e) {
+        return jdbcTemplate.update(String.format(FMT_DELETE_BY_ID, replaceTableName(e, domainTable)), e.getId());
     }
 
     @Override

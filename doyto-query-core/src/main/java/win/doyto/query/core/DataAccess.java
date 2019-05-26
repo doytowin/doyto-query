@@ -1,5 +1,7 @@
 package win.doyto.query.core;
 
+import win.doyto.query.entity.Persistable;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -8,7 +10,7 @@ import java.util.List;
  *
  * @author f0rb
  */
-public interface DataAccess<E, I extends Serializable, Q> {
+public interface DataAccess<E extends Persistable<I>, I extends Serializable, Q> {
 
     List<E> query(Q query);
 
@@ -17,6 +19,14 @@ public interface DataAccess<E, I extends Serializable, Q> {
     E get(I id);
 
     int delete(I id);
+
+    default E get(E e) {
+        return get(e.getId());
+    }
+
+    default int delete(E e) {
+        return delete(e.getId());
+    }
 
     void create(E e);
 

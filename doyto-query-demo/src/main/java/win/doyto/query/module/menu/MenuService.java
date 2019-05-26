@@ -1,7 +1,7 @@
 package win.doyto.query.module.menu;
 
 import org.springframework.stereotype.Service;
-import win.doyto.query.core.AbstractCrudService;
+import win.doyto.query.core.AbstractDynamicService;
 
 /**
  * MenuService
@@ -9,7 +9,7 @@ import win.doyto.query.core.AbstractCrudService;
  * @author f0rb
  */
 @Service
-class MenuService extends AbstractCrudService<MenuEntity, Integer, MenuQuery> {
+class MenuService extends AbstractDynamicService<MenuEntity, Integer, MenuQuery> {
 
     @Override
     protected String getCacheName() {

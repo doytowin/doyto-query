@@ -23,14 +23,6 @@ import javax.persistence.Transient;
 @Slf4j
 public class QueryBuilder {
 
-    private static class Singleton {
-        private static QueryBuilder instance = new QueryBuilder();
-    }
-
-    public static QueryBuilder instance() {
-        return Singleton.instance;
-    }
-
     public String buildSelect(Object query) {
         return buildSelectAndArgs(query, null);
     }
@@ -123,22 +115,22 @@ public class QueryBuilder {
         return matcher.replaceAll("?");
     }
 
-    public static Object readFieldGetter(Field field, Object query) {
+    public static Object readFieldGetter(Field field, Object target) {
         Object value;
         try {
             String fieldName = field.getName();
             String prefix = field.getType().isAssignableFrom(boolean.class) ? "is" : "get";
-            value = MethodUtils.invokeMethod(query, true, prefix + StringUtils.capitalize(fieldName));
+            value = MethodUtils.invokeMethod(target, true, prefix + StringUtils.capitalize(fieldName));
         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             log.warn("is/get调用异常 : {}-{}", e.getClass().getName(), e.getMessage());
-            value = readField(field, query);
+            value = readField(field, target);
         }
         return value;
     }
 
-    public static Object readField(Field field, Object query) {
+    public static Object readField(Field field, Object target) {
         try {
-            return FieldUtils.readField(field, query, true);
+            return FieldUtils.readField(field, target, true);
         } catch (IllegalAccessException e) {
             log.warn("字段读取异常 : {}-{}", e.getClass().getName(), e.getMessage());
         }
