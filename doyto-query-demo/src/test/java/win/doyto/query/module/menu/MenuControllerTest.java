@@ -18,7 +18,7 @@ class MenuControllerTest {
         MenuRequest menuRequest = new MenuRequest();
         menuRequest.setParentId(0);
         menuRequest.setMenuName("root");
-        menuController.save(menuRequest);
+        menuController.create(menuRequest);
 
         MenuResponse menuResponse = menuController.get(1);
         assertEquals("root", menuResponse.getMenuName());

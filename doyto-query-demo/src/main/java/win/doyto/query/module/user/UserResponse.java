@@ -3,9 +3,7 @@ package win.doyto.query.module.user;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.BeanUtils;
-
-import java.io.Serializable;
+import win.doyto.query.entity.EntityResponse;
 
 /**
  * UserResponse
@@ -14,7 +12,7 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
-public class UserResponse implements Serializable {
+public class UserResponse implements EntityResponse<UserEntity, UserResponse> {
     private static final long serialVersionUID = -1L;
 
     private Long id;
@@ -26,9 +24,4 @@ public class UserResponse implements Serializable {
     private String password;
     private Boolean valid;
 
-    public static UserResponse of(UserEntity userEntity) {
-        UserResponse userResponse = new UserResponse();
-        BeanUtils.copyProperties(userEntity, userResponse);
-        return userResponse;
-    }
 }

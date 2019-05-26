@@ -22,7 +22,7 @@ import javax.validation.Valid;
 @Slf4j
 @RestController
 @AllArgsConstructor
-public class LoginController {
+class LoginController {
 
     @Resource
     UserApi userApi;

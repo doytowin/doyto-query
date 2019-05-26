@@ -1,9 +1,9 @@
 package win.doyto.query.module.menu;
 
-import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-import win.doyto.query.core.PageList;
-import win.doyto.query.exception.ServiceException;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import win.doyto.query.core.CrudService;
+import win.doyto.query.entity.AbstractRestController;
 
 /**
  * MenuController
@@ -12,28 +12,11 @@ import win.doyto.query.exception.ServiceException;
  */
 @RestController
 @RequestMapping("menu")
-@AllArgsConstructor
 @SuppressWarnings("squid:S4529")
-class MenuController {
+class MenuController extends AbstractRestController<MenuEntity, Integer, MenuQuery, MenuRequest, MenuResponse> {
 
-    MenuService menuService;
-
-    @GetMapping("page")
-    public PageList<MenuResponse> page(MenuQuery menuQuery) {
-        return menuService.page(menuQuery, MenuResponse::of);
+    public MenuController(CrudService<MenuEntity, Integer, MenuQuery> crudService) {
+        super(crudService);
     }
 
-    @GetMapping("get")
-    public MenuResponse get(Integer id) {
-        MenuEntity menuEntity = menuService.get(id);
-        if (menuEntity == null) {
-            throw new ServiceException("菜单不存在");
-        }
-        return MenuResponse.of(menuEntity);
-    }
-
-    @PostMapping("save")
-    public void save(@RequestBody MenuRequest menuRequest) {
-        menuService.save(menuRequest.toEntity());
-    }
 }

@@ -3,6 +3,7 @@ package win.doyto.query.module.menu;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.common.BeanUtil;
+import win.doyto.query.entity.EntityRequest;
 
 /**
  * MenuRequest
@@ -11,7 +12,7 @@ import win.doyto.query.common.BeanUtil;
  */
 @Getter
 @Setter
-public class MenuRequest {
+public class MenuRequest implements EntityRequest<MenuEntity> {
 
     private Integer id;
 

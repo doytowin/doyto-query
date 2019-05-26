@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import win.doyto.query.core.PageList;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,9 +53,10 @@ public class UserControllerTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void query() {
         UserQuery userQuery = UserQuery.builder().username("username1").build();
-        assertThat(userController.query(userQuery))
+        assertThat((List<UserResponse>) userController.query(userQuery))
             .hasSize(1)
             .first()
             .hasFieldOrPropertyWithValue("id", 1L)
