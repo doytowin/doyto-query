@@ -2,6 +2,8 @@ package win.doyto.query.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import win.doyto.query.cache.CacheWrapper;
 import win.doyto.query.entity.EntityAspect;
 import win.doyto.query.entity.Persistable;
@@ -11,7 +13,6 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.LinkedList;
 import java.util.List;
-import javax.persistence.EntityManager;
 
 /**
  * AbstractCrudService
@@ -55,9 +56,9 @@ public abstract class AbstractCrudService<E extends Persistable<I>, I extends Se
         }
     }
 
-    @Autowired(required = false)
-    public void setEntityManager(EntityManager entityManager) {
-        dataAccess = new Jpa2DataAccess<>(domainType, entityManager);
+    @Autowired
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        dataAccess = new JdbcDataAccess<>(jdbcTemplate, domainType);
     }
 
     protected String getCacheName() {
@@ -79,11 +80,7 @@ public abstract class AbstractCrudService<E extends Persistable<I>, I extends Se
         return entityCacheWrapper.execute(id, () -> dataAccess.get(id));
     }
 
-    @Override
-    public E fetch(I id) {
-        return entityCacheWrapper.execute(id, () -> dataAccess.fetch(id));
-    }
-
+    @Transactional
     public E save(E e) {
         if (userIdProvider != null) {
             userIdProvider.setupUserId(e);

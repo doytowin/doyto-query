@@ -16,15 +16,15 @@ public interface CrudService<E extends Persistable<I>, I extends Serializable, Q
 
     E get(I id);
 
+    @Transactional
     default void create(E e) {
         save(e);
     }
 
+    @Transactional
     default void update(E e) {
         save(e);
     }
-
-    E fetch(I id);
 
     E save(E e);
 

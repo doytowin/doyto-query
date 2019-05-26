@@ -11,6 +11,8 @@ import java.io.Serializable;
 public interface Persistable<I> extends Serializable {
     I getId();
 
+    void setId(I id);
+
     @Transient
     default boolean isNew() {
         return getId() == null;

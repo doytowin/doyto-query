@@ -161,6 +161,14 @@ class DemoApplicationTest {
                .andExpect(jsonPath("$.updateUserId").value("1"));
     }
 
+    @Test
+    public void createMenu() throws Exception {
+        requestJson(post("/menu/"), "{}", session).andExpect(status().is(200));
+        mockMvc.perform(get("/menu/3"))
+               .andExpect(jsonPath("$.createUserId").value("1"))
+               .andExpect(jsonPath("$.updateUserId").doesNotExist());
+    }
+
     /*=============== login ==================*/
     @Test
     void login() throws Exception {
