@@ -16,9 +16,11 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import win.doyto.query.module.user.TestUserEntityAspect;
 
 import javax.annotation.Resource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -117,11 +119,15 @@ class DemoApplicationTest {
         ;
     }
 
+    @Resource
+    TestUserEntityAspect testUserEntityAspect;
+
     @Test
     public void updateUser() throws Exception {
         String result = mockMvc.perform(get("/user/1")).andReturn().getResponse().getContentAsString();
 
         requestJson(put("/user/1"), result.replace("f0rb", "test"));
+        assertEquals(1, testUserEntityAspect.getTimes());
 
         mockMvc.perform(get("/user/?pageNumber=0"))
                .andDo(print())
