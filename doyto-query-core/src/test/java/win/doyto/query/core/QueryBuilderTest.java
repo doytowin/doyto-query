@@ -20,10 +20,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class QueryBuilderTest {
 
     private QueryBuilder queryBuilder = new QueryBuilder();
+    private List<Object> argList;
 
     @BeforeEach
     void setUp() {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
+        argList = new LinkedList<>();
     }
 
     @Test
@@ -56,7 +58,6 @@ public class QueryBuilderTest {
     @Test
     public void buildSelectWithArgs() {
         UserQuery userQuery = UserQuery.builder().username("test").build();
-        LinkedList<Object> argList = new LinkedList<>();
         assertEquals("SELECT * FROM user WHERE username = ?",
                      queryBuilder.buildSelectAndArgs(userQuery, argList));
         assertEquals(1, argList.size());
@@ -65,7 +66,6 @@ public class QueryBuilderTest {
 
     @Test
     public void buildSelectAndArgsWithCustomWhere() {
-        LinkedList<Object> argList = new LinkedList<>();
 
         UserQuery userQuery = UserQuery.builder().account("test").build();
         assertEquals("SELECT * FROM user WHERE (username = ? OR email = ? OR mobile = ?)",
@@ -77,7 +77,6 @@ public class QueryBuilderTest {
     public void buildCountAndArgsWithWhere() {
         UserQuery userQuery = UserQuery.builder().username("test").build();
         userQuery.setPageNumber(2).setPageSize(10);
-        LinkedList<Object> argList = new LinkedList<>();
         assertEquals("SELECT * FROM user WHERE username = ? LIMIT 10 OFFSET 20",
                      queryBuilder.buildSelectAndArgs(userQuery, argList));
 
@@ -95,9 +94,13 @@ public class QueryBuilderTest {
 
     @Test
     public void supportLikeSuffix() {
-        UserQuery userQuery = UserQuery.builder().usernameLike("test").build();
+        UserQuery userQuery = UserQuery.builder().usernameLike("_test%f0rb").build();
         assertEquals("SELECT * FROM user WHERE username LIKE #{usernameLike}",
                      queryBuilder.buildSelect(userQuery));
+
+        assertEquals("SELECT * FROM user WHERE username LIKE ?",
+                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+        assertThat(argList).containsExactly("%\\_test\\%f0rb%");
     }
 
     @Test
@@ -107,7 +110,6 @@ public class QueryBuilderTest {
         assertEquals("SELECT * FROM user WHERE id IN (#{idIn[0]}, #{idIn[1]}, #{idIn[2]})",
                      queryBuilder.buildSelect(userQuery));
 
-        LinkedList<Object> argList = new LinkedList<>();
         assertEquals("SELECT * FROM user WHERE id IN (?, ?, ?)",
                      queryBuilder.buildSelectAndArgs(userQuery, argList));
         assertThat(argList).containsExactly(1, 2, 3);
@@ -121,7 +123,6 @@ public class QueryBuilderTest {
         assertEquals("SELECT * FROM user WHERE id NOT IN (#{idNotIn[0]}, #{idNotIn[1]}, #{idNotIn[2]})",
                      queryBuilder.buildSelect(userQuery));
 
-        LinkedList<Object> argList = new LinkedList<>();
         assertEquals("SELECT * FROM user WHERE id NOT IN (?, ?, ?)",
                      queryBuilder.buildSelectAndArgs(userQuery, argList));
         assertThat(argList).containsExactly(1, 2, 3);
@@ -134,7 +135,6 @@ public class QueryBuilderTest {
         assertEquals("SELECT * FROM user WHERE username = #{username} AND createTime > #{createTimeGt}",
                      queryBuilder.buildSelect(userQuery));
 
-        LinkedList<Object> argList = new LinkedList<>();
         assertEquals("SELECT * FROM user WHERE username = ? AND createTime > ?",
                      queryBuilder.buildSelectAndArgs(userQuery, argList));
         assertThat(argList).containsExactly("test", createTimeGt);
@@ -147,7 +147,6 @@ public class QueryBuilderTest {
         assertEquals("SELECT * FROM user WHERE username = #{username} AND createTime >= #{createTimeGe}",
                      queryBuilder.buildSelect(userQuery));
 
-        LinkedList<Object> argList = new LinkedList<>();
         assertEquals("SELECT * FROM user WHERE username = ? AND createTime >= ?",
                      queryBuilder.buildSelectAndArgs(userQuery, argList));
         assertThat(argList).containsExactly("test", date);
@@ -160,7 +159,6 @@ public class QueryBuilderTest {
         assertEquals("SELECT * FROM user WHERE username = #{username} AND createTime < #{createTimeLt}",
                      queryBuilder.buildSelect(userQuery));
 
-        LinkedList<Object> argList = new LinkedList<>();
         assertEquals("SELECT * FROM user WHERE username = ? AND createTime < ?",
                      queryBuilder.buildSelectAndArgs(userQuery, argList));
         assertThat(argList).containsExactly("test", date);
@@ -173,7 +171,6 @@ public class QueryBuilderTest {
         assertEquals("SELECT * FROM user WHERE username = #{username} AND createTime <= #{createTimeLe}",
                      queryBuilder.buildSelect(userQuery));
 
-        LinkedList<Object> argList = new LinkedList<>();
         assertEquals("SELECT * FROM user WHERE username = ? AND createTime <= ?",
                      queryBuilder.buildSelectAndArgs(userQuery, argList));
         assertThat(argList).containsExactly("test", date);
@@ -185,7 +182,6 @@ public class QueryBuilderTest {
         assertEquals("SELECT * FROM user WHERE (username = #{usernameOrEmailOrMobile} OR email = #{usernameOrEmailOrMobile} OR mobile = #{usernameOrEmailOrMobile})",
                      queryBuilder.buildSelect(userQuery));
 
-        LinkedList<Object> argList = new LinkedList<>();
         assertEquals("SELECT * FROM user WHERE (username = ? OR email = ? OR mobile = ?)",
                      queryBuilder.buildSelectAndArgs(userQuery, argList));
         assertThat(argList).containsExactly("test", "test", "test");
@@ -198,10 +194,9 @@ public class QueryBuilderTest {
         assertEquals("SELECT * FROM user WHERE (username LIKE #{usernameOrEmailOrMobileLike} OR email LIKE #{usernameOrEmailOrMobileLike} OR mobile LIKE #{usernameOrEmailOrMobileLike})",
                      queryBuilder.buildSelect(userQuery));
 
-        LinkedList<Object> argList = new LinkedList<>();
         assertEquals("SELECT * FROM user WHERE (username LIKE ? OR email LIKE ? OR mobile LIKE ?)",
                      queryBuilder.buildSelectAndArgs(userQuery, argList));
-        assertThat(argList).containsExactly("test", "test", "test");
+        assertThat(argList).containsExactly("%test%", "%test%", "%test%");
 
     }
 
@@ -222,10 +217,9 @@ public class QueryBuilderTest {
         assertEquals("SELECT * FROM user WHERE (user_name LIKE #{userNameOrUserCodeLike} OR user_code LIKE #{userNameOrUserCodeLike}) AND create_time < #{createTimeLt}",
                      queryBuilder.buildSelect(userQuery));
 
-        LinkedList<Object> argList = new LinkedList<>();
         assertEquals("SELECT * FROM user WHERE (user_name LIKE ? OR user_code LIKE ?) AND create_time < ?",
                      queryBuilder.buildSelectAndArgs(userQuery, argList));
-        assertThat(argList).containsExactly("test", "test", date);
+        assertThat(argList).containsExactly("%test%", "%test%", date);
     }
 
     @Test
@@ -235,7 +229,6 @@ public class QueryBuilderTest {
         assertEquals("SELECT * FROM t_dynamic_f0rb_i18n WHERE score < #{scoreLt}",
                      queryBuilder.buildSelect(dynamicQuery));
 
-        LinkedList<Object> argList = new LinkedList<>();
         assertEquals("SELECT * FROM t_dynamic_f0rb_i18n WHERE score < ?",
                      queryBuilder.buildSelectAndArgs(dynamicQuery, argList));
         assertThat(argList).containsExactly(100);
