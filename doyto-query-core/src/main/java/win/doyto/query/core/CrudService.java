@@ -30,4 +30,6 @@ public interface CrudService<E extends Persistable<I>, I extends Serializable, Q
     }
 
     E delete(I id);
+
+    int delete(Q query);
 }

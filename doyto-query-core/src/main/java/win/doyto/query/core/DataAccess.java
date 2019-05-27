@@ -18,15 +18,17 @@ public interface DataAccess<E extends Persistable<I>, I extends Serializable, Q>
 
     E get(I id);
 
-    int delete(I id);
-
     default E get(E e) {
         return get(e.getId());
     }
 
+    int delete(I id);
+
     default int delete(E e) {
         return delete(e.getId());
     }
+
+    int delete(Q query);
 
     void create(E e);
 

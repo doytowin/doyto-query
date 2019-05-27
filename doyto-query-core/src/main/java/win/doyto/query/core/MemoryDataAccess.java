@@ -91,6 +91,13 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         return entitiesMap.remove(id) == null ? 0 : 1;
     }
 
+    @Override
+    public int delete(Q query) {
+        List<E> list = query(query);
+        list.stream().map(Persistable::getId).forEach(entitiesMap::remove);
+        return list.size();
+    }
+
     /**
      * 根据Query对象筛选符合条件的Entity对象
      *

@@ -119,6 +119,11 @@ public abstract class AbstractCrudService<E extends Persistable<I>, I extends Se
         return e;
     }
 
+    @Override
+    public int delete(Q query) {
+        return dataAccess.delete(query);
+    }
+
     public boolean exists(Q query) {
         return count(query) > 0;
     }

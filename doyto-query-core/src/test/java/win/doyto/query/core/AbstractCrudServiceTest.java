@@ -80,4 +80,17 @@ class AbstractCrudServiceTest {
     void exists() {
         assertTrue(userService.exists(UserQuery.builder().username("username1").build()));
     }
+
+    @Test
+    void deleteByQuery() {
+        UserQuery userQuery = UserQuery.builder().usernameLike("username").build();
+        assertEquals(4, userService.delete(userQuery));
+    }
+
+    @Test
+    void deleteByQueryWithLimit() {
+        UserQuery userQuery = UserQuery.builder().usernameLike("username").build();
+        userQuery.setPageSize(2);
+        assertEquals(2, userService.delete(userQuery));
+    }
 }

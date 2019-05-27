@@ -60,6 +60,13 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
     }
 
     @Override
+    public int delete(Q q) {
+        LinkedList<Object> args = new LinkedList<>();
+        String sql = crudBuilder.buildDeleteAndArgs(q, args);
+        return jdbcTemplate.update(sql, args.toArray(), rowMapper);
+    }
+
+    @Override
     public E get(I id) {
         Assert.notNull(id, "The given id must not be null!");
         return jdbcTemplate.queryForObject(getById, rowMapper, id);

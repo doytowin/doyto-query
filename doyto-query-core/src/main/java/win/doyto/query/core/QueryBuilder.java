@@ -39,12 +39,18 @@ public class QueryBuilder {
         return build(DatabaseOperation.COUNT, query, argList);
     }
 
+    public String buildDeleteAndArgs(Object query, List<Object> argList) {
+        return build(DatabaseOperation.DELETE, query, argList);
+    }
+
     private static String build(DatabaseOperation operation, Object query, List<Object> argList) {
         QueryTable queryTable = query.getClass().getAnnotation(QueryTable.class);
         String table = queryTable.table();
         String sql;
         if (operation == DatabaseOperation.COUNT) {
             sql = "SELECT count(*) FROM " + table;
+        } else if (operation == DatabaseOperation.DELETE) {
+            sql = "DELETE FROM " + table;
         } else {
             sql = "SELECT * FROM " + table;
         }
@@ -57,10 +63,13 @@ public class QueryBuilder {
                 sql += " ORDER BY " + pageQuery.getSort().replaceAll(",", " ").replaceAll(";", ", ");
             }
         }
-        if (operation == DatabaseOperation.SELECT && query instanceof PageQuery) {
+        if (operation != DatabaseOperation.COUNT && query instanceof PageQuery) {
             PageQuery pageQuery = (PageQuery) query;
             if (pageQuery.needPaging()) {
-                sql += " LIMIT " + pageQuery.getPageSize() + " OFFSET " + pageQuery.getOffset();
+                sql += " LIMIT " + pageQuery.getPageSize();
+                if (operation == DatabaseOperation.SELECT) {
+                   sql += " OFFSET " + pageQuery.getOffset();
+                }
             }
         }
         log.info("SQL: {}", sql);
@@ -154,6 +163,6 @@ public class QueryBuilder {
     }
 
     private enum DatabaseOperation {
-        SELECT, COUNT
+        SELECT, COUNT, DELETE
     }
 }

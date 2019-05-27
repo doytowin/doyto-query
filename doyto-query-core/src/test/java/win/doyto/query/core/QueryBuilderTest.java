@@ -234,4 +234,13 @@ public class QueryBuilderTest {
         assertThat(argList).containsExactly(100);
     }
 
+    @Test
+    public void buildDeleteAndArgs() {
+        UserQuery userQuery = UserQuery.builder().username("test").build();
+        userQuery.setPageNumber(3).setPageSize(10);
+        assertEquals("DELETE FROM user WHERE username = ? LIMIT 10",
+                     queryBuilder.buildDeleteAndArgs(userQuery, argList));
+        assertEquals(1, argList.size());
+        assertEquals("test", argList.get(0));
+    }
 }
