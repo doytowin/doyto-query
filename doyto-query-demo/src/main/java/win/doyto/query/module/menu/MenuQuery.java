@@ -15,6 +15,8 @@ import win.doyto.query.core.QueryTable;
 @QueryTable(table = MenuEntity.TABLE)
 public class MenuQuery extends PageQuery {
 
+    private Integer id;
+
     private String platform;
 
     private String menuNameLike;

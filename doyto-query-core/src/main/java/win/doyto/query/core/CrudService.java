@@ -4,8 +4,6 @@ import org.springframework.transaction.annotation.Transactional;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * CrudService
@@ -16,30 +14,18 @@ public interface CrudService<E extends Persistable<I>, I extends Serializable, Q
 
     E get(I id);
 
-    @Transactional
-    default void create(E e) {
-        save(e);
-    }
+    void create(E e);
 
-    @Transactional
-    default void update(E e) {
-        save(e);
-    }
+    void update(E e);
 
     void patch(E e);
 
-    E save(E e);
-
     @Transactional
-    default List<E> save(Iterable<E> entities) {
-        List<E> result = new ArrayList<>();
-        if (entities == null) {
-            return result;
-        } else {
+    default void batchInsert(Iterable<E> entities) {
+        if (entities != null) {
             for (E entity : entities) {
-                result.add(this.save(entity));
+                this.create(entity);
             }
-            return result;
         }
     }
 

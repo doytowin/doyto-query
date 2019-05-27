@@ -75,32 +75,37 @@ public abstract class AbstractCrudService<E extends Persistable<I>, I extends Se
         return entityCacheWrapper.execute(id, () -> dataAccess.get(id));
     }
 
+    @Override
+    @Transactional
+    public void create(E e) {
+        if (userIdProvider != null) {
+            userIdProvider.setupUserId(e);
+        }
+        dataAccess.create(e);
+        entityAspects.forEach(entityAspect -> entityAspect.afterCreate(e));
+        entityCacheWrapper.evict(e.getId());
+    }
+
+    @Override
+    @Transactional
+    public void update(E e) {
+        doUpdate(e, () -> dataAccess.update(e));
+    }
+
+    @Override
     @Transactional
     public void patch(E e) {
+        doUpdate(e, () -> dataAccess.patch(e));
+    }
+
+    private void doUpdate(E e, Runnable runnable) {
         if (userIdProvider != null) {
             userIdProvider.setupUserId(e);
         }
         E origin = entityAspects.isEmpty() ? null : dataAccess.fetch(e.getId());
-        dataAccess.patch(e);
+        runnable.run();
         entityAspects.forEach(entityAspect -> entityAspect.afterUpdate(origin, e));
         entityCacheWrapper.evict(e.getId());
-    }
-
-    @Transactional
-    public E save(E e) {
-        if (userIdProvider != null) {
-            userIdProvider.setupUserId(e);
-        }
-        if (e.isNew()) {
-            dataAccess.create(e);
-            entityAspects.forEach(entityAspect -> entityAspect.afterCreate(e));
-        } else {
-            E origin = entityAspects.isEmpty() ? null : dataAccess.fetch(e.getId());
-            dataAccess.update(e);
-            entityAspects.forEach(entityAspect -> entityAspect.afterUpdate(origin, e));
-        }
-        entityCacheWrapper.evict(e.getId());
-        return e;
     }
 
     @Override

@@ -34,8 +34,8 @@ class MenuController {
     }
 
     @GetMapping("{id}")
-    public MenuResponse get(MenuRequest menuRequest) {
-        MenuEntity e = menuService.get(menuRequest.toEntity());
+    public MenuResponse get(MenuQuery menuRequest) {
+        MenuEntity e = menuService.get(menuRequest);
         if (e == null) {
             throw new IllegalArgumentException("Record not found");
         }

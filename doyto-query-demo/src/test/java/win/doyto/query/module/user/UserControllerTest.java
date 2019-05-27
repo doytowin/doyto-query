@@ -44,7 +44,7 @@ public class UserControllerTest {
         userEntity.setMobile("17778888880");
         userEntity.setValid(true);
         userEntities.add(userEntity);
-        userService.save(userEntities);
+        userService.batchInsert(userEntities);
     }
 
     @BeforeEach

@@ -67,8 +67,6 @@ public class QueryBuilder {
         return sql;
     }
 
-    static final Pattern PLACE_HOLDER_PTN = Pattern.compile("#\\{\\w+}");
-
     private static String buildWhere(String sql, Object query, List<Object> argList) {
         LinkedList<Object> whereList = new LinkedList<>();
         for (Field field : query.getClass().getDeclaredFields()) {
@@ -104,6 +102,7 @@ public class QueryBuilder {
         whereList.add(andSQL);
     }
 
+    private static final Pattern PLACE_HOLDER_PTN = Pattern.compile("#\\{\\w+}");
     private static String replaceArgs(Object value, List<Object> argList, String andSQL) {
         if (argList == null) {
             return andSQL;

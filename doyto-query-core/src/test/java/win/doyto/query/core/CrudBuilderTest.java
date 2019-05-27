@@ -18,6 +18,7 @@ class CrudBuilderTest {
 
     private DynamicEntity dynamicEntity;
     private LinkedList<Object> argList;
+    private CrudBuilder<UserEntity> userEntityCrudBuilder = new CrudBuilder<>(UserEntity.class);
     private CrudBuilder<DynamicEntity> dynamicEntityCrudBuilder = new CrudBuilder<>(DynamicEntity.class);
 
     @BeforeEach
@@ -33,36 +34,33 @@ class CrudBuilderTest {
 
     @Test
     void create() {
-        assertEquals("INSERT INTO user (username, password, mobile, email, nickname, valid) VALUES (#{username}, #{password}, #{mobile}, #{email}, #{nickname}, #{valid})",
-                     new CrudBuilder<>(UserEntity.class).buildCreate(new UserEntity()));
+        assertEquals("INSERT INTO user (username, password, mobile, email, nickname, valid) VALUES (?, ?, ?, ?, ?, ?)",
+                     userEntityCrudBuilder.buildCreateAndArgs(new UserEntity(), argList));
     }
 
     @Test
     void update() {
-        assertEquals("UPDATE user SET username = #{username}, password = #{password}, mobile = #{mobile}, email = #{email}, nickname = #{nickname}, valid = #{valid} WHERE id = #{id}",
-                     new CrudBuilder<>(UserEntity.class).buildUpdate(new UserEntity()));
+        assertEquals("UPDATE user SET username = ?, password = ?, mobile = ?, email = ?, nickname = ?, valid = ? WHERE id = ?",
+                     userEntityCrudBuilder.buildUpdateAndArgs(new UserEntity(), argList));
     }
 
     @Test
     void createDynamicEntity() {
-        assertEquals("INSERT INTO t_dynamic_f0rb_i18n (user_score, memo) VALUES (#{score}, #{memo})",
-                     new CrudBuilder<>(DynamicEntity.class).buildCreate(dynamicEntity));
 
         assertEquals("INSERT INTO t_dynamic_f0rb_i18n (user_score, memo) VALUES (?, ?)",
-                     new CrudBuilder<>(DynamicEntity.class).buildCreateAndArgs(dynamicEntity, argList));
+                     dynamicEntityCrudBuilder.buildCreateAndArgs(dynamicEntity, argList));
         assertThat(argList).containsExactly(100, null);
     }
 
     @Test
     void updateDynamicEntity() {
         dynamicEntity.setId(1);
-        assertEquals("UPDATE t_dynamic_f0rb_i18n SET user_score = #{score}, memo = #{memo} WHERE id = #{id}",
-                     dynamicEntityCrudBuilder.buildUpdate(dynamicEntity));
 
         assertEquals("UPDATE t_dynamic_f0rb_i18n SET user_score = ?, memo = ? WHERE id = ?",
                      dynamicEntityCrudBuilder.buildUpdateAndArgs(dynamicEntity, argList));
         assertThat(argList).containsExactly(100, null, 1);
     }
+
 
     @Test
     void buildPatchAndArgs() {

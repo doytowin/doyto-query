@@ -24,7 +24,7 @@ class AbstractCrudServiceTest {
     void setUp() {
         userService = new UserService();
         userService.dataAccess = spy(userService.dataAccess);
-        userService.save(initUserEntities());
+        userService.batchInsert(initUserEntities());
     }
 
     @Test
