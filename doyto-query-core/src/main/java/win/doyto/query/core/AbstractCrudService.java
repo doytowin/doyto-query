@@ -119,4 +119,7 @@ public abstract class AbstractCrudService<E extends Persistable<I>, I extends Se
         return e;
     }
 
+    public boolean exists(Q query) {
+        return count(query) > 0;
+    }
 }

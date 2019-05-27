@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import win.doyto.query.entity.EntityAspect;
 import win.doyto.query.user.UserEntity;
+import win.doyto.query.user.UserQuery;
 import win.doyto.query.user.UserService;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static win.doyto.query.core.MemoryDataAccessTest.initUserEntities;
 
@@ -69,5 +69,15 @@ class AbstractCrudServiceTest {
 
         userService.delete(e.getId());
         verify(entityAspect, times(1)).afterDelete(u);
+    }
+
+    @Test
+    void count() {
+        assertEquals(1, userService.count(UserQuery.builder().username("username1").build()));
+    }
+
+    @Test
+    void exists() {
+        assertTrue(userService.exists(UserQuery.builder().username("username1").build()));
     }
 }

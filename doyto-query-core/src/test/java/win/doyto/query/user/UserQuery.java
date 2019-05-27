@@ -1,8 +1,6 @@
 package win.doyto.query.user;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.core.QueryField;
 import win.doyto.query.core.QueryTable;
@@ -18,6 +16,8 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @QueryTable(table = UserEntity.TABLE)
 public class UserQuery extends PageQuery {
     private List<Integer> idIn;
