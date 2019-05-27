@@ -81,6 +81,17 @@ public abstract class AbstractCrudService<E extends Persistable<I>, I extends Se
     }
 
     @Transactional
+    public void patch(E e) {
+        if (userIdProvider != null) {
+            userIdProvider.setupUserId(e);
+        }
+        E origin = entityAspects.isEmpty() ? null : dataAccess.fetch(e.getId());
+        dataAccess.patch(e);
+        entityAspects.forEach(entityAspect -> entityAspect.afterUpdate(origin, e));
+        entityCacheWrapper.evict(e.getId());
+    }
+
+    @Transactional
     public E save(E e) {
         if (userIdProvider != null) {
             userIdProvider.setupUserId(e);
@@ -102,7 +113,7 @@ public abstract class AbstractCrudService<E extends Persistable<I>, I extends Se
         E e = get(id);
         if (e != null) {
             dataAccess.delete(id);
-            entityCacheWrapper.execute(id, () ->  null);
+            entityCacheWrapper.execute(id, () -> null);
             entityAspects.forEach(entityAspect -> entityAspect.afterDelete(e));
         }
         return e;

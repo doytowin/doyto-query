@@ -26,6 +26,8 @@ public interface CrudService<E extends Persistable<I>, I extends Serializable, Q
         save(e);
     }
 
+    void patch(E e);
+
     E save(E e);
 
     @Transactional

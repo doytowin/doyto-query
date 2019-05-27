@@ -22,7 +22,7 @@ public class AbstractRestController<E extends Persistable<I>, I extends Serializ
 
     protected CrudService<E, I, Q> crudService;
 
-    private S noumenon;
+    private final S noumenon;
 
     @SuppressWarnings("unchecked")
     @SneakyThrows
@@ -70,12 +70,18 @@ public class AbstractRestController<E extends Persistable<I>, I extends Serializ
 
     @PutMapping("{id}")
     public void update(@RequestBody R request) {
-        crudService.save(request.toEntity());
+        crudService.update(request.toEntity());
+    }
+
+
+    @PatchMapping("{id}")
+    public void patch(@RequestBody R request) {
+        crudService.patch(request.toEntity());
     }
 
     @PostMapping
     public void create(@RequestBody R request) {
-        crudService.save(request.toEntity());
+        crudService.create(request.toEntity());
     }
 
 }

@@ -31,6 +31,8 @@ public class DynamicEntity extends IntegerId {
     @Column(name = "user_score")
     private Integer score;
 
+    private String memo;
+
     @Transient
     private Date createTime;
 

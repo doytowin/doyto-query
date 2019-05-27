@@ -24,7 +24,7 @@ import static win.doyto.query.core.QuerySuffix.*;
  * @author f0rb
  */
 @Slf4j
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "squid:S1135"})
 public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
     protected static final Map<Object, Map> tableMap = new ConcurrentHashMap<>();
 
@@ -81,6 +81,12 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     }
 
     @Override
+    public void patch(E e) {
+        // TODO patch
+        update(e);
+    }
+
+    @Override
     public int delete(I id) {
         return entitiesMap.remove(id) == null ? 0 : 1;
     }
@@ -88,7 +94,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     /**
      * 根据Query对象筛选符合条件的Entity对象
      *
-     * @param query Query
+     * @param query  Query
      * @param entity Entity
      * @return true, Entity符合条件需要保留; false, Entity不符合条件需要过滤掉
      */
@@ -149,7 +155,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
 
     @SuppressWarnings("unused")
     protected void doSort(List<E> queryList, String sort) {
-        // support later
+        // TODO support later
     }
 
     @Override

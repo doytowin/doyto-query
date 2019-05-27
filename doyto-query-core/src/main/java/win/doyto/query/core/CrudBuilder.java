@@ -8,6 +8,7 @@ import win.doyto.query.entity.Persistable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -160,4 +161,17 @@ public class CrudBuilder<E extends Persistable> extends QueryBuilder {
         return buildUpdateSql(table, setClauses, idColumn + " = " + whereId);
     }
 
+    public String buildPatchAndArgs(E entity, List<Object> argList) {
+        String table = isDynamicTable ? replaceTableName(entity, tableName) : tableName;
+        List<String> setClauses = new LinkedList<>();
+        for (Field field : fields) {
+            Object o = readField(field, entity);
+            if (o != null) {
+                setClauses.add(resolveColumn(field) + " = ?");
+                argList.add(o);
+            }
+        }
+        argList.add(readField(idField, entity));
+        return buildUpdateSql(table, StringUtils.join(setClauses, SEPARATOR), idColumn + " = ?");
+    }
 }

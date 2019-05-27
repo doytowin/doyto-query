@@ -108,6 +108,13 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
     }
 
     @Override
+    public void patch(E e) {
+        LinkedList<Object> args = new LinkedList<>();
+        String sql = crudBuilder.buildPatchAndArgs(e, args);
+        jdbcTemplate.update(sql, args.toArray());
+    }
+
+    @Override
     public E fetch(I id) {
         return get(id);
     }

@@ -61,9 +61,12 @@ class DemoApplicationTest {
     }
 
     /*=============== user ==================*/
+    private static final String URL_USER = "/user/";
+    private static final String URL_USER_1 = URL_USER + "1";
+
     @Test
     public void queryByUsername() throws Exception {
-        mockMvc.perform(get("/user/?username=f0rb"))
+        mockMvc.perform(get(URL_USER + "?username=f0rb"))
                .andExpect(jsonPath("$").isArray())
                .andExpect(jsonPath("$[0].nickname").value("测试1"))
         ;
@@ -71,7 +74,7 @@ class DemoApplicationTest {
 
     @Test
     public void queryByAccount() throws Exception {
-        mockMvc.perform(get("/user/?account=17778888882"))
+        mockMvc.perform(get(URL_USER + "?account=17778888882"))
                .andExpect(jsonPath("$").isArray())
                .andExpect(jsonPath("$[0].nickname").value("测试2"))
                .andExpect(jsonPath("$[0].password").doesNotExist())
@@ -81,7 +84,7 @@ class DemoApplicationTest {
 
     @Test
     public void pageByAccount() throws Exception {
-        mockMvc.perform(get("/user/?account=17778888882&pageNumber=0&pageSize=5"))
+        mockMvc.perform(get(URL_USER + "?account=17778888882&pageNumber=0&pageSize=5"))
                .andExpect(jsonPath("$.list").isArray())
                .andExpect(jsonPath("$.list[0].nickname").value("测试2"))
                .andExpect(jsonPath("$.list[0].password").doesNotExist())
@@ -91,7 +94,7 @@ class DemoApplicationTest {
 
     @Test
     public void pageByUsernameLike() throws Exception {
-        mockMvc.perform(get("/user/?usernameLike=user&pageNumber=0&pageSize=2"))
+        mockMvc.perform(get(URL_USER + "?usernameLike=user&pageNumber=0&pageSize=2"))
                .andDo(print())
                .andExpect(jsonPath("$.list").isArray())
                .andExpect(jsonPath("$.list[0].nickname").value("测试2"))
@@ -102,7 +105,7 @@ class DemoApplicationTest {
 
     @Test
     public void getUserById() throws Exception {
-        mockMvc.perform(get("/user/1"))
+        mockMvc.perform(get(URL_USER_1))
                .andExpect(jsonPath("$.username").value("f0rb"))
                .andExpect(jsonPath("$.nickname").value("测试1"))
                .andExpect(jsonPath("$.password").doesNotExist())
@@ -111,9 +114,9 @@ class DemoApplicationTest {
 
     @Test
     public void createUser() throws Exception {
-        requestJson(post("/user/"), "{\"username\": \"test\"}");
+        requestJson(post(URL_USER), "{\"username\": \"test\"}");
 
-        mockMvc.perform(get("/user/?pageNumber=0"))
+        mockMvc.perform(get(URL_USER + "?pageNumber=0"))
                .andDo(print())
                .andExpect(jsonPath("$.total").value(5))
                .andExpect(jsonPath("$.list[4].username").value("test"))
@@ -125,15 +128,27 @@ class DemoApplicationTest {
 
     @Test
     public void updateUser() throws Exception {
-        String result = mockMvc.perform(get("/user/1")).andReturn().getResponse().getContentAsString();
+        String result = mockMvc.perform(get(URL_USER_1)).andReturn().getResponse().getContentAsString();
 
-        requestJson(put("/user/1"), result.replace("f0rb", "test"));
-        assertEquals(1, testUserEntityAspect.getTimes());
+        int timesBefore = testUserEntityAspect.getTimes();
+        requestJson(put(URL_USER_1), result.replace("f0rb", "test"));
+        assertEquals(1, testUserEntityAspect.getTimes() - timesBefore);
 
-        mockMvc.perform(get("/user/?pageNumber=0"))
+        mockMvc.perform(get(URL_USER + "?pageNumber=0"))
                .andDo(print())
                .andExpect(jsonPath("$.list[0].username").value("test"))
                .andExpect(jsonPath("$.total").value(4))
+        ;
+    }
+
+    @Test
+    public void patchUser() throws Exception {
+        requestJson(patch(URL_USER_1), "{\"id\":1,\"username\":\"test\"}");
+
+        mockMvc.perform(get(URL_USER_1))
+               .andDo(print())
+               .andExpect(jsonPath("$.username").value("test"))
+               .andExpect(jsonPath("$.nickname").value("测试1"))
         ;
     }
 
