@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import win.doyto.query.entity.EntityAspect;
 import win.doyto.query.user.UserEntity;
-import win.doyto.query.user.UserQuery;
 import win.doyto.query.user.UserService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,12 +19,11 @@ import static win.doyto.query.core.MemoryDataAccessTest.initUserEntities;
  */
 class AbstractCrudServiceTest {
     UserService userService;
-    MemoryDataAccess<UserEntity, Integer, UserQuery> dataAccess;
 
     @BeforeEach
     void setUp() {
-        dataAccess = spy(new MemoryDataAccess<>(UserEntity.class));
-        userService = new UserService(dataAccess);
+        userService = new UserService();
+        userService.dataAccess = spy(userService.dataAccess);
         userService.save(initUserEntities());
     }
 
@@ -34,16 +32,16 @@ class AbstractCrudServiceTest {
         userService.setCacheManager(new ConcurrentMapCacheManager());
         userService.get(1);
         userService.get(1);
-        verify(dataAccess, times(1)).get(1);
+        verify(userService.dataAccess, times(1)).get(1);
     }
 
     @Test
     void supportEvictCache() {
         userService.setCacheManager(new ConcurrentMapCacheManager());
         UserEntity userEntity = userService.get(1);
-        userService.save(userEntity);
+        userService.update(userEntity);
         userService.get(1);
-        verify(dataAccess, times(2)).get(1);
+        verify(userService.dataAccess, times(2)).get(1);
     }
 
     @Test

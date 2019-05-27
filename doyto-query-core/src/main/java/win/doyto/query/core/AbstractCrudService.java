@@ -38,11 +38,6 @@ public abstract class AbstractCrudService<E extends Persistable<I>, I extends Se
         this.dataAccess = new MemoryDataAccess<>(this.domainType);
     }
 
-    public AbstractCrudService(DataAccess<E, I, Q> dataAccess) {
-        this.domainType = getDomainType();
-        this.dataAccess = dataAccess;
-    }
-
     @SuppressWarnings("unchecked")
     private Class<E> getDomainType() {
         return (Class<E>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
