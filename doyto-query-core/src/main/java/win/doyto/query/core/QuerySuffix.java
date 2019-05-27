@@ -67,7 +67,7 @@ enum QuerySuffix {
         Collection collection = (Collection) columnMeta.value;
         if (!collection.isEmpty()) {
             List<Object> inList = IntStream.range(0, collection.size()).
-                mapToObj(i -> columnMeta.argList != null ? "?" : String.format("#{%s[%d]}", columnMeta.fieldName, i)).collect(Collectors.toList());
+                mapToObj(i -> ColumnMeta.getEx(columnMeta.argList, String.format("%s[%d]", columnMeta.fieldName, i))).collect(Collectors.toList());
             ex = "(" + StringUtils.join(inList, ", ") + ")";
         }
         return columnMeta.defaultSql(querySuffix, ex);

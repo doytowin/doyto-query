@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.SPACE;
 import static win.doyto.query.core.GlobalConfiguration.convertColumn;
 
 /**
@@ -21,7 +22,11 @@ class ColumnMeta {
     final List<Object> argList;
 
     String defaultSql(QuerySuffix querySuffix) {
-        return defaultSql(querySuffix, argList != null ? "?" : "#{" + fieldName + "}");
+        return defaultSql(querySuffix, getEx(argList, fieldName));
+    }
+
+    static String getEx(List<Object> argList, String fieldName) {
+        return argList != null ? "?" : "#{" + fieldName + "}";
     }
 
     String defaultSql(QuerySuffix querySuffix, String ex) {
@@ -29,14 +34,14 @@ class ColumnMeta {
         if (columnName.contains("Or")) {
             LinkedList<String> objects = new LinkedList<>();
             for (String or : splitByOr(columnName)) {
-                objects.add(convertColumn(camelize(or)) + " " + querySuffix.getOp() + " " + ex);
+                objects.add(convertColumn(camelize(or)) + SPACE + querySuffix.getOp() + SPACE + ex);
                 appendArgs(value, argList);
             }
             return "(" + StringUtils.join(objects, " OR ") + ")";
         }
 
         appendArgs(value, argList);
-        return convertColumn(columnName) + " " + querySuffix.getOp() + " " + ex;
+        return convertColumn(columnName) + SPACE + querySuffix.getOp() + SPACE + ex;
     }
 
     static String camelize(String or) {

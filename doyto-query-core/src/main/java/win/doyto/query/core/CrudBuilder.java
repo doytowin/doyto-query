@@ -17,6 +17,8 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import static org.apache.commons.lang3.StringUtils.SPACE;
+
 /**
  * CrudBuilder
  *
@@ -100,7 +102,7 @@ public class CrudBuilder<E extends Persistable> extends QueryBuilder {
         insertList.add("(" + columns + ")");
         insertList.add("VALUES");
         insertList.add("(" + fields + ")");
-        return StringUtils.join(insertList, " ");
+        return StringUtils.join(insertList, SPACE);
     }
 
     private static String buildUpdateSql(String tableName, String setClauses, String whereId) {
@@ -111,7 +113,7 @@ public class CrudBuilder<E extends Persistable> extends QueryBuilder {
         updateList.add(setClauses);
         updateList.add("WHERE");
         updateList.add(whereId);
-        return StringUtils.join(updateList, " ");
+        return StringUtils.join(updateList, SPACE);
     }
 
     private static void readValueToArgList(List<Field> fields, Object entity, List<Object> argList) {
