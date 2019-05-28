@@ -23,26 +23,6 @@ import javax.persistence.Transient;
 @Slf4j
 public class QueryBuilder {
 
-    public String buildSelect(Object query) {
-        return buildSelectAndArgs(query, null);
-    }
-
-    public String buildSelectAndArgs(Object query, List<Object> argList) {
-        return build(DatabaseOperation.SELECT, query, argList);
-    }
-
-    public String buildCount(Object query) {
-        return buildCountAndArgs(query, null);
-    }
-
-    public String buildCountAndArgs(Object query, List<Object> argList) {
-        return build(DatabaseOperation.COUNT, query, argList);
-    }
-
-    public String buildDeleteAndArgs(Object query, List<Object> argList) {
-        return build(DatabaseOperation.DELETE, query, argList);
-    }
-
     private static String build(DatabaseOperation operation, Object query, List<Object> argList) {
         QueryTable queryTable = query.getClass().getAnnotation(QueryTable.class);
         String table = queryTable.table();
@@ -101,14 +81,25 @@ public class QueryBuilder {
 
     private static void processField(Object value, Field field, LinkedList<Object> whereList, List<Object> argList) {
         QueryField queryField = field.getAnnotation(QueryField.class);
+        NestedQuery nestedQuery = field.getAnnotation(NestedQuery.class);
         String andSQL;
         if (queryField != null) {
             andSQL = replaceArgs(value, argList, queryField.and());
+        } else if (nestedQuery != null) {
+            andSQL = resolveNestedQuery(nestedQuery, argList, field.getName());
+            if (argList != null) {
+                argList.add(value);
+            }
         } else {
             String fieldName = field.getName();
             andSQL = QuerySuffix.buildAndSql(fieldName, value, argList);
         }
         whereList.add(andSQL);
+    }
+
+    static String resolveNestedQuery(NestedQuery nestedQuery, List<Object> argList, String fieldName) {
+        String subquery = "id in (SELECT " + nestedQuery.left() + " FROM " + nestedQuery.table() + " WHERE " + nestedQuery.right();
+        return subquery + " = " + ColumnMeta.getEx(argList, fieldName) + ")";
     }
 
     private static final Pattern PLACE_HOLDER_PTN = Pattern.compile("#\\{\\w+}");
@@ -160,6 +151,26 @@ public class QueryBuilder {
             || field.isAnnotationPresent(Id.class)          // id
             || field.isAnnotationPresent(Transient.class)   // Transient field
             ;
+    }
+
+    public String buildSelect(Object query) {
+        return buildSelectAndArgs(query, null);
+    }
+
+    public String buildSelectAndArgs(Object query, List<Object> argList) {
+        return build(DatabaseOperation.SELECT, query, argList);
+    }
+
+    public String buildCount(Object query) {
+        return buildCountAndArgs(query, null);
+    }
+
+    public String buildCountAndArgs(Object query, List<Object> argList) {
+        return build(DatabaseOperation.COUNT, query, argList);
+    }
+
+    public String buildDeleteAndArgs(Object query, List<Object> argList) {
+        return build(DatabaseOperation.DELETE, query, argList);
     }
 
     private enum DatabaseOperation {
