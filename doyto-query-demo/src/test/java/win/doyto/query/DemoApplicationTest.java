@@ -104,6 +104,12 @@ class DemoApplicationTest {
     }
 
     @Test
+    public void validateSortField() throws Exception {
+        mockMvc.perform(get(URL_USER + "?sort=username")).andExpect(status().is(400));
+        mockMvc.perform(get(URL_USER + "?sort=username,asc")).andExpect(status().is(200));
+    }
+
+    @Test
     public void getUserById() throws Exception {
         mockMvc.perform(get(URL_USER_1))
                .andExpect(jsonPath("$.username").value("f0rb"))

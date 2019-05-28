@@ -1,11 +1,16 @@
 package win.doyto.query.service;
 
 import lombok.SneakyThrows;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.entity.EntityRequest;
 import win.doyto.query.entity.EntityResponse;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.validation.CreateGroup;
+import win.doyto.query.validation.PageGroup;
+import win.doyto.query.validation.PatchGroup;
+import win.doyto.query.validation.UpdateGroup;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
@@ -39,7 +44,7 @@ public class AbstractRestService<E extends Persistable<I>, I extends Serializabl
     }
 
     @GetMapping
-    public Object queryOrPage(Q q) {
+    public Object queryOrPage(@Validated(PageGroup.class) Q q) {
         return q.needPaging() ? page(q) : list(q);
     }
 
@@ -74,20 +79,20 @@ public class AbstractRestService<E extends Persistable<I>, I extends Serializabl
 
     @Override
     @PutMapping("{id}")
-    public void update(@RequestBody R request) {
+    public void update(@RequestBody @Validated(UpdateGroup.class) R request) {
         update(request.toEntity());
     }
 
 
     @Override
     @PatchMapping("{id}")
-    public void patch(@RequestBody R request) {
+    public void patch(@RequestBody @Validated(PatchGroup.class) R request) {
         patch(request.toEntity());
     }
 
     @Override
     @PostMapping
-    public void create(@RequestBody R request) {
+    public void create(@RequestBody @Validated(CreateGroup.class) R request) {
         create(request.toEntity());
     }
 

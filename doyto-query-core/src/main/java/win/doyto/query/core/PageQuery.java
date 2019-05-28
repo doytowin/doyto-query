@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import win.doyto.query.validation.PageGroup;
 
 import javax.validation.constraints.Pattern;
 
@@ -23,7 +24,7 @@ public class PageQuery {
     private Integer pageSize;
 
     @ApiModelProperty(value = "Sorting field, format: field1,desc;field2,asc")
-    @Pattern(regexp = "([_\\w]+,(asc|desc);)*[_\\w]+,(asc|desc)", message = "Sorting field format error")
+    @Pattern(regexp = "([_\\w]+,(asc|desc);)*[_\\w]+,(asc|desc)", message = "Sorting field format error", groups = PageGroup.class)
     @Getter
     private String sort;
 
