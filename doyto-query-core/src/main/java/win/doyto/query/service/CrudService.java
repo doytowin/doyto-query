@@ -4,6 +4,7 @@ import org.springframework.transaction.annotation.Transactional;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * CrudService
@@ -13,6 +14,8 @@ import java.io.Serializable;
 public interface CrudService<E extends Persistable<I>, I extends Serializable, Q> extends QueryService<E, Q> {
 
     E get(I id);
+
+    List<I> queryIds(Q query);
 
     void create(E e);
 

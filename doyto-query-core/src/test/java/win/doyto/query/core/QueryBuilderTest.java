@@ -292,4 +292,14 @@ public class QueryBuilderTest {
         assertThat(argList).containsExactly(1);
     }
 
+
+    @Test
+    public void buildSelectIdWithArgs() {
+        UserQuery userQuery = UserQuery.builder().username("test").build();
+        assertEquals("SELECT id FROM user WHERE username = ?",
+                     queryBuilder.buildSelectIdAndArgs(userQuery, argList));
+        assertEquals(1, argList.size());
+        assertThat(argList).containsExactly("test");
+    }
+
 }

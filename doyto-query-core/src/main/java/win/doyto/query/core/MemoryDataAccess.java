@@ -160,6 +160,11 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         return queryList;
     }
 
+    @Override
+    public List<I> queryIds(Q q) {
+        return query(q).stream().map(E::getId).collect(Collectors.toList());
+    }
+
     @SuppressWarnings("unused")
     protected void doSort(List<E> queryList, String sort) {
         // TODO support later

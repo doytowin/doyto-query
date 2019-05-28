@@ -14,6 +14,8 @@ public interface DataAccess<E extends Persistable<I>, I extends Serializable, Q>
 
     List<E> query(Q query);
 
+    List<I> queryIds(Q q);
+
     long count(Q query);
 
     E get(I id);

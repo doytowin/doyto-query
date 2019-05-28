@@ -3,9 +3,9 @@ package win.doyto.query.service;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.util.Assert;
 import win.doyto.query.core.CrudBuilder;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.entity.Persistable;
@@ -28,6 +28,7 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<E> rowMapper;
+    private final RowMapper<I> rowMapperForId = new SingleColumnRowMapper<>();
     private final String getById;
     private final String deleteById;
     private final CrudBuilder<E> crudBuilder;
@@ -54,6 +55,13 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
     }
 
     @Override
+    public List<I> queryIds(Q q) {
+        LinkedList<Object> args = new LinkedList<>();
+        String sql = crudBuilder.buildSelectIdAndArgs(q, args);
+        return jdbcTemplate.query(sql, args.toArray(), rowMapperForId);
+    }
+
+    @Override
     public long count(Q q) {
         LinkedList<Object> args = new LinkedList<>();
         String sql = crudBuilder.buildCountAndArgs(q, args);
@@ -70,13 +78,11 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
 
     @Override
     public E get(I id) {
-        Assert.notNull(id, "The given id must not be null!");
         return jdbcTemplate.queryForObject(getById, rowMapper, id);
     }
 
     @Override
     public int delete(I id) {
-        Assert.notNull(id, "The given id must not be null!");
         return jdbcTemplate.update(deleteById, id);
     }
 

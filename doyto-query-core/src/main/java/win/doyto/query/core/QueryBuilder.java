@@ -25,16 +25,7 @@ public class QueryBuilder {
 
     private static String build(DatabaseOperation operation, Object query, List<Object> argList) {
         QueryTable queryTable = query.getClass().getAnnotation(QueryTable.class);
-        String table = queryTable.table();
-        String sql;
-        if (operation == DatabaseOperation.COUNT) {
-            sql = "SELECT count(*) FROM " + table;
-        } else if (operation == DatabaseOperation.DELETE) {
-            sql = "DELETE FROM " + table;
-        } else {
-            sql = "SELECT * FROM " + table;
-        }
-
+        String sql = "FROM " + queryTable.table();
         sql = buildWhere(sql, query, argList);
 
         if (operation == DatabaseOperation.SELECT && query instanceof PageQuery) {
@@ -52,7 +43,6 @@ public class QueryBuilder {
                 }
             }
         }
-        log.info("SQL: {}", sql);
         return sql;
     }
 
@@ -179,7 +169,7 @@ public class QueryBuilder {
     }
 
     public String buildSelectAndArgs(Object query, List<Object> argList) {
-        return build(DatabaseOperation.SELECT, query, argList);
+        return logBeforeReturn("SELECT * " + build(DatabaseOperation.SELECT, query, argList));
     }
 
     public String buildCount(Object query) {
@@ -187,11 +177,20 @@ public class QueryBuilder {
     }
 
     public String buildCountAndArgs(Object query, List<Object> argList) {
-        return build(DatabaseOperation.COUNT, query, argList);
+        return logBeforeReturn("SELECT count(*) " + build(DatabaseOperation.COUNT, query, argList));
     }
 
     public String buildDeleteAndArgs(Object query, List<Object> argList) {
-        return build(DatabaseOperation.DELETE, query, argList);
+        return logBeforeReturn("DELETE " + build(DatabaseOperation.DELETE, query, argList));
+    }
+
+    public String buildSelectIdAndArgs(Object query, List<Object> argList) {
+        return logBeforeReturn("SELECT id " + build(DatabaseOperation.SELECT, query, argList));
+    }
+
+    private String logBeforeReturn(String sql) {
+        log.info("SQL: {}", sql);
+        return sql;
     }
 
     private enum DatabaseOperation {

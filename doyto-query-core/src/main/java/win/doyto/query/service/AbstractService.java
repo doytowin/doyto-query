@@ -69,6 +69,10 @@ public class AbstractService<E extends Persistable<I>, I extends Serializable, Q
         return dataAccess.count(query);
     }
 
+    public List<I> queryIds(Q query) {
+        return dataAccess.queryIds(query);
+    }
+
     @Transactional
     public void create(E e) {
         if (userIdProvider != null) {
