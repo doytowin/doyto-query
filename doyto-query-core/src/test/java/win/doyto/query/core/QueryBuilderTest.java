@@ -292,6 +292,14 @@ public class QueryBuilderTest {
         assertThat(argList).containsExactly(1);
     }
 
+    @Test
+    public void build_boolean_field() {
+        MenuQuery menuQuery = MenuQuery.builder().onlyParent(true).build();
+
+        String expected = "SELECT * FROM menu WHERE id IN (SELECT parent_id FROM menu)";
+        assertEquals(expected, queryBuilder.buildSelectAndArgs(menuQuery, argList));
+        assertThat(argList).isEmpty();
+    }
 
     @Test
     public void buildSelectIdWithArgs() {

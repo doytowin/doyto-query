@@ -50,11 +50,11 @@ public class QueryBuilder {
         LinkedList<Object> whereList = new LinkedList<>();
         for (Field field : query.getClass().getDeclaredFields()) {
             String fieldName = field.getName();
-            if (fieldName.startsWith("$")) {
+            if (ignoreField(field)) {
                 continue;
             }
             Object value = readFieldGetter(field, query);
-            if (value != null) {
+            if (!ignoreValue(value, field)) {
                 if (sql.contains("${" + fieldName + "}")) {
                     sql = sql.replaceAll("\\$\\{" + fieldName + "}", String.valueOf(value));
                 } else {
@@ -67,6 +67,10 @@ public class QueryBuilder {
             where = " WHERE " + StringUtils.join(whereList, " AND ");
         }
         return sql + where;
+    }
+
+    private static boolean ignoreValue(Object value, Field field) {
+        return value == null || (value instanceof Boolean && field.getType().isPrimitive() && Boolean.FALSE.equals(value));
     }
 
     private static void processField(Object value, Field field, LinkedList<Object> whereList, List<Object> argList) {
