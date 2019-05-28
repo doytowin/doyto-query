@@ -19,5 +19,5 @@ public @interface NestedQuery {
     String left();
     String table();
     String right() default "";
-
+    String extra() default "";
 }

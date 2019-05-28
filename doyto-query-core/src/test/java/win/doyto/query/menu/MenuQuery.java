@@ -16,8 +16,8 @@ public class MenuQuery {
     public static final String TABLE = "menu";
 
     @NestedQueries({
-        @NestedQuery(left = "menuId", table = "t_perm_and_menu", right = "permId"),
-        @NestedQuery(left = "permId", table = "t_role_and_perm", right = "roleId"),
+        @NestedQuery(left = "menuId", table = "t_perm_and_menu pm", right = "permId", extra = "inner join t_perm p on p.id = pm.perm_id and p.valid = true"),
+        @NestedQuery(left = "permId", table = "t_role_and_perm rp", right = "roleId", extra = "inner join t_role r on r.id = rp.role_id and r.valid = true"),
         @NestedQuery(left = "roleId", table = "t_user_and_role", right = "userId"),
     })
     private Integer userId;

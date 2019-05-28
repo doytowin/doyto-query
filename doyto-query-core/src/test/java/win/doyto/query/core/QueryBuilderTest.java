@@ -285,8 +285,8 @@ public class QueryBuilderTest {
         MenuQuery menuQuery = MenuQuery.builder().userId(1).build();
 
         String expected = "SELECT * FROM menu WHERE id IN (" +
-            "SELECT menuId FROM t_perm_and_menu WHERE permId IN (" +
-            "SELECT permId FROM t_role_and_perm WHERE roleId IN (" +
+            "SELECT menuId FROM t_perm_and_menu pm inner join t_perm p on p.id = pm.perm_id and p.valid = true WHERE permId IN (" +
+            "SELECT permId FROM t_role_and_perm rp inner join t_role r on r.id = rp.role_id and r.valid = true WHERE roleId IN (" +
             "SELECT roleId FROM t_user_and_role WHERE userId = ?)))";
         assertEquals(expected, queryBuilder.buildSelectAndArgs(menuQuery, argList));
         assertThat(argList).containsExactly(1);

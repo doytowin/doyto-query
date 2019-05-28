@@ -115,7 +115,16 @@ public class QueryBuilder {
     }
 
     private static String getSubquery(NestedQuery nestedQuery) {
-        return " IN (SELECT " + nestedQuery.left() + " FROM " + nestedQuery.table() + " WHERE " + nestedQuery.right();
+        return new StringBuilder()
+            .append(" IN (SELECT ")
+            .append(nestedQuery.left())
+            .append(" FROM ")
+            .append(nestedQuery.table())
+            .append(nestedQuery.extra().isEmpty() ? "" : " ")
+            .append(nestedQuery.extra())
+            .append(" WHERE ")
+            .append(nestedQuery.right())
+            .toString();
     }
 
     private static final Pattern PLACE_HOLDER_PTN = Pattern.compile("#\\{\\w+}");
