@@ -3,7 +3,6 @@ package win.doyto.query.menu;
 import lombok.Builder;
 import win.doyto.query.core.NestedQueries;
 import win.doyto.query.core.NestedQuery;
-import win.doyto.query.core.QueryField;
 import win.doyto.query.core.QueryTable;
 
 /**
@@ -23,6 +22,6 @@ public class MenuQuery {
     })
     private Integer userId;
 
-    @QueryField(and = "id IN (SELECT parent_id FROM menu)")
+    @NestedQuery(left = "parent_id", table = "menu", right = "true")
     private boolean onlyParent;
 }

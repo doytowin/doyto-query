@@ -94,15 +94,16 @@ public class QueryBuilder {
         NestedQueries nestedQueries = field.getAnnotation(NestedQueries.class);
         String ex = ColumnMeta.getEx(argList, field.getName());
         if (nestedQueries == null) {
-            String subquery = getSubquery(field.getAnnotation(NestedQuery.class));
-            return concatNestedQueries(subquery, ex);
+            NestedQuery nestedQuery = field.getAnnotation(NestedQuery.class);
+            String subquery = getSubquery(nestedQuery);
+            return concatNestedQueries(nestedQuery.column(), subquery, ex);
         }
         String subquery = getSubquery(nestedQueries);
-        return concatNestedQueries(subquery, ex) + StringUtils.repeat(')', nestedQueries.value().length - 1);
+        return concatNestedQueries(nestedQueries.column(), subquery, ex) + StringUtils.repeat(')', nestedQueries.value().length - 1);
     }
 
-    private static String concatNestedQueries(String string, String ex) {
-        return "id" + string + " = " + ex + ")";
+    private static String concatNestedQueries(String column, String string, String ex) {
+        return column + string + " = " + ex + ")";
     }
 
     private static String getSubquery(NestedQueries nestedQueries) {
@@ -114,7 +115,7 @@ public class QueryBuilder {
     }
 
     private static String getSubquery(NestedQuery nestedQuery) {
-        return " in (SELECT " + nestedQuery.left() + " FROM " + nestedQuery.table() + " WHERE " + nestedQuery.right();
+        return " IN (SELECT " + nestedQuery.left() + " FROM " + nestedQuery.table() + " WHERE " + nestedQuery.right();
     }
 
     private static final Pattern PLACE_HOLDER_PTN = Pattern.compile("#\\{\\w+}");

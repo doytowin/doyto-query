@@ -251,7 +251,7 @@ public class QueryBuilderTest {
     public void buildSubquery() {
         UserQuery userQuery = UserQuery.builder().roleId(1).build();
 
-        assertEquals("SELECT * FROM user WHERE id in (SELECT userId FROM t_user_and_role WHERE roleId = ?)",
+        assertEquals("SELECT * FROM user WHERE id IN (SELECT userId FROM t_user_and_role WHERE roleId = ?)",
                      queryBuilder.buildSelectAndArgs(userQuery, argList));
         assertThat(argList).containsExactly(1);
     }
@@ -259,14 +259,14 @@ public class QueryBuilderTest {
     @Test
     void testResolveNestedQuery() throws NoSuchFieldException {
         UserQuery userQuery = UserQuery.builder().roleId(1).build();
-        assertEquals("id in (SELECT userId FROM t_user_and_role WHERE roleId = #{roleId})",
+        assertEquals("id IN (SELECT userId FROM t_user_and_role WHERE roleId = #{roleId})",
                      resolvedNestedQuery(userQuery.getClass().getDeclaredField("roleId"), null));
     }
 
     @Test
     void testResolveNestedQueries() throws NoSuchFieldException {
         PermissionQuery permissionQuery = PermissionQuery.builder().userId(1).build();
-        assertEquals("id in (SELECT permId FROM t_role_and_perm WHERE roleId in (SELECT roleId FROM t_user_and_role WHERE userId = ?))",
+        assertEquals("id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN (SELECT roleId FROM t_user_and_role WHERE userId = ?))",
                      resolvedNestedQuery(permissionQuery.getClass().getDeclaredField("userId"), argList));
     }
 
@@ -274,7 +274,7 @@ public class QueryBuilderTest {
     public void buildNestedQuery() {
         PermissionQuery permissionQuery = PermissionQuery.builder().userId(1).build();
 
-        assertEquals("SELECT * FROM permission WHERE id in (SELECT permId FROM t_role_and_perm WHERE roleId in " +
+        assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN " +
                          "(SELECT roleId FROM t_user_and_role WHERE userId = ?))",
                      queryBuilder.buildSelectAndArgs(permissionQuery, argList));
         assertThat(argList).containsExactly(1);
@@ -284,9 +284,9 @@ public class QueryBuilderTest {
     public void buildNestedQuery2() {
         MenuQuery menuQuery = MenuQuery.builder().userId(1).build();
 
-        String expected = "SELECT * FROM menu WHERE id in (" +
-            "SELECT menuId FROM t_perm_and_menu WHERE permId in (" +
-            "SELECT permId FROM t_role_and_perm WHERE roleId in (" +
+        String expected = "SELECT * FROM menu WHERE id IN (" +
+            "SELECT menuId FROM t_perm_and_menu WHERE permId IN (" +
+            "SELECT permId FROM t_role_and_perm WHERE roleId IN (" +
             "SELECT roleId FROM t_user_and_role WHERE userId = ?)))";
         assertEquals(expected, queryBuilder.buildSelectAndArgs(menuQuery, argList));
         assertThat(argList).containsExactly(1);
@@ -296,9 +296,9 @@ public class QueryBuilderTest {
     public void build_boolean_field() {
         MenuQuery menuQuery = MenuQuery.builder().onlyParent(true).build();
 
-        String expected = "SELECT * FROM menu WHERE id IN (SELECT parent_id FROM menu)";
+        String expected = "SELECT * FROM menu WHERE id IN (SELECT parent_id FROM menu WHERE true = ?)";
         assertEquals(expected, queryBuilder.buildSelectAndArgs(menuQuery, argList));
-        assertThat(argList).isEmpty();
+        assertThat(argList).containsExactly(true);
     }
 
     @Test
