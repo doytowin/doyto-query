@@ -72,7 +72,7 @@ public class CrudBuilder<E extends Persistable> extends QueryBuilder {
         isDynamicTable = PTN_$EX.matcher(tableName).find();
     }
 
-    static String replaceTableName(Object entity, String tableName) {
+    public static String replaceTableName(Object entity, String tableName) {
         Matcher matcher = PTN_$EX.matcher(tableName);
         if (!matcher.find()) {
             return tableName;

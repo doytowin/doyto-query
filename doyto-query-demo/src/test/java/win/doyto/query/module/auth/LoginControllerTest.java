@@ -25,9 +25,9 @@ class LoginControllerTest {
 
     @BeforeEach
     void setUp() {
-        loginController = new LoginController(UserControllerTest.userController);
+        loginController = new LoginController(UserControllerTest.userService);
         httpRequest = new MockHttpServletRequest();
-        loginController.userApi = UserControllerTest.userController;
+        loginController.userService = UserControllerTest.userService;
     }
 
     @Test

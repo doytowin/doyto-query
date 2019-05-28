@@ -1,0 +1,31 @@
+package win.doyto.query.service;
+
+import win.doyto.query.entity.Persistable;
+
+import java.io.Serializable;
+
+/**
+ * AbstractCrudService
+ *
+ * @author f0rb
+ */
+public abstract class AbstractCrudService<E extends Persistable<I>, I extends Serializable, Q>
+    extends AbstractService<E, I, Q> implements CrudService<E, I, Q> {
+
+    @Override
+    public E get(I id) {
+        return entityCacheWrapper.execute(id, () -> dataAccess.get(id));
+    }
+
+    @Override
+    public E delete(I id) {
+        E e = get(id);
+        if (e != null) {
+            dataAccess.delete(id);
+            entityCacheWrapper.execute(id, () -> null);
+            entityAspects.forEach(entityAspect -> entityAspect.afterDelete(e));
+        }
+        return e;
+    }
+
+}

@@ -1,10 +1,12 @@
-package win.doyto.query.core;
+package win.doyto.query.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import win.doyto.query.cache.CacheWrapper;
+import win.doyto.query.core.DataAccess;
+import win.doyto.query.core.MemoryDataAccess;
 import win.doyto.query.entity.EntityAspect;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.entity.UserIdProvider;
@@ -15,12 +17,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * AbstractCrudService
+ * AbstractService
  *
- * @author f0rb
+ * @author f0rb on 2019-05-28
  */
-public abstract class AbstractCrudService<E extends Persistable<I>, I extends Serializable, Q> implements CrudService<E, I, Q> {
-
+public class AbstractService<E extends Persistable<I>, I extends Serializable, Q> {
     protected DataAccess<E, I, Q> dataAccess;
 
     protected CacheWrapper<E> entityCacheWrapper = CacheWrapper.createInstance();
@@ -33,13 +34,13 @@ public abstract class AbstractCrudService<E extends Persistable<I>, I extends Se
 
     protected Class<E> domainType;
 
-    public AbstractCrudService() {
+    public AbstractService() {
         this.domainType = getDomainType();
         this.dataAccess = new MemoryDataAccess<>(this.domainType);
     }
 
     @SuppressWarnings("unchecked")
-    private Class<E> getDomainType() {
+    protected Class<E> getDomainType() {
         return (Class<E>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
@@ -60,22 +61,14 @@ public abstract class AbstractCrudService<E extends Persistable<I>, I extends Se
         return null;
     }
 
-    @Override
     public List<E> query(Q query) {
         return dataAccess.query(query);
     }
 
-    @Override
     public long count(Q query) {
         return dataAccess.count(query);
     }
 
-    @Override
-    public E get(I id) {
-        return entityCacheWrapper.execute(id, () -> dataAccess.get(id));
-    }
-
-    @Override
     @Transactional
     public void create(E e) {
         if (userIdProvider != null) {
@@ -86,13 +79,11 @@ public abstract class AbstractCrudService<E extends Persistable<I>, I extends Se
         entityCacheWrapper.evict(e.getId());
     }
 
-    @Override
     @Transactional
     public void update(E e) {
         doUpdate(e, () -> dataAccess.update(e));
     }
 
-    @Override
     @Transactional
     public void patch(E e) {
         doUpdate(e, () -> dataAccess.patch(e));
@@ -108,18 +99,6 @@ public abstract class AbstractCrudService<E extends Persistable<I>, I extends Se
         entityCacheWrapper.evict(e.getId());
     }
 
-    @Override
-    public E delete(I id) {
-        E e = get(id);
-        if (e != null) {
-            dataAccess.delete(id);
-            entityCacheWrapper.execute(id, () -> null);
-            entityAspects.forEach(entityAspect -> entityAspect.afterDelete(e));
-        }
-        return e;
-    }
-
-    @Override
     public int delete(Q query) {
         return dataAccess.delete(query);
     }

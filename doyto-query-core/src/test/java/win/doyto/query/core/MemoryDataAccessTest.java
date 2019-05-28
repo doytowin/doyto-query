@@ -6,10 +6,10 @@ import win.doyto.query.user.UserEntity;
 import win.doyto.query.user.UserQuery;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static win.doyto.query.user.UserEntity.initUserEntities;
 
 /**
  * MemoryDataAccessTest
@@ -20,39 +20,10 @@ class MemoryDataAccessTest {
 
     MemoryDataAccess<UserEntity, Integer, UserQuery> mockUserDataAccess;
 
-    private static final int INIT_SIZE = 5;
-
     @BeforeEach
     void setUp() {
         mockUserDataAccess = new MemoryDataAccess<>(UserEntity.class);
-        for (UserEntity entity : initUserEntities()) {
-            mockUserDataAccess.create(entity);
-        }
-    }
-
-    static LinkedList<UserEntity> initUserEntities() {
-        LinkedList<UserEntity> userEntities = new LinkedList<>();
-
-        for (int i = 1; i < INIT_SIZE; i++) {
-            UserEntity userEntity = new UserEntity();
-            userEntity.setId(i);
-            userEntity.setUsername("username" + i);
-            userEntity.setPassword("password" + i);
-            userEntity.setEmail("test" + i + "@163.com");
-            userEntity.setMobile("1777888888" + i);
-            userEntity.setValid(i % 2 == 0);
-            userEntities.add(userEntity);
-        }
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId(INIT_SIZE);
-        userEntity.setUsername("f0rb");
-        userEntity.setNickname("自在");
-        userEntity.setPassword("123456");
-        userEntity.setEmail("f0rb@163.com");
-        userEntity.setMobile("17778888880");
-        userEntity.setValid(true);
-        userEntities.add(userEntity);
-        return userEntities;
+        initUserEntities().forEach(mockUserDataAccess::create);
     }
 
     @Test

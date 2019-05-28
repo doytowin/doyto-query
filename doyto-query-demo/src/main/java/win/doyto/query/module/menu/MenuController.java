@@ -2,7 +2,8 @@ package win.doyto.query.module.menu;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import win.doyto.query.core.PageList;
+import win.doyto.query.service.AbstractDynamicService;
+import win.doyto.query.service.PageList;
 
 /**
  * MenuController
@@ -13,38 +14,34 @@ import win.doyto.query.core.PageList;
 @RequestMapping("{platform}/menu")
 @AllArgsConstructor
 @SuppressWarnings("squid:S4529")
-class MenuController {
+class MenuController extends AbstractDynamicService<MenuEntity, Integer, MenuQuery> {
 
-    MenuService menuService;
-
-    private MenuResponse getEntityView() {
-        return new MenuResponse();
+    @Override
+    protected String getCacheName() {
+        return "module:menu";
     }
 
     @GetMapping
-    public Object query(MenuQuery q) {
-        if (q.needPaging()) {
-            return page(q);
-        }
-        return menuService.query(q, getEntityView()::from);
+    public Object list(MenuQuery q) {
+        return q.needPaging() ? page(q) : query(q, MenuResponse::build);
     }
 
     public PageList<MenuResponse> page(MenuQuery q) {
-        return menuService.page(q, getEntityView()::from);
+        return page(q, MenuResponse::build);
     }
 
     @GetMapping("{id}")
-    public MenuResponse get(MenuQuery menuRequest) {
-        MenuEntity e = menuService.get(menuRequest);
+    public MenuResponse getByQuery(MenuQuery menuQuery) {
+        MenuEntity e = get(menuQuery);
         if (e == null) {
             throw new IllegalArgumentException("Record not found");
         }
-        return getEntityView().from(e);
+        return MenuResponse.build(e);
     }
 
     @DeleteMapping("{id}")
     public void delete(MenuRequest menuRequest) {
-        MenuEntity e = menuService.delete(menuRequest.toEntity());
+        MenuEntity e = delete(menuRequest.toEntity());
         if (e == null) {
             throw new IllegalArgumentException("Record not found");
         }
@@ -53,13 +50,13 @@ class MenuController {
     @PostMapping
     public void create(@RequestBody MenuRequest request, @PathVariable String platform) {
         request.setPlatform(platform);
-        menuService.create(request.toEntity());
+        create(request.toEntity());
     }
 
     @PutMapping("{id}")
     public void update(@RequestBody MenuRequest request, @PathVariable String platform) {
         request.setPlatform(platform);
-        menuService.update(request.toEntity());
+        update(request.toEntity());
     }
 
 }

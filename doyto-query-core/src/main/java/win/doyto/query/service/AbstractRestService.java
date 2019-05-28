@@ -1,15 +1,17 @@
-package win.doyto.query.entity;
+package win.doyto.query.service;
 
 import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.*;
-import win.doyto.query.core.CrudService;
-import win.doyto.query.core.PageList;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.entity.EntityRequest;
+import win.doyto.query.entity.EntityResponse;
+import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
 
 /**
  * AbstractRestController
@@ -17,18 +19,15 @@ import java.lang.reflect.Type;
  * @author f0rb on 2019-05-26
  */
 @SuppressWarnings("squid:S4529")
-public class AbstractRestController<E extends Persistable<I>, I extends Serializable, Q extends PageQuery,
-    R extends EntityRequest<E>, S extends EntityResponse<E, S>> {
-
-    protected CrudService<E, I, Q> crudService;
+public class AbstractRestService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery,
+    R extends EntityRequest<E>, S extends EntityResponse<E, S>>
+    extends AbstractCrudService<E, I, Q> implements RestService<E, I, Q, R, S> {
 
     private final S noumenon;
 
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public AbstractRestController(CrudService<E, I, Q> crudService) {
-        this.crudService = crudService;
-
+    public AbstractRestService() {
         Type type = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[4];
         Class<S> clazz = (Class<S>) type;
         Constructor<S> constructor = clazz.getDeclaredConstructor();
@@ -40,48 +39,56 @@ public class AbstractRestController<E extends Persistable<I>, I extends Serializ
     }
 
     @GetMapping
-    public Object query(Q q) {
-        if (q.needPaging()) {
-            return page(q);
-        }
-        return crudService.query(q, getEntityView()::from);
+    public Object queryOrPage(Q q) {
+        return q.needPaging() ? page(q) : list(q);
     }
 
+    @Override
+    public List<S> list(Q q) {
+        return query(q, getEntityView()::from);
+    }
+
+    @Override
     public PageList<S> page(Q q) {
-        return crudService.page(q, getEntityView()::from);
+        return page(q, getEntityView()::from);
     }
 
+    @Override
     @GetMapping("{id}")
-    public S get(@PathVariable I id) {
-        E e = crudService.get(id);
+    public S getById(@PathVariable I id) {
+        E e = get(id);
         if (e == null) {
             throw new IllegalArgumentException("Record not found");
         }
         return getEntityView().from(e);
     }
 
+    @Override
     @DeleteMapping("{id}")
-    public void delete(@PathVariable I id) {
-        E e = crudService.delete(id);
+    public void deleteById(@PathVariable I id) {
+        E e = delete(id);
         if (e == null) {
             throw new IllegalArgumentException("Record not found");
         }
     }
 
+    @Override
     @PutMapping("{id}")
     public void update(@RequestBody R request) {
-        crudService.update(request.toEntity());
+        update(request.toEntity());
     }
 
 
+    @Override
     @PatchMapping("{id}")
     public void patch(@RequestBody R request) {
-        crudService.patch(request.toEntity());
+        patch(request.toEntity());
     }
 
+    @Override
     @PostMapping
     public void create(@RequestBody R request) {
-        crudService.create(request.toEntity());
+        create(request.toEntity());
     }
 
 }

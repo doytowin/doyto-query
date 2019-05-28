@@ -1,4 +1,4 @@
-package win.doyto.query.core;
+package win.doyto.query.service;
 
 import org.springframework.transaction.annotation.Transactional;
 import win.doyto.query.entity.Persistable;

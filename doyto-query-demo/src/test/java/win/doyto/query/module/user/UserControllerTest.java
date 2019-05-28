@@ -2,10 +2,9 @@ package win.doyto.query.module.user;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import win.doyto.query.core.PageList;
+import win.doyto.query.service.PageList;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,46 +16,43 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class UserControllerTest {
     public static final int INIT_SIZE = 5;
-    public static UserController userController;
+    public static UserService userService;
 
     static {
-        initData();
+        initData().forEach(userService::create);
     }
 
-    private static void initData() {
-        UserService userService = new UserService();
-        userController = new UserController(userService);
-
-        LinkedList<UserEntity> userEntities = new LinkedList<>();
+    private static LinkedList<UserRequest> initData() {
+        userService = new UserController();
+        LinkedList<UserRequest> userRequests = new LinkedList<>();
         for (int i = 1; i < INIT_SIZE; i++) {
-            UserEntity userEntity = new UserEntity();
-            userEntity.setUsername("username" + i);
-            userEntity.setPassword("password" + i);
-            userEntity.setEmail("test" + i + "@163.com");
-            userEntity.setMobile("1777888888" + i);
-            userEntities.add(userEntity);
+            UserRequest userRequest = new UserRequest();
+            userRequest.setUsername("username" + i);
+            userRequest.setPassword("password" + i);
+            userRequest.setEmail("test" + i + "@163.com");
+            userRequest.setMobile("1777888888" + i);
+            userRequest.setValid(i % 2 == 0);
+            userRequests.add(userRequest);
         }
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUsername("f0rb");
-        userEntity.setNickname("自在");
-        userEntity.setPassword("123456");
-        userEntity.setEmail("f0rb@163.com");
-        userEntity.setMobile("17778888880");
-        userEntity.setValid(true);
-        userEntities.add(userEntity);
-        userService.batchInsert(userEntities);
+        UserRequest userRequest = new UserRequest();
+        userRequest.setUsername("f0rb");
+        userRequest.setNickname("自在");
+        userRequest.setPassword("123456");
+        userRequest.setEmail("f0rb@163.com");
+        userRequest.setMobile("17778888880");
+        userRequests.add(userRequest);
+        return userRequests;
     }
 
     @BeforeEach
     void setUp() {
-        initData();
+        initData().forEach(userService::create);
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void query() {
         UserQuery userQuery = UserQuery.builder().username("username1").build();
-        assertThat((List<UserResponse>) userController.query(userQuery))
+        assertThat(userService.list(userQuery))
             .hasSize(1)
             .first()
             .hasFieldOrPropertyWithValue("id", 1L)
@@ -68,7 +64,7 @@ public class UserControllerTest {
     void pageUser() {
         UserQuery userQuery = UserQuery.builder().build();
         userQuery.setPageNumber(0).setPageSize(2);
-        PageList<UserResponse> page = userController.page(userQuery);
+        PageList<UserResponse> page = userService.page(userQuery);
         assertEquals(INIT_SIZE, page.getTotal());
         assertEquals(2, page.getList().size());
     }
@@ -77,14 +73,14 @@ public class UserControllerTest {
     void pageUserWithCriteria() {
         UserQuery userQuery = UserQuery.builder().usernameLike("username").build();
         userQuery.setPageNumber(1).setPageSize(2);
-        PageList<UserResponse> page = userController.page(userQuery);
+        PageList<UserResponse> page = userService.page(userQuery);
         assertEquals(4, page.getTotal());
         assertEquals(2, page.getList().size());
     }
 
     @Test
     void get() {
-        assertThat(userController.get(1L))
+        assertThat(userService.getById(1L))
             .hasFieldOrPropertyWithValue("id", 1L)
             .hasFieldOrPropertyWithValue("username", "username1")
         ;
@@ -92,7 +88,7 @@ public class UserControllerTest {
 
     @Test
     void delete() {
-        userController.delete(1L);
-        assertThat(userController.page(UserQuery.builder().build()).getTotal()).isEqualTo(4);
+        userService.deleteById(1L);
+        assertThat(userService.page(UserQuery.builder().build()).getTotal()).isEqualTo(4);
     }
 }

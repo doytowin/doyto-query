@@ -20,11 +20,11 @@ public class UserRequest implements EntityRequest<UserEntity> {
     private String mobile;
     private String email;
     private String nickname;
+    private boolean valid = true;
 
     public UserEntity toEntity() {
         UserEntity userEntity = new UserEntity();
         BeanUtils.copyProperties(this, userEntity);
-        userEntity.setValid(true);
         return userEntity;
     }
 }

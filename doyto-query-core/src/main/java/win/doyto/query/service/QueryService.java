@@ -1,4 +1,4 @@
-package win.doyto.query.core;
+package win.doyto.query.service;
 
 import java.util.List;
 import java.util.function.Function;
@@ -17,10 +17,6 @@ public interface QueryService<E, Q> {
 
     default E get(Q query) {
         return CollectionUtil.first(query(query));
-    }
-
-    default PageList<E> page(Q query) {
-        return new PageList<>(query(query), count(query));
     }
 
     default <V> List<V> query(Q query, Function<E, V> transfer) {

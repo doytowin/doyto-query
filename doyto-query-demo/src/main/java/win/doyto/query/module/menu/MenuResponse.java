@@ -2,7 +2,7 @@ package win.doyto.query.module.menu;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.entity.EntityResponse;
+import org.springframework.beans.BeanUtils;
 
 /**
  * MenuResponse
@@ -11,7 +11,7 @@ import win.doyto.query.entity.EntityResponse;
  */
 @Getter
 @Setter
-public class MenuResponse implements EntityResponse<MenuEntity, MenuResponse> {
+public class MenuResponse {
 
     private Integer id;
 
@@ -27,14 +27,13 @@ public class MenuResponse implements EntityResponse<MenuEntity, MenuResponse> {
 
     private Long updateUserId;
 
-    @Override
-    public MenuResponse from(MenuEntity menuEntity) {
-
-        MenuResponse from = EntityResponse.super.from(menuEntity);
-        from.setId(menuEntity.getId());
-        from.setCreateUserId(menuEntity.getCreateUserId());
-        from.setUpdateUserId(menuEntity.getUpdateUserId());
-        return from;
+    public static MenuResponse build(MenuEntity menuEntity) {
+        MenuResponse menuResponse = new MenuResponse();
+        BeanUtils.copyProperties(menuEntity, menuResponse);
+        menuResponse.setId(menuEntity.getId());
+        menuResponse.setCreateUserId(menuEntity.getCreateUserId());
+        menuResponse.setUpdateUserId(menuEntity.getUpdateUserId());
+        return menuResponse;
 
     }
 }

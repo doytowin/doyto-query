@@ -3,8 +3,8 @@ package win.doyto.query.module.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import win.doyto.query.entity.AbstractRestController;
 import win.doyto.query.exception.ServiceException;
+import win.doyto.query.service.AbstractRestService;
 
 import java.util.Objects;
 
@@ -16,15 +16,16 @@ import java.util.Objects;
 @Slf4j
 @RestController
 @RequestMapping("user")
-class UserController extends AbstractRestController<UserEntity, Long, UserQuery, UserRequest, UserResponse> implements UserApi {
+class UserController extends AbstractRestService<UserEntity, Long, UserQuery, UserRequest, UserResponse> implements UserService {
 
-    public UserController(UserService userService) {
-        super(userService);
+    @Override
+    protected String getCacheName() {
+        return "module:user";
     }
 
     @Override
     public UserResponse auth(String account, String password) {
-        UserEntity userEntity = crudService.get(UserQuery.builder().usernameOrEmailOrMobile(account).build());
+        UserEntity userEntity = get(UserQuery.builder().usernameOrEmailOrMobile(account).build());
         if (userEntity == null) {
             throw new ServiceException("账号不存在");
         }

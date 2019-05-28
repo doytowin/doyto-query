@@ -1,4 +1,4 @@
-package win.doyto.query.core;
+package win.doyto.query.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,7 +10,7 @@ import win.doyto.query.user.UserService;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static win.doyto.query.core.MemoryDataAccessTest.initUserEntities;
+import static win.doyto.query.user.UserEntity.initUserEntities;
 
 /**
  * AbstractCrudServiceTest

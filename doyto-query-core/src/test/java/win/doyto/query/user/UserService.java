@@ -1,6 +1,6 @@
 package win.doyto.query.user;
 
-import win.doyto.query.core.AbstractCrudService;
+import win.doyto.query.service.AbstractCrudService;
 
 /**
  * UserService

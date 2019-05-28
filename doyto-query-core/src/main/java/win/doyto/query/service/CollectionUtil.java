@@ -1,4 +1,4 @@
-package win.doyto.query.core;
+package win.doyto.query.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
