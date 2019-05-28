@@ -2,6 +2,8 @@ package win.doyto.query.core;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import win.doyto.query.menu.MenuQuery;
+import win.doyto.query.permission.PermissionQuery;
 import win.doyto.query.user.UserQuery;
 
 import java.util.Arrays;
@@ -11,7 +13,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static win.doyto.query.core.QueryBuilder.resolveNestedQuery;
+import static win.doyto.query.core.QueryBuilder.resolvedNestedQuery;
 
 /**
  * QueryBuilderTest
@@ -257,9 +259,37 @@ public class QueryBuilderTest {
     @Test
     void testResolveNestedQuery() throws NoSuchFieldException {
         UserQuery userQuery = UserQuery.builder().roleId(1).build();
-        NestedQuery nestedQuery = userQuery.getClass().getDeclaredField("roleId").getAnnotation(NestedQuery.class);
         assertEquals("id in (SELECT userId FROM t_user_and_role WHERE roleId = #{roleId})",
-                     resolveNestedQuery(nestedQuery, null, "roleId"));
+                     resolvedNestedQuery(userQuery.getClass().getDeclaredField("roleId"), null));
+    }
+
+    @Test
+    void testResolveNestedQueries() throws NoSuchFieldException {
+        PermissionQuery permissionQuery = PermissionQuery.builder().userId(1).build();
+        assertEquals("id in (SELECT permId FROM t_role_and_perm WHERE roleId in (SELECT roleId FROM t_user_and_role WHERE userId = ?))",
+                     resolvedNestedQuery(permissionQuery.getClass().getDeclaredField("userId"), argList));
+    }
+
+    @Test
+    public void buildNestedQuery() {
+        PermissionQuery permissionQuery = PermissionQuery.builder().userId(1).build();
+
+        assertEquals("SELECT * FROM permission WHERE id in (SELECT permId FROM t_role_and_perm WHERE roleId in " +
+                         "(SELECT roleId FROM t_user_and_role WHERE userId = ?))",
+                     queryBuilder.buildSelectAndArgs(permissionQuery, argList));
+        assertThat(argList).containsExactly(1);
+    }
+
+    @Test
+    public void buildNestedQuery2() {
+        MenuQuery menuQuery = MenuQuery.builder().userId(1).build();
+
+        String expected = "SELECT * FROM menu WHERE id in (" +
+            "SELECT menuId FROM t_perm_and_menu WHERE permId in (" +
+            "SELECT permId FROM t_role_and_perm WHERE roleId in (" +
+            "SELECT roleId FROM t_user_and_role WHERE userId = ?)))";
+        assertEquals(expected, queryBuilder.buildSelectAndArgs(menuQuery, argList));
+        assertThat(argList).containsExactly(1);
     }
 
 }

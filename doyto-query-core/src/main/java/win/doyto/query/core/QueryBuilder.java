@@ -80,13 +80,12 @@ public class QueryBuilder {
     }
 
     private static void processField(Object value, Field field, LinkedList<Object> whereList, List<Object> argList) {
-        QueryField queryField = field.getAnnotation(QueryField.class);
-        NestedQuery nestedQuery = field.getAnnotation(NestedQuery.class);
         String andSQL;
+        QueryField queryField = field.getAnnotation(QueryField.class);
         if (queryField != null) {
             andSQL = replaceArgs(value, argList, queryField.and());
-        } else if (nestedQuery != null) {
-            andSQL = resolveNestedQuery(nestedQuery, argList, field.getName());
+        } else if (field.isAnnotationPresent(NestedQuery.class) || field.isAnnotationPresent(NestedQueries.class)) {
+            andSQL = resolvedNestedQuery(field, argList);
             if (argList != null) {
                 argList.add(value);
             }
@@ -97,9 +96,31 @@ public class QueryBuilder {
         whereList.add(andSQL);
     }
 
-    static String resolveNestedQuery(NestedQuery nestedQuery, List<Object> argList, String fieldName) {
-        String subquery = "id in (SELECT " + nestedQuery.left() + " FROM " + nestedQuery.table() + " WHERE " + nestedQuery.right();
-        return subquery + " = " + ColumnMeta.getEx(argList, fieldName) + ")";
+    static String resolvedNestedQuery(Field field, List<Object> argList) {
+        NestedQueries nestedQueries = field.getAnnotation(NestedQueries.class);
+        String ex = ColumnMeta.getEx(argList, field.getName());
+        if (nestedQueries == null) {
+            String subquery = getSubquery(field.getAnnotation(NestedQuery.class));
+            return concatNestedQueries(subquery, ex);
+        }
+        String subquery = getSubquery(nestedQueries);
+        return concatNestedQueries(subquery, ex) + StringUtils.repeat(')', nestedQueries.value().length - 1);
+    }
+
+    private static String concatNestedQueries(String string, String ex) {
+        return "id" + string + " = " + ex + ")";
+    }
+
+    private static String getSubquery(NestedQueries nestedQueries) {
+        StringBuilder subquery = new StringBuilder();
+        for (NestedQuery nestedQuery : nestedQueries.value()) {
+            subquery.append(getSubquery(nestedQuery));
+        }
+        return subquery.toString();
+    }
+
+    private static String getSubquery(NestedQuery nestedQuery) {
+        return " in (SELECT " + nestedQuery.left() + " FROM " + nestedQuery.table() + " WHERE " + nestedQuery.right();
     }
 
     private static final Pattern PLACE_HOLDER_PTN = Pattern.compile("#\\{\\w+}");
