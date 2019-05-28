@@ -4,13 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>doyto-query-parent</artifactId>
-        <groupId>win.doyto.query</groupId>
+        <groupId>win.doyto</groupId>
         <version>${revision}</version>
         <relativePath>../doyto-query-parent/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>doyto-query-core</artifactId>
+    <artifactId>doyto-query</artifactId>
+    <name>doyto-query</name>
 
     <properties>
         <spring.version>5.1.5.RELEASE</spring.version>

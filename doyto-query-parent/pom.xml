@@ -10,7 +10,7 @@
         <version>7</version>
     </parent>
 
-    <groupId>win.doyto.query</groupId>
+    <groupId>win.doyto</groupId>
     <artifactId>doyto-query-parent</artifactId>
     <packaging>pom</packaging>
     <version>${revision}</version>
