@@ -310,4 +310,11 @@ public class QueryBuilderTest {
         assertThat(argList).containsExactly("test");
     }
 
+    @Test
+    public void buildSelectColumnsAndArgs() {
+        UserQuery userQuery = UserQuery.builder().build();
+        assertEquals("SELECT username, password FROM user",
+                     queryBuilder.buildSelectColumnsAndArgs(userQuery, argList, "username", "password"));
+    }
+
 }

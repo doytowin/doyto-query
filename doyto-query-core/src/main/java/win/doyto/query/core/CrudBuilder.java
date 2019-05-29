@@ -28,7 +28,6 @@ import static org.apache.commons.lang3.StringUtils.SPACE;
 public class CrudBuilder<E extends Persistable> extends QueryBuilder {
 
     private static final String SQL_LOG = "SQL: {}";
-    private static final String SEPARATOR = ", ";
 
     private static final Pattern PTN_$EX = Pattern.compile("\\$\\{(\\w+)}");
 
