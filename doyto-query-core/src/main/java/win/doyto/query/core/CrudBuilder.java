@@ -90,7 +90,7 @@ public class CrudBuilder<E extends Persistable> extends QueryBuilder {
         if (column != null && !column.name().isEmpty()) {
             return column.name();
         } else {
-            return field.getName();
+            return GlobalConfiguration.convertColumn(field.getName());
         }
     }
 

@@ -34,13 +34,13 @@ class CrudBuilderTest {
 
     @Test
     void create() {
-        assertEquals("INSERT INTO user (username, password, mobile, email, nickname, valid) VALUES (?, ?, ?, ?, ?, ?)",
+        assertEquals("INSERT INTO user (username, password, mobile, email, nickname, userLevel, valid) VALUES (?, ?, ?, ?, ?, ?, ?)",
                      userEntityCrudBuilder.buildCreateAndArgs(new UserEntity(), argList));
     }
 
     @Test
     void update() {
-        assertEquals("UPDATE user SET username = ?, password = ?, mobile = ?, email = ?, nickname = ?, valid = ? WHERE id = ?",
+        assertEquals("UPDATE user SET username = ?, password = ?, mobile = ?, email = ?, nickname = ?, userLevel = ?, valid = ? WHERE id = ?",
                      userEntityCrudBuilder.buildUpdateAndArgs(new UserEntity(), argList));
     }
 
@@ -84,5 +84,18 @@ class CrudBuilderTest {
         assertEquals("t_dynamic_f0rb_i18n", CrudBuilder.replaceTableName(entity, DynamicEntity.TABLE));
         assertEquals("user", CrudBuilder.replaceTableName(new UserEntity(), UserEntity.TABLE));
 
+    }
+
+    @Test
+    public void supportMapFieldToUnderscore() {
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(1);
+        userEntity.setUserLevel("vip");
+        assertEquals("UPDATE user SET user_level = ?, valid = ? WHERE id = ?",
+                     userEntityCrudBuilder.buildPatchAndArgs(userEntity, argList));
+
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
     }
 }

@@ -28,6 +28,7 @@ public class UserEntity extends IntegerId {
     private String mobile;
     private String email;
     private String nickname;
+    private String userLevel;
     private boolean valid = true;
 
     @Transient
