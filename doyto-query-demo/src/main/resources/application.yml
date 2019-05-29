@@ -18,3 +18,6 @@ spring:
       enabled: true
       charset: UTF-8
       force: true
+
+  cache:
+    type: simple

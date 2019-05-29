@@ -69,6 +69,7 @@ class DemoApplicationTest {
         mockMvc.perform(get(URL_USER + "?username=f0rb"))
                .andExpect(jsonPath("$").isArray())
                .andExpect(jsonPath("$[0].nickname").value("测试1"))
+               .andExpect(jsonPath("$[0].userLevel").value("高级"))
         ;
     }
 
@@ -120,12 +121,13 @@ class DemoApplicationTest {
 
     @Test
     public void createUser() throws Exception {
-        requestJson(post(URL_USER), "{\"username\": \"test\"}");
+        requestJson(post(URL_USER), "{\"username\": \"test\",\"userLevel\": \"普通\"}");
 
         mockMvc.perform(get(URL_USER + "?pageNumber=0"))
                .andDo(print())
                .andExpect(jsonPath("$.total").value(5))
                .andExpect(jsonPath("$.list[4].username").value("test"))
+               .andExpect(jsonPath("$.list[4].userLevel").value("普通"))
         ;
     }
 
@@ -143,6 +145,7 @@ class DemoApplicationTest {
         mockMvc.perform(get(URL_USER + "?pageNumber=0"))
                .andDo(print())
                .andExpect(jsonPath("$.list[0].username").value("test"))
+               .andExpect(jsonPath("$.list[0].userLevel").value("高级"))
                .andExpect(jsonPath("$.total").value(4))
         ;
     }

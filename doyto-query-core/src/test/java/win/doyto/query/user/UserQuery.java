@@ -42,6 +42,8 @@ public class UserQuery extends PageQuery {
 
     private String userNameOrUserCodeLike;
 
+    private UserLevel userLevel;
+
     private Date createTimeGt;
     private Date createTimeGe;
     private Date createTimeLt;

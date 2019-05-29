@@ -12,6 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 
@@ -161,6 +163,14 @@ public class QueryBuilder {
             log.warn("is/get调用异常 : {}-{}", e.getClass().getName(), e.getMessage());
             value = readField(field, target);
         }
+        if (value instanceof Enum) {
+            Enumerated enumerated = field.getAnnotation(Enumerated.class);
+            if (enumerated != null && enumerated.value() == EnumType.STRING) {
+                value = value.toString();
+            } else {
+                value = ((Enum) value).ordinal();
+            }
+        }
         return value;
     }
 
@@ -174,12 +184,8 @@ public class QueryBuilder {
     }
 
     public static Object readField(Object target, String fieldName) {
-        try {
-            return FieldUtils.readField(target, fieldName, true);
-        } catch (IllegalAccessException e) {
-            log.error("FieldUtils.readField failed: {}", e.getMessage());
-        }
-        return null;
+        Field field = FieldUtils.getField(target.getClass(), fieldName, true);
+        return readField(field, target);
     }
 
     public static boolean ignoreField(Field field) {

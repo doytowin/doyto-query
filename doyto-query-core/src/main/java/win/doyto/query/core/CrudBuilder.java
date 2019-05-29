@@ -116,7 +116,17 @@ public class CrudBuilder<E extends Persistable> extends QueryBuilder {
     }
 
     private static void readValueToArgList(List<Field> fields, Object entity, List<Object> argList) {
-        fields.stream().map(field -> readField(field, entity)).forEach(argList::add);
+        fields.stream().map(field -> readFieldGetter(field, entity)).forEach(argList::add);
+    }
+
+    private static void readValueToArgList(List<Field> fields, Object entity, List<Object> argList, List<String> setClauses) {
+        for (Field field : fields) {
+            Object o = readFieldGetter(field, entity);
+            if (o != null) {
+                setClauses.add(resolveColumn(field) + " = ?");
+                argList.add(o);
+            }
+        }
     }
 
     public String buildCreateAndArgs(E entity, List<Object> argList) {
@@ -141,13 +151,7 @@ public class CrudBuilder<E extends Persistable> extends QueryBuilder {
     public String buildPatchAndArgs(E entity, List<Object> argList) {
         String table = isDynamicTable ? replaceTableName(entity, tableName) : tableName;
         List<String> setClauses = new LinkedList<>();
-        for (Field field : fields) {
-            Object o = readField(field, entity);
-            if (o != null) {
-                setClauses.add(resolveColumn(field) + " = ?");
-                argList.add(o);
-            }
-        }
+        readValueToArgList(fields, entity, argList, setClauses);
         argList.add(readField(idField, entity));
         String sql = buildUpdateSql(table, StringUtils.join(setClauses, SEPARATOR), idColumn + " = ?");
         logger.debug(SQL_LOG, sql);

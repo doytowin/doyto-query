@@ -21,6 +21,7 @@ public class UserRequest implements EntityRequest<UserEntity> {
     private String email;
     private String nickname;
     private boolean valid = true;
+    private UserLevel userLevel;
 
     public UserEntity toEntity() {
         UserEntity userEntity = new UserEntity();

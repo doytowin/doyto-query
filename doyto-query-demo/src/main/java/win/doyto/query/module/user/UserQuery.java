@@ -25,6 +25,8 @@ public class UserQuery extends PageQuery {
 
     private String usernameLike;
 
+    private UserLevel userLevel;
+
     public void setAccount(String account) {
         this.usernameOrEmailOrMobile = account;
     }

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.menu.MenuQuery;
 import win.doyto.query.permission.PermissionQuery;
+import win.doyto.query.user.UserLevel;
 import win.doyto.query.user.UserQuery;
 
 import java.util.Arrays;
@@ -315,6 +316,15 @@ public class QueryBuilderTest {
         UserQuery userQuery = UserQuery.builder().build();
         assertEquals("SELECT username, password FROM user",
                      queryBuilder.buildSelectColumnsAndArgs(userQuery, argList, "username", "password"));
+    }
+
+    @Test
+    public void defaultEnumOrdinal() {
+        UserQuery userQuery = UserQuery.builder().userLevel(UserLevel.VIP).build();
+        assertEquals("SELECT id FROM user WHERE userLevel = ?",
+                     queryBuilder.buildSelectIdAndArgs(userQuery, argList));
+        assertThat(argList).containsExactly(0);
+
     }
 
 }
