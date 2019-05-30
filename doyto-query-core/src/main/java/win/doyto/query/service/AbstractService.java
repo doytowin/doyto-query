@@ -3,6 +3,7 @@ package win.doyto.query.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Transactional;
 import win.doyto.query.cache.CacheWrapper;
 import win.doyto.query.core.DataAccess;
@@ -21,7 +22,7 @@ import java.util.List;
  *
  * @author f0rb on 2019-05-28
  */
-public class AbstractService<E extends Persistable<I>, I extends Serializable, Q> {
+public abstract class AbstractService<E extends Persistable<I>, I extends Serializable, Q> {
     protected DataAccess<E, I, Q> dataAccess;
 
     protected CacheWrapper<E> entityCacheWrapper = CacheWrapper.createInstance();
@@ -71,6 +72,10 @@ public class AbstractService<E extends Persistable<I>, I extends Serializable, Q
 
     public List<I> queryIds(Q query) {
         return dataAccess.queryIds(query);
+    }
+
+    public <V> List<V> queryColumns(Q query, RowMapper<V> rowMapper, String... columns) {
+        return dataAccess.queryColumns(query, rowMapper, columns);
     }
 
     @Transactional

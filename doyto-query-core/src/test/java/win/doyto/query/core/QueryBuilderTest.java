@@ -306,7 +306,7 @@ public class QueryBuilderTest {
     public void buildSelectIdWithArgs() {
         UserQuery userQuery = UserQuery.builder().username("test").build();
         assertEquals("SELECT id FROM user WHERE username = ?",
-                     queryBuilder.buildSelectIdAndArgs(userQuery, argList));
+                     queryBuilder.buildSelectColumnsAndArgs(userQuery, argList, "id"));
         assertEquals(1, argList.size());
         assertThat(argList).containsExactly("test");
     }
@@ -321,8 +321,8 @@ public class QueryBuilderTest {
     @Test
     public void defaultEnumOrdinal() {
         UserQuery userQuery = UserQuery.builder().userLevel(UserLevel.VIP).build();
-        assertEquals("SELECT id FROM user WHERE userLevel = ?",
-                     queryBuilder.buildSelectIdAndArgs(userQuery, argList));
+        assertEquals("SELECT * FROM user WHERE userLevel = ?",
+                     queryBuilder.buildSelectAndArgs(userQuery, argList));
         assertThat(argList).containsExactly(0);
 
     }

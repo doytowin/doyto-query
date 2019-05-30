@@ -56,9 +56,14 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
 
     @Override
     public List<I> queryIds(Q q) {
+        return queryColumns(q, rowMapperForId, "id");
+    }
+
+    @Override
+    public <V> List<V> queryColumns(Q q, RowMapper<V> rowMapper, String... columns) {
         LinkedList<Object> args = new LinkedList<>();
-        String sql = crudBuilder.buildSelectIdAndArgs(q, args);
-        return jdbcTemplate.query(sql, args.toArray(), rowMapperForId);
+        String sql = crudBuilder.buildSelectColumnsAndArgs(q, args, columns);
+        return jdbcTemplate.query(sql, args.toArray(), rowMapper);
     }
 
     @Override

@@ -216,10 +216,6 @@ public class QueryBuilder {
         return build(DatabaseOperation.DELETE, query, argList);
     }
 
-    public String buildSelectIdAndArgs(Object query, List<Object> argList) {
-        return buildSelectColumnsAndArgs(query, argList, "id");
-    }
-
     public String buildSelectColumnsAndArgs(Object query, List<Object> argList, String... columns) {
         return build(DatabaseOperation.SELECT, query, argList, columns);
     }

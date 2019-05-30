@@ -1,11 +1,13 @@
 package win.doyto.query.module.user;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import win.doyto.query.exception.ServiceException;
 import win.doyto.query.service.AbstractRestService;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -18,9 +20,17 @@ import java.util.Objects;
 @RequestMapping("user")
 class UserController extends AbstractRestService<UserEntity, Long, UserQuery, UserRequest, UserResponse> implements UserService {
 
+    private BeanPropertyRowMapper<UserResponse> userResponseRowMapper = new BeanPropertyRowMapper<>(UserResponse.class);
+
     @Override
     protected String getCacheName() {
         return "module:user";
+    }
+
+    @Override
+    public List<UserResponse> list(UserQuery q) {
+        return dataAccess.queryColumns(q, userResponseRowMapper,
+            "id", "username", "mobile", "email", "nickname", "valid", "userLevel");
     }
 
     @Override

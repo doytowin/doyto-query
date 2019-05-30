@@ -1,5 +1,6 @@
 package win.doyto.query.core;
 
+import org.springframework.jdbc.core.RowMapper;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
@@ -19,6 +20,8 @@ public interface DataAccess<E extends Persistable<I>, I extends Serializable, Q>
     long count(Q query);
 
     E get(I id);
+
+    <V> List<V> queryColumns(Q q, RowMapper<V> rowMapper, String... columns);
 
     default E get(E e) {
         return get(e.getId());

@@ -1,9 +1,12 @@
 package win.doyto.query.core;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.jdbc.core.RowMapper;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
@@ -165,6 +168,20 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         return query(q).stream().map(E::getId).collect(Collectors.toList());
     }
 
+    @Override
+    @SneakyThrows
+    public <V> List<V> queryColumns(Q q, RowMapper<V> rowMapper, String... columns) {
+        Class<V> classV = (Class<V>) FieldUtils.readField(rowMapper, "mappedClass", true);
+        V v = classV.getDeclaredConstructor().newInstance();
+        List<E> entities = query(q);
+        List<V> objects = new ArrayList<>(entities.size());
+        entities.forEach(e -> {
+            BeanUtils.copyProperties(e, v);
+            objects.add(v);
+        });
+        return objects;
+    }
+
     @SuppressWarnings("unused")
     protected void doSort(List<E> queryList, String sort) {
         // TODO support later
@@ -173,11 +190,6 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     @Override
     public long count(Q query) {
         return entitiesMap.values().stream().filter(item -> filterByQuery(query, item)).count();
-    }
-
-    public void reset() {
-        entitiesMap.clear();
-        idGenerator.set(0);
     }
 
     interface FilterExecutor {
