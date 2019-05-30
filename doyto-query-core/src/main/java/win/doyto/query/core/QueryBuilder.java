@@ -69,7 +69,7 @@ public class QueryBuilder {
             }
             Object value = readFieldGetter(field, query);
             if (!ignoreValue(value, field)) {
-                if (sql.contains("${" + fieldName + "}")) {
+                if (sql.contains("${" + fieldName + "}") && StringUtils.isAlphanumeric(String.valueOf(value))) {
                     sql = sql.replaceAll("\\$\\{" + fieldName + "}", String.valueOf(value));
                 } else {
                     processField(value, field, whereList, argList);

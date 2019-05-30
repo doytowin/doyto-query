@@ -327,4 +327,12 @@ public class QueryBuilderTest {
 
     }
 
+    @Test
+    public void fixSQLInject() {
+        DynamicQuery dynamicQuery = DynamicQuery.builder().user("f0rb").project("; DROP TABLE menu;").scoreLt(100).build();
+
+        assertEquals("SELECT * FROM t_dynamic_f0rb_${project} WHERE project = ? AND score < ?",
+                     queryBuilder.buildSelectAndArgs(dynamicQuery, argList));
+        assertThat(argList).containsExactly("; DROP TABLE menu;", 100);
+    }
 }
