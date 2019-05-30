@@ -16,7 +16,7 @@
     <version>${revision}</version>
 
     <properties>
-        <revision>0.1.1-SNAPSHOT</revision>
+        <revision>0.1.1-RELEASE</revision>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
