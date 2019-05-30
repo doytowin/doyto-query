@@ -1,7 +1,7 @@
 DoytoQuery --- A Query Framework for Java
 ---
-[![Sonar Stats](https://sonarcloud.io/api/project_badges/measure?project=win.doyto.query%3Adoyto-query-parent&metric=alert_status)](https://sonarcloud.io/dashboard?id=win.doyto.query%3Adoyto-query-parent)
-[![Coverage Status](https://sonarcloud.io/api/project_badges/measure?project=win.doyto.query%3Adoyto-query-parent&metric=coverage)](https://sonarcloud.io/component_measures?id=win.doyto.query%3Adoyto-query-parent&metric=coverage)
+[![Sonar Stats](https://sonarcloud.io/api/project_badges/measure?project=win.doyto%3Adoyto-query-parent&metric=alert_status)](https://sonarcloud.io/dashboard?id=win.doyto%3Adoyto-query-parent)
+[![Coverage Status](https://sonarcloud.io/api/project_badges/measure?project=win.doyto%3Adoyto-query-parent&metric=coverage)](https://sonarcloud.io/component_measures?id=win.doyto%3Adoyto-query-parent&metric=coverage)
 [![License](http://img.shields.io/:license-apache-brightgreen.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 ### Core idea
