@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "doyto.query.config.map-camel-case-to-underscore",
+      "type": "java.lang.Boolean",
+      "description": "True to map camelCase to under_score."
+  }]
+}
