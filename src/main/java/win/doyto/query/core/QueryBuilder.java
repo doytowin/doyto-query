@@ -53,7 +53,7 @@ public class QueryBuilder {
         return sql;
     }
 
-    private static String buildWhere(String sql, Object query, List<Object> argList) {
+    protected static String buildWhere(String sql, Object query, List<Object> argList) {
         Field[] fields = query.getClass().getDeclaredFields();
         List<Object> whereList = new ArrayList<>(fields.length);
         for (Field field : fields) {

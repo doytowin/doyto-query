@@ -39,6 +39,8 @@ public interface DataAccess<E extends Persistable<I>, I extends Serializable, Q>
 
     void patch(E e);
 
+    void patch(E e, Q q);
+
     /**
      * force to get a new entity object from database
      *

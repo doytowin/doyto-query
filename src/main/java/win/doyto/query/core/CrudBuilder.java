@@ -1,9 +1,8 @@
 package win.doyto.query.core;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import win.doyto.query.entity.Persistable;
 
 import java.lang.reflect.Field;
@@ -26,15 +25,13 @@ import static win.doyto.query.core.CommonUtil.*;
  * @author f0rb
  */
 @SuppressWarnings("squid:CommentedOutCodeLine")
+@Slf4j
 class CrudBuilder<E extends Persistable> extends QueryBuilder {
 
     private static final String SQL_LOG = "SQL: {}";
     private static final String EQUALS_REPLACE_HOLDER = " = " + REPLACE_HOLDER;
 
-    private final Logger logger;
-
     private final Field idField;
-    private final String idColumn;
     private final String tableName;
     private final List<Field> fields;
     private final int fieldsSize;
@@ -42,12 +39,13 @@ class CrudBuilder<E extends Persistable> extends QueryBuilder {
     private final String wildInsertValue;   // ?, ?, ?
     private final String insertColumns;
     private final String wildSetClause;     // column1 = ?, column2 = ?
+    private final String whereId;
 
     public CrudBuilder(Class<E> entityClass) {
-        logger = LoggerFactory.getLogger(entityClass);
         tableName = entityClass.getAnnotation(Table.class).name();
         idField = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0];
-        idColumn = resolveColumn(idField);
+        whereId = " WHERE " + resolveColumn(idField) + EQUALS_REPLACE_HOLDER;
+
         isDynamicTable = isDynamicTable(tableName);
 
         // init fields
@@ -84,14 +82,12 @@ class CrudBuilder<E extends Persistable> extends QueryBuilder {
         return StringUtils.join(insertList, SPACE);
     }
 
-    private static String buildUpdateSql(String tableName, String setClauses, String whereId) {
+    private static String buildUpdateSql(String tableName, String setClauses) {
         ArrayList<String> updateList = new ArrayList<>();
         updateList.add("UPDATE");
         updateList.add(tableName);
         updateList.add("SET");
         updateList.add(setClauses);
-        updateList.add("WHERE");
-        updateList.add(whereId);
         return StringUtils.join(updateList, SPACE);
     }
 
@@ -109,30 +105,46 @@ class CrudBuilder<E extends Persistable> extends QueryBuilder {
         }
     }
 
+    private static String logSql(String sql) {
+        log.debug(SQL_LOG, sql);
+        return sql;
+    }
+
+    private String resolveTableName(E entity) {
+        return isDynamicTable ? replaceTableName(entity, tableName) : tableName;
+    }
+
     public String buildCreateAndArgs(E entity, List<Object> argList) {
-        String table = isDynamicTable ? replaceTableName(entity, tableName) : tableName;
+        String table = resolveTableName(entity);
         readValueToArgList(fields, entity, argList);
         String sql = buildInsertSql(table, insertColumns, wildInsertValue);
-        logger.debug(SQL_LOG, sql);
-        return sql;
+        return logSql(sql);
     }
 
     public String buildUpdateAndArgs(E entity, List<Object> argList) {
-        String table = isDynamicTable ? replaceTableName(entity, tableName) : tableName;
+        String table = resolveTableName(entity);
         readValueToArgList(fields, entity, argList);
         argList.add(readField(idField, entity));
-        String sql = buildUpdateSql(table, wildSetClause, idColumn + EQUALS_REPLACE_HOLDER);
-        logger.debug(SQL_LOG, sql);
-        return sql;
+        String sql = buildUpdateSql(table, wildSetClause) + whereId;
+        return logSql(sql);
     }
 
     public String buildPatchAndArgs(E entity, List<Object> argList) {
-        String table = isDynamicTable ? replaceTableName(entity, tableName) : tableName;
+        String table = resolveTableName(entity);
         List<String> setClauses = new ArrayList<>(fieldsSize);
         readValueToArgList(fields, entity, argList, setClauses);
+        return buildUpdateSql(table, StringUtils.join(setClauses, SEPARATOR));
+    }
+
+    public String buildPatchAndArgsWithId(E entity, List<Object> argList) {
+        String sql = buildPatchAndArgs(entity, argList)+ whereId;
         argList.add(readField(idField, entity));
-        String sql = buildUpdateSql(table, StringUtils.join(setClauses, SEPARATOR), idColumn + EQUALS_REPLACE_HOLDER);
-        logger.debug(SQL_LOG, sql);
-        return sql;
+        return logSql(sql);
+    }
+
+    public String buildPatchAndArgsWithQuery(E entity, Object query, List<Object> argList) {
+        String sql = buildPatchAndArgs(entity, argList);
+        sql = buildWhere(sql, query, argList);
+        return logSql(sql);
     }
 }

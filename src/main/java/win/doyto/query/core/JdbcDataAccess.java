@@ -46,9 +46,7 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
 
     @Override
     public List<E> query(Q q) {
-        List<Object> args = new ArrayList<>();
-        String sql = crudBuilder.buildSelectAndArgs(q, args);
-        return jdbcTemplate.query(sql, args.toArray(), rowMapper);
+        return queryColumns(q, rowMapper, "*");
     }
 
     @Override
@@ -62,7 +60,6 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
     public long count(Q q) {
         List<Object> args = new ArrayList<>();
         String sql = crudBuilder.buildCountAndArgs(q, args);
-        //noinspection ConstantConditions
         return jdbcTemplate.queryForObject(sql, args.toArray(), Long.class);
     }
 
@@ -130,7 +127,14 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
     @Override
     public void patch(E e) {
         List<Object> args = new ArrayList<>();
-        String sql = crudBuilder.buildPatchAndArgs(e, args);
+        String sql = crudBuilder.buildPatchAndArgsWithId(e, args);
+        jdbcTemplate.update(sql, args.toArray());
+    }
+
+    @Override
+    public void patch(E e, Q q) {
+        List<Object> args = new ArrayList<>();
+        String sql = crudBuilder.buildPatchAndArgsWithQuery(e, q, args);
         jdbcTemplate.update(sql, args.toArray());
     }
 

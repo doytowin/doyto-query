@@ -30,7 +30,7 @@ public class UserEntity extends IntegerId {
     private String email;
     private String nickname;
     private String userLevel;
-    private boolean valid = true;
+    private Boolean valid;
 
     @Transient
     private Date createTime;

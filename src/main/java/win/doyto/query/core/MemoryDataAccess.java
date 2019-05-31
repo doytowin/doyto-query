@@ -90,6 +90,11 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     }
 
     @Override
+    public void patch(E e, Q q) {
+        query(q).forEach(this::patch);
+    }
+
+    @Override
     public int delete(I id) {
         return entitiesMap.remove(id) == null ? 0 : 1;
     }

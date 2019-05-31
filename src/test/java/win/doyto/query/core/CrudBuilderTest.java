@@ -3,6 +3,7 @@ package win.doyto.query.core;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.core.module.user.UserEntity;
+import win.doyto.query.core.module.user.UserQuery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +71,7 @@ class CrudBuilderTest {
         dynamicEntity.setMemo("memo");
 
         assertEquals("UPDATE t_dynamic_f0rb_i18n SET memo = ? WHERE id = ?",
-                     dynamicEntityCrudBuilder.buildPatchAndArgs(dynamicEntity, argList));
+                     dynamicEntityCrudBuilder.buildPatchAndArgsWithId(dynamicEntity, argList));
         assertThat(argList).containsExactly("memo", 1);
     }
 
@@ -91,12 +92,27 @@ class CrudBuilderTest {
     public void supportMapFieldToUnderscore() {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
 
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId(1);
-        userEntity.setUserLevel("vip");
-        assertEquals("UPDATE user SET user_level = ?, valid = ? WHERE id = ?",
-                     userEntityCrudBuilder.buildPatchAndArgs(userEntity, argList));
+        try {
+            UserEntity userEntity = new UserEntity();
+            userEntity.setId(1);
+            userEntity.setUserLevel("vip");
+            userEntity.setValid(true);
+            assertEquals("UPDATE user SET user_level = ?, valid = ? WHERE id = ?",
+                         userEntityCrudBuilder.buildPatchAndArgsWithId(userEntity, argList));
+        } finally {
+            GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
+        }
+    }
 
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
+    @Test
+    public void buildPatchAndArgsWithQuery() {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setNickname("测试");
+
+        UserQuery userQuery = UserQuery.builder().username("test").build();
+
+        assertEquals("UPDATE user SET nickname = ? WHERE username = ?",
+                     userEntityCrudBuilder.buildPatchAndArgsWithQuery(userEntity, userQuery, argList));
+        assertThat(argList).containsExactly("测试", "test");
     }
 }
