@@ -9,10 +9,12 @@ import win.doyto.query.entity.Persistable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -36,10 +38,11 @@ public class CrudBuilder<E extends Persistable> extends QueryBuilder {
     private final Field idField;
     private final String idColumn;
     private final String tableName;
-    private final List<Field> fields = new ArrayList<>();
+    private final List<Field> fields;
+    private final int fieldsSize;
     private final boolean isDynamicTable;
     private final String wildInsertValue;   // ?, ?, ?
-    private String insertColumns;
+    private final String insertColumns;
     private final String wildSetClause;     // column1 = ?, column2 = ?
 
     public CrudBuilder(Class<E> entityClass) {
@@ -47,28 +50,25 @@ public class CrudBuilder<E extends Persistable> extends QueryBuilder {
         tableName = entityClass.getAnnotation(Table.class).name();
         idField = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0];
         idColumn = resolveColumn(idField);
+        isDynamicTable = isDynamicTable(tableName);
 
-        Arrays.stream(FieldUtils.getAllFields(entityClass))
-              .filter(field -> !ignoreField(field)).forEachOrdered(fields::add);
+        // init fields
+        Field[] allFields = FieldUtils.getAllFields(entityClass);
+        List<Field> tempFields = new ArrayList<>(allFields.length);
+        Arrays.stream(allFields).filter(field -> !ignoreField(field)).forEachOrdered(tempFields::add);
+        fields = Collections.unmodifiableList(tempFields);
+        fieldsSize = fields.size();
 
-        List<String> columnList = new ArrayList<>();
-        List<String> insertFields2 = new ArrayList<>();
+        wildInsertValue = StringUtils.join(IntStream.range(0, fieldsSize).mapToObj(i -> "?").collect(Collectors.toList()), SEPARATOR);
 
-        List<String> updateFields2 = new ArrayList<>();
+        List<String> columnList = fields.stream().map(CrudBuilder::resolveColumn).collect(Collectors.toList());
+        insertColumns = StringUtils.join(columnList, SEPARATOR);
+        wildSetClause = StringUtils.join(columnList.stream().map(c -> c + " = ?").collect(Collectors.toList()), SEPARATOR);
 
-        for (Field field : fields) {
-            String columnName = resolveColumn(field);
-            columnList.add(columnName);
-            insertFields2.add("?");
+    }
 
-            updateFields2.add(columnName + " = ?");
-        }
-        this.insertColumns = StringUtils.join(columnList, SEPARATOR);
-        wildInsertValue = StringUtils.join(insertFields2, SEPARATOR);
-
-        wildSetClause = StringUtils.join(updateFields2, SEPARATOR);
-
-        isDynamicTable = PTN_$EX.matcher(tableName).find();
+    private static boolean isDynamicTable(String input) {
+        return PTN_$EX.matcher(input).find();
     }
 
     public static String replaceTableName(Object entity, String tableName) {
@@ -139,18 +139,16 @@ public class CrudBuilder<E extends Persistable> extends QueryBuilder {
 
     public String buildUpdateAndArgs(E entity, List<Object> argList) {
         String table = isDynamicTable ? replaceTableName(entity, tableName) : tableName;
-        String setClauses;
-        setClauses = wildSetClause;
         readValueToArgList(fields, entity, argList);
         argList.add(readField(idField, entity));
-        String sql = buildUpdateSql(table, setClauses, idColumn + " = ?");
+        String sql = buildUpdateSql(table, wildSetClause, idColumn + " = ?");
         logger.debug(SQL_LOG, sql);
         return sql;
     }
 
     public String buildPatchAndArgs(E entity, List<Object> argList) {
         String table = isDynamicTable ? replaceTableName(entity, tableName) : tableName;
-        List<String> setClauses = new LinkedList<>();
+        List<String> setClauses = new ArrayList<>(fieldsSize);
         readValueToArgList(fields, entity, argList, setClauses);
         argList.add(readField(idField, entity));
         String sql = buildUpdateSql(table, StringUtils.join(setClauses, SEPARATOR), idColumn + " = ?");

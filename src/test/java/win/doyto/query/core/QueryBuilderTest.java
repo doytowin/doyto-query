@@ -7,9 +7,9 @@ import win.doyto.query.permission.PermissionQuery;
 import win.doyto.query.user.UserLevel;
 import win.doyto.query.user.UserQuery;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,7 +29,7 @@ public class QueryBuilderTest {
     @BeforeEach
     void setUp() {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
-        argList = new LinkedList<>();
+        argList = new ArrayList<>();
     }
 
     @Test
@@ -84,7 +84,7 @@ public class QueryBuilderTest {
         assertEquals("SELECT * FROM user WHERE username = ? LIMIT 10 OFFSET 20",
                      queryBuilder.buildSelectAndArgs(userQuery, argList));
 
-        LinkedList<Object> countArgList = new LinkedList<>();
+        List<Object> countArgList = new ArrayList<>();
         assertEquals("SELECT count(*) FROM user WHERE username = ?",
                      queryBuilder.buildCountAndArgs(userQuery, countArgList));
     }

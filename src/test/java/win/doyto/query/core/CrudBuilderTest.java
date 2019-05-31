@@ -4,7 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.user.UserEntity;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class CrudBuilderTest {
 
     private DynamicEntity dynamicEntity;
-    private LinkedList<Object> argList;
+    private List<Object> argList;
     private CrudBuilder<UserEntity> userEntityCrudBuilder = new CrudBuilder<>(UserEntity.class);
     private CrudBuilder<DynamicEntity> dynamicEntityCrudBuilder = new CrudBuilder<>(DynamicEntity.class);
 
@@ -29,7 +30,7 @@ class CrudBuilderTest {
         dynamicEntity.setProject("i18n");
         dynamicEntity.setScore(100);
 
-        argList = new LinkedList<>();
+        argList = new ArrayList<>();
     }
 
     @Test

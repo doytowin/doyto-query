@@ -3,7 +3,6 @@ package win.doyto.query.service;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -17,7 +16,7 @@ class CollectionUtilTest {
 
     @Test
     void first() {
-        assertNull(CollectionUtil.first(new LinkedList<>()));
+        assertNull(CollectionUtil.first(Arrays.asList()));
         assertEquals("hello", CollectionUtil.first(Arrays.asList("hello")));
         assertEquals("hello", CollectionUtil.first(Arrays.asList("hello", "world")));
     }

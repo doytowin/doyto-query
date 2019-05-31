@@ -37,7 +37,7 @@ enum QuerySuffix {
     private static final Map<QuerySuffix, Function<ColumnMeta, String>> sqlFuncMap = new EnumMap<>(QuerySuffix.class);
 
     static {
-        LinkedList<String> suffixList = Arrays.stream(QuerySuffix.values()).filter(querySuffix -> querySuffix != NONE).map(Enum::name).collect(Collectors.toCollection(LinkedList::new));
+        List<String> suffixList = Arrays.stream(QuerySuffix.values()).filter(querySuffix -> querySuffix != NONE).map(Enum::name).collect(Collectors.toList());
         String suffixPtn = StringUtils.join(suffixList, "|");
         SUFFIX_PTN = Pattern.compile("(" + suffixPtn + ")$");
 

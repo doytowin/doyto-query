@@ -12,7 +12,7 @@ import win.doyto.query.entity.Persistable;
 import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Table;
 
@@ -47,21 +47,21 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
 
     @Override
     public List<E> query(Q q) {
-        LinkedList<Object> args = new LinkedList<>();
+        List<Object> args = new ArrayList<>();
         String sql = crudBuilder.buildSelectAndArgs(q, args);
         return jdbcTemplate.query(sql, args.toArray(), rowMapper);
     }
 
     @Override
     public <V> List<V> queryColumns(Q q, RowMapper<V> rowMapper, String... columns) {
-        LinkedList<Object> args = new LinkedList<>();
+        List<Object> args = new ArrayList<>();
         String sql = crudBuilder.buildSelectColumnsAndArgs(q, args, columns);
         return jdbcTemplate.query(sql, args.toArray(), rowMapper);
     }
 
     @Override
     public long count(Q q) {
-        LinkedList<Object> args = new LinkedList<>();
+        List<Object> args = new ArrayList<>();
         String sql = crudBuilder.buildCountAndArgs(q, args);
         //noinspection ConstantConditions
         return jdbcTemplate.queryForObject(sql, args.toArray(), Long.class);
@@ -69,7 +69,7 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
 
     @Override
     public int delete(Q q) {
-        LinkedList<Object> args = new LinkedList<>();
+        List<Object> args = new ArrayList<>();
         String sql = crudBuilder.buildDeleteAndArgs(q, args);
         return jdbcTemplate.update(sql, args.toArray(), rowMapper);
     }
@@ -98,7 +98,7 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
     @Override
     @SuppressWarnings("unchecked")
     public void create(E e) {
-        LinkedList<Object> args = new LinkedList<>();
+        List<Object> args = new ArrayList<>();
         String sql = crudBuilder.buildCreateAndArgs(e, args);
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -115,14 +115,14 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
 
     @Override
     public void update(E e) {
-        LinkedList<Object> args = new LinkedList<>();
+        List<Object> args = new ArrayList<>();
         String sql = crudBuilder.buildUpdateAndArgs(e, args);
         jdbcTemplate.update(sql, args.toArray());
     }
 
     @Override
     public void patch(E e) {
-        LinkedList<Object> args = new LinkedList<>();
+        List<Object> args = new ArrayList<>();
         String sql = crudBuilder.buildPatchAndArgs(e, args);
         jdbcTemplate.update(sql, args.toArray());
     }

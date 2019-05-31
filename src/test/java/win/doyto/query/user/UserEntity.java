@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.entity.IntegerId;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,7 +38,7 @@ public class UserEntity extends IntegerId {
     private static final int INIT_SIZE = 5;
 
     public static List<UserEntity> initUserEntities() {
-        List<UserEntity> userEntities = new LinkedList<>();
+        List<UserEntity> userEntities = new ArrayList<>(INIT_SIZE);
 
         for (int i = 1; i < INIT_SIZE; i++) {
             UserEntity userEntity = new UserEntity();

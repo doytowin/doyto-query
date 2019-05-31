@@ -3,8 +3,8 @@ package win.doyto.query.core;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.SPACE;
@@ -32,12 +32,13 @@ class ColumnMeta {
     String defaultSql(QuerySuffix querySuffix, String ex) {
         String columnName = querySuffix.resolveColumnName(fieldName);
         if (columnName.contains("Or")) {
-            LinkedList<String> objects = new LinkedList<>();
-            for (String or : splitByOr(columnName)) {
-                objects.add(convertColumn(camelize(or)) + SPACE + querySuffix.getOp() + SPACE + ex);
+            String[] ors = splitByOr(columnName);
+            List<String> columns = new ArrayList<>(ors.length);
+            for (String or : ors) {
+                columns.add(convertColumn(camelize(or)) + SPACE + querySuffix.getOp() + SPACE + ex);
                 appendArgs(value, argList);
             }
-            return "(" + StringUtils.join(objects, " OR ") + ")";
+            return "(" + StringUtils.join(columns, " OR ") + ")";
         }
 
         appendArgs(value, argList);

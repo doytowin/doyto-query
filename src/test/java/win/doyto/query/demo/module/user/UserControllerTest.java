@@ -4,7 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.service.PageList;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,9 +23,9 @@ public class UserControllerTest {
         initData().forEach(userService::create);
     }
 
-    private static LinkedList<UserRequest> initData() {
+    private static List<UserRequest> initData() {
         userService = new UserController();
-        LinkedList<UserRequest> userRequests = new LinkedList<>();
+        List<UserRequest> userRequests = new ArrayList<>(INIT_SIZE);
         for (int i = 1; i < INIT_SIZE; i++) {
             UserRequest userRequest = new UserRequest();
             userRequest.setUsername("username" + i);

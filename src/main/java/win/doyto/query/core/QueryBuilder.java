@@ -8,7 +8,7 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -61,8 +61,9 @@ public class QueryBuilder {
     }
 
     private static String buildWhere(String sql, Object query, List<Object> argList) {
-        LinkedList<Object> whereList = new LinkedList<>();
-        for (Field field : query.getClass().getDeclaredFields()) {
+        Field[] fields = query.getClass().getDeclaredFields();
+        List<Object> whereList = new ArrayList<>(fields.length);
+        for (Field field : fields) {
             String fieldName = field.getName();
             if (ignoreField(field)) {
                 continue;
@@ -87,7 +88,7 @@ public class QueryBuilder {
         return value == null || (value instanceof Boolean && field.getType().isPrimitive() && Boolean.FALSE.equals(value));
     }
 
-    private static void processField(Object value, Field field, LinkedList<Object> whereList, List<Object> argList) {
+    private static void processField(Object value, Field field, List<Object> whereList, List<Object> argList) {
         String andSQL;
         QueryField queryField = field.getAnnotation(QueryField.class);
         if (queryField != null) {
