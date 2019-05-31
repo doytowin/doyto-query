@@ -23,7 +23,7 @@ public interface RestService<E extends Persistable<I>, I extends Serializable, Q
 
     void deleteById(I id);
 
-    void update(R request);
+    void update(I id, R request);
 
     void patch(R request);
 

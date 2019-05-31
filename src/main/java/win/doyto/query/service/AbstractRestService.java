@@ -79,10 +79,10 @@ public class AbstractRestService<E extends Persistable<I>, I extends Serializabl
 
     @Override
     @PutMapping("{id}")
-    public void update(@RequestBody @Validated(UpdateGroup.class) R request) {
-        update(request.toEntity());
+    public void update(@PathVariable I id, @RequestBody @Validated(UpdateGroup.class) R request) {
+        E e = get(id);
+        save(request.toEntity(e));
     }
-
 
     @Override
     @PatchMapping("{id}")
@@ -93,7 +93,7 @@ public class AbstractRestService<E extends Persistable<I>, I extends Serializabl
     @Override
     @PostMapping
     public void create(@RequestBody @Validated(CreateGroup.class) R request) {
-        create(request.toEntity());
+        save(request.toEntity());
     }
 
 }

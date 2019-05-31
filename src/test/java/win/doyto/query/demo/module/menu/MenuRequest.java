@@ -26,6 +26,7 @@ public class MenuRequest implements EntityRequest<MenuEntity> {
 
     private Boolean valid = true;
 
+    @Override
     public MenuEntity toEntity() {
         return BeanUtil.copyFields(this, MenuEntity.class);
     }

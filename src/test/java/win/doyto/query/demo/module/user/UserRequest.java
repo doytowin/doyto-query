@@ -23,6 +23,7 @@ public class UserRequest implements EntityRequest<UserEntity> {
     private boolean valid = true;
     private UserLevel userLevel;
 
+    @Override
     public UserEntity toEntity() {
         UserEntity userEntity = new UserEntity();
         BeanUtils.copyProperties(this, userEntity);
