@@ -18,10 +18,13 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import win.doyto.query.demo.exception.ServiceException;
 import win.doyto.query.demo.module.user.TestUserEntityAspect;
 
 import javax.annotation.Resource;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -183,6 +186,13 @@ class DemoApplicationTest {
                .andExpect(jsonPath("$.id").value("1"))
                .andExpect(jsonPath("$.menuName").value("root"))
         ;
+
+        try {
+            mockMvc.perform(get(menuUri + "9"));
+            fail();
+        } catch (Exception e) {
+            assertTrue(e.getCause() instanceof ServiceException);
+        }
     }
 
     @Test
@@ -215,6 +225,16 @@ class DemoApplicationTest {
                .andExpect(statusIs200())
                .andExpect(jsonPath("$.list[1]").exists())
                .andExpect(jsonPath("$.list[2]").doesNotExist());
+    }
+
+    @Test
+    public void deleteMenu() throws Exception {
+        try {
+            mockMvc.perform(delete("/02/menu/0")).andDo(print());
+            fail();
+        } catch (Exception e) {
+            assertTrue(e.getCause() instanceof ServiceException);
+        }
     }
 
     private ResultMatcher statusIs200() {

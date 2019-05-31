@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import win.doyto.query.demo.exception.ServiceException;
+import win.doyto.query.demo.exception.ServiceAsserts;
 import win.doyto.query.service.AbstractRestService;
 
 import java.util.List;
@@ -36,16 +36,10 @@ class UserController extends AbstractRestService<UserEntity, Long, UserQuery, Us
     @Override
     public UserResponse auth(String account, String password) {
         UserEntity userEntity = get(UserQuery.builder().usernameOrEmailOrMobile(account).build());
-        if (userEntity == null) {
-            throw new ServiceException("账号不存在");
-        }
-        if (!userEntity.isValid()) {
-            throw new ServiceException("账号被禁用");
-        }
-
-        if (!Objects.equals(userEntity.getPassword(), password)) {
-            throw new ServiceException("密码错误");
-        }
+        ServiceAsserts.notNull(userEntity, "账号不存在");
+        ServiceAsserts.isTrue(userEntity.isValid(), "账号被禁用");
+        ServiceAsserts.isTrue(Objects.equals(userEntity.getPassword(), password), "密码错误");
         return getEntityView().from(userEntity);
     }
+
 }

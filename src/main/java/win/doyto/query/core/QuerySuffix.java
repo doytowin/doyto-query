@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static win.doyto.query.core.CommonUtil.wrapWithParenthesis;
 import static win.doyto.query.core.QueryBuilder.SEPARATOR;
 
 /**
@@ -69,12 +70,9 @@ enum QuerySuffix {
     }
 
     private static String buildSqlForCollection(ColumnMeta columnMeta, QuerySuffix querySuffix) {
-        String ex = "(null)";
-        Collection collection = (Collection) columnMeta.value;
-        if (!collection.isEmpty()) {
-            ex = "(" + StringUtils.join(IntStream.range(0, collection.size()).mapToObj(i -> QueryBuilder.REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR) + ")";
-        }
-        return columnMeta.defaultSql(querySuffix, ex);
+        int size = ((Collection) columnMeta.value).size();
+        String ex = StringUtils.join(IntStream.range(0, size).mapToObj(i -> QueryBuilder.REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR);
+        return columnMeta.defaultSql(querySuffix, wrapWithParenthesis(StringUtils.trimToNull(ex)));
     }
 
     String resolveColumnName(String fieldName) {

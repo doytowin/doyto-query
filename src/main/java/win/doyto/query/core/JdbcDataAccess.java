@@ -1,5 +1,6 @@
 package win.doyto.query.core;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -30,17 +31,17 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
     private final CrudBuilder<E> crudBuilder;
     private static final String FMT_GET_BY_ID = "SELECT * FROM %s WHERE id = ?";
     private static final String FMT_DELETE_BY_ID = "DELETE FROM %s WHERE id = ?";
-    private final String domainTable;
+    private final String entityTable;
 
-    public JdbcDataAccess(JdbcTemplate jdbcTemplate, Class<E> domainType) {
+    public JdbcDataAccess(JdbcTemplate jdbcTemplate, Class<E> entityClass) {
         this.jdbcTemplate = jdbcTemplate;
 
-        rowMapper = new BeanPropertyRowMapper<>(domainType);
+        rowMapper = new BeanPropertyRowMapper<>(entityClass);
 
-        domainTable = domainType.getAnnotation(Table.class).name();
-        getById = String.format(FMT_GET_BY_ID, domainTable);
-        deleteById = String.format(FMT_DELETE_BY_ID, domainTable);
-        crudBuilder = new CrudBuilder<>(domainType);
+        entityTable = entityClass.getAnnotation(Table.class).name();
+        getById = String.format(FMT_GET_BY_ID, entityTable);
+        deleteById = String.format(FMT_DELETE_BY_ID, entityTable);
+        crudBuilder = new CrudBuilder<>(entityClass);
     }
 
     @Override
@@ -74,7 +75,7 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
 
     @Override
     public E get(I id) {
-        return jdbcTemplate.queryForObject(getById, rowMapper, id);
+        return getEntity(getById, id);
     }
 
     @Override
@@ -84,13 +85,21 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
 
     @Override
     public E get(E e) {
-        String sql = String.format(FMT_GET_BY_ID, replaceTableName(e, domainTable));
-        return jdbcTemplate.queryForObject(sql, rowMapper, e.getId());
+        String sql = String.format(FMT_GET_BY_ID, replaceTableName(e, entityTable));
+        return getEntity(sql, e.getId());
+    }
+
+    private E getEntity(String sql, I id) {
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        } catch (DataAccessException ex) {
+            return null;
+        }
     }
 
     @Override
     public int delete(E e) {
-        return jdbcTemplate.update(String.format(FMT_DELETE_BY_ID, replaceTableName(e, domainTable)), e.getId());
+        return jdbcTemplate.update(String.format(FMT_DELETE_BY_ID, replaceTableName(e, entityTable)), e.getId());
     }
 
     @Override

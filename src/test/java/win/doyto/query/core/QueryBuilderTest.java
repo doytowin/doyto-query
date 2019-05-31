@@ -120,12 +120,11 @@ public class QueryBuilderTest {
 
     @Test
     public void supportNotInSuffix() {
-        List<Integer> ids = Arrays.asList(1, 2, 3);
-        UserQuery userQuery = UserQuery.builder().idNotIn(ids).build();
+        UserQuery userQuery = UserQuery.builder().idNotIn(Arrays.asList()).build();
 
-        assertEquals("SELECT * FROM user WHERE id NOT IN (?, ?, ?)",
+        assertEquals("SELECT * FROM user WHERE id NOT IN (null)",
                      queryBuilder.buildSelectAndArgs(userQuery, argList));
-        assertThat(argList).containsExactly(1, 2, 3);
+        assertThat(argList).isEmpty();
     }
 
     @Test

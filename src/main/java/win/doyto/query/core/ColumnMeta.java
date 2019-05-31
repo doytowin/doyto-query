@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.SPACE;
+import static win.doyto.query.core.CommonUtil.wrapWithParenthesis;
 import static win.doyto.query.core.GlobalConfiguration.convertColumn;
 
 /**
@@ -34,7 +35,7 @@ class ColumnMeta {
                 columns.add(convertColumn(camelize(or)) + SPACE + querySuffix.getOp() + SPACE + ex);
                 appendArgs(value, argList);
             }
-            return "(" + StringUtils.join(columns, " OR ") + ")";
+            return wrapWithParenthesis(StringUtils.join(columns, " OR "));
         }
 
         appendArgs(value, argList);

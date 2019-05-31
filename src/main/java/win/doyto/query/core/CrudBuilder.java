@@ -18,6 +18,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import static org.apache.commons.lang3.StringUtils.SPACE;
+import static win.doyto.query.core.CommonUtil.*;
 
 /**
  * CrudBuilder
@@ -47,12 +48,12 @@ class CrudBuilder<E extends Persistable> extends QueryBuilder {
         tableName = entityClass.getAnnotation(Table.class).name();
         idField = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0];
         idColumn = resolveColumn(idField);
-        isDynamicTable = CommonUtil.isDynamicTable(tableName);
+        isDynamicTable = isDynamicTable(tableName);
 
         // init fields
         Field[] allFields = FieldUtils.getAllFields(entityClass);
         List<Field> tempFields = new ArrayList<>(allFields.length);
-        Arrays.stream(allFields).filter(field -> !CommonUtil.ignoreField(field)).forEachOrdered(tempFields::add);
+        Arrays.stream(allFields).filter(field -> !ignoreField(field)).forEachOrdered(tempFields::add);
         fields = Collections.unmodifiableList(tempFields);
         fieldsSize = fields.size();
 
@@ -77,9 +78,9 @@ class CrudBuilder<E extends Persistable> extends QueryBuilder {
         ArrayList<String> insertList = new ArrayList<>();
         insertList.add("INSERT INTO");
         insertList.add(table);
-        insertList.add("(" + columns + ")");
+        insertList.add(wrapWithParenthesis(columns));
         insertList.add("VALUES");
-        insertList.add("(" + fields + ")");
+        insertList.add(wrapWithParenthesis(fields));
         return StringUtils.join(insertList, SPACE);
     }
 
@@ -95,12 +96,12 @@ class CrudBuilder<E extends Persistable> extends QueryBuilder {
     }
 
     private static void readValueToArgList(List<Field> fields, Object entity, List<Object> argList) {
-        fields.stream().map(field -> CommonUtil.readFieldGetter(field, entity)).forEach(argList::add);
+        fields.stream().map(field -> readFieldGetter(field, entity)).forEach(argList::add);
     }
 
     private static void readValueToArgList(List<Field> fields, Object entity, List<Object> argList, List<String> setClauses) {
         for (Field field : fields) {
-            Object o = CommonUtil.readFieldGetter(field, entity);
+            Object o = readFieldGetter(field, entity);
             if (o != null) {
                 setClauses.add(resolveColumn(field) + EQUALS_REPLACE_HOLDER);
                 argList.add(o);
@@ -109,7 +110,7 @@ class CrudBuilder<E extends Persistable> extends QueryBuilder {
     }
 
     public String buildCreateAndArgs(E entity, List<Object> argList) {
-        String table = isDynamicTable ? CommonUtil.replaceTableName(entity, tableName) : tableName;
+        String table = isDynamicTable ? replaceTableName(entity, tableName) : tableName;
         readValueToArgList(fields, entity, argList);
         String sql = buildInsertSql(table, insertColumns, wildInsertValue);
         logger.debug(SQL_LOG, sql);
@@ -117,19 +118,19 @@ class CrudBuilder<E extends Persistable> extends QueryBuilder {
     }
 
     public String buildUpdateAndArgs(E entity, List<Object> argList) {
-        String table = isDynamicTable ? CommonUtil.replaceTableName(entity, tableName) : tableName;
+        String table = isDynamicTable ? replaceTableName(entity, tableName) : tableName;
         readValueToArgList(fields, entity, argList);
-        argList.add(CommonUtil.readField(idField, entity));
+        argList.add(readField(idField, entity));
         String sql = buildUpdateSql(table, wildSetClause, idColumn + EQUALS_REPLACE_HOLDER);
         logger.debug(SQL_LOG, sql);
         return sql;
     }
 
     public String buildPatchAndArgs(E entity, List<Object> argList) {
-        String table = isDynamicTable ? CommonUtil.replaceTableName(entity, tableName) : tableName;
+        String table = isDynamicTable ? replaceTableName(entity, tableName) : tableName;
         List<String> setClauses = new ArrayList<>(fieldsSize);
         readValueToArgList(fields, entity, argList, setClauses);
-        argList.add(CommonUtil.readField(idField, entity));
+        argList.add(readField(idField, entity));
         String sql = buildUpdateSql(table, StringUtils.join(setClauses, SEPARATOR), idColumn + EQUALS_REPLACE_HOLDER);
         logger.debug(SQL_LOG, sql);
         return sql;

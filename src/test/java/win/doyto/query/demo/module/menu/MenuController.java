@@ -2,6 +2,7 @@ package win.doyto.query.demo.module.menu;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import win.doyto.query.demo.exception.ServiceAsserts;
 import win.doyto.query.service.AbstractDynamicService;
 import win.doyto.query.service.PageList;
 
@@ -32,19 +33,15 @@ class MenuController extends AbstractDynamicService<MenuEntity, Integer, MenuQue
 
     @GetMapping("{id}")
     public MenuResponse getByQuery(MenuQuery menuQuery) {
-        MenuEntity e = get(menuQuery);
-        if (e == null) {
-            throw new IllegalArgumentException("Record not found");
-        }
-        return MenuResponse.build(e);
+        MenuEntity menuEntity = get(menuQuery);
+        ServiceAsserts.notNull(menuEntity, "菜单不存在");
+        return MenuResponse.build(menuEntity);
     }
 
     @DeleteMapping("{id}")
     public void delete(MenuRequest menuRequest) {
-        MenuEntity e = delete(menuRequest.toEntity());
-        if (e == null) {
-            throw new IllegalArgumentException("Record not found");
-        }
+        MenuEntity menuEntity = delete(menuRequest.toEntity());
+        ServiceAsserts.notNull(menuEntity, "菜单不存在");
     }
 
     @PostMapping

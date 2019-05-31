@@ -2,6 +2,7 @@ package win.doyto.query.core;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -67,13 +68,9 @@ class CommonUtil {
         return value;
     }
 
+    @SneakyThrows
     public static Object readField(Field field, Object target) {
-        try {
-            return FieldUtils.readField(field, target, true);
-        } catch (IllegalAccessException e) {
-            log.warn("字段读取异常 : {}-{}", e.getClass().getName(), e.getMessage());
-        }
-        return null;
+        return FieldUtils.readField(field, target, true);
     }
 
     public static Object readField(Object target, String fieldName) {
@@ -87,5 +84,9 @@ class CommonUtil {
             || field.isAnnotationPresent(Id.class)          // id
             || field.isAnnotationPresent(Transient.class)   // Transient field
             ;
+    }
+
+    public static String wrapWithParenthesis(String input) {
+        return "(" + input + ")";
     }
 }
