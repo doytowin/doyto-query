@@ -28,6 +28,7 @@ import static org.apache.commons.lang3.StringUtils.SPACE;
 class CrudBuilder<E extends Persistable> extends QueryBuilder {
 
     private static final String SQL_LOG = "SQL: {}";
+    private static final String EQUALS_REPLACE_HOLDER = " = " + REPLACE_HOLDER;
 
     private final Logger logger;
 
@@ -55,11 +56,11 @@ class CrudBuilder<E extends Persistable> extends QueryBuilder {
         fields = Collections.unmodifiableList(tempFields);
         fieldsSize = fields.size();
 
-        wildInsertValue = StringUtils.join(IntStream.range(0, fieldsSize).mapToObj(i -> "?").collect(Collectors.toList()), SEPARATOR);
+        wildInsertValue = StringUtils.join(IntStream.range(0, fieldsSize).mapToObj(i -> REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR);
 
         List<String> columnList = fields.stream().map(CrudBuilder::resolveColumn).collect(Collectors.toList());
         insertColumns = StringUtils.join(columnList, SEPARATOR);
-        wildSetClause = StringUtils.join(columnList.stream().map(c -> c + " = ?").collect(Collectors.toList()), SEPARATOR);
+        wildSetClause = StringUtils.join(columnList.stream().map(c -> c + EQUALS_REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR);
 
     }
 
@@ -101,7 +102,7 @@ class CrudBuilder<E extends Persistable> extends QueryBuilder {
         for (Field field : fields) {
             Object o = CommonUtil.readFieldGetter(field, entity);
             if (o != null) {
-                setClauses.add(resolveColumn(field) + " = ?");
+                setClauses.add(resolveColumn(field) + EQUALS_REPLACE_HOLDER);
                 argList.add(o);
             }
         }
@@ -119,7 +120,7 @@ class CrudBuilder<E extends Persistable> extends QueryBuilder {
         String table = isDynamicTable ? CommonUtil.replaceTableName(entity, tableName) : tableName;
         readValueToArgList(fields, entity, argList);
         argList.add(CommonUtil.readField(idField, entity));
-        String sql = buildUpdateSql(table, wildSetClause, idColumn + " = ?");
+        String sql = buildUpdateSql(table, wildSetClause, idColumn + EQUALS_REPLACE_HOLDER);
         logger.debug(SQL_LOG, sql);
         return sql;
     }
@@ -129,7 +130,7 @@ class CrudBuilder<E extends Persistable> extends QueryBuilder {
         List<String> setClauses = new ArrayList<>(fieldsSize);
         readValueToArgList(fields, entity, argList, setClauses);
         argList.add(CommonUtil.readField(idField, entity));
-        String sql = buildUpdateSql(table, StringUtils.join(setClauses, SEPARATOR), idColumn + " = ?");
+        String sql = buildUpdateSql(table, StringUtils.join(setClauses, SEPARATOR), idColumn + EQUALS_REPLACE_HOLDER);
         logger.debug(SQL_LOG, sql);
         return sql;
     }

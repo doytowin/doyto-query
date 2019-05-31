@@ -6,8 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 /**
  * QueryBuilder
@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 public class QueryBuilder {
 
     static final String SEPARATOR = ", ";
+    static final String REPLACE_HOLDER = "?";
 
     private static String build(DatabaseOperation operation, Object query, List<Object> argList, String... columns) {
         QueryTable queryTable = query.getClass().getAnnotation(QueryTable.class);
@@ -86,10 +87,8 @@ public class QueryBuilder {
         if (queryField != null) {
             andSQL = replaceArgs(value, argList, queryField.and());
         } else if (field.isAnnotationPresent(NestedQuery.class) || field.isAnnotationPresent(NestedQueries.class)) {
-            andSQL = resolvedNestedQuery(field, argList);
-            if (argList != null) {
-                argList.add(value);
-            }
+            andSQL = resolvedNestedQuery(field);
+            argList.add(value);
         } else {
             String fieldName = field.getName();
             andSQL = QuerySuffix.buildAndSql(fieldName, value, argList);
@@ -97,20 +96,19 @@ public class QueryBuilder {
         whereList.add(andSQL);
     }
 
-    static String resolvedNestedQuery(Field field, List<Object> argList) {
+    static String resolvedNestedQuery(Field field) {
         NestedQueries nestedQueries = field.getAnnotation(NestedQueries.class);
-        String ex = ColumnMeta.getEx(argList, field.getName());
         if (nestedQueries == null) {
             NestedQuery nestedQuery = field.getAnnotation(NestedQuery.class);
             String subquery = getSubquery(nestedQuery);
-            return concatNestedQueries(nestedQuery.column(), subquery, ex);
+            return concatNestedQueries(nestedQuery.column(), subquery);
         }
         String subquery = getSubquery(nestedQueries);
-        return concatNestedQueries(nestedQueries.column(), subquery, ex) + StringUtils.repeat(')', nestedQueries.value().length - 1);
+        return concatNestedQueries(nestedQueries.column(), subquery) + StringUtils.repeat(')', nestedQueries.value().length - 1);
     }
 
-    private static String concatNestedQueries(String column, String string, String ex) {
-        return column + string + " = " + ex + ")";
+    private static String concatNestedQueries(String column, String string) {
+        return column + string + " = " + REPLACE_HOLDER + ")";
     }
 
     private static String getSubquery(NestedQueries nestedQueries) {
@@ -135,26 +133,13 @@ public class QueryBuilder {
     private static final Pattern PLACE_HOLDER_PTN = Pattern.compile("#\\{\\w+}");
 
     private static String replaceArgs(Object value, List<Object> argList, String andSQL) {
-        if (argList == null) {
-            return andSQL;
-        }
-        Matcher matcher = PLACE_HOLDER_PTN.matcher(andSQL);
-        while (matcher.find()) {
-            argList.add(value);
-        }
-        return matcher.replaceAll("?");
-    }
-
-    public String buildSelect(Object query) {
-        return buildSelectAndArgs(query, null);
+        String and = PLACE_HOLDER_PTN.matcher(andSQL).replaceAll(REPLACE_HOLDER);
+        IntStream.range(0, StringUtils.countMatches(and, REPLACE_HOLDER)).mapToObj(i -> value).forEach(argList::add);
+        return and;
     }
 
     public String buildSelectAndArgs(Object query, List<Object> argList) {
         return buildSelectColumnsAndArgs(query, argList, "*");
-    }
-
-    public String buildCount(Object query) {
-        return buildCountAndArgs(query, null);
     }
 
     public String buildCountAndArgs(Object query, List<Object> argList) {

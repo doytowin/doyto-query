@@ -31,7 +31,7 @@ public class UserQuery extends PageQuery {
     @NestedQuery(left = "userId", table = "t_user_and_role", right = "roleId")
     private Integer roleId;
 
-    @QueryField(and = "(username = #{account} OR email = #{account} OR mobile = #{account})")
+    @QueryField(and = "(username = ? OR email = ? OR mobile = ?)")
     private String account;
 
     private String usernameOrEmailOrMobile;

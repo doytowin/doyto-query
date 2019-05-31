@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static win.doyto.query.core.QueryBuilder.SEPARATOR;
+
 /**
  * QuerySuffix
  *
@@ -70,9 +72,7 @@ enum QuerySuffix {
         String ex = "(null)";
         Collection collection = (Collection) columnMeta.value;
         if (!collection.isEmpty()) {
-            List<Object> inList = IntStream.range(0, collection.size()).
-                mapToObj(i -> ColumnMeta.getEx(columnMeta.argList, String.format("%s[%d]", columnMeta.fieldName, i))).collect(Collectors.toList());
-            ex = "(" + StringUtils.join(inList, ", ") + ")";
+            ex = "(" + StringUtils.join(IntStream.range(0, collection.size()).mapToObj(i -> QueryBuilder.REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR) + ")";
         }
         return columnMeta.defaultSql(querySuffix, ex);
     }

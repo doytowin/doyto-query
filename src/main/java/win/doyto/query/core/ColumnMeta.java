@@ -22,11 +22,7 @@ class ColumnMeta {
     final List<Object> argList;
 
     String defaultSql(QuerySuffix querySuffix) {
-        return defaultSql(querySuffix, getEx(argList, fieldName));
-    }
-
-    static String getEx(List<Object> argList, String fieldName) {
-        return argList != null ? "?" : "#{" + fieldName + "}";
+        return defaultSql(querySuffix, QueryBuilder.REPLACE_HOLDER);
     }
 
     String defaultSql(QuerySuffix querySuffix, String ex) {
@@ -55,12 +51,10 @@ class ColumnMeta {
 
     @SuppressWarnings("unchecked")
     private static void appendArgs(Object value, List<Object> argList) {
-        if (argList != null) {
-            if (value instanceof Collection) {
-                argList.addAll((Collection<Object>) value);
-            } else {
-                argList.add(value);
-            }
+        if (value instanceof Collection) {
+            argList.addAll((Collection<Object>) value);
+        } else {
+            argList.add(value);
         }
     }
 
