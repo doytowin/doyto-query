@@ -3,14 +3,14 @@ package win.doyto.query.core;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import win.doyto.query.core.module.user.UserEntity;
+import win.doyto.query.core.module.user.UserQuery;
+import win.doyto.query.core.module.user.UserService;
 import win.doyto.query.entity.EntityAspect;
-import win.doyto.query.user.UserEntity;
-import win.doyto.query.user.UserQuery;
-import win.doyto.query.user.UserService;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static win.doyto.query.user.UserEntity.initUserEntities;
+import static win.doyto.query.core.module.user.UserEntity.initUserEntities;
 
 /**
  * AbstractServiceTest

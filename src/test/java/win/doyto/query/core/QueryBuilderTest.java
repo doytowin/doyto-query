@@ -2,10 +2,10 @@ package win.doyto.query.core;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import win.doyto.query.menu.MenuQuery;
-import win.doyto.query.permission.PermissionQuery;
-import win.doyto.query.user.UserLevel;
-import win.doyto.query.user.UserQuery;
+import win.doyto.query.core.module.menu.MenuQuery;
+import win.doyto.query.core.module.permission.PermissionQuery;
+import win.doyto.query.core.module.user.UserLevel;
+import win.doyto.query.core.module.user.UserQuery;
 
 import java.util.ArrayList;
 import java.util.Arrays;

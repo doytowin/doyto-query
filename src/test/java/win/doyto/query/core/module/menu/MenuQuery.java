@@ -1,4 +1,4 @@
-package win.doyto.query.menu;
+package win.doyto.query.core.module.menu;
 
 import lombok.Builder;
 import win.doyto.query.core.NestedQueries;
@@ -11,9 +11,8 @@ import win.doyto.query.core.QueryTable;
  * @author f0rb on 2019-05-28
  */
 @Builder
-@QueryTable(table = MenuQuery.TABLE)
+@QueryTable(table = "menu")
 public class MenuQuery {
-    public static final String TABLE = "menu";
 
     @NestedQueries({
         @NestedQuery(left = "menuId", table = "t_perm_and_menu pm", right = "permId", extra = "inner join t_perm p on p.id = pm.perm_id and p.valid = true"),

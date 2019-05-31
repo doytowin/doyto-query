@@ -47,7 +47,7 @@ class CommonUtil {
         return sb.toString();
     }
 
-    public static Object readFieldGetter(Field field, Object target) {
+    static Object readFieldGetter(Field field, Object target) {
         Object value;
         try {
             String fieldName = field.getName();
@@ -69,16 +69,16 @@ class CommonUtil {
     }
 
     @SneakyThrows
-    public static Object readField(Field field, Object target) {
+    static Object readField(Field field, Object target) {
         return FieldUtils.readField(field, target, true);
     }
 
-    public static Object readField(Object target, String fieldName) {
+    static Object readField(Object target, String fieldName) {
         Field field = FieldUtils.getField(target.getClass(), fieldName, true);
         return readField(field, target);
     }
 
-    public static boolean ignoreField(Field field) {
+    static boolean ignoreField(Field field) {
         return field.getName().startsWith("$")              // $jacocoData
             || Modifier.isStatic(field.getModifiers())      // static field
             || field.isAnnotationPresent(Id.class)          // id
@@ -86,7 +86,14 @@ class CommonUtil {
             ;
     }
 
-    public static String wrapWithParenthesis(String input) {
+    static String wrapWithParenthesis(String input) {
         return "(" + input + ")";
+    }
+
+    static String escapeLike(String like) {
+        if (StringUtils.isBlank(like)) {
+            return like;
+        }
+        return "%" + like.replaceAll("[%|_]", "\\\\$0") + "%";
     }
 }

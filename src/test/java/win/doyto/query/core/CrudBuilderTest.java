@@ -2,7 +2,7 @@ package win.doyto.query.core;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import win.doyto.query.user.UserEntity;
+import win.doyto.query.core.module.user.UserEntity;
 
 import java.util.ArrayList;
 import java.util.List;

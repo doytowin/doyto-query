@@ -3,7 +3,6 @@ package win.doyto.query.core;
 import lombok.Getter;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import win.doyto.query.util.ColumnUtil;
 
 import java.util.*;
 import java.util.function.Function;
@@ -55,7 +54,7 @@ enum QuerySuffix {
     static String buildAndSql(String fieldName, @NonNull Object value, List<Object> argList) {
         QuerySuffix querySuffix = resolve(fieldName);
         if (querySuffix == Like) {
-            value = ColumnUtil.escapeLike(String.valueOf(value));
+            value = CommonUtil.escapeLike(String.valueOf(value));
         }
         return sqlFuncMap.get(querySuffix).apply(new ColumnMeta(fieldName, value, argList));
     }

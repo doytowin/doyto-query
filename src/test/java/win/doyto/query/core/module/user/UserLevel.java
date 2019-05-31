@@ -1,4 +1,4 @@
-package win.doyto.query.user;
+package win.doyto.query.core.module.user;
 
 /**
  * UserLevel
