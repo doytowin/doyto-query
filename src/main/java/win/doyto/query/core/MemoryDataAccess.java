@@ -164,14 +164,9 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     }
 
     @Override
-    public List<I> queryIds(Q q) {
-        return query(q).stream().map(E::getId).collect(Collectors.toList());
-    }
-
-    @Override
     @SneakyThrows
     public <V> List<V> queryColumns(Q q, RowMapper<V> rowMapper, String... columns) {
-        Class<V> classV = (Class<V>) FieldUtils.readField(rowMapper, "mappedClass", true);
+        Class<V> classV = (Class<V>) readField(rowMapper, "mappedClass");
         V v = classV.getDeclaredConstructor().newInstance();
         List<E> entities = query(q);
         List<V> objects = new ArrayList<>(entities.size());

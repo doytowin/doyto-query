@@ -1,7 +1,5 @@
 package win.doyto.query.service;
 
-import org.springframework.jdbc.core.RowMapper;
-
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -29,10 +27,16 @@ public interface QueryService<E, Q> {
         return new PageList<>(query(query, transfer), count(query));
     }
 
-    <V> List<V> queryColumns(Q q, RowMapper<V> rowMapper, String... columns);
+    <V> List<V> queryColumns(Q query, Class<V> clazz, String... columns);
 
-    default <V> V getColumns(Q query, RowMapper<V> rowMapper, String... columns) {
-        return CollectionUtil.first(queryColumns(query, rowMapper, columns));
+    <S> List<S> queryColumn(Q query, Class<S> clazz, String column);
+
+    default <V> V getColumns(Q query, Class<V> clazz, String... columns) {
+        return CollectionUtil.first(queryColumns(query, clazz, columns));
+    }
+
+    default <V> V getColumn(Q query, Class<V> clazz, String column) {
+        return CollectionUtil.first(queryColumns(query, clazz, column));
     }
 
 }

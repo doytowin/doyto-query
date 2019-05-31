@@ -2,8 +2,10 @@ package win.doyto.query.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 import win.doyto.query.cache.CacheWrapper;
 import win.doyto.query.core.DataAccess;
@@ -23,6 +25,8 @@ import java.util.List;
  * @author f0rb on 2019-05-28
  */
 public abstract class AbstractService<E extends Persistable<I>, I extends Serializable, Q> {
+    private final RowMapper<I> rowMapperForId = new SingleColumnRowMapper<>();
+
     protected DataAccess<E, I, Q> dataAccess;
 
     protected CacheWrapper<E> entityCacheWrapper = CacheWrapper.createInstance();
@@ -71,11 +75,19 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     }
 
     public List<I> queryIds(Q query) {
-        return dataAccess.queryIds(query);
+        return queryColumns(query, rowMapperForId, "id");
     }
 
     public <V> List<V> queryColumns(Q query, RowMapper<V> rowMapper, String... columns) {
         return dataAccess.queryColumns(query, rowMapper, columns);
+    }
+
+    public <V> List<V> queryColumns(Q query, Class<V> clazz, String... columns) {
+        return queryColumns(query, new BeanPropertyRowMapper<>(clazz), columns);
+    }
+
+    public <S> List<S> queryColumn(Q query, Class<S> clazz, String column) {
+        return queryColumns(query, new SingleColumnRowMapper<>(clazz), column);
     }
 
     @Transactional

@@ -3,7 +3,6 @@ package win.doyto.query.service;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import win.doyto.query.core.CrudBuilder;
@@ -28,7 +27,6 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<E> rowMapper;
-    private final RowMapper<I> rowMapperForId = new SingleColumnRowMapper<>();
     private final String getById;
     private final String deleteById;
     private final CrudBuilder<E> crudBuilder;
@@ -52,11 +50,6 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
         LinkedList<Object> args = new LinkedList<>();
         String sql = crudBuilder.buildSelectAndArgs(q, args);
         return jdbcTemplate.query(sql, args.toArray(), rowMapper);
-    }
-
-    @Override
-    public List<I> queryIds(Q q) {
-        return queryColumns(q, rowMapperForId, "id");
     }
 
     @Override
