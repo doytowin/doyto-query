@@ -1,4 +1,4 @@
-package win.doyto.query.service;
+package win.doyto.query.core;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,11 +13,11 @@ import static org.mockito.Mockito.*;
 import static win.doyto.query.user.UserEntity.initUserEntities;
 
 /**
- * AbstractCrudServiceTest
+ * AbstractServiceTest
  *
  * @author f0rb
  */
-class AbstractCrudServiceTest {
+class AbstractServiceTest {
     UserService userService;
 
     @BeforeEach

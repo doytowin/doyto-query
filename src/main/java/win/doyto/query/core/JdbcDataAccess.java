@@ -1,12 +1,10 @@
-package win.doyto.query.service;
+package win.doyto.query.core;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import win.doyto.query.core.CrudBuilder;
-import win.doyto.query.core.DataAccess;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
@@ -16,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Table;
 
-import static win.doyto.query.core.CrudBuilder.replaceTableName;
+import static win.doyto.query.core.CommonUtil.replaceTableName;
 
 /**
  * JdbcDataAccess

@@ -2,20 +2,12 @@ package win.doyto.query.core;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.commons.lang3.reflect.MethodUtils;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.Transient;
 
 /**
  * QueryBuilder
@@ -52,7 +44,7 @@ public class QueryBuilder {
             if (pageQuery.needPaging()) {
                 sql += " LIMIT " + pageQuery.getPageSize();
                 if (operation == DatabaseOperation.SELECT) {
-                   sql += " OFFSET " + pageQuery.getOffset();
+                    sql += " OFFSET " + pageQuery.getOffset();
                 }
             }
         }
@@ -65,10 +57,10 @@ public class QueryBuilder {
         List<Object> whereList = new ArrayList<>(fields.length);
         for (Field field : fields) {
             String fieldName = field.getName();
-            if (ignoreField(field)) {
+            if (CommonUtil.ignoreField(field)) {
                 continue;
             }
-            Object value = readFieldGetter(field, query);
+            Object value = CommonUtil.readFieldGetter(field, query);
             if (!ignoreValue(value, field)) {
                 if (sql.contains("${" + fieldName + "}") && StringUtils.isAlphanumeric(String.valueOf(value))) {
                     sql = sql.replaceAll("\\$\\{" + fieldName + "}", String.valueOf(value));
@@ -130,19 +122,18 @@ public class QueryBuilder {
     }
 
     private static String getSubquery(NestedQuery nestedQuery) {
-        return new StringBuilder()
-            .append(" IN (SELECT ")
-            .append(nestedQuery.left())
-            .append(" FROM ")
-            .append(nestedQuery.table())
-            .append(nestedQuery.extra().isEmpty() ? "" : " ")
-            .append(nestedQuery.extra())
-            .append(" WHERE ")
-            .append(nestedQuery.right())
-            .toString();
+        return " IN (SELECT " +
+            nestedQuery.left() +
+            " FROM " +
+            nestedQuery.table() +
+            (nestedQuery.extra().isEmpty() ? "" : " ") +
+            nestedQuery.extra() +
+            " WHERE " +
+            nestedQuery.right();
     }
 
     private static final Pattern PLACE_HOLDER_PTN = Pattern.compile("#\\{\\w+}");
+
     private static String replaceArgs(Object value, List<Object> argList, String andSQL) {
         if (argList == null) {
             return andSQL;
@@ -152,49 +143,6 @@ public class QueryBuilder {
             argList.add(value);
         }
         return matcher.replaceAll("?");
-    }
-
-    public static Object readFieldGetter(Field field, Object target) {
-        Object value;
-        try {
-            String fieldName = field.getName();
-            String prefix = field.getType().isAssignableFrom(boolean.class) ? "is" : "get";
-            value = MethodUtils.invokeMethod(target, true, prefix + StringUtils.capitalize(fieldName));
-        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            log.warn("is/get调用异常 : {}-{}", e.getClass().getName(), e.getMessage());
-            value = readField(field, target);
-        }
-        if (value instanceof Enum) {
-            Enumerated enumerated = field.getAnnotation(Enumerated.class);
-            if (enumerated != null && enumerated.value() == EnumType.STRING) {
-                value = value.toString();
-            } else {
-                value = ((Enum) value).ordinal();
-            }
-        }
-        return value;
-    }
-
-    public static Object readField(Field field, Object target) {
-        try {
-            return FieldUtils.readField(field, target, true);
-        } catch (IllegalAccessException e) {
-            log.warn("字段读取异常 : {}-{}", e.getClass().getName(), e.getMessage());
-        }
-        return null;
-    }
-
-    public static Object readField(Object target, String fieldName) {
-        Field field = FieldUtils.getField(target.getClass(), fieldName, true);
-        return readField(field, target);
-    }
-
-    public static boolean ignoreField(Field field) {
-        return field.getName().startsWith("$")              // $jacocoData
-            || Modifier.isStatic(field.getModifiers())      // static field
-            || field.isAnnotationPresent(Id.class)          // id
-            || field.isAnnotationPresent(Transient.class)   // Transient field
-            ;
     }
 
     public String buildSelect(Object query) {

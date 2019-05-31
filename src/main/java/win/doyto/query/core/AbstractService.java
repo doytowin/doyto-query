@@ -1,4 +1,4 @@
-package win.doyto.query.service;
+package win.doyto.query.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
@@ -8,8 +8,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 import win.doyto.query.cache.CacheWrapper;
-import win.doyto.query.core.DataAccess;
-import win.doyto.query.core.MemoryDataAccess;
 import win.doyto.query.entity.EntityAspect;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.entity.UserIdProvider;

@@ -82,8 +82,8 @@ class CrudBuilderTest {
         entity.setUser("f0rb");
         entity.setProject("i18n");
 
-        assertEquals("t_dynamic_f0rb_i18n", CrudBuilder.replaceTableName(entity, DynamicEntity.TABLE));
-        assertEquals("user", CrudBuilder.replaceTableName(new UserEntity(), UserEntity.TABLE));
+        assertEquals("t_dynamic_f0rb_i18n", CommonUtil.replaceTableName(entity, DynamicEntity.TABLE));
+        assertEquals("user", CommonUtil.replaceTableName(new UserEntity(), UserEntity.TABLE));
 
     }
 

@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.persistence.Column;
@@ -27,11 +25,9 @@ import static org.apache.commons.lang3.StringUtils.SPACE;
  * @author f0rb
  */
 @SuppressWarnings("squid:CommentedOutCodeLine")
-public class CrudBuilder<E extends Persistable> extends QueryBuilder {
+class CrudBuilder<E extends Persistable> extends QueryBuilder {
 
     private static final String SQL_LOG = "SQL: {}";
-
-    private static final Pattern PTN_$EX = Pattern.compile("\\$\\{(\\w+)}");
 
     private final Logger logger;
 
@@ -50,12 +46,12 @@ public class CrudBuilder<E extends Persistable> extends QueryBuilder {
         tableName = entityClass.getAnnotation(Table.class).name();
         idField = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0];
         idColumn = resolveColumn(idField);
-        isDynamicTable = isDynamicTable(tableName);
+        isDynamicTable = CommonUtil.isDynamicTable(tableName);
 
         // init fields
         Field[] allFields = FieldUtils.getAllFields(entityClass);
         List<Field> tempFields = new ArrayList<>(allFields.length);
-        Arrays.stream(allFields).filter(field -> !ignoreField(field)).forEachOrdered(tempFields::add);
+        Arrays.stream(allFields).filter(field -> !CommonUtil.ignoreField(field)).forEachOrdered(tempFields::add);
         fields = Collections.unmodifiableList(tempFields);
         fieldsSize = fields.size();
 
@@ -65,24 +61,6 @@ public class CrudBuilder<E extends Persistable> extends QueryBuilder {
         insertColumns = StringUtils.join(columnList, SEPARATOR);
         wildSetClause = StringUtils.join(columnList.stream().map(c -> c + " = ?").collect(Collectors.toList()), SEPARATOR);
 
-    }
-
-    private static boolean isDynamicTable(String input) {
-        return PTN_$EX.matcher(input).find();
-    }
-
-    public static String replaceTableName(Object entity, String tableName) {
-        Matcher matcher = PTN_$EX.matcher(tableName);
-        if (!matcher.find()) {
-            return tableName;
-        }
-
-        StringBuffer sb = new StringBuffer();
-        do {
-            String fieldName = matcher.group(1);
-            matcher = matcher.appendReplacement(sb, String.valueOf(readField(entity, fieldName)));
-        } while (matcher.find());
-        return sb.toString();
     }
 
     private static String resolveColumn(Field field) {
@@ -116,12 +94,12 @@ public class CrudBuilder<E extends Persistable> extends QueryBuilder {
     }
 
     private static void readValueToArgList(List<Field> fields, Object entity, List<Object> argList) {
-        fields.stream().map(field -> readFieldGetter(field, entity)).forEach(argList::add);
+        fields.stream().map(field -> CommonUtil.readFieldGetter(field, entity)).forEach(argList::add);
     }
 
     private static void readValueToArgList(List<Field> fields, Object entity, List<Object> argList, List<String> setClauses) {
         for (Field field : fields) {
-            Object o = readFieldGetter(field, entity);
+            Object o = CommonUtil.readFieldGetter(field, entity);
             if (o != null) {
                 setClauses.add(resolveColumn(field) + " = ?");
                 argList.add(o);
@@ -130,7 +108,7 @@ public class CrudBuilder<E extends Persistable> extends QueryBuilder {
     }
 
     public String buildCreateAndArgs(E entity, List<Object> argList) {
-        String table = isDynamicTable ? replaceTableName(entity, tableName) : tableName;
+        String table = isDynamicTable ? CommonUtil.replaceTableName(entity, tableName) : tableName;
         readValueToArgList(fields, entity, argList);
         String sql = buildInsertSql(table, insertColumns, wildInsertValue);
         logger.debug(SQL_LOG, sql);
@@ -138,19 +116,19 @@ public class CrudBuilder<E extends Persistable> extends QueryBuilder {
     }
 
     public String buildUpdateAndArgs(E entity, List<Object> argList) {
-        String table = isDynamicTable ? replaceTableName(entity, tableName) : tableName;
+        String table = isDynamicTable ? CommonUtil.replaceTableName(entity, tableName) : tableName;
         readValueToArgList(fields, entity, argList);
-        argList.add(readField(idField, entity));
+        argList.add(CommonUtil.readField(idField, entity));
         String sql = buildUpdateSql(table, wildSetClause, idColumn + " = ?");
         logger.debug(SQL_LOG, sql);
         return sql;
     }
 
     public String buildPatchAndArgs(E entity, List<Object> argList) {
-        String table = isDynamicTable ? replaceTableName(entity, tableName) : tableName;
+        String table = isDynamicTable ? CommonUtil.replaceTableName(entity, tableName) : tableName;
         List<String> setClauses = new ArrayList<>(fieldsSize);
         readValueToArgList(fields, entity, argList, setClauses);
-        argList.add(readField(idField, entity));
+        argList.add(CommonUtil.readField(idField, entity));
         String sql = buildUpdateSql(table, StringUtils.join(setClauses, SEPARATOR), idColumn + " = ?");
         logger.debug(SQL_LOG, sql);
         return sql;

@@ -17,8 +17,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import javax.persistence.Id;
 
-import static win.doyto.query.core.QueryBuilder.ignoreField;
-import static win.doyto.query.core.QueryBuilder.readField;
+import static win.doyto.query.core.CommonUtil.ignoreField;
+import static win.doyto.query.core.CommonUtil.readField;
 import static win.doyto.query.core.QuerySuffix.*;
 
 /**

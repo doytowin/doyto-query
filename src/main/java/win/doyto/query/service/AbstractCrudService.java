@@ -1,6 +1,7 @@
 package win.doyto.query.service;
 
 import org.springframework.cache.support.NoOpCache;
+import win.doyto.query.core.AbstractService;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
