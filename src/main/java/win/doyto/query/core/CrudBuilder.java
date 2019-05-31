@@ -164,4 +164,11 @@ class CrudBuilder<E extends Persistable> extends QueryBuilder {
         return new SqlAndArgs(sql, argList);
     }
 
+    public String buildSelectById() {
+        return "SELECT * FROM " + tableName + whereId;
+    }
+
+    public String buildDeleteById() {
+        return "DELETE FROM " + tableName + whereId;
+    }
 }
