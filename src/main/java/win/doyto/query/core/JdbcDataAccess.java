@@ -51,23 +51,19 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
 
     @Override
     public <V> List<V> queryColumns(Q q, RowMapper<V> rowMapper, String... columns) {
-        List<Object> args = new ArrayList<>();
-        String sql = crudBuilder.buildSelectColumnsAndArgs(q, args, columns);
-        return jdbcTemplate.query(sql, args.toArray(), rowMapper);
+        SqlAndArgs sqlAndArgs = crudBuilder.buildSelectColumnsAndArgs(q, columns);
+        return jdbcTemplate.query(sqlAndArgs.sql, sqlAndArgs.args, rowMapper);
     }
 
     @Override
     public long count(Q q) {
-        List<Object> args = new ArrayList<>();
-        String sql = crudBuilder.buildCountAndArgs(q, args);
-        return jdbcTemplate.queryForObject(sql, args.toArray(), Long.class);
+        SqlAndArgs sqlAndArgs = crudBuilder.buildCountAndArgs(q);
+        return jdbcTemplate.queryForObject(sqlAndArgs.sql, sqlAndArgs.args, Long.class);
     }
 
     @Override
     public int delete(Q q) {
-        List<Object> args = new ArrayList<>();
-        String sql = crudBuilder.buildDeleteAndArgs(q, args);
-        return jdbcTemplate.update(sql, args.toArray(), rowMapper);
+        return doUpdate(crudBuilder.buildDeleteAndArgs(q));
     }
 
     @Override
@@ -117,25 +113,23 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
         e.setId((I) keyHolder.getKey());
     }
 
+    private int doUpdate(SqlAndArgs sql) {
+        return jdbcTemplate.update(sql.sql, sql.args);
+    }
+
     @Override
     public void update(E e) {
-        List<Object> args = new ArrayList<>();
-        String sql = crudBuilder.buildUpdateAndArgs(e, args);
-        jdbcTemplate.update(sql, args.toArray());
+        doUpdate(crudBuilder.buildUpdateAndArgs(e));
     }
 
     @Override
     public void patch(E e) {
-        List<Object> args = new ArrayList<>();
-        String sql = crudBuilder.buildPatchAndArgsWithId(e, args);
-        jdbcTemplate.update(sql, args.toArray());
+        doUpdate(crudBuilder.buildPatchAndArgsWithId(e));
     }
 
     @Override
     public void patch(E e, Q q) {
-        List<Object> args = new ArrayList<>();
-        String sql = crudBuilder.buildPatchAndArgsWithQuery(e, q, args);
-        jdbcTemplate.update(sql, args.toArray());
+        doUpdate(crudBuilder.buildPatchAndArgsWithQuery(e, q));
     }
 
     @Override

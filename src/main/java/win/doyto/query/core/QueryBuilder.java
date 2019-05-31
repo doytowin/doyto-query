@@ -146,12 +146,27 @@ public class QueryBuilder {
         return build(DatabaseOperation.COUNT, query, argList);
     }
 
+    public <Q> SqlAndArgs buildCountAndArgs(Q q) {
+        ArrayList<Object> argList = new ArrayList<>();
+        return new SqlAndArgs(buildCountAndArgs(q, argList), argList);
+    }
+
     public String buildDeleteAndArgs(Object query, List<Object> argList) {
         return build(DatabaseOperation.DELETE, query, argList);
     }
 
+    public SqlAndArgs buildDeleteAndArgs(Object query) {
+        ArrayList<Object> argList = new ArrayList<>();
+        return new SqlAndArgs(buildDeleteAndArgs(query, argList), argList);
+    }
+
     public String buildSelectColumnsAndArgs(Object query, List<Object> argList, String... columns) {
         return build(DatabaseOperation.SELECT, query, argList, columns);
+    }
+
+    public SqlAndArgs buildSelectColumnsAndArgs(Object query, String[] columns) {
+        ArrayList<Object> argList = new ArrayList<>();
+        return new SqlAndArgs(buildSelectColumnsAndArgs(query, argList, columns), argList);
     }
 
     private enum DatabaseOperation {

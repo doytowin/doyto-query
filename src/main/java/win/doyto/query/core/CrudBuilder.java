@@ -129,6 +129,11 @@ class CrudBuilder<E extends Persistable> extends QueryBuilder {
         return logSql(sql);
     }
 
+    public SqlAndArgs buildUpdateAndArgs(E entity) {
+        ArrayList<Object> argList = new ArrayList<>();
+        return new SqlAndArgs(buildUpdateAndArgs(entity, argList), argList);
+    }
+
     public String buildPatchAndArgs(E entity, List<Object> argList) {
         String table = resolveTableName(entity);
         List<String> setClauses = new ArrayList<>(fieldsSize);
@@ -137,14 +142,26 @@ class CrudBuilder<E extends Persistable> extends QueryBuilder {
     }
 
     public String buildPatchAndArgsWithId(E entity, List<Object> argList) {
-        String sql = buildPatchAndArgs(entity, argList)+ whereId;
+        String sql = buildPatchAndArgs(entity, argList) + whereId;
         argList.add(readField(idField, entity));
         return logSql(sql);
     }
 
+    public SqlAndArgs buildPatchAndArgsWithId(E entity) {
+        ArrayList<Object> argList = new ArrayList<>();
+        return new SqlAndArgs(buildPatchAndArgsWithId(entity, argList), argList);
+    }
+
     public String buildPatchAndArgsWithQuery(E entity, Object query, List<Object> argList) {
         String sql = buildPatchAndArgs(entity, argList);
-        sql = buildWhere(sql, query, argList);
-        return logSql(sql);
+        return buildWhere(sql, query, argList);
     }
+
+    public SqlAndArgs buildPatchAndArgsWithQuery(E entity, Object query) {
+        ArrayList<Object> argList = new ArrayList<>();
+        String sql = buildPatchAndArgsWithQuery(entity, query, argList);
+        sql = buildWhere(sql, query, argList);
+        return new SqlAndArgs(sql, argList);
+    }
+
 }
