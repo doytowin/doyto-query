@@ -1,5 +1,6 @@
 package win.doyto.query.service;
 
+import win.doyto.query.core.CommonCrudService;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
@@ -9,7 +10,7 @@ import java.io.Serializable;
  *
  * @author f0rb on 2019-05-28
  */
-public interface DynamicService<E extends Persistable<I>, I extends Serializable, Q> extends QueryService<E, Q> {
+public interface DynamicService<E extends Persistable<I>, I extends Serializable, Q> extends CommonCrudService<E, Q> {
 
     /**
      * Get origin entity from sharding table
@@ -27,11 +28,4 @@ public interface DynamicService<E extends Persistable<I>, I extends Serializable
      */
     E delete(E param);
 
-    void create(E e);
-
-    void update(E e);
-
-    void patch(E e);
-
-    int delete(Q query);
 }

@@ -33,10 +33,14 @@ public abstract class AbstractCrudService<E extends Persistable<I>, I extends Se
     }
 
     public List<E> query(Q query) {
-        if (entityCacheWrapper.getCache() instanceof NoOpCache) {
-            return dataAccess.query(query);
+        if (caching()) {
+            return queryIds(query).stream().map(dataAccess::get).collect(Collectors.toList());
         }
-        return queryIds(query).stream().map(dataAccess::get).collect(Collectors.toList());
+        return dataAccess.query(query);
+    }
+
+    protected boolean caching() {
+        return !(entityCacheWrapper.getCache() instanceof NoOpCache);
     }
 
 }

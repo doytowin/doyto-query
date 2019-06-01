@@ -22,7 +22,9 @@ import java.util.List;
  *
  * @author f0rb on 2019-05-28
  */
-public abstract class AbstractService<E extends Persistable<I>, I extends Serializable, Q> {
+public abstract class AbstractService<E extends Persistable<I>, I extends Serializable, Q>
+    implements CommonCrudService<E, Q> {
+
     private final RowMapper<I> rowMapperForId = new SingleColumnRowMapper<>();
 
     protected DataAccess<E, I, Q> dataAccess;
