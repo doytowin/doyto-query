@@ -131,16 +131,16 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     protected Boolean unsatisfied(E entity, String queryFieldName, Object queryFieldValue) {
         QuerySuffix querySuffix = resolve(queryFieldName);
         String columnName = querySuffix.resolveColumnName(queryFieldName);
-        FilterExecutor filterExecutor = filterExecutorMap.get(querySuffix);
+        FilterExecutor.Matcher matcher = FilterExecutor.get(querySuffix);
 
         if (columnName.contains("Or")) {
             String[] names = ColumnMeta.splitByOr(columnName);
             return Arrays.stream(names).
                 map(name -> readField(entity, ColumnMeta.camelize(name))).
-                noneMatch(entityFieldValue -> filterExecutor.match(queryFieldValue, entityFieldValue));
+                noneMatch(entityFieldValue -> matcher.match(queryFieldValue, entityFieldValue));
         } else {
             Object entityFieldValue = readField(entity, columnName);
-            return !filterExecutor.match(queryFieldValue, entityFieldValue);
+            return !matcher.match(queryFieldValue, entityFieldValue);
         }
     }
 
@@ -192,45 +192,55 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         return entitiesMap.values().stream().filter(item -> filterByQuery(query, item)).count();
     }
 
-    interface FilterExecutor {
-        /**
-         * 实体对象筛选
-         *
-         * @param queryFieldValue  查询对象字段值
-         * @param entityFieldValue 实体对象字段值
-         * @return true 符合过滤条件
-         */
-        boolean match(Object queryFieldValue, Object entityFieldValue);
-    }
+    private static class FilterExecutor {
 
-    static final Map<QuerySuffix, FilterExecutor> filterExecutorMap = new EnumMap<>(QuerySuffix.class);
+        private static final Map<QuerySuffix, Matcher> map = new EnumMap<>(QuerySuffix.class);
 
-    static {
-        filterExecutorMap.put(Like, (queryFieldValue, entityFieldValue) ->
-            entityFieldValue instanceof String && StringUtils.contains(((String) entityFieldValue), (String) queryFieldValue));
+        static {
+            map.put(Like, new Matcher() {
+                @Override
+                public boolean doMatch(Object qv, Object ev) {
+                    return StringUtils.contains(((String) ev), (String) qv);
+                }
 
-        filterExecutorMap.put(In, (queryFieldValue, entityFieldValue) ->
-            queryFieldValue instanceof Collection && ((Collection) queryFieldValue).contains(entityFieldValue));
+                @Override
+                public boolean isComparable(Object qv, Object ev) {
+                    return ev instanceof String;
+                }
+            });
 
-        filterExecutorMap.put(NotIn, (queryFieldValue, entityFieldValue) ->
-            queryFieldValue instanceof Collection && !((Collection) queryFieldValue).contains(entityFieldValue));
+            map.put(In, (qv, ev) -> ((Collection) qv).contains(ev));
+            map.put(NotIn, (qv, ev) -> !((Collection) qv).contains(ev));
+            map.put(Gt, (qv, ev) -> ((Comparable) ev).compareTo(qv) > 0);
+            map.put(Lt, (qv, ev) -> ((Comparable) ev).compareTo(qv) < 0);
+            map.put(Ge, (qv, ev) -> ((Comparable) ev).compareTo(qv) >= 0);
+            map.put(Le, (qv, ev) -> ((Comparable) ev).compareTo(qv) <= 0);
+            map.put(NONE, Object::equals);
+        }
 
-        filterExecutorMap.put(Gt, (queryFieldValue, entityFieldValue) ->
-            !(queryFieldValue instanceof Comparable) || !(entityFieldValue instanceof Comparable) ||
-                ((Comparable) entityFieldValue).compareTo(queryFieldValue) > 0);
+        static Matcher get(QuerySuffix querySuffix) {
+            return map.get(querySuffix);
+        }
 
-        filterExecutorMap.put(Lt, (queryFieldValue, entityFieldValue) ->
-            !(queryFieldValue instanceof Comparable) || !(entityFieldValue instanceof Comparable) ||
-                ((Comparable) entityFieldValue).compareTo(queryFieldValue) < 0);
+        interface Matcher {
 
-        filterExecutorMap.put(Ge, (queryFieldValue, entityFieldValue) ->
-            !(queryFieldValue instanceof Comparable) || !(entityFieldValue instanceof Comparable) ||
-                ((Comparable) entityFieldValue).compareTo(queryFieldValue) >= 0);
+            /**
+             * 实体对象筛选
+             *
+             * @param qv  查询对象字段值
+             * @param ev 实体对象字段值
+             * @return true 符合过滤条件
+             */
+            boolean doMatch(Object qv, Object ev);
 
-        filterExecutorMap.put(Le, (queryFieldValue, entityFieldValue) ->
-            !(queryFieldValue instanceof Comparable) || !(entityFieldValue instanceof Comparable) ||
-                ((Comparable) entityFieldValue).compareTo(queryFieldValue) <= 0);
+            default boolean match(Object qv, Object ev) {
+                return isComparable(qv, ev) && doMatch(qv, ev);
+            }
 
-        filterExecutorMap.put(NONE, Object::equals);
+            default boolean isComparable(Object qv, Object ev) {
+                return qv instanceof Collection || (qv instanceof Comparable && ev instanceof Comparable);
+            }
+        }
+
     }
 }
