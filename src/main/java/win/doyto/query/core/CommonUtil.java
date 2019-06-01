@@ -101,10 +101,8 @@ class CommonUtil {
     }
 
     static String convertColumn(String columnName) {
-        if (GlobalConfiguration.instance().isMapCamelCaseToUnderscore()) {
-            columnName = camelCaseToUnderscore(columnName);
-        }
-        return columnName;
+        return GlobalConfiguration.instance().isMapCamelCaseToUnderscore() ?
+            camelCaseToUnderscore(columnName) : columnName;
     }
 
     private static String camelCaseToUnderscore(String camel) {
