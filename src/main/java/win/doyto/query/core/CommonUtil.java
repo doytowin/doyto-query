@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import win.doyto.query.config.GlobalConfiguration;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -28,6 +29,7 @@ import javax.persistence.Transient;
 class CommonUtil {
 
     private static final Pattern PTN_$EX = Pattern.compile("\\$\\{(\\w+)}");
+    private static final Pattern PTN_CAPITAL_CHAR = Pattern.compile("([A-Z])");
 
     static boolean isDynamicTable(String input) {
         return PTN_$EX.matcher(input).find();
@@ -95,5 +97,16 @@ class CommonUtil {
             return like;
         }
         return "%" + like.replaceAll("[%|_]", "\\\\$0") + "%";
+    }
+
+    static String convertColumn(String columnName) {
+        if (GlobalConfiguration.instance().isMapCamelCaseToUnderscore()) {
+            columnName = camelCaseToUnderscore(columnName);
+        }
+        return columnName;
+    }
+
+    private static String camelCaseToUnderscore(String camel) {
+        return PTN_CAPITAL_CHAR.matcher(camel).replaceAll("_$1").toLowerCase();
     }
 }

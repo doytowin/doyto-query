@@ -8,8 +8,8 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.SPACE;
+import static win.doyto.query.core.CommonUtil.convertColumn;
 import static win.doyto.query.core.CommonUtil.wrapWithParenthesis;
-import static win.doyto.query.core.GlobalConfiguration.convertColumn;
 
 /**
  * ColumnMeta

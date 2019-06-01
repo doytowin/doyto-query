@@ -3,7 +3,6 @@ package win.doyto.query.config;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
-import win.doyto.query.core.GlobalConfiguration;
 
 /**
  * DoytoQueryInitializer
