@@ -44,7 +44,8 @@ class CommonUtil {
         StringBuffer sb = new StringBuffer();
         do {
             String fieldName = matcher.group(1);
-            matcher = matcher.appendReplacement(sb, String.valueOf(readField(entity, fieldName)));
+            String replacement = StringUtils.remove(String.valueOf(readField(entity, fieldName)), ' ');
+            matcher = matcher.appendReplacement(sb, replacement);
         } while (matcher.find());
         return sb.toString();
     }
