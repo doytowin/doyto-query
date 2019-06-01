@@ -17,15 +17,19 @@ public interface RestService<E extends Persistable<I>, I extends Serializable, Q
 
     List<S> list(Q q);
 
-    PageList<S> page(Q q);
+    long count(Q q);
 
-    EntityResponse getById(I id);
+    default PageList<S> page(Q q) {
+        return new PageList<>(list(q), count(q));
+    }
+
+    S getById(I id);
 
     void deleteById(I id);
 
     void update(I id, R request);
 
-    void patch(R request);
+    void patch(I id, R request);
 
     void create(R request);
 

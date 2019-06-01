@@ -24,7 +24,7 @@ import java.util.List;
  * @author f0rb on 2019-05-26
  */
 @SuppressWarnings("squid:S4529")
-public class AbstractRestService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery,
+public abstract class AbstractRestService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery,
     R extends EntityRequest<E>, S extends EntityResponse<E, S>>
     extends AbstractCrudService<E, I, Q> implements RestService<E, I, Q, R, S> {
 
@@ -45,7 +45,7 @@ public class AbstractRestService<E extends Persistable<I>, I extends Serializabl
 
     @GetMapping
     public Object queryOrPage(@Validated(PageGroup.class) Q q) {
-        return q.needPaging() ? page(q) : list(q);
+        return q.needPaging() ? new PageList<>(list(q), count(q)) : list(q);
     }
 
     @Override
@@ -54,27 +54,16 @@ public class AbstractRestService<E extends Persistable<I>, I extends Serializabl
     }
 
     @Override
-    public PageList<S> page(Q q) {
-        return page(q, getEntityView()::from);
-    }
-
-    @Override
     @GetMapping("{id}")
     public S getById(@PathVariable I id) {
         E e = get(id);
-        if (e == null) {
-            throw new IllegalArgumentException("Record not found");
-        }
-        return getEntityView().from(e);
+        return e == null ? null : getEntityView().from(e);
     }
 
     @Override
     @DeleteMapping("{id}")
     public void deleteById(@PathVariable I id) {
-        E e = delete(id);
-        if (e == null) {
-            throw new IllegalArgumentException("Record not found");
-        }
+        delete(id);
     }
 
     @Override
@@ -86,8 +75,10 @@ public class AbstractRestService<E extends Persistable<I>, I extends Serializabl
 
     @Override
     @PatchMapping("{id}")
-    public void patch(@RequestBody @Validated(PatchGroup.class) R request) {
-        patch(request.toEntity());
+    public void patch(@PathVariable I id, @RequestBody @Validated(PatchGroup.class) R request) {
+        E e = request.toEntity();
+        e.setId(id);
+        patch(e);
     }
 
     @Override
