@@ -1,4 +1,4 @@
-package win.doyto.query.core.module.permission;
+package win.doyto.query.core.test;
 
 import lombok.Builder;
 import win.doyto.query.core.NestedQueries;

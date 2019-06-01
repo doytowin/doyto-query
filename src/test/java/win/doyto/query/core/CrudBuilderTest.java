@@ -3,8 +3,8 @@ package win.doyto.query.core;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.core.module.user.UserEntity;
-import win.doyto.query.core.module.user.UserQuery;
+import win.doyto.query.core.test.TestEntity;
+import win.doyto.query.core.test.TestQuery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ class CrudBuilderTest {
 
     private DynamicEntity dynamicEntity;
     private List<Object> argList;
-    private CrudBuilder<UserEntity> userEntityCrudBuilder = new CrudBuilder<>(UserEntity.class);
+    private CrudBuilder<TestEntity> userEntityCrudBuilder = new CrudBuilder<>(TestEntity.class);
     private CrudBuilder<DynamicEntity> dynamicEntityCrudBuilder = new CrudBuilder<>(DynamicEntity.class);
 
     @BeforeEach
@@ -38,13 +38,13 @@ class CrudBuilderTest {
     @Test
     void create() {
         assertEquals("INSERT INTO user (username, password, mobile, email, nickname, userLevel, valid) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                     userEntityCrudBuilder.buildCreateAndArgs(new UserEntity(), argList));
+                     userEntityCrudBuilder.buildCreateAndArgs(new TestEntity(), argList));
     }
 
     @Test
     void update() {
         assertEquals("UPDATE user SET username = ?, password = ?, mobile = ?, email = ?, nickname = ?, userLevel = ?, valid = ? WHERE id = ?",
-                     userEntityCrudBuilder.buildUpdateAndArgs(new UserEntity(), argList));
+                     userEntityCrudBuilder.buildUpdateAndArgs(new TestEntity(), argList));
     }
 
     @Test
@@ -85,7 +85,7 @@ class CrudBuilderTest {
         entity.setProject("i18n");
 
         assertEquals("t_dynamic_f0rb_i18n", CommonUtil.replaceTableName(entity, DynamicEntity.TABLE));
-        assertEquals("user", CommonUtil.replaceTableName(new UserEntity(), UserEntity.TABLE));
+        assertEquals("user", CommonUtil.replaceTableName(new TestEntity(), TestEntity.TABLE));
 
     }
 
@@ -94,12 +94,12 @@ class CrudBuilderTest {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
 
         try {
-            UserEntity userEntity = new UserEntity();
-            userEntity.setId(1);
-            userEntity.setUserLevel("vip");
-            userEntity.setValid(true);
+            TestEntity testEntity = new TestEntity();
+            testEntity.setId(1);
+            testEntity.setUserLevel("vip");
+            testEntity.setValid(true);
             assertEquals("UPDATE user SET user_level = ?, valid = ? WHERE id = ?",
-                         userEntityCrudBuilder.buildPatchAndArgsWithId(userEntity, argList));
+                         userEntityCrudBuilder.buildPatchAndArgsWithId(testEntity, argList));
         } finally {
             GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
         }
@@ -107,13 +107,13 @@ class CrudBuilderTest {
 
     @Test
     public void buildPatchAndArgsWithQuery() {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setNickname("测试");
+        TestEntity testEntity = new TestEntity();
+        testEntity.setNickname("测试");
 
-        UserQuery userQuery = UserQuery.builder().username("test").build();
+        TestQuery testQuery = TestQuery.builder().username("test").build();
 
         assertEquals("UPDATE user SET nickname = ? WHERE username = ?",
-                     userEntityCrudBuilder.buildPatchAndArgsWithQuery(userEntity, userQuery, argList));
+                     userEntityCrudBuilder.buildPatchAndArgsWithQuery(testEntity, testQuery, argList));
         assertThat(argList).containsExactly("测试", "test");
     }
 }

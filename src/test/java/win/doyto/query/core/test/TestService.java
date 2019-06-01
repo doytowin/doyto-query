@@ -1,13 +1,13 @@
-package win.doyto.query.core.module.user;
+package win.doyto.query.core.test;
 
 import win.doyto.query.service.AbstractCrudService;
 
 /**
- * UserService
+ * TestService
  *
  * @author f0rb
  */
-public class UserService extends AbstractCrudService<UserEntity, Integer, UserQuery> {
+public class TestService extends AbstractCrudService<TestEntity, Integer, TestQuery> {
     @Override
     protected String getCacheName() {
         return "module:user";

@@ -1,4 +1,4 @@
-package win.doyto.query.core.module.menu;
+package win.doyto.query.core.test;
 
 import lombok.Builder;
 import win.doyto.query.core.NestedQueries;

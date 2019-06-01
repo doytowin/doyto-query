@@ -3,14 +3,14 @@ package win.doyto.query.core;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
-import win.doyto.query.core.module.user.UserEntity;
-import win.doyto.query.core.module.user.UserQuery;
-import win.doyto.query.core.module.user.UserService;
+import win.doyto.query.core.test.TestEntity;
+import win.doyto.query.core.test.TestQuery;
+import win.doyto.query.core.test.TestService;
 import win.doyto.query.entity.EntityAspect;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static win.doyto.query.core.module.user.UserEntity.initUserEntities;
+import static win.doyto.query.core.test.TestEntity.initUserEntities;
 
 /**
  * AbstractServiceTest
@@ -18,79 +18,79 @@ import static win.doyto.query.core.module.user.UserEntity.initUserEntities;
  * @author f0rb
  */
 class AbstractServiceTest {
-    UserService userService;
+    TestService testService;
 
     @BeforeEach
     void setUp() {
-        userService = new UserService();
-        userService.dataAccess = spy(userService.dataAccess);
-        userService.batchInsert(initUserEntities());
+        testService = new TestService();
+        testService.dataAccess = spy(testService.dataAccess);
+        testService.batchInsert(initUserEntities());
     }
 
     @Test
     void supportCache() {
-        userService.setCacheManager(new ConcurrentMapCacheManager());
-        userService.get(1);
-        userService.get(1);
-        verify(userService.dataAccess, times(1)).get(1);
+        testService.setCacheManager(new ConcurrentMapCacheManager());
+        testService.get(1);
+        testService.get(1);
+        verify(testService.dataAccess, times(1)).get(1);
     }
 
     @Test
     void supportEvictCache() {
-        userService.setCacheManager(new ConcurrentMapCacheManager());
-        UserEntity userEntity = userService.get(1);
-        userService.update(userEntity);
-        userService.get(1);
-        verify(userService.dataAccess, times(2)).get(1);
+        testService.setCacheManager(new ConcurrentMapCacheManager());
+        TestEntity testEntity = testService.get(1);
+        testService.update(testEntity);
+        testService.get(1);
+        verify(testService.dataAccess, times(2)).get(1);
     }
 
     @Test
     void supportAspect() {
-        EntityAspect<UserEntity> entityAspect = spy(new EntityAspect<UserEntity>() {
+        EntityAspect<TestEntity> entityAspect = spy(new EntityAspect<TestEntity>() {
             @Override
-            public void afterUpdate(UserEntity origin, UserEntity current) {
+            public void afterUpdate(TestEntity origin, TestEntity current) {
                 assertNotSame(origin, current);
                 assertEquals("test1", origin.getUsername());
                 assertEquals("test2", current.getUsername());
             }
         });
 
-        userService.entityAspects.add(entityAspect);
-        UserEntity e = new UserEntity();
+        testService.entityAspects.add(entityAspect);
+        TestEntity e = new TestEntity();
         e.setUsername("test1");
-        userService.create(e);
+        testService.create(e);
         verify(entityAspect, times(1)).afterCreate(e);
 
-        UserEntity u = new UserEntity();
+        TestEntity u = new TestEntity();
         u.setId(e.getId());
         u.setUsername("test2");
-        userService.update(u);
+        testService.update(u);
         verify(entityAspect, times(1)).afterUpdate(any(), eq(u));
 
-        userService.delete(e.getId());
+        testService.delete(e.getId());
         verify(entityAspect, times(1)).afterDelete(u);
     }
 
     @Test
     void count() {
-        assertEquals(1, userService.count(UserQuery.builder().username("username1").build()));
+        assertEquals(1, testService.count(TestQuery.builder().username("username1").build()));
     }
 
     @Test
     void exists() {
-        assertTrue(userService.exists(UserQuery.builder().username("username1").build()));
+        assertTrue(testService.exists(TestQuery.builder().username("username1").build()));
     }
 
     @Test
     void deleteByQuery() {
-        UserQuery userQuery = UserQuery.builder().usernameLike("username").build();
-        assertEquals(4, userService.delete(userQuery));
+        TestQuery testQuery = TestQuery.builder().usernameLike("username").build();
+        assertEquals(4, testService.delete(testQuery));
     }
 
     @Test
     void deleteByQueryWithLimit() {
-        UserQuery userQuery = UserQuery.builder().usernameLike("username").build();
-        userQuery.setPageSize(2);
-        assertEquals(2, userService.delete(userQuery));
+        TestQuery testQuery = TestQuery.builder().usernameLike("username").build();
+        testQuery.setPageSize(2);
+        assertEquals(2, testService.delete(testQuery));
     }
 }

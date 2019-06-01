@@ -5,7 +5,7 @@ import win.doyto.query.core.PageQuery;
 import win.doyto.query.core.QueryTable;
 
 /**
- * UserQuery
+ * TestQuery
  *
  * @author f0rb
  */

@@ -2,14 +2,14 @@ package win.doyto.query.core;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import win.doyto.query.core.module.user.UserEntity;
-import win.doyto.query.core.module.user.UserQuery;
+import win.doyto.query.core.test.TestEntity;
+import win.doyto.query.core.test.TestQuery;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static win.doyto.query.core.module.user.UserEntity.initUserEntities;
+import static win.doyto.query.core.test.TestEntity.initUserEntities;
 
 /**
  * MemoryDataAccessTest
@@ -18,65 +18,65 @@ import static win.doyto.query.core.module.user.UserEntity.initUserEntities;
  */
 class MemoryDataAccessTest {
 
-    MemoryDataAccess<UserEntity, Integer, UserQuery> mockUserDataAccess;
+    MemoryDataAccess<TestEntity, Integer, TestQuery> mockUserDataAccess;
 
     @BeforeEach
     void setUp() {
-        mockUserDataAccess = new MemoryDataAccess<>(UserEntity.class);
+        mockUserDataAccess = new MemoryDataAccess<>(TestEntity.class);
         initUserEntities().forEach(mockUserDataAccess::create);
     }
 
     @Test
     void filterByUsername() {
-        UserQuery userQuery = UserQuery.builder().username("f0rb").build();
-        assertEquals(1, mockUserDataAccess.query(userQuery).size());
+        TestQuery testQuery = TestQuery.builder().username("f0rb").build();
+        assertEquals(1, mockUserDataAccess.query(testQuery).size());
     }
 
     @Test
     void filterByOr() {
-        UserQuery userQuery = UserQuery.builder().usernameOrEmailOrMobile("f0rb").build();
-        assertEquals(1, mockUserDataAccess.query(userQuery).size());
+        TestQuery testQuery = TestQuery.builder().usernameOrEmailOrMobile("f0rb").build();
+        assertEquals(1, mockUserDataAccess.query(testQuery).size());
     }
 
     @Test
     void filterByLike() {
-        UserQuery userQuery = UserQuery.builder().usernameLike("name").build();
-        assertEquals(4, mockUserDataAccess.query(userQuery).size());
+        TestQuery testQuery = TestQuery.builder().usernameLike("name").build();
+        assertEquals(4, mockUserDataAccess.query(testQuery).size());
     }
 
     @Test
     void filterByIn() {
         List<Integer> idIn = Arrays.asList(1, 2, 3, -1);
-        UserQuery userQuery = UserQuery.builder().idIn(idIn).build();
-        assertEquals(3, mockUserDataAccess.query(userQuery).size());
+        TestQuery testQuery = TestQuery.builder().idIn(idIn).build();
+        assertEquals(3, mockUserDataAccess.query(testQuery).size());
     }
 
     @Test
     void filterByLt() {
-        UserQuery userQuery = UserQuery.builder().idLt(3).build();
-        assertEquals(2, mockUserDataAccess.query(userQuery).size());
+        TestQuery testQuery = TestQuery.builder().idLt(3).build();
+        assertEquals(2, mockUserDataAccess.query(testQuery).size());
     }
 
     @Test
     void filterByLe() {
-        UserQuery userQuery = UserQuery.builder().idLe(3).build();
-        assertEquals(3, mockUserDataAccess.query(userQuery).size());
+        TestQuery testQuery = TestQuery.builder().idLe(3).build();
+        assertEquals(3, mockUserDataAccess.query(testQuery).size());
     }
 
     @Test
     public void fetch() {
-        UserEntity u1 = mockUserDataAccess.get(1);
-        UserEntity u2 = mockUserDataAccess.get(1);
+        TestEntity u1 = mockUserDataAccess.get(1);
+        TestEntity u2 = mockUserDataAccess.get(1);
         assertSame(u1, u2);
 
-        UserEntity f1 = mockUserDataAccess.fetch(1);
+        TestEntity f1 = mockUserDataAccess.fetch(1);
         assertNotSame(u1, f1);
     }
 
     @Test
     void filterByMultiConditions() {
-        UserQuery userQuery = UserQuery.builder().valid(true).usernameOrEmailOrMobileLike("username").build();
-        List<UserEntity> userEntities = mockUserDataAccess.query(userQuery);
+        TestQuery testQuery = TestQuery.builder().valid(true).usernameOrEmailOrMobileLike("username").build();
+        List<TestEntity> userEntities = mockUserDataAccess.query(testQuery);
         assertEquals(2, userEntities.size());
     }
 

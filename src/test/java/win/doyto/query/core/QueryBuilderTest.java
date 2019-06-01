@@ -3,10 +3,10 @@ package win.doyto.query.core;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.core.module.menu.MenuQuery;
-import win.doyto.query.core.module.permission.PermissionQuery;
-import win.doyto.query.core.module.user.UserLevel;
-import win.doyto.query.core.module.user.UserQuery;
+import win.doyto.query.core.test.MenuQuery;
+import win.doyto.query.core.test.PermissionQuery;
+import win.doyto.query.core.test.TestEnum;
+import win.doyto.query.core.test.TestQuery;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,36 +35,36 @@ public class QueryBuilderTest {
 
     @Test
     public void buildSelect() {
-        UserQuery userQuery = UserQuery.builder().build();
-        assertEquals("SELECT * FROM user", queryBuilder.buildSelectAndArgs(userQuery, argList));
+        TestQuery testQuery = TestQuery.builder().build();
+        assertEquals("SELECT * FROM user", queryBuilder.buildSelectAndArgs(testQuery, argList));
     }
 
     @Test
     public void buildSelectWithWhere() {
-        UserQuery userQuery = UserQuery.builder().username("test").build();
-        assertEquals("SELECT * FROM user WHERE username = ?", queryBuilder.buildSelectAndArgs(userQuery, argList));
+        TestQuery testQuery = TestQuery.builder().username("test").build();
+        assertEquals("SELECT * FROM user WHERE username = ?", queryBuilder.buildSelectAndArgs(testQuery, argList));
     }
 
     @Test
     public void buildSelectWithWhereAndPage() {
-        UserQuery userQuery = UserQuery.builder().username("test").build();
-        userQuery.setPageNumber(3).setPageSize(10);
+        TestQuery testQuery = TestQuery.builder().username("test").build();
+        testQuery.setPageNumber(3).setPageSize(10);
         assertEquals("SELECT * FROM user WHERE username = ? LIMIT 10 OFFSET 30",
-                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
     }
 
     @Test
     public void buildSelectWithCustomWhere() {
-        UserQuery userQuery = UserQuery.builder().account("test").build();
+        TestQuery testQuery = TestQuery.builder().account("test").build();
         assertEquals("SELECT * FROM user WHERE (username = ? OR email = ? OR mobile = ?)",
-                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
     }
 
     @Test
     public void buildSelectWithArgs() {
-        UserQuery userQuery = UserQuery.builder().username("test").build();
+        TestQuery testQuery = TestQuery.builder().username("test").build();
         assertEquals("SELECT * FROM user WHERE username = ?",
-                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
         assertEquals(1, argList.size());
         assertEquals("test", argList.get(0));
     }
@@ -72,128 +72,128 @@ public class QueryBuilderTest {
     @Test
     public void buildSelectAndArgsWithCustomWhere() {
 
-        UserQuery userQuery = UserQuery.builder().account("test").build();
+        TestQuery testQuery = TestQuery.builder().account("test").build();
         assertEquals("SELECT * FROM user WHERE (username = ? OR email = ? OR mobile = ?)",
-                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
         assertEquals(3, argList.size());
     }
 
     @Test
     public void buildCountAndArgsWithWhere() {
-        UserQuery userQuery = UserQuery.builder().username("test").build();
-        userQuery.setPageNumber(2).setPageSize(10);
+        TestQuery testQuery = TestQuery.builder().username("test").build();
+        testQuery.setPageNumber(2).setPageSize(10);
         assertEquals("SELECT * FROM user WHERE username = ? LIMIT 10 OFFSET 20",
-                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
 
         List<Object> countArgList = new ArrayList<>();
         assertEquals("SELECT count(*) FROM user WHERE username = ?",
-                     queryBuilder.buildCountAndArgs(userQuery, countArgList));
+                     queryBuilder.buildCountAndArgs(testQuery, countArgList));
     }
 
     @Test
     public void buildCountWithWhere() {
-        UserQuery userQuery = UserQuery.builder().username("test").build();
-        userQuery.setPageNumber(0);
+        TestQuery testQuery = TestQuery.builder().username("test").build();
+        testQuery.setPageNumber(0);
         assertEquals("SELECT count(*) FROM user WHERE username = ?",
-                     queryBuilder.buildCountAndArgs(userQuery, argList));
+                     queryBuilder.buildCountAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test");
     }
 
     @Test
     public void supportLikeSuffix() {
-        UserQuery userQuery = UserQuery.builder().usernameLike("_test%f0rb").build();
+        TestQuery testQuery = TestQuery.builder().usernameLike("_test%f0rb").build();
 
         assertEquals("SELECT * FROM user WHERE username LIKE ?",
-                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("%\\_test\\%f0rb%");
     }
 
     @Test
     public void supportInSuffix() {
         List<Integer> ids = Arrays.asList(1, 2, 3);
-        UserQuery userQuery = UserQuery.builder().idIn(ids).build();
+        TestQuery testQuery = TestQuery.builder().idIn(ids).build();
 
         assertEquals("SELECT * FROM user WHERE id IN (?, ?, ?)",
-                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly(1, 2, 3);
 
     }
 
     @Test
     public void supportNotInSuffix() {
-        UserQuery userQuery = UserQuery.builder().idNotIn(Arrays.asList()).build();
+        TestQuery testQuery = TestQuery.builder().idNotIn(Arrays.asList()).build();
 
         assertEquals("SELECT * FROM user WHERE id NOT IN (null)",
-                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).isEmpty();
     }
 
     @Test
     public void supportGtSuffix() {
         Date createTimeGt = new Date();
-        UserQuery userQuery = UserQuery.builder().username("test").createTimeGt(createTimeGt).build();
+        TestQuery testQuery = TestQuery.builder().username("test").createTimeGt(createTimeGt).build();
 
         assertEquals("SELECT * FROM user WHERE username = ? AND createTime > ?",
-                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test", createTimeGt);
     }
 
     @Test
     public void supportGeSuffix() {
         Date date = new Date();
-        UserQuery userQuery = UserQuery.builder().username("test").createTimeGe(date).build();
+        TestQuery testQuery = TestQuery.builder().username("test").createTimeGe(date).build();
 
         assertEquals("SELECT * FROM user WHERE username = ? AND createTime >= ?",
-                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test", date);
     }
 
     @Test
     public void supportLtSuffix() {
         Date date = new Date();
-        UserQuery userQuery = UserQuery.builder().username("test").createTimeLt(date).build();
+        TestQuery testQuery = TestQuery.builder().username("test").createTimeLt(date).build();
 
         assertEquals("SELECT * FROM user WHERE username = ? AND createTime < ?",
-                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test", date);
     }
 
     @Test
     public void supportLeSuffix() {
         Date date = new Date();
-        UserQuery userQuery = UserQuery.builder().username("test").createTimeLe(date).build();
+        TestQuery testQuery = TestQuery.builder().username("test").createTimeLe(date).build();
 
         assertEquals("SELECT * FROM user WHERE username = ? AND createTime <= ?",
-                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test", date);
     }
 
     @Test
     void supportOr() {
-        UserQuery userQuery = UserQuery.builder().usernameOrEmailOrMobile("test").build();
+        TestQuery testQuery = TestQuery.builder().usernameOrEmailOrMobile("test").build();
 
         assertEquals("SELECT * FROM user WHERE (username = ? OR email = ? OR mobile = ?)",
-                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test", "test", "test");
 
     }
 
     @Test
     void supportOrWithLike() {
-        UserQuery userQuery = UserQuery.builder().usernameOrEmailOrMobileLike("test").build();
+        TestQuery testQuery = TestQuery.builder().usernameOrEmailOrMobileLike("test").build();
 
         assertEquals("SELECT * FROM user WHERE (username LIKE ? OR email LIKE ? OR mobile LIKE ?)",
-                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("%test%", "%test%", "%test%");
 
     }
 
     @Test
     public void supportSort() {
-        UserQuery userQuery = UserQuery.builder().usernameLike("test").build();
-        userQuery.setPageNumber(5).setPageSize(10).setSort("id,desc;createTime,asc");
+        TestQuery testQuery = TestQuery.builder().usernameLike("test").build();
+        testQuery.setPageNumber(5).setPageSize(10).setSort("id,desc;createTime,asc");
         assertEquals("SELECT * FROM user WHERE username LIKE ? ORDER BY id desc, createTime asc LIMIT 10 OFFSET 50",
-                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
     }
 
     @Test
@@ -201,10 +201,10 @@ public class QueryBuilderTest {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
 
         Date date = new Date();
-        UserQuery userQuery = UserQuery.builder().userNameOrUserCodeLike("test").createTimeLt(date).build();
+        TestQuery testQuery = TestQuery.builder().userNameOrUserCodeLike("test").createTimeLt(date).build();
 
         assertEquals("SELECT * FROM user WHERE (user_name LIKE ? OR user_code LIKE ?) AND create_time < ?",
-                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("%test%", "%test%", date);
     }
 
@@ -219,28 +219,28 @@ public class QueryBuilderTest {
 
     @Test
     public void buildDeleteAndArgs() {
-        UserQuery userQuery = UserQuery.builder().username("test").build();
-        userQuery.setPageNumber(3).setPageSize(10);
+        TestQuery testQuery = TestQuery.builder().username("test").build();
+        testQuery.setPageNumber(3).setPageSize(10);
         assertEquals("DELETE FROM user WHERE username = ? LIMIT 10",
-                     queryBuilder.buildDeleteAndArgs(userQuery, argList));
+                     queryBuilder.buildDeleteAndArgs(testQuery, argList));
         assertEquals(1, argList.size());
         assertEquals("test", argList.get(0));
     }
 
     @Test
     public void buildSubquery() {
-        UserQuery userQuery = UserQuery.builder().roleId(1).build();
+        TestQuery testQuery = TestQuery.builder().roleId(1).build();
 
         assertEquals("SELECT * FROM user WHERE id IN (SELECT userId FROM t_user_and_role WHERE roleId = ?)",
-                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly(1);
     }
 
     @Test
     void testResolveNestedQuery() throws NoSuchFieldException {
-        UserQuery userQuery = UserQuery.builder().roleId(1).build();
+        TestQuery testQuery = TestQuery.builder().roleId(1).build();
         assertEquals("id IN (SELECT userId FROM t_user_and_role WHERE roleId = ?)",
-                     resolvedNestedQuery(userQuery.getClass().getDeclaredField("roleId")));
+                     resolvedNestedQuery(testQuery.getClass().getDeclaredField("roleId")));
     }
 
     @Test
@@ -283,25 +283,25 @@ public class QueryBuilderTest {
 
     @Test
     public void buildSelectIdWithArgs() {
-        UserQuery userQuery = UserQuery.builder().username("test").build();
+        TestQuery testQuery = TestQuery.builder().username("test").build();
         assertEquals("SELECT id FROM user WHERE username = ?",
-                     queryBuilder.buildSelectColumnsAndArgs(userQuery, argList, "id"));
+                     queryBuilder.buildSelectColumnsAndArgs(testQuery, argList, "id"));
         assertEquals(1, argList.size());
         assertThat(argList).containsExactly("test");
     }
 
     @Test
     public void buildSelectColumnsAndArgs() {
-        UserQuery userQuery = UserQuery.builder().build();
+        TestQuery testQuery = TestQuery.builder().build();
         assertEquals("SELECT username, password FROM user",
-                     queryBuilder.buildSelectColumnsAndArgs(userQuery, argList, "username", "password"));
+                     queryBuilder.buildSelectColumnsAndArgs(testQuery, argList, "username", "password"));
     }
 
     @Test
     public void defaultEnumOrdinal() {
-        UserQuery userQuery = UserQuery.builder().userLevel(UserLevel.VIP).build();
+        TestQuery testQuery = TestQuery.builder().userLevel(TestEnum.VIP).build();
         assertEquals("SELECT * FROM user WHERE userLevel = ?",
-                     queryBuilder.buildSelectAndArgs(userQuery, argList));
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly(0);
 
     }

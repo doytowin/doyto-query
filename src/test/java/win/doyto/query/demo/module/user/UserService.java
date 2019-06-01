@@ -3,7 +3,7 @@ package win.doyto.query.demo.module.user;
 import win.doyto.query.service.RestService;
 
 /**
- * UserService
+ * TestService
  *
  * @author f0rb
  */

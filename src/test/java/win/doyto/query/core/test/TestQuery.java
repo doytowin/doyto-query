@@ -1,4 +1,4 @@
-package win.doyto.query.core.module.user;
+package win.doyto.query.core.test;
 
 import lombok.*;
 import win.doyto.query.core.NestedQuery;
@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * UserQuery
+ * TestQuery
  *
  * @author f0rb
  */
@@ -19,8 +19,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@QueryTable(table = UserEntity.TABLE)
-public class UserQuery extends PageQuery {
+@QueryTable(table = TestEntity.TABLE)
+public class TestQuery extends PageQuery {
     private List<Integer> idIn;
     private List<Integer> idNotIn;
     private Integer idLt;
@@ -42,7 +42,7 @@ public class UserQuery extends PageQuery {
 
     private String userNameOrUserCodeLike;
 
-    private UserLevel userLevel;
+    private TestEnum userLevel;
 
     private Date createTimeGt;
     private Date createTimeGe;

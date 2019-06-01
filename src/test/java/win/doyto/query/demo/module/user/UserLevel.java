@@ -3,7 +3,7 @@ package win.doyto.query.demo.module.user;
 import lombok.AllArgsConstructor;
 
 /**
- * UserLevel
+ * TestEnum
  *
  * @author f0rb on 2019-05-29
  */

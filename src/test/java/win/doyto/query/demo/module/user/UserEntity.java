@@ -10,7 +10,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 /**
- * UserEntity
+ * TestEntity
  *
  * @author f0rb
  */
