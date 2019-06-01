@@ -108,6 +108,12 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         doUpdate(e, () -> dataAccess.patch(e));
     }
 
+    @Transactional
+    public void patch(E e, Q q) {
+        dataAccess.patch(e, q);
+        entityCacheWrapper.clear();
+    }
+
     private void doUpdate(E e, Runnable runnable) {
         if (userIdProvider != null) {
             userIdProvider.setupUserId(e);
@@ -119,7 +125,9 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     }
 
     public int delete(Q query) {
-        return dataAccess.delete(query);
+        int delete = dataAccess.delete(query);
+        entityCacheWrapper.clear();
+        return delete;
     }
 
     public boolean exists(Q query) {

@@ -28,7 +28,6 @@ import static win.doyto.query.core.CommonUtil.*;
 @Slf4j
 class CrudBuilder<E extends Persistable> extends QueryBuilder {
 
-    private static final String SQL_LOG = "SQL: {}";
     private static final String EQUALS_REPLACE_HOLDER = " = " + REPLACE_HOLDER;
 
     private final Field idField;
@@ -105,11 +104,6 @@ class CrudBuilder<E extends Persistable> extends QueryBuilder {
         }
     }
 
-    private static String logSql(String sql) {
-        log.debug(SQL_LOG, sql);
-        return sql;
-    }
-
     private String resolveTableName(E entity) {
         return isDynamicTable ? replaceTableName(entity, tableName) : tableName;
     }
@@ -117,16 +111,14 @@ class CrudBuilder<E extends Persistable> extends QueryBuilder {
     public String buildCreateAndArgs(E entity, List<Object> argList) {
         String table = resolveTableName(entity);
         readValueToArgList(fields, entity, argList);
-        String sql = buildInsertSql(table, insertColumns, wildInsertValue);
-        return logSql(sql);
+        return buildInsertSql(table, insertColumns, wildInsertValue);
     }
 
     public String buildUpdateAndArgs(E entity, List<Object> argList) {
         String table = resolveTableName(entity);
         readValueToArgList(fields, entity, argList);
         argList.add(readField(idField, entity));
-        String sql = buildUpdateSql(table, wildSetClause) + whereId;
-        return logSql(sql);
+        return buildUpdateSql(table, wildSetClause) + whereId;
     }
 
     public SqlAndArgs buildUpdateAndArgs(E entity) {
@@ -144,7 +136,7 @@ class CrudBuilder<E extends Persistable> extends QueryBuilder {
     public String buildPatchAndArgsWithId(E entity, List<Object> argList) {
         String sql = buildPatchAndArgs(entity, argList) + whereId;
         argList.add(readField(idField, entity));
-        return logSql(sql);
+        return sql;
     }
 
     public SqlAndArgs buildPatchAndArgsWithId(E entity) {
@@ -160,7 +152,6 @@ class CrudBuilder<E extends Persistable> extends QueryBuilder {
     public SqlAndArgs buildPatchAndArgsWithQuery(E entity, Object query) {
         ArrayList<Object> argList = new ArrayList<>();
         String sql = buildPatchAndArgsWithQuery(entity, query, argList);
-        sql = buildWhere(sql, query, argList);
         return new SqlAndArgs(sql, argList);
     }
 

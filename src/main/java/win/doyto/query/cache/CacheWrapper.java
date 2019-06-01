@@ -37,4 +37,8 @@ public interface CacheWrapper<T> {
     default void evict(Object key) {
         getCache().evict(key);
     }
+
+    default void clear() {
+        getCache().clear();
+    }
 }

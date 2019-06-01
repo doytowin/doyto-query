@@ -24,7 +24,8 @@ class SqlAndArgs {
             String out = args.stream()
                 .map(arg -> arg + (arg == null ? "" : wrapWithParenthesis(arg.getClass().getName())) + ", ")
                 .collect(Collectors.joining());
-            log.debug("params: {}", out.substring(0, out.lastIndexOf(',')));
+            log.debug("SQL  : {}", sql);
+            log.debug("Param: {}", out.substring(0, out.lastIndexOf(',')));
         }
     }
 }

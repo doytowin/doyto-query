@@ -26,7 +26,8 @@ class UserEntity extends LongId {
     private String mobile;
     private String email;
     private String nickname;
+    private String memo;
     @Enumerated(EnumType.STRING)
     private UserLevel userLevel;
-    private boolean valid;
+    private Boolean valid;
 }

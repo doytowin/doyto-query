@@ -33,6 +33,8 @@ public interface CrudService<E extends Persistable<I>, I extends Serializable, Q
 
     void patch(E e);
 
+    void patch(E e, Q q);
+
     @Transactional
     default void batchInsert(Iterable<E> entities) {
         if (entities != null) {

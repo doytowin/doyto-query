@@ -20,6 +20,7 @@ public class UserRequest implements EntityRequest<UserEntity> {
     private String mobile;
     private String email;
     private String nickname;
+    private String memo;
     private boolean valid = true;
     private UserLevel userLevel;
 

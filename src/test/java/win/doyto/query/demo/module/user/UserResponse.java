@@ -19,6 +19,7 @@ public class UserResponse implements EntityResponse<UserEntity, UserResponse> {
     private String mobile;
     private String email;
     private String nickname;
+    private String memo;
     private Boolean valid;
     private UserLevel userLevel;
 

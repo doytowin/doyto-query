@@ -164,6 +164,19 @@ class DemoApplicationTest {
         ;
     }
 
+    @Test
+    public void patchMemo() throws Exception {
+        requestJson(post("/user/memo"), "{\"email\":\"qq\",\"memo\":\"qq邮箱\"}");
+
+        mockMvc.perform(get(URL_USER))
+               .andDo(print())
+               .andExpect(jsonPath("$[0].email").value("f0rb@163.com"))
+               .andExpect(jsonPath("$[0].memo").doesNotExist())
+               .andExpect(jsonPath("$[1].email").value("test2@qq.com"))
+               .andExpect(jsonPath("$[1].memo").value("qq邮箱"))
+        ;
+    }
+
     /*=============== menu ==================*/
     private String menuUri = "/01/menu/";
     private String menuUri1 = menuUri + "1";
