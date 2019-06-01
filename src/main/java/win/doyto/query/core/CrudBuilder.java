@@ -26,7 +26,7 @@ import static win.doyto.query.core.CommonUtil.*;
  */
 @SuppressWarnings("squid:CommentedOutCodeLine")
 @Slf4j
-class CrudBuilder<E extends Persistable> extends QueryBuilder {
+final class CrudBuilder<E extends Persistable> extends QueryBuilder {
 
     private static final String EQUALS_REPLACE_HOLDER = " = " + REPLACE_HOLDER;
 

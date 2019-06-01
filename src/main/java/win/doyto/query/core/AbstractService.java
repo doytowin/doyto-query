@@ -29,10 +29,10 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
 
     protected DataAccess<E, I, Q> dataAccess;
 
-    protected CacheWrapper<E> entityCacheWrapper = CacheWrapper.createInstance();
+    protected final CacheWrapper<E> entityCacheWrapper = CacheWrapper.createInstance();
 
     @Autowired(required = false)
-    protected UserIdProvider userIdProvider;
+    private UserIdProvider userIdProvider;
 
     @Autowired(required = false)
     protected List<EntityAspect<E>> entityAspects = new LinkedList<>();
@@ -45,7 +45,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     }
 
     @SuppressWarnings("unchecked")
-    protected Class<E> getDomainType() {
+    private Class<E> getDomainType() {
         return (Class<E>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
@@ -70,23 +70,23 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         return dataAccess.query(query);
     }
 
-    public long count(Q query) {
+    public final long count(Q query) {
         return dataAccess.count(query);
     }
 
-    public List<I> queryIds(Q query) {
+    public final List<I> queryIds(Q query) {
         return queryColumns(query, rowMapperForId, "id");
     }
 
-    public <V> List<V> queryColumns(Q query, RowMapper<V> rowMapper, String... columns) {
+    public final <V> List<V> queryColumns(Q query, RowMapper<V> rowMapper, String... columns) {
         return dataAccess.queryColumns(query, rowMapper, columns);
     }
 
-    public <V> List<V> queryColumns(Q query, Class<V> clazz, String... columns) {
+    public final <V> List<V> queryColumns(Q query, Class<V> clazz, String... columns) {
         return queryColumns(query, new BeanPropertyRowMapper<>(clazz), columns);
     }
 
-    public <S> List<S> queryColumn(Q query, Class<S> clazz, String column) {
+    public final <S> List<S> queryColumn(Q query, Class<S> clazz, String column) {
         return queryColumns(query, new SingleColumnRowMapper<>(clazz), column);
     }
 
@@ -110,8 +110,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         doUpdate(e, () -> dataAccess.patch(e));
     }
 
-    @Transactional
-    public void patch(E e, Q q) {
+    public final void patch(E e, Q q) {
         dataAccess.patch(e, q);
         entityCacheWrapper.clear();
     }
@@ -126,13 +125,14 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         entityCacheWrapper.evict(e.getId());
     }
 
-    public int delete(Q query) {
+    public final int delete(Q query) {
         int delete = dataAccess.delete(query);
         entityCacheWrapper.clear();
         return delete;
     }
 
-    public boolean exists(Q query) {
+    public final boolean exists(Q query) {
         return count(query) > 0;
     }
+
 }

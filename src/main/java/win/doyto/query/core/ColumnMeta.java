@@ -17,16 +17,16 @@ import static win.doyto.query.core.CommonUtil.wrapWithParenthesis;
  * @author f0rb
  */
 @AllArgsConstructor
-class ColumnMeta {
+final class ColumnMeta {
     final String fieldName;
     final Object value;
     final List<Object> argList;
 
-    String defaultSql(QuerySuffix querySuffix) {
+    final String defaultSql(QuerySuffix querySuffix) {
         return defaultSql(querySuffix, QueryBuilder.REPLACE_HOLDER);
     }
 
-    String defaultSql(QuerySuffix querySuffix, String ex) {
+    final String defaultSql(QuerySuffix querySuffix, String ex) {
         if (!ex.isEmpty()) {
             ex = SPACE + ex;
         }

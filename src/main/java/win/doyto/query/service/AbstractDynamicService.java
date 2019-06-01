@@ -13,11 +13,11 @@ import java.io.Serializable;
 public abstract class AbstractDynamicService<E extends Persistable<I>, I extends Serializable, Q>
     extends AbstractService<E, I, Q> implements DynamicService<E, I, Q> {
 
-    public E get(E param) {
+    public final E get(E param) {
         return entityCacheWrapper.execute(param.getId(), () -> dataAccess.get(param));
     }
 
-    public E delete(E param) {
+    public final E delete(E param) {
         E e = get(param);
         if (e != null) {
             dataAccess.delete(param);

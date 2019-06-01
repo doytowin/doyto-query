@@ -17,12 +17,12 @@ public abstract class AbstractCrudService<E extends Persistable<I>, I extends Se
     extends AbstractService<E, I, Q> implements CrudService<E, I, Q> {
 
     @Override
-    public E get(I id) {
+    public final E get(I id) {
         return entityCacheWrapper.execute(id, () -> dataAccess.get(id));
     }
 
     @Override
-    public E delete(I id) {
+    public final E delete(I id) {
         E e = get(id);
         if (e != null) {
             dataAccess.delete(id);
@@ -32,7 +32,7 @@ public abstract class AbstractCrudService<E extends Persistable<I>, I extends Se
         return e;
     }
 
-    public List<E> query(Q query) {
+    public final List<E> query(Q query) {
         if (caching()) {
             return queryIds(query).stream().map(dataAccess::get).collect(Collectors.toList());
         }

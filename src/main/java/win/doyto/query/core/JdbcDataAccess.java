@@ -22,7 +22,7 @@ import static win.doyto.query.core.CommonUtil.replaceTableName;
  *
  * @author f0rb
  */
-class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
+final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<E> rowMapper;
@@ -41,39 +41,39 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
     }
 
     @Override
-    public List<E> query(Q q) {
+    public final List<E> query(Q q) {
         return queryColumns(q, rowMapper, "*");
     }
 
     @Override
-    public <V> List<V> queryColumns(Q q, RowMapper<V> rowMapper, String... columns) {
+    public final <V> List<V> queryColumns(Q q, RowMapper<V> rowMapper, String... columns) {
         SqlAndArgs sqlAndArgs = crudBuilder.buildSelectColumnsAndArgs(q, columns);
         return jdbcTemplate.query(sqlAndArgs.sql, sqlAndArgs.args, rowMapper);
     }
 
     @Override
-    public long count(Q q) {
+    public final long count(Q q) {
         SqlAndArgs sqlAndArgs = crudBuilder.buildCountAndArgs(q);
         return jdbcTemplate.queryForObject(sqlAndArgs.sql, sqlAndArgs.args, Long.class);
     }
 
     @Override
-    public int delete(Q q) {
+    public final int delete(Q q) {
         return doUpdate(crudBuilder.buildDeleteAndArgs(q));
     }
 
     @Override
-    public E get(I id) {
+    public final E get(I id) {
         return getEntity(crudBuilder.buildSelectById(), id);
     }
 
     @Override
-    public int delete(I id) {
+    public final int delete(I id) {
         return jdbcTemplate.update(crudBuilder.buildDeleteById(), id);
     }
 
     @Override
-    public E get(E e) {
+    public final E get(E e) {
         String sql = String.format(FMT_GET_BY_ID, replaceTableName(e, entityTable));
         return getEntity(sql, e.getId());
     }
@@ -87,13 +87,13 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
     }
 
     @Override
-    public int delete(E e) {
+    public final int delete(E e) {
         return jdbcTemplate.update(String.format(FMT_DELETE_BY_ID, replaceTableName(e, entityTable)), e.getId());
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void create(E e) {
+    public final void create(E e) {
         List<Object> args = new ArrayList<>();
         String sql = crudBuilder.buildCreateAndArgs(e, args);
 
@@ -114,22 +114,22 @@ class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implem
     }
 
     @Override
-    public void update(E e) {
+    public final void update(E e) {
         doUpdate(crudBuilder.buildUpdateAndArgs(e));
     }
 
     @Override
-    public void patch(E e) {
+    public final void patch(E e) {
         doUpdate(crudBuilder.buildPatchAndArgsWithId(e));
     }
 
     @Override
-    public void patch(E e, Q q) {
+    public final void patch(E e, Q q) {
         doUpdate(crudBuilder.buildPatchAndArgsWithQuery(e, q));
     }
 
     @Override
-    public E fetch(I id) {
+    public final E fetch(I id) {
         return get(id);
     }
 
