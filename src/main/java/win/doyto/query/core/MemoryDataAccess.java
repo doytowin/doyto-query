@@ -116,7 +116,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         for (Field field : query.getClass().getDeclaredFields()) {
             if (!ignoreField(field)) {
                 Object v1 = readField(field, query);
-                if (!ignoreValue(v1, field)) {
+                if (isValidValue(v1, field)) {
                     boolean shouldNotRemain = unsatisfied(entity, field.getName(), v1);
                     if (shouldNotRemain) {
                         return false;

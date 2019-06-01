@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
+import static win.doyto.query.core.CommonUtil.isValidValue;
+
 /**
  * QueryBuilder
  *
@@ -62,7 +64,7 @@ public class QueryBuilder {
                 continue;
             }
             Object value = CommonUtil.readFieldGetter(field, query);
-            if (!CommonUtil.ignoreValue(value, field)) {
+            if (isValidValue(value, field)) {
                 if (sql.contains("${" + fieldName + "}") && StringUtils.isAlphanumeric(String.valueOf(value))) {
                     sql = sql.replaceAll("\\$\\{" + fieldName + "}", String.valueOf(value));
                 } else {
