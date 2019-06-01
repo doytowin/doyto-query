@@ -314,4 +314,13 @@ public class QueryBuilderTest {
                      queryBuilder.buildSelectAndArgs(dynamicQuery, argList));
         assertThat(argList).containsExactly("; DROP TABLE menu;", 100);
     }
+
+    @Test
+    void supportIsNull() {
+        MenuQuery byNoParent = MenuQuery.builder().parentIdNull(true).build();
+
+        assertEquals("SELECT * FROM menu WHERE parentId IS NULL",
+                     queryBuilder.buildSelectAndArgs(byNoParent, argList));
+        assertThat(argList).isEmpty();
+    }
 }

@@ -48,7 +48,7 @@ class UserController extends AbstractRestService<UserEntity, Long, UserQuery, Us
     public void updateMemo(@RequestBody UserRequest request) {
         UserEntity userEntity = new UserEntity();
         userEntity.setMemo(request.getMemo());
-        UserQuery byEmail = UserQuery.builder().emailLike(request.getEmail()).build();
+        UserQuery byEmail = UserQuery.builder().emailLike(request.getEmail()).memoNull(true).build();
         patch(userEntity, byEmail);
     }
 

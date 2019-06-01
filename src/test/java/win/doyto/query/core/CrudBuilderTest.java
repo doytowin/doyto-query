@@ -37,13 +37,13 @@ class CrudBuilderTest {
 
     @Test
     void create() {
-        assertEquals("INSERT INTO user (username, password, mobile, email, nickname, userLevel, valid) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        assertEquals("INSERT INTO user (username, password, mobile, email, nickname, userLevel, memo, valid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                      userEntityCrudBuilder.buildCreateAndArgs(new TestEntity(), argList));
     }
 
     @Test
     void update() {
-        assertEquals("UPDATE user SET username = ?, password = ?, mobile = ?, email = ?, nickname = ?, userLevel = ?, valid = ? WHERE id = ?",
+        assertEquals("UPDATE user SET username = ?, password = ?, mobile = ?, email = ?, nickname = ?, userLevel = ?, memo = ?, valid = ? WHERE id = ?",
                      userEntityCrudBuilder.buildUpdateAndArgs(new TestEntity(), argList));
     }
 

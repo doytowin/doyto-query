@@ -27,19 +27,22 @@ class ColumnMeta {
     }
 
     String defaultSql(QuerySuffix querySuffix, String ex) {
+        if (!ex.isEmpty()) {
+            ex = SPACE + ex;
+        }
         String columnName = querySuffix.resolveColumnName(fieldName);
         if (columnName.contains("Or")) {
             String[] ors = splitByOr(columnName);
             List<String> columns = new ArrayList<>(ors.length);
             for (String or : ors) {
-                columns.add(convertColumn(camelize(or)) + SPACE + querySuffix.getOp() + SPACE + ex);
-                appendArgs(value, argList);
+                columns.add(convertColumn(camelize(or)) + SPACE + querySuffix.getOp() + ex);
+                appendArgs(ex, value, argList);
             }
             return wrapWithParenthesis(StringUtils.join(columns, " OR "));
         }
 
-        appendArgs(value, argList);
-        return convertColumn(columnName) + SPACE + querySuffix.getOp() + SPACE + ex;
+        appendArgs(ex, value, argList);
+        return convertColumn(columnName) + SPACE + querySuffix.getOp() + ex;
     }
 
     static String camelize(String or) {
@@ -51,10 +54,10 @@ class ColumnMeta {
     }
 
     @SuppressWarnings("unchecked")
-    private static void appendArgs(Object value, List<Object> argList) {
+    private static void appendArgs(String ex, Object value, List<Object> argList) {
         if (value instanceof Collection) {
             argList.addAll((Collection<Object>) value);
-        } else {
+        } else if (ex.contains("?")){
             argList.add(value);
         }
     }

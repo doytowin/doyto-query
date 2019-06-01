@@ -42,6 +42,9 @@ public class TestQuery extends PageQuery {
 
     private String userNameOrUserCodeLike;
 
+    private boolean memoNull;
+    private boolean memoNotNull;
+
     private TestEnum userLevel;
 
     private Date createTimeGt;

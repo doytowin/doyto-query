@@ -23,4 +23,6 @@ public class MenuQuery {
 
     @NestedQuery(left = "parent_id", table = "menu", right = "true")
     private boolean onlyParent;
+
+    private boolean parentIdNull;
 }

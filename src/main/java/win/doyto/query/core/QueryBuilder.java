@@ -62,7 +62,7 @@ public class QueryBuilder {
                 continue;
             }
             Object value = CommonUtil.readFieldGetter(field, query);
-            if (!ignoreValue(value, field)) {
+            if (!CommonUtil.ignoreValue(value, field)) {
                 if (sql.contains("${" + fieldName + "}") && StringUtils.isAlphanumeric(String.valueOf(value))) {
                     sql = sql.replaceAll("\\$\\{" + fieldName + "}", String.valueOf(value));
                 } else {
@@ -75,10 +75,6 @@ public class QueryBuilder {
             where = " WHERE " + StringUtils.join(whereList, " AND ");
         }
         return sql + where;
-    }
-
-    private static boolean ignoreValue(Object value, Field field) {
-        return value == null || (value instanceof Boolean && field.getType().isPrimitive() && Boolean.FALSE.equals(value));
     }
 
     private static void processField(Object value, Field field, List<Object> whereList, List<Object> argList) {

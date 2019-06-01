@@ -22,7 +22,17 @@ import static win.doyto.query.core.QueryBuilder.SEPARATOR;
 @SuppressWarnings("squid:S00115")
 @Getter
 enum QuerySuffix {
-    Like, NotIn("NOT IN"), In, Gt(">"), Ge(">="), Lt("<"), Le("<="), NONE("=");
+    NotLike("NOT LIKE"),
+    Like,
+    NotIn("NOT IN"),
+    In,
+    NotNull("IS NOT NULL"),
+    Null("IS NULL"),
+    Gt(">"),
+    Ge(">="),
+    Lt("<"),
+    Le("<="),
+    NONE("=");
 
     QuerySuffix() {
         this.op = name().toUpperCase();
@@ -39,16 +49,19 @@ enum QuerySuffix {
     private static final Map<QuerySuffix, Function<ColumnMeta, String>> sqlFuncMap = new EnumMap<>(QuerySuffix.class);
 
     static {
-        List<String> suffixList = Arrays.stream(QuerySuffix.values()).filter(querySuffix -> querySuffix != NONE).map(Enum::name).collect(Collectors.toList());
+        List<String> suffixList = Arrays.stream(values()).filter(querySuffix -> querySuffix != NONE).map(Enum::name).collect(Collectors.toList());
         String suffixPtn = StringUtils.join(suffixList, "|");
         SUFFIX_PTN = Pattern.compile("(" + suffixPtn + ")$");
 
-        for (QuerySuffix querySuffix : QuerySuffix.values()) {
+        for (QuerySuffix querySuffix : values()) {
             sqlFuncMap.put(querySuffix, columnMeta -> columnMeta.defaultSql(querySuffix));
         }
 
-        sqlFuncMap.put(QuerySuffix.In, columnMeta -> buildSqlForCollection(columnMeta, QuerySuffix.In));
-        sqlFuncMap.put(QuerySuffix.NotIn, columnMeta -> buildSqlForCollection(columnMeta, QuerySuffix.NotIn));
+        sqlFuncMap.put(Null, columnMeta -> columnMeta.defaultSql(Null, ""));
+        sqlFuncMap.put(NotNull, columnMeta -> columnMeta.defaultSql(NotNull, ""));
+
+        sqlFuncMap.put(In, columnMeta -> buildSqlForCollection(columnMeta, In));
+        sqlFuncMap.put(NotIn, columnMeta -> buildSqlForCollection(columnMeta, NotIn));
     }
 
     static String buildAndSql(String fieldName, @NonNull Object value, List<Object> argList) {
@@ -60,10 +73,10 @@ enum QuerySuffix {
     }
 
     static QuerySuffix resolve(String fieldName) {
-        QuerySuffix querySuffix = QuerySuffix.NONE;
+        QuerySuffix querySuffix = NONE;
         Matcher matcher = SUFFIX_PTN.matcher(fieldName);
         if (matcher.find()) {
-            querySuffix = QuerySuffix.valueOf(matcher.group());
+            querySuffix = valueOf(matcher.group());
         }
         return querySuffix;
     }

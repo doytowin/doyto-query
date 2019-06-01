@@ -99,7 +99,6 @@ class DemoApplicationTest {
     @Test
     public void pageByUsernameLike() throws Exception {
         mockMvc.perform(get(URL_USER + "?usernameLike=user&pageNumber=0&pageSize=2"))
-               .andDo(print())
                .andExpect(jsonPath("$.list").isArray())
                .andExpect(jsonPath("$.list[0].nickname").value("测试2"))
                .andExpect(jsonPath("$.list[0].password").doesNotExist())
@@ -174,6 +173,8 @@ class DemoApplicationTest {
                .andExpect(jsonPath("$[0].memo").doesNotExist())
                .andExpect(jsonPath("$[1].email").value("test2@qq.com"))
                .andExpect(jsonPath("$[1].memo").value("qq邮箱"))
+               .andExpect(jsonPath("$[2].email").value("test3@qq.com"))
+               .andExpect(jsonPath("$[2].memo").value("memo"))
         ;
     }
 

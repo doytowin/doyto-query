@@ -17,8 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import javax.persistence.Id;
 
-import static win.doyto.query.core.CommonUtil.ignoreField;
-import static win.doyto.query.core.CommonUtil.readField;
+import static win.doyto.query.core.CommonUtil.*;
 import static win.doyto.query.core.QuerySuffix.*;
 
 /**
@@ -117,7 +116,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         for (Field field : query.getClass().getDeclaredFields()) {
             if (!ignoreField(field)) {
                 Object v1 = readField(field, query);
-                if (v1 != null) {
+                if (!ignoreValue(v1, field)) {
                     boolean shouldNotRemain = unsatisfied(entity, field.getName(), v1);
                     if (shouldNotRemain) {
                         return false;
@@ -194,21 +193,51 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
 
     private static class FilterExecutor {
 
-        private static final Map<QuerySuffix, Matcher> map = new EnumMap<>(QuerySuffix.class);
+        static final Map<QuerySuffix, Matcher> map = new EnumMap<>(QuerySuffix.class);
+
+        static class NotLikeMatcher implements Matcher {
+            @Override
+            public boolean doMatch(Object qv, Object ev) {
+                return !StringUtils.contains(((String) ev), (String) qv);
+            }
+
+            @Override
+            public boolean isComparable(Object qv, Object ev) {
+                return ev instanceof String;
+            }
+        }
+
+        static class LikeMatcher extends NotLikeMatcher {
+            @Override
+            public boolean doMatch(Object qv, Object ev) {
+                return !super.doMatch(qv, ev);
+            }
+        }
+
+        static class NotNullMatcher implements Matcher {
+            @Override
+            public boolean doMatch(Object qv, Object ev) {
+                return ev != null;
+            }
+
+            @Override
+            public boolean isComparable(Object qv, Object ev) {
+                return true;
+            }
+        }
+
+        static class NullMatcher extends NotNullMatcher {
+            @Override
+            public boolean doMatch(Object qv, Object ev) {
+                return !super.doMatch(qv, ev);
+            }
+        }
 
         static {
-            map.put(Like, new Matcher() {
-                @Override
-                public boolean doMatch(Object qv, Object ev) {
-                    return StringUtils.contains(((String) ev), (String) qv);
-                }
-
-                @Override
-                public boolean isComparable(Object qv, Object ev) {
-                    return ev instanceof String;
-                }
-            });
-
+            map.put(Like, new LikeMatcher());
+            map.put(NotLike, new NotLikeMatcher());
+            map.put(Null, new NullMatcher());
+            map.put(NotNull, new NotNullMatcher());
             map.put(In, (qv, ev) -> ((Collection) qv).contains(ev));
             map.put(NotIn, (qv, ev) -> !((Collection) qv).contains(ev));
             map.put(Gt, (qv, ev) -> ((Comparable) ev).compareTo(qv) > 0);

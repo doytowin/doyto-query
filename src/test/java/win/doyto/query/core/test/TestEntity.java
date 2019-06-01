@@ -30,6 +30,7 @@ public class TestEntity extends IntegerId {
     private String email;
     private String nickname;
     private String userLevel;
+    private String memo;
     private Boolean valid;
 
     @Transient
@@ -58,6 +59,7 @@ public class TestEntity extends IntegerId {
         testEntity.setEmail("f0rb@163.com");
         testEntity.setMobile("17778888880");
         testEntity.setValid(true);
+        testEntity.setMemo("master");
         userEntities.add(testEntity);
         return userEntities;
     }

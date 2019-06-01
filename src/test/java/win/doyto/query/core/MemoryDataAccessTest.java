@@ -80,4 +80,18 @@ class MemoryDataAccessTest {
         assertEquals(2, userEntities.size());
     }
 
+    @Test
+    void memoNull() {
+        TestQuery byNullMemo = TestQuery.builder().build();
+        assertEquals(5, mockUserDataAccess.count(byNullMemo));
+
+        byNullMemo.setMemoNull(true);
+        assertEquals(4, mockUserDataAccess.count(byNullMemo));
+    }
+
+    @Test
+    void notNull() {
+        TestQuery byNoneNullMemo = TestQuery.builder().memoNotNull(true).build();
+        assertEquals(1, mockUserDataAccess.count(byNoneNullMemo));
+    }
 }
