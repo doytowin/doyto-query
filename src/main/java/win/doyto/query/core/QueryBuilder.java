@@ -6,7 +6,10 @@ import win.doyto.query.config.GlobalConfiguration;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
@@ -19,6 +22,8 @@ import static win.doyto.query.core.CommonUtil.*;
  */
 @Slf4j
 public class QueryBuilder {
+
+    private static final Map<Class, Field[]> classFieldsMap = new ConcurrentHashMap<>();
 
     static final String SEPARATOR = ", ";
     static final String REPLACE_HOLDER = "?";
@@ -56,13 +61,11 @@ public class QueryBuilder {
     }
 
     protected static String buildWhere(String sql, Object query, List<Object> argList) {
-        Field[] fields = query.getClass().getDeclaredFields();
+        initFields(query);
+        Field[] fields = classFieldsMap.get(query.getClass());
         List<Object> whereList = new ArrayList<>(fields.length);
         for (Field field : fields) {
             String fieldName = field.getName();
-            if (ignoreField(field)) {
-                continue;
-            }
             Object value = readFieldGetter(field, query);
             if (isValidValue(value, field)) {
                 if (sql.contains("${" + fieldName + "}") && StringUtils.isAlphanumeric(String.valueOf(value))) {
@@ -76,6 +79,13 @@ public class QueryBuilder {
             sql += " WHERE " + StringUtils.join(whereList, " AND ");
         }
         return sql;
+    }
+
+    private static void initFields(Object query) {
+        Class<?> clazz = query.getClass();
+        if (!classFieldsMap.containsKey(clazz)) {
+            classFieldsMap.put(clazz, Arrays.stream(clazz.getDeclaredFields()).filter(field -> !ignoreField(field)).toArray(Field[]::new));
+        }
     }
 
     private static void processField(Object value, Field field, List<Object> whereList, List<Object> argList) {
