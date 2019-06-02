@@ -2,6 +2,7 @@ package win.doyto.query.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.core.Dialect;
 
 /**
  * GlobalConfiguration
@@ -13,12 +14,13 @@ import lombok.Setter;
 public class GlobalConfiguration {
 
     private boolean mapCamelCaseToUnderscore;
+    private Dialect dialect = (sql, limit, offset) -> sql + " LIMIT " + limit + (sql.startsWith("SELECT") ? " OFFSET " + offset : "");
 
     private GlobalConfiguration() {
     }
 
     public static GlobalConfiguration instance() {
-        return GlobalConfiguration.Singleton.instance;
+        return Singleton.instance;
     }
 
     private static class Singleton {

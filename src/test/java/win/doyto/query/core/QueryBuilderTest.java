@@ -323,4 +323,19 @@ public class QueryBuilderTest {
                      queryBuilder.buildSelectAndArgs(byNoParent, argList));
         assertThat(argList).isEmpty();
     }
+
+    @Test
+    void customPageDialect() {
+        GlobalConfiguration.instance().setDialect(
+            (sql, limit, offset) -> String.format("SELECT LIMIT %d %d %s", offset, offset + limit, sql.substring("SELECT ".length())));
+
+        PageQuery pageQuery = TestQuery.builder().build().setPageNumber(2).setPageSize(10);
+        assertEquals("SELECT LIMIT 20 30 * FROM user",
+                     queryBuilder.buildSelectAndArgs(pageQuery, argList));
+
+        // reset
+        GlobalConfiguration.instance().setDialect(
+            (sql, limit, offset) -> sql + " LIMIT " + limit + (sql.startsWith("SELECT") ? " OFFSET " + offset : ""));
+
+    }
 }

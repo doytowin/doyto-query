@@ -2,6 +2,7 @@ package win.doyto.query.core;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import win.doyto.query.config.GlobalConfiguration;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
-import static win.doyto.query.core.CommonUtil.isValidValue;
+import static win.doyto.query.core.CommonUtil.*;
 
 /**
  * QueryBuilder
@@ -25,14 +26,7 @@ public class QueryBuilder {
     private static String build(DatabaseOperation operation, Object query, List<Object> argList, String... columns) {
         QueryTable queryTable = query.getClass().getAnnotation(QueryTable.class);
         String table = queryTable.table();
-        String sql;
-        if (operation == DatabaseOperation.COUNT) {
-            sql = "SELECT count(*) FROM " + table;
-        } else if (operation == DatabaseOperation.DELETE) {
-            sql = "DELETE FROM " + table;
-        } else {
-            sql = "SELECT " + StringUtils.join(columns, SEPARATOR) + " FROM " + table;
-        }
+        String sql = start(operation, table, columns);
 
         sql = buildWhere(sql, query, argList);
 
@@ -42,16 +36,22 @@ public class QueryBuilder {
                 sql += " ORDER BY " + pageQuery.getSort().replaceAll(",", " ").replaceAll(";", ", ");
             }
         }
-        if (operation != DatabaseOperation.COUNT && query instanceof PageQuery) {
+        if (operation != DatabaseOperation.COUNT && query instanceof PageQuery && ((PageQuery) query).needPaging()) {
             PageQuery pageQuery = (PageQuery) query;
-            if (pageQuery.needPaging()) {
-                sql += " LIMIT " + pageQuery.getPageSize();
-                if (operation == DatabaseOperation.SELECT) {
-                    sql += " OFFSET " + pageQuery.getOffset();
-                }
-            }
+            sql = GlobalConfiguration.instance().getDialect().buildPageSql(sql, pageQuery.getPageSize(), pageQuery.getOffset());
         }
-        log.info("SQL: {}", sql);
+        return sql;
+    }
+
+    private static String start(DatabaseOperation operation, String table, String[] columns) {
+        String sql;
+        if (operation == DatabaseOperation.COUNT) {
+            sql = "SELECT count(*) FROM " + table;
+        } else if (operation == DatabaseOperation.DELETE) {
+            sql = "DELETE FROM " + table;
+        } else {
+            sql = "SELECT " + StringUtils.join(columns, SEPARATOR) + " FROM " + table;
+        }
         return sql;
     }
 
@@ -60,10 +60,10 @@ public class QueryBuilder {
         List<Object> whereList = new ArrayList<>(fields.length);
         for (Field field : fields) {
             String fieldName = field.getName();
-            if (CommonUtil.ignoreField(field)) {
+            if (ignoreField(field)) {
                 continue;
             }
-            Object value = CommonUtil.readFieldGetter(field, query);
+            Object value = readFieldGetter(field, query);
             if (isValidValue(value, field)) {
                 if (sql.contains("${" + fieldName + "}") && StringUtils.isAlphanumeric(String.valueOf(value))) {
                     sql = sql.replaceAll("\\$\\{" + fieldName + "}", String.valueOf(value));
@@ -72,11 +72,10 @@ public class QueryBuilder {
                 }
             }
         }
-        String where = "";
         if (!whereList.isEmpty()) {
-            where = " WHERE " + StringUtils.join(whereList, " AND ");
+            sql += " WHERE " + StringUtils.join(whereList, " AND ");
         }
-        return sql + where;
+        return sql;
     }
 
     private static void processField(Object value, Field field, List<Object> whereList, List<Object> argList) {
