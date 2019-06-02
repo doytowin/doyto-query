@@ -23,13 +23,13 @@ import static win.doyto.query.core.CommonUtil.*;
 public class QueryBuilder {
 
     private static final Map<Class, Field[]> classFieldsMap = new ConcurrentHashMap<>();
+    private static final Map<Class, String> tableMap = new ConcurrentHashMap<>();
 
     static final String SEPARATOR = ", ";
     static final String REPLACE_HOLDER = "?";
 
     private static String build(DatabaseOperation operation, Object query, List<Object> argList, String... columns) {
-        QueryTable queryTable = query.getClass().getAnnotation(QueryTable.class);
-        String table = queryTable.table();
+        String table = tableMap.computeIfAbsent(query.getClass(), c -> ((QueryTable) c.getAnnotation(QueryTable.class)).table());
         String sql = start(operation, table, columns);
 
         sql = buildWhere(sql, query, argList);
