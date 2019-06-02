@@ -14,7 +14,7 @@
     <groupId>win.doyto</groupId>
     <artifactId>doyto-query</artifactId>
     <name>doyto-query</name>
-    <version>0.1.2-RELEASE</version>
+    <version>0.1.3-SNAPSHOT</version>
     <url>https://query.doyto.win/</url>
 
     <properties>
