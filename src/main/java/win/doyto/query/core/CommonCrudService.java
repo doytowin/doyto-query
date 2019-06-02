@@ -32,6 +32,9 @@ public interface CommonCrudService<E extends Persistable, Q> extends QueryServic
      * <li><b>不会</b>按id清理缓存</li>
      * <li><b>不会</b>执行{@link win.doyto.query.entity.EntityAspect#afterCreate(Object)}</li>
      * </ol>
+     *
+     * @param entities entities to insert
+     * @return amount of updated entities
      */
     int batchInsert(Iterable<E> entities);
 
@@ -42,9 +45,10 @@ public interface CommonCrudService<E extends Persistable, Q> extends QueryServic
      * <li><b>不会</b>按id清理缓存</li>
      * <li><b>不会</b>执行{@link win.doyto.query.entity.EntityAspect#afterUpdate(Object, Object)}</li>
      * </ol>
-     *  @param e entity object
+     *
+     * @param e entity object
      * @param q query object
-     * @return
+     * @return amount of updated entities
      */
     int patch(E e, Q q);
 
@@ -58,6 +62,7 @@ public interface CommonCrudService<E extends Persistable, Q> extends QueryServic
      * </ol>
      *
      * @param q query object
+     * @return amount of updated entities
      */
     int delete(Q q);
 
