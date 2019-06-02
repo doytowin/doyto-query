@@ -14,15 +14,29 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     extends AbstractService<E, I, Q> implements DynamicService<E, I, Q> {
 
     public final E get(E param) {
-        return entityCacheWrapper.execute(param.getId(), () -> dataAccess.get(param));
+        return entityCacheWrapper.execute(resolveCacheKey(param), () -> fetch(param));
+    }
+
+    @Override
+    public final E fetch(E param) {
+        return dataAccess.get(param);
     }
 
     public final E delete(E param) {
         E e = get(param);
         if (e != null) {
-            dataAccess.delete(param);
-            entityCacheWrapper.execute(e.getId(), () -> null);
-            entityAspects.forEach(entityAspect -> entityAspect.afterDelete(e));
+            if (!entityAspects.isEmpty()) {
+                transactionOperations.execute(s -> {
+                    dataAccess.delete(param);
+                    entityAspects.forEach(entityAspect -> entityAspect.afterDelete(e));
+                    return null;
+                });
+            } else {
+                dataAccess.delete(param);
+            }
+            String key = resolveCacheKey(e);
+            entityCacheWrapper.evict(key);
+            entityCacheWrapper.execute(key, () -> null);
         }
         return e;
     }

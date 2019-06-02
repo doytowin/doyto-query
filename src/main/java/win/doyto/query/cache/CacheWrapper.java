@@ -26,7 +26,7 @@ public interface CacheWrapper<T> {
         return new DefaultCacheWrapper<>();
     }
 
-    default T execute(Object key, Invocable<T> invocable) {
+    default T execute(String key, Invocable<T> invocable) {
         return CacheWrapper.invoke(getCache(), key, invocable);
     }
 
@@ -34,7 +34,7 @@ public interface CacheWrapper<T> {
 
     Cache getCache();
 
-    default void evict(Object key) {
+    default void evict(String key) {
         getCache().evict(key);
     }
 

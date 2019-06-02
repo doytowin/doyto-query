@@ -15,6 +15,14 @@ public interface CrudService<E extends Persistable<I>, I extends Serializable, Q
 
     E get(I id);
 
+    /**
+     * force to get a new entity object from database
+     *
+     * @param id entity id
+     * @return a new entity object
+     */
+    E fetch(I id);
+
     List<I> queryIds(Q query);
 
     E delete(I id);

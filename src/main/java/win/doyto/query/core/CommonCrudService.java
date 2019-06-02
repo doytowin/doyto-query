@@ -15,7 +15,6 @@ public interface CommonCrudService<E extends Persistable, Q> extends QueryServic
 
     void update(E e);
 
-    @Transactional
     default E save(E e) {
         if (e.isNew()) {
             create(e);
@@ -29,10 +28,8 @@ public interface CommonCrudService<E extends Persistable, Q> extends QueryServic
 
     @Transactional
     default void batchInsert(Iterable<E> entities) {
-        if (entities != null) {
-            for (E entity : entities) {
-                this.create(entity);
-            }
+        for (E entity : entities) {
+            create(entity);
         }
     }
 

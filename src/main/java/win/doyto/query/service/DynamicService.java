@@ -21,6 +21,14 @@ public interface DynamicService<E extends Persistable<I>, I extends Serializable
     E get(E param);
 
     /**
+     * force to get a new entity object from database
+     *
+     * @param param entity id
+     * @return a new entity object
+     */
+    E fetch(E param);
+
+    /**
      * Delete entity from sharding table
      *
      * @param param an entity just contains id and information of sharding table

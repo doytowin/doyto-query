@@ -18,6 +18,11 @@ import win.doyto.query.service.PageList;
 class MenuController extends AbstractDynamicService<MenuEntity, Integer, MenuQuery> {
 
     @Override
+    protected String resolveCacheKey(MenuEntity menuEntity) {
+        return menuEntity.getId() + menuEntity.getPlatform();
+    }
+
+    @Override
     protected String getCacheName() {
         return "module:menu";
     }

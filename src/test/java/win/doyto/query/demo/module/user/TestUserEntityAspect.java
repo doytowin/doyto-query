@@ -21,4 +21,12 @@ public class TestUserEntityAspect implements EntityAspect<UserEntity> {
         assertNotSame(origin, current);
         times++;
     }
+
+    @Override
+    public void afterDelete(UserEntity userEntity) {
+        if (userEntity.getId() == 1) {
+            // trigger rollback
+            throw new RuntimeException();
+        }
+    }
 }

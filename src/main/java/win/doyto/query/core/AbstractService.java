@@ -6,7 +6,12 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.SimpleTransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionOperations;
+import org.springframework.transaction.support.TransactionTemplate;
 import win.doyto.query.cache.CacheWrapper;
 import win.doyto.query.entity.EntityAspect;
 import win.doyto.query.entity.Persistable;
@@ -37,16 +42,28 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     @Autowired(required = false)
     protected List<EntityAspect<E>> entityAspects = new LinkedList<>();
 
-    protected Class<E> domainType;
+    protected Class<E> entityType;
+
+    protected TransactionOperations transactionOperations = NoneTransactionOperations.instance;
 
     public AbstractService() {
-        this.domainType = getDomainType();
-        this.dataAccess = new MemoryDataAccess<>(this.domainType);
+        this.entityType = getEntityType();
+        this.dataAccess = new MemoryDataAccess<>(this.entityType);
     }
 
     @SuppressWarnings("unchecked")
-    private Class<E> getDomainType() {
+    private Class<E> getEntityType() {
         return (Class<E>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+    }
+
+    @Autowired
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        dataAccess = new JdbcDataAccess<>(jdbcTemplate, entityType);
+    }
+
+    @Autowired(required = false)
+    public void setJdbcTemplate(PlatformTransactionManager transactionManager) {
+        transactionOperations = new TransactionTemplate(transactionManager);
     }
 
     @Autowired(required = false)
@@ -57,10 +74,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         }
     }
 
-    @Autowired
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        dataAccess = new JdbcDataAccess<>(jdbcTemplate, domainType);
-    }
+    protected abstract String resolveCacheKey(E e);
 
     protected String getCacheName() {
         return null;
@@ -90,39 +104,50 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         return queryColumns(query, new SingleColumnRowMapper<>(clazz), column);
     }
 
-    @Transactional
-    public void create(E e) {
+    public final void create(E e) {
         if (userIdProvider != null) {
             userIdProvider.setupUserId(e);
         }
-        dataAccess.create(e);
-        entityAspects.forEach(entityAspect -> entityAspect.afterCreate(e));
-        entityCacheWrapper.evict(e.getId());
+        if (!entityAspects.isEmpty()) {
+            transactionOperations.execute(s -> {
+                dataAccess.create(e);
+                entityAspects.forEach(entityAspect -> entityAspect.afterCreate(e));
+                return null;
+            });
+        } else {
+            dataAccess.create(e);
+        }
+        entityCacheWrapper.evict(resolveCacheKey(e));
     }
 
-    @Transactional
-    public void update(E e) {
+    public final void update(E e) {
         doUpdate(e, () -> dataAccess.update(e));
     }
 
-    @Transactional
-    public void patch(E e) {
+    public final void patch(E e) {
         doUpdate(e, () -> dataAccess.patch(e));
-    }
-
-    public final void patch(E e, Q q) {
-        dataAccess.patch(e, q);
-        entityCacheWrapper.clear();
     }
 
     private void doUpdate(E e, Runnable runnable) {
         if (userIdProvider != null) {
             userIdProvider.setupUserId(e);
         }
-        E origin = entityAspects.isEmpty() ? null : dataAccess.fetch(e.getId());
-        runnable.run();
-        entityAspects.forEach(entityAspect -> entityAspect.afterUpdate(origin, e));
-        entityCacheWrapper.evict(e.getId());
+        if (!entityAspects.isEmpty()) {
+            transactionOperations.execute(s -> {
+                E origin = dataAccess.fetch(e.getId());
+                runnable.run();
+                entityAspects.forEach(entityAspect -> entityAspect.afterUpdate(origin, e));
+                return null;
+            });
+        } else {
+            runnable.run();
+        }
+        entityCacheWrapper.evict(resolveCacheKey(e));
+    }
+
+    public final void patch(E e, Q q) {
+        dataAccess.patch(e, q);
+        entityCacheWrapper.clear();
     }
 
     public final int delete(Q query) {
@@ -135,4 +160,13 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         return count(query) > 0;
     }
 
+    private static class NoneTransactionOperations implements TransactionOperations {
+        private static final TransactionOperations instance = new NoneTransactionOperations();
+        private static final TransactionStatus TRANSACTION_STATUS = new SimpleTransactionStatus();
+
+        @Override
+        public <T> T execute(TransactionCallback<T> transactionCallback) {
+            return transactionCallback.doInTransaction(TRANSACTION_STATUS);
+        }
+    }
 }

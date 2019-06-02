@@ -66,6 +66,7 @@ class DemoApplicationTest {
     /*=============== user ==================*/
     private static final String URL_USER = "/user/";
     private static final String URL_USER_1 = URL_USER + "1";
+    private static final String URL_USER_2 = URL_USER + "2";
 
     @Test
     public void queryByUsername() throws Exception {
@@ -176,6 +177,21 @@ class DemoApplicationTest {
                .andExpect(jsonPath("$[2].email").value("test3@qq.com"))
                .andExpect(jsonPath("$[2].memo").value("memo"))
         ;
+    }
+
+    @Test
+    void deleteUser() throws Exception {
+        try {
+            mockMvc.perform(delete(URL_USER_1));
+            fail();
+        } catch (Exception e) {
+            assertTrue(e.getCause() instanceof RuntimeException);
+        }
+        mockMvc.perform(get(URL_USER_1)).andExpect(jsonPath("$.username").value("f0rb"));
+
+        mockMvc.perform(delete(URL_USER_2));
+        mockMvc.perform(get(URL_USER_2)).andDo(print()).andExpect(jsonPath("$").doesNotExist());
+
     }
 
     /*=============== menu ==================*/
