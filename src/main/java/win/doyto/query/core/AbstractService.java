@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.support.NoOpCache;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -58,12 +58,12 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     }
 
     @Autowired
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        dataAccess = new JdbcDataAccess<>(jdbcTemplate, entityType);
+    public void setJdbcOperations(JdbcOperations jdbcOperations) {
+        dataAccess = new JdbcDataAccess<>(jdbcOperations, entityType);
     }
 
     @Autowired(required = false)
-    public void setJdbcTemplate(PlatformTransactionManager transactionManager) {
+    public void setJdbcOperations(PlatformTransactionManager transactionManager) {
         transactionOperations = new TransactionTemplate(transactionManager);
     }
 

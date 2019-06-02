@@ -2,7 +2,7 @@ package win.doyto.query.core;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -21,12 +21,12 @@ import java.util.List;
  */
 final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final JdbcOperations jdbcOperations;
     private final RowMapper<E> rowMapper;
     private final CrudBuilder<E> crudBuilder;
 
-    public JdbcDataAccess(JdbcTemplate jdbcTemplate, Class<E> entityClass) {
-        this.jdbcTemplate = jdbcTemplate;
+    public JdbcDataAccess(JdbcOperations jdbcOperations, Class<E> entityClass) {
+        this.jdbcOperations = jdbcOperations;
         rowMapper = new BeanPropertyRowMapper<>(entityClass);
         crudBuilder = new CrudBuilder<>(entityClass);
     }
@@ -39,13 +39,13 @@ final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> 
     @Override
     public final <V> List<V> queryColumns(Q q, RowMapper<V> rowMapper, String... columns) {
         SqlAndArgs sqlAndArgs = crudBuilder.buildSelectColumnsAndArgs(q, columns);
-        return jdbcTemplate.query(sqlAndArgs.sql, sqlAndArgs.args, rowMapper);
+        return jdbcOperations.query(sqlAndArgs.sql, sqlAndArgs.args, rowMapper);
     }
 
     @Override
     public final long count(Q q) {
         SqlAndArgs sqlAndArgs = crudBuilder.buildCountAndArgs(q);
-        return jdbcTemplate.queryForObject(sqlAndArgs.sql, sqlAndArgs.args, Long.class);
+        return jdbcOperations.queryForObject(sqlAndArgs.sql, sqlAndArgs.args, Long.class);
     }
 
     @Override
@@ -60,7 +60,7 @@ final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> 
 
     @Override
     public final int delete(I id) {
-        return jdbcTemplate.update(crudBuilder.buildDeleteById(), id);
+        return jdbcOperations.update(crudBuilder.buildDeleteById(), id);
     }
 
     @Override
@@ -70,7 +70,7 @@ final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> 
 
     private E getEntity(String sql, I id) {
         try {
-            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return jdbcOperations.queryForObject(sql, rowMapper, id);
         } catch (DataAccessException ex) {
             return null;
         }
@@ -78,7 +78,7 @@ final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> 
 
     @Override
     public final int delete(E e) {
-        return jdbcTemplate.update(crudBuilder.buildDeleteById(e), e.getId());
+        return jdbcOperations.update(crudBuilder.buildDeleteById(e), e.getId());
     }
 
     @Override
@@ -88,7 +88,7 @@ final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> 
         String sql = crudBuilder.buildCreateAndArgs(e, args);
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
+        jdbcOperations.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             int i = 1;
             for (Object arg : args) {
@@ -100,7 +100,7 @@ final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> 
     }
 
     private int doUpdate(SqlAndArgs sql) {
-        return jdbcTemplate.update(sql.sql, sql.args);
+        return jdbcOperations.update(sql.sql, sql.args);
     }
 
     @Override
