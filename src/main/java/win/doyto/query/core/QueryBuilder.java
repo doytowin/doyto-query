@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 import static win.doyto.query.core.CommonUtil.*;
@@ -60,7 +59,7 @@ public class QueryBuilder {
         return sql;
     }
 
-    protected static String buildWhere(String sql, Object query, List<Object> argList) {
+    public static String buildWhere(String sql, Object query, List<Object> argList) {
         initFields(query);
         Field[] fields = classFieldsMap.get(query.getClass());
         List<Object> whereList = new ArrayList<>(fields.length);
@@ -92,7 +91,8 @@ public class QueryBuilder {
         String andSQL;
         QueryField queryField = field.getAnnotation(QueryField.class);
         if (queryField != null) {
-            andSQL = replaceArgs(value, argList, queryField.and());
+            andSQL = queryField.and();
+            IntStream.range(0, StringUtils.countMatches(andSQL, REPLACE_HOLDER)).mapToObj(i -> value).forEach(argList::add);
         } else if (field.isAnnotationPresent(NestedQuery.class) || field.isAnnotationPresent(NestedQueries.class)) {
             andSQL = resolvedNestedQuery(field);
             argList.add(value);
@@ -137,14 +137,6 @@ public class QueryBuilder {
             nestedQuery.right();
     }
 
-    private static final Pattern PLACE_HOLDER_PTN = Pattern.compile("#\\{\\w+}");
-
-    private static String replaceArgs(Object value, List<Object> argList, String andSQL) {
-        String and = PLACE_HOLDER_PTN.matcher(andSQL).replaceAll(REPLACE_HOLDER);
-        IntStream.range(0, StringUtils.countMatches(and, REPLACE_HOLDER)).mapToObj(i -> value).forEach(argList::add);
-        return and;
-    }
-
     public String buildSelectAndArgs(Object query, List<Object> argList) {
         return buildSelectColumnsAndArgs(query, argList, "*");
     }
@@ -153,9 +145,9 @@ public class QueryBuilder {
         return build(DatabaseOperation.COUNT, query, argList);
     }
 
-    public <Q> SqlAndArgs buildCountAndArgs(Q q) {
+    public SqlAndArgs buildCountAndArgs(Object query) {
         ArrayList<Object> argList = new ArrayList<>();
-        return new SqlAndArgs(buildCountAndArgs(q, argList), argList);
+        return new SqlAndArgs(buildCountAndArgs(query, argList), argList);
     }
 
     public String buildDeleteAndArgs(Object query, List<Object> argList) {
