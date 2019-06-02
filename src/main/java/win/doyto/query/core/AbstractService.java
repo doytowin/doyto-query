@@ -2,6 +2,7 @@ package win.doyto.query.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.support.NoOpCache;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -158,6 +159,10 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
 
     public final boolean exists(Q query) {
         return count(query) > 0;
+    }
+
+    protected boolean caching() {
+        return !(entityCacheWrapper.getCache() instanceof NoOpCache);
     }
 
     private static class NoneTransactionOperations implements TransactionOperations {
