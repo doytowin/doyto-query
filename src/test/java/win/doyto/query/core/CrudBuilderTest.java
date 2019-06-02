@@ -88,6 +88,17 @@ class CrudBuilderTest {
         assertEquals("user", CommonUtil.replaceTableName(new TestEntity(), TestEntity.TABLE));
 
     }
+    @Test
+    void fixReplaceTableNameWithTail() {
+
+        DynamicEntity entity = new DynamicEntity();
+        entity.setId(1);
+        entity.setUser("f0rb");
+        entity.setProject("i18n");
+
+        assertEquals("t_dynamic_f0rb_i18n_any", CommonUtil.replaceTableName(entity, DynamicEntity.TABLE + "_any"));
+
+    }
 
     @Test
     public void supportMapFieldToUnderscore() {

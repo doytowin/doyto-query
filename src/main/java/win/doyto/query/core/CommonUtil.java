@@ -47,7 +47,7 @@ class CommonUtil {
             String replacement = StringUtils.remove(String.valueOf(readField(entity, fieldName)), ' ');
             matcher = matcher.appendReplacement(sb, replacement);
         } while (matcher.find());
-        return sb.toString();
+        return matcher.appendTail(sb).toString();
     }
 
     static Object readFieldGetter(Field field, Object target) {
