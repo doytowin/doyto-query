@@ -13,9 +13,6 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Table;
-
-import static win.doyto.query.core.CommonUtil.replaceTableName;
 
 /**
  * JdbcDataAccess
@@ -27,16 +24,10 @@ final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<E> rowMapper;
     private final CrudBuilder<E> crudBuilder;
-    private static final String FMT_GET_BY_ID = "SELECT * FROM %s WHERE id = ?";
-    private static final String FMT_DELETE_BY_ID = "DELETE FROM %s WHERE id = ?";
-    private final String entityTable;
 
     public JdbcDataAccess(JdbcTemplate jdbcTemplate, Class<E> entityClass) {
         this.jdbcTemplate = jdbcTemplate;
-
         rowMapper = new BeanPropertyRowMapper<>(entityClass);
-
-        entityTable = entityClass.getAnnotation(Table.class).name();
         crudBuilder = new CrudBuilder<>(entityClass);
     }
 
@@ -74,8 +65,7 @@ final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> 
 
     @Override
     public final E get(E e) {
-        String sql = String.format(FMT_GET_BY_ID, replaceTableName(e, entityTable));
-        return getEntity(sql, e.getId());
+        return getEntity(crudBuilder.buildSelectById(e), e.getId());
     }
 
     private E getEntity(String sql, I id) {
@@ -88,7 +78,7 @@ final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> 
 
     @Override
     public final int delete(E e) {
-        return jdbcTemplate.update(String.format(FMT_DELETE_BY_ID, replaceTableName(e, entityTable)), e.getId());
+        return jdbcTemplate.update(crudBuilder.buildDeleteById(e), e.getId());
     }
 
     @Override

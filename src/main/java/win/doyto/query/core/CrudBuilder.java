@@ -162,4 +162,12 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
     public String buildDeleteById() {
         return "DELETE FROM " + tableName + whereId;
     }
+
+    protected String buildSelectById(E e) {
+        return "SELECT * FROM " + replaceTableName(e, tableName) + whereId;
+    }
+
+    protected String buildDeleteById(E e) {
+        return "DELETE FROM " + replaceTableName(e, tableName) + whereId;
+    }
 }
