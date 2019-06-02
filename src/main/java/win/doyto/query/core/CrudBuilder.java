@@ -62,7 +62,7 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
 
     }
 
-    private static String resolveColumn(Field field) {
+    static String resolveColumn(Field field) {
         Column column = field.getAnnotation(Column.class);
         if (column != null && !column.name().isEmpty()) {
             return column.name();

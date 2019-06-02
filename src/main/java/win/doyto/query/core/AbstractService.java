@@ -1,5 +1,6 @@
 package win.doyto.query.core;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.support.NoOpCache;
@@ -19,9 +20,13 @@ import win.doyto.query.entity.Persistable;
 import win.doyto.query.entity.UserIdProvider;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.LinkedList;
 import java.util.List;
+import javax.persistence.Id;
+
+import static win.doyto.query.core.CrudBuilder.resolveColumn;
 
 /**
  * AbstractService
@@ -46,10 +51,13 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     protected Class<E> entityType;
 
     protected TransactionOperations transactionOperations = NoneTransactionOperations.instance;
+    private final String idColumn;
 
     public AbstractService() {
-        this.entityType = getEntityType();
-        this.dataAccess = new MemoryDataAccess<>(this.entityType);
+        entityType = getEntityType();
+        dataAccess = new MemoryDataAccess<>(entityType);
+        Field idField = FieldUtils.getFieldsWithAnnotation(entityType, Id.class)[0];
+        idColumn = resolveColumn(idField);
     }
 
     @SuppressWarnings("unchecked")
@@ -90,7 +98,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     }
 
     public final List<I> queryIds(Q query) {
-        return queryColumns(query, rowMapperForId, "id");
+        return queryColumns(query, rowMapperForId, idColumn);
     }
 
     public final <V> List<V> queryColumns(Q query, RowMapper<V> rowMapper, String... columns) {
