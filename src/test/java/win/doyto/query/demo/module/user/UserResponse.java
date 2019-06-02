@@ -2,6 +2,7 @@ package win.doyto.query.demo.module.user;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.BeanUtils;
 import win.doyto.query.entity.EntityResponse;
 
 /**
@@ -23,4 +24,10 @@ public class UserResponse implements EntityResponse<UserEntity, UserResponse> {
     private Boolean valid;
     private UserLevel userLevel;
 
+    @Override
+    public UserResponse from(UserEntity userEntity) {
+        UserResponse userResponse = new UserResponse();
+        BeanUtils.copyProperties(userEntity, userResponse);
+        return userResponse;
+    }
 }
