@@ -7,6 +7,7 @@ import win.doyto.query.core.test.TestEntity;
 import win.doyto.query.core.test.TestQuery;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -126,5 +127,13 @@ class CrudBuilderTest {
         assertEquals("UPDATE user SET nickname = ? WHERE username = ?",
                      userEntityCrudBuilder.buildPatchAndArgsWithQuery(testEntity, testQuery, argList));
         assertThat(argList).containsExactly("测试", "test");
+    }
+
+    @Test
+    void createMulti() {
+        SqlAndArgs sqlAndArgs = userEntityCrudBuilder.buildCreateAndArgs(Arrays.asList(new TestEntity(), new TestEntity(), new TestEntity()));
+        assertEquals(
+            "INSERT INTO user (username, password, mobile, email, nickname, userLevel, memo, valid) VALUES " +
+                "(?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?)", sqlAndArgs.sql);
     }
 }

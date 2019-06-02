@@ -6,6 +6,9 @@ import win.doyto.query.demo.exception.ServiceAsserts;
 import win.doyto.query.service.AbstractDynamicService;
 import win.doyto.query.service.PageList;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * MenuController
  *
@@ -53,6 +56,16 @@ class MenuController extends AbstractDynamicService<MenuEntity, Integer, MenuQue
     public void create(@RequestBody MenuRequest request, @PathVariable String platform) {
         request.setPlatform(platform);
         create(request.toEntity());
+    }
+
+    @PostMapping("import")
+    public void create(@RequestBody List<MenuRequest> requests, @PathVariable String platform) {
+        ArrayList<MenuEntity> menuEntities = new ArrayList<>(requests.size());
+        for (MenuRequest request : requests) {
+            request.setPlatform(platform);
+            menuEntities.add(request.toEntity());
+        }
+        batchInsert(menuEntities);
     }
 
     @PutMapping("{id}")

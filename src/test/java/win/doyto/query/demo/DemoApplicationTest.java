@@ -255,8 +255,19 @@ class DemoApplicationTest {
 
         mockMvc.perform(get(menuUri + "?pageNumber=0"))
                .andExpect(statusIs200())
-               .andExpect(jsonPath("$.list[1]").exists())
-               .andExpect(jsonPath("$.list[2]").doesNotExist());
+               .andExpect(jsonPath("$.length()").value(2));
+    }
+
+    @Test
+    public void createMenus() throws Exception {
+
+        requestJson(post("/02/menu/import"), "[{\"menuName\":\"Test Menu1\"},{\"menuName\":\"Test Menu2\"}]", session)
+            .andExpect(statusIs200());
+
+        mockMvc.perform(get("/02/menu/"))
+               .andDo(print())
+               .andExpect(statusIs200())
+               .andExpect(jsonPath("$.length()").value(3));
     }
 
     @Test

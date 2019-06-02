@@ -35,6 +35,15 @@ public interface DataAccess<E extends Persistable<I>, I extends Serializable, Q>
 
     void create(E e);
 
+    default int batchInsert(Iterable<E> entities) {
+        int count = 0;
+        for (E entity : entities) {
+            create(entity);
+            count++;
+        }
+        return count;
+    }
+
     void update(E e);
 
     void patch(E e);

@@ -99,6 +99,11 @@ final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> 
         e.setId((I) keyHolder.getKey());
     }
 
+    @Override
+    public int batchInsert(Iterable<E> entities) {
+        return doUpdate(crudBuilder.buildCreateAndArgs(entities));
+    }
+
     private int doUpdate(SqlAndArgs sql) {
         return jdbcOperations.update(sql.sql, sql.args);
     }

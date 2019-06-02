@@ -154,6 +154,20 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         entityCacheWrapper.evict(resolveCacheKey(e));
     }
 
+    /**
+     * 执行<i>INSERT INTO [TABLE] (col1, col2) VALUES (?), (?)</i>
+     * <ol>
+     * <li><b>会</b>清空全部缓存</li>
+     * <li><b>不会</b>按id清理缓存</li>
+     * <li><b>不会</b>执行{@link win.doyto.query.entity.EntityAspect#afterCreate(Object)}</li>
+     * </ol>
+     */
+    @Override
+    public void batchInsert(Iterable<E> entities) {
+        dataAccess.batchInsert(entities);
+        entityCacheWrapper.clear();
+    }
+
     public final void patch(E e, Q q) {
         dataAccess.patch(e, q);
         entityCacheWrapper.clear();

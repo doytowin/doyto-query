@@ -6,10 +6,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.entity.Persistable;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.persistence.Column;
@@ -54,10 +51,10 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
         fields = Collections.unmodifiableList(tempFields);
         fieldsSize = fields.size();
 
-        wildInsertValue = StringUtils.join(IntStream.range(0, fieldsSize).mapToObj(i -> REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR);
+        wildInsertValue = wrapWithParenthesis(StringUtils.join(IntStream.range(0, fieldsSize).mapToObj(i -> REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR));
 
         List<String> columnList = fields.stream().map(CrudBuilder::resolveColumn).collect(Collectors.toList());
-        insertColumns = StringUtils.join(columnList, SEPARATOR);
+        insertColumns = wrapWithParenthesis(StringUtils.join(columnList, SEPARATOR));
         wildSetClause = StringUtils.join(columnList.stream().map(c -> c + EQUALS_REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR);
 
     }
@@ -75,9 +72,9 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
         ArrayList<String> insertList = new ArrayList<>();
         insertList.add("INSERT INTO");
         insertList.add(table);
-        insertList.add(wrapWithParenthesis(columns));
+        insertList.add(columns);
         insertList.add("VALUES");
-        insertList.add(wrapWithParenthesis(fields));
+        insertList.add(fields);
         return StringUtils.join(insertList, SPACE);
     }
 
@@ -112,6 +109,23 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
         String table = resolveTableName(entity);
         readValueToArgList(fields, entity, argList);
         return buildInsertSql(table, insertColumns, wildInsertValue);
+    }
+
+    public SqlAndArgs buildCreateAndArgs(Iterable<E> entities) {
+        Iterator<E> iterator = entities.iterator();
+        E next = iterator.next();
+        String table = resolveTableName(next);
+        StringBuilder insertSql = new StringBuilder(buildInsertSql(table, insertColumns, wildInsertValue));
+
+        ArrayList<Object> argList = new ArrayList<>();
+        readValueToArgList(fields, next, argList);
+        while (iterator.hasNext()) {
+            E entity = iterator.next();
+            readValueToArgList(fields, entity, argList);
+            insertSql.append(", ").append(wildInsertValue);
+        }
+
+        return new SqlAndArgs(insertSql.toString(), argList);
     }
 
     public String buildUpdateAndArgs(E entity, List<Object> argList) {
