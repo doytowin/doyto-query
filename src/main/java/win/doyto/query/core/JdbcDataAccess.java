@@ -119,8 +119,8 @@ final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> 
     }
 
     @Override
-    public final void patch(E e, Q q) {
-        doUpdate(crudBuilder.buildPatchAndArgsWithQuery(e, q));
+    public final int patch(E e, Q q) {
+        return doUpdate(crudBuilder.buildPatchAndArgsWithQuery(e, q));
     }
 
     @Override

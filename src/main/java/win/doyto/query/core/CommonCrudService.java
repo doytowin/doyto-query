@@ -1,6 +1,5 @@
 package win.doyto.query.core;
 
-import org.springframework.transaction.annotation.Transactional;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.service.QueryService;
 
@@ -26,12 +25,15 @@ public interface CommonCrudService<E extends Persistable, Q> extends QueryServic
 
     void patch(E e);
 
-    @Transactional
-    default void batchInsert(Iterable<E> entities) {
-        for (E entity : entities) {
-            create(entity);
-        }
-    }
+    /**
+     * 执行<i>INSERT INTO [TABLE] (col1, col2) VALUES (?), (?)</i>
+     * <ol>
+     * <li><b>会</b>清空全部缓存</li>
+     * <li><b>不会</b>按id清理缓存</li>
+     * <li><b>不会</b>执行{@link win.doyto.query.entity.EntityAspect#afterCreate(Object)}</li>
+     * </ol>
+     */
+    int batchInsert(Iterable<E> entities);
 
     /**
      * 执行<i>UPDATE [TABLE] SET ... WHERE ...</i>
@@ -40,11 +42,11 @@ public interface CommonCrudService<E extends Persistable, Q> extends QueryServic
      * <li><b>不会</b>按id清理缓存</li>
      * <li><b>不会</b>执行{@link win.doyto.query.entity.EntityAspect#afterUpdate(Object, Object)}</li>
      * </ol>
-     *
-     * @param e entity object
+     *  @param e entity object
      * @param q query object
+     * @return
      */
-    void patch(E e, Q q);
+    int patch(E e, Q q);
 
 
     /**

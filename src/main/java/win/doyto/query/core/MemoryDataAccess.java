@@ -89,8 +89,10 @@ class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q> impl
     }
 
     @Override
-    public void patch(E e, Q q) {
-        query(q).forEach(this::patch);
+    public int patch(E e, Q q) {
+        List<E> list = query(q);
+        list.forEach(this::patch);
+        return list.size();
     }
 
     @Override
