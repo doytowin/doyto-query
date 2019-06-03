@@ -3,6 +3,7 @@ package win.doyto.query.core.test;
 import lombok.Builder;
 import win.doyto.query.core.NestedQueries;
 import win.doyto.query.core.NestedQuery;
+import win.doyto.query.core.PageQuery;
 import win.doyto.query.core.QueryTable;
 
 /**
@@ -12,7 +13,7 @@ import win.doyto.query.core.QueryTable;
  */
 @Builder
 @QueryTable(table = "permission")
-public class PermissionQuery {
+public class PermissionQuery extends PageQuery {
 
    @NestedQueries({
        @NestedQuery(left = "permId", table = "t_role_and_perm", right = "roleId"),

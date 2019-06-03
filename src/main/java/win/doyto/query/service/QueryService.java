@@ -31,12 +31,4 @@ public interface QueryService<E, Q> {
 
     <S> List<S> queryColumn(Q query, Class<S> clazz, String column);
 
-    default <V> V getColumns(Q query, Class<V> clazz, String... columns) {
-        return CollectionUtil.first(queryColumns(query, clazz, columns));
-    }
-
-    default <V> V getColumn(Q query, Class<V> clazz, String column) {
-        return CollectionUtil.first(queryColumns(query, clazz, column));
-    }
-
 }

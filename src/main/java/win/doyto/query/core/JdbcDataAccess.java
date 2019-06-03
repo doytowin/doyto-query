@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author f0rb
  */
-final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
+final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> implements DataAccess<E, I, Q> {
 
     private final JdbcOperations jdbcOperations;
     private final RowMapper<E> rowMapper;

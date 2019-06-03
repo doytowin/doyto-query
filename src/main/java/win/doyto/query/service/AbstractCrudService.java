@@ -2,6 +2,7 @@ package win.doyto.query.service;
 
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import win.doyto.query.core.AbstractService;
+import win.doyto.query.core.PageQuery;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
  *
  * @author f0rb
  */
-public abstract class AbstractCrudService<E extends Persistable<I>, I extends Serializable, Q>
+public abstract class AbstractCrudService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery>
     extends AbstractService<E, I, Q> implements CrudService<E, I, Q> {
 
     @Override
@@ -51,6 +52,7 @@ public abstract class AbstractCrudService<E extends Persistable<I>, I extends Se
         return e;
     }
 
+    @Override
     public final List<E> query(Q query) {
         if (caching() && !TransactionSynchronizationManager.isActualTransactionActive()) {
             return queryIds(query).stream().map(dataAccess::get).collect(Collectors.toList());

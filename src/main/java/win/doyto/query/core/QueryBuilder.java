@@ -28,20 +28,16 @@ public class QueryBuilder {
     static final String SEPARATOR = ", ";
     static final String REPLACE_HOLDER = "?";
 
-    private static String build(DatabaseOperation operation, Object query, List<Object> argList, String... columns) {
-        String table = tableMap.computeIfAbsent(query.getClass(), c -> ((QueryTable) c.getAnnotation(QueryTable.class)).table());
+    private static String build(DatabaseOperation operation, PageQuery pageQuery, List<Object> argList, String... columns) {
+        String table = tableMap.computeIfAbsent(pageQuery.getClass(), c -> ((QueryTable) c.getAnnotation(QueryTable.class)).table());
         String sql = start(operation, table, columns);
 
-        sql = buildWhere(sql, query, argList);
+        sql = buildWhere(sql, pageQuery, argList);
 
-        if (operation == DatabaseOperation.SELECT && query instanceof PageQuery) {
-            PageQuery pageQuery = (PageQuery) query;
-            if (pageQuery.getSort() != null) {
-                sql += " ORDER BY " + pageQuery.getSort().replaceAll(",", " ").replaceAll(";", ", ");
-            }
+        if (operation == DatabaseOperation.SELECT && pageQuery.getSort() != null) {
+            sql += " ORDER BY " + pageQuery.getSort().replaceAll(",", " ").replaceAll(";", ", ");
         }
-        if (operation != DatabaseOperation.COUNT && query instanceof PageQuery && ((PageQuery) query).needPaging()) {
-            PageQuery pageQuery = (PageQuery) query;
+        if (operation != DatabaseOperation.COUNT && pageQuery.needPaging()) {
             sql = GlobalConfiguration.instance().getDialect().buildPageSql(sql, pageQuery.getPageSize(), pageQuery.getOffset());
         }
         return sql;
@@ -137,33 +133,33 @@ public class QueryBuilder {
             nestedQuery.right();
     }
 
-    public String buildSelectAndArgs(Object query, List<Object> argList) {
+    public String buildSelectAndArgs(PageQuery query, List<Object> argList) {
         return buildSelectColumnsAndArgs(query, argList, "*");
     }
 
-    public String buildCountAndArgs(Object query, List<Object> argList) {
+    public String buildCountAndArgs(PageQuery query, List<Object> argList) {
         return build(DatabaseOperation.COUNT, query, argList);
     }
 
-    public SqlAndArgs buildCountAndArgs(Object query) {
+    public SqlAndArgs buildCountAndArgs(PageQuery query) {
         ArrayList<Object> argList = new ArrayList<>();
         return new SqlAndArgs(buildCountAndArgs(query, argList), argList);
     }
 
-    public String buildDeleteAndArgs(Object query, List<Object> argList) {
+    public String buildDeleteAndArgs(PageQuery query, List<Object> argList) {
         return build(DatabaseOperation.DELETE, query, argList);
     }
 
-    public SqlAndArgs buildDeleteAndArgs(Object query) {
+    public SqlAndArgs buildDeleteAndArgs(PageQuery query) {
         ArrayList<Object> argList = new ArrayList<>();
         return new SqlAndArgs(buildDeleteAndArgs(query, argList), argList);
     }
 
-    public String buildSelectColumnsAndArgs(Object query, List<Object> argList, String... columns) {
+    public String buildSelectColumnsAndArgs(PageQuery query, List<Object> argList, String... columns) {
         return build(DatabaseOperation.SELECT, query, argList, columns);
     }
 
-    public SqlAndArgs buildSelectColumnsAndArgs(Object query, String[] columns) {
+    public SqlAndArgs buildSelectColumnsAndArgs(PageQuery query, String[] columns) {
         ArrayList<Object> argList = new ArrayList<>();
         return new SqlAndArgs(buildSelectColumnsAndArgs(query, argList, columns), argList);
     }

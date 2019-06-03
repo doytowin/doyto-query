@@ -4,6 +4,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.ReflectionUtils;
 import win.doyto.query.core.AbstractService;
+import win.doyto.query.core.PageQuery;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
  * @author f0rb on 2019-05-26
  */
 @SuppressWarnings("squid:S00112")
-public abstract class AbstractDynamicService<E extends Persistable<I>, I extends Serializable, Q>
+public abstract class AbstractDynamicService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery>
     extends AbstractService<E, I, Q> implements DynamicService<E, I, Q> {
 
     private Constructor<E> constructor;
