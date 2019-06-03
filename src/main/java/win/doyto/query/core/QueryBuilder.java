@@ -18,6 +18,7 @@ import static win.doyto.query.core.Constant.*;
  * @author f0rb
  */
 @Slf4j
+@SuppressWarnings("unchecked")
 public class QueryBuilder {
 
     private static final Map<Class, Field[]> classFieldsMap = new ConcurrentHashMap<>();
@@ -28,15 +29,19 @@ public class QueryBuilder {
     private static final String FROM = " FROM ";
     private static final String EMPTY = "";
 
+    @SuppressWarnings("squid:S4973")
     private static String build(PageQuery pageQuery, List<Object> argList, String operation, String... columns) {
-        @SuppressWarnings("unchecked")
         String table = tableMap.computeIfAbsent(pageQuery.getClass(), c -> ((QueryTable) c.getAnnotation(QueryTable.class)).table());
 
         String sql;
         sql = buildStart(operation, columns, table);
         sql = buildWhere(sql, pageQuery, argList);
-        sql = buildOrderBy(sql, pageQuery, operation);
-        sql = buildPaging(sql, pageQuery, columns);
+        // intentionally use ==
+        if (!(columns.length == 1 && COUNT == columns[0])) {
+            // not SELECT COUNT(*)
+            sql = buildOrderBy(sql, pageQuery, operation);
+            sql = buildPaging(sql, pageQuery);
+        }
         return sql;
     }
 
@@ -44,15 +49,17 @@ public class QueryBuilder {
         return operation + StringUtils.join(columns, SEPARATOR) + FROM + table;
     }
 
+    @SuppressWarnings("squid:S4973")
     private static String buildOrderBy(String sql, PageQuery pageQuery, String operation) {
+        // intentionally use ==
         if (SELECT == operation && pageQuery.getSort() != null) {
             sql += " ORDER BY " + pageQuery.getSort().replaceAll(",", SPACE).replaceAll(";", ", ");
         }
         return sql;
     }
 
-    private static String buildPaging(String sql, PageQuery pageQuery, String[] columns) {
-        if (!(columns.length == 1 && COUNT == columns[0]) && pageQuery.needPaging()) {
+    private static String buildPaging(String sql, PageQuery pageQuery) {
+        if (pageQuery.needPaging()) {
             sql = GlobalConfiguration.instance().getDialect().buildPageSql(sql, pageQuery.getPageSize(), pageQuery.getOffset());
         }
         return sql;
@@ -139,7 +146,6 @@ public class QueryBuilder {
             nestedQuery.extra();
     }
 
-    @SuppressWarnings("unchecked")
     static String resolvedSubQuery(Field field, List<Object> argList, Object value) {
         SubQuery subQuery = field.getAnnotation(SubQuery.class);
         StringBuilder clauseBuilder = new StringBuilder()

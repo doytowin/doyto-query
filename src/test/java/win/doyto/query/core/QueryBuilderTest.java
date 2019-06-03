@@ -84,7 +84,8 @@ public class QueryBuilderTest {
     public void buildCountAndArgsWithWhere() {
         TestQuery testQuery = TestQuery.builder().username("test").build();
         testQuery.setPageNumber(2).setPageSize(10);
-        assertEquals("SELECT * FROM user WHERE username = ? LIMIT 10 OFFSET 20",
+        testQuery.setSort("createTime,asc");
+        assertEquals("SELECT * FROM user WHERE username = ? ORDER BY createTime asc LIMIT 10 OFFSET 20",
                      queryBuilder.buildSelectAndArgs(testQuery, argList));
 
         List<Object> countArgList = new ArrayList<>();

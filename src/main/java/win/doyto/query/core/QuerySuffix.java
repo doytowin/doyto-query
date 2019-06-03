@@ -1,7 +1,6 @@
 package win.doyto.query.core;
 
 import lombok.Getter;
-import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -60,7 +59,7 @@ enum QuerySuffix {
         sqlFuncMap.put(NotIn, columnMeta -> buildSqlForCollection(columnMeta, NotIn));
     }
 
-    static String buildAndSql(String fieldName, @NonNull Object value, List<Object> argList) {
+    static String buildAndSql(String fieldName, Object value, List<Object> argList) {
         QuerySuffix querySuffix = resolve(fieldName);
         if (querySuffix == Like) {
             value = CommonUtil.escapeLike(String.valueOf(value));
