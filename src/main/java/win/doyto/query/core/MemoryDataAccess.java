@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
@@ -172,14 +173,18 @@ class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q> impl
     @Override
     @SneakyThrows
     public <V> List<V> queryColumns(Q q, RowMapper<V> rowMapper, String... columns) {
-        Class<V> classV = (Class<V>) readField(rowMapper, "mappedClass");
-        V v = classV.getDeclaredConstructor().newInstance();
         List<E> entities = query(q);
         List<V> objects = new ArrayList<>(entities.size());
-        entities.forEach(e -> {
-            BeanUtils.copyProperties(e, v);
-            objects.add(v);
-        });
+        if (rowMapper instanceof SingleColumnRowMapper) {
+            return entities.stream().map(entity -> (V) readField(entity, columns[0])).collect(Collectors.toList());
+        } else {
+            Class<V> classV = (Class<V>) readField(rowMapper, "mappedClass");
+            V v = classV.getDeclaredConstructor().newInstance();
+            entities.forEach(e -> {
+                BeanUtils.copyProperties(e, v);
+                objects.add(v);
+            });
+        }
         return objects;
     }
 

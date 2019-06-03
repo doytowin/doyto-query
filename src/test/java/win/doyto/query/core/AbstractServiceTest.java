@@ -8,6 +8,8 @@ import win.doyto.query.core.test.TestQuery;
 import win.doyto.query.core.test.TestService;
 import win.doyto.query.entity.EntityAspect;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static win.doyto.query.core.test.TestEntity.initUserEntities;
@@ -92,5 +94,13 @@ class AbstractServiceTest {
         TestQuery testQuery = TestQuery.builder().usernameLike("username").build();
         testQuery.setPageSize(2);
         assertEquals(2, testService.delete(testQuery));
+    }
+
+    @Test
+    void queryIds() {
+        TestQuery testQuery = TestQuery.builder().usernameLike("f0rb").build();
+        List<Integer> ids = testService.queryIds(testQuery);
+        assertEquals(1, ids.size());
+        assertEquals(5, (int) ids.get(0));
     }
 }
