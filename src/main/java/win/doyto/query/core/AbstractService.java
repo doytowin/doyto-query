@@ -71,7 +71,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     }
 
     @Autowired(required = false)
-    public void setJdbcOperations(PlatformTransactionManager transactionManager) {
+    public void setTransactionManager(PlatformTransactionManager transactionManager) {
         transactionOperations = new TransactionTemplate(transactionManager);
     }
 

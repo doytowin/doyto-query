@@ -165,7 +165,7 @@ public class QueryBuilder {
         return build(query, argList, SELECT, columns);
     }
 
-    public SqlAndArgs buildSelectColumnsAndArgs(PageQuery query, String[] columns) {
+    public SqlAndArgs buildSelectColumnsAndArgs(PageQuery query, String... columns) {
         ArrayList<Object> argList = new ArrayList<>();
         return new SqlAndArgs(buildSelectColumnsAndArgs(query, argList, columns), argList);
     }
