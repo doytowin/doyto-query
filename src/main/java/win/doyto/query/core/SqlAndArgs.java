@@ -1,5 +1,6 @@
 package win.doyto.query.core;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -13,7 +14,8 @@ import static win.doyto.query.core.CommonUtil.wrapWithParenthesis;
  * @author f0rb on 2019-05-31
  */
 @Slf4j
-class SqlAndArgs {
+@Getter
+public class SqlAndArgs {
     String sql;
     Object[] args;
 

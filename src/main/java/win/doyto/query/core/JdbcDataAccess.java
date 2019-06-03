@@ -104,8 +104,8 @@ final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q e
         return doUpdate(crudBuilder.buildCreateAndArgs(entities));
     }
 
-    private int doUpdate(SqlAndArgs sql) {
-        return jdbcOperations.update(sql.sql, sql.args);
+    private int doUpdate(SqlAndArgs sqlAndArgs) {
+        return jdbcOperations.update(sqlAndArgs.sql, sqlAndArgs.args);
     }
 
     @Override
