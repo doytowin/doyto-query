@@ -19,7 +19,7 @@ public class MenuQuery extends PageQuery {
     }, right = "userId")
     private Integer userId;
 
-    @SubQuery(left = "parent_id", table = "menu", right = "true")
+    @SubQuery(left = "parent_id", table = "menu", ignoreField = true)
     private boolean onlyParent;
 
     private boolean parentIdNull;

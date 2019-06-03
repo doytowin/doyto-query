@@ -1,10 +1,9 @@
 package win.doyto.query.core.test;
 
 import lombok.Builder;
-import win.doyto.query.core.NestedQueries;
-import win.doyto.query.core.NestedQuery;
-import win.doyto.query.core.PageQuery;
-import win.doyto.query.core.QueryTable;
+import win.doyto.query.core.*;
+
+import java.util.List;
 
 /**
  * PermissionQuery
@@ -29,5 +28,8 @@ public class PermissionQuery extends PageQuery {
        )
    })
    private boolean validUser;
+
+   @SubQuery(left = "permId", table = "t_role_and_perm")
+   private List<Integer> roleIds;
 
 }

@@ -16,9 +16,16 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface SubQuery {
 
     String column() default "id";
+
     String op() default "IN";
+
     String left();
+
     String table();
+
     String right() default "";
+
+    boolean ignoreField() default false;
+
     String extra() default "";
 }

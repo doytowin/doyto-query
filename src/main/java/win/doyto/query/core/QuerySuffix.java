@@ -9,10 +9,6 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static win.doyto.query.core.CommonUtil.wrapWithParenthesis;
-import static win.doyto.query.core.QueryBuilder.SEPARATOR;
 
 /**
  * QuerySuffix
@@ -83,8 +79,7 @@ enum QuerySuffix {
 
     private static String buildSqlForCollection(ColumnMeta columnMeta, QuerySuffix querySuffix) {
         int size = ((Collection) columnMeta.value).size();
-        String ex = StringUtils.join(IntStream.range(0, size).mapToObj(i -> QueryBuilder.REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR);
-        return columnMeta.defaultSql(querySuffix, wrapWithParenthesis(StringUtils.trimToNull(ex)));
+        return columnMeta.defaultSql(querySuffix, CommonUtil.generateReplaceHoldersForCollection(size));
     }
 
     String resolveColumnName(String fieldName) {

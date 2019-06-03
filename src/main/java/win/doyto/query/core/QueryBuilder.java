@@ -5,10 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.config.GlobalConfiguration;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
 
@@ -32,6 +29,8 @@ public class QueryBuilder {
     private static final String SELECT = "SELECT ";
     private static final String WHERE = " WHERE ";
     private static final String FROM = " FROM ";
+    private static final String EMPTY = "";
+    private static final String IN = " IN ";
 
     private static String build(PageQuery pageQuery, List<Object> argList, String operation, String... columns) {
         @SuppressWarnings("unchecked")
@@ -51,7 +50,7 @@ public class QueryBuilder {
 
     private static String buildOrderBy(String sql, PageQuery pageQuery, String operation) {
         if (SELECT == operation && pageQuery.getSort() != null) {
-            sql += " ORDER BY " + pageQuery.getSort().replaceAll(",", " ").replaceAll(";", ", ");
+            sql += " ORDER BY " + pageQuery.getSort().replaceAll(",", SPACE).replaceAll(";", ", ");
         }
         return sql;
     }
@@ -98,8 +97,7 @@ public class QueryBuilder {
             andSQL = queryField.and();
             IntStream.range(0, StringUtils.countMatches(andSQL, REPLACE_HOLDER)).mapToObj(i -> value).forEach(argList::add);
         } else if (field.isAnnotationPresent(SubQuery.class)) {
-            andSQL = resolvedSubQuery(field);
-            argList.add(value);
+            andSQL = resolvedSubQuery(field, argList, value);
         } else if (field.isAnnotationPresent(NestedQueries.class)) {
             NestedQueries nestedQueries = field.getAnnotation(NestedQueries.class);
             andSQL = resolvedNestedQuery(nestedQueries, argList, value);
@@ -113,7 +111,7 @@ public class QueryBuilder {
     static String resolvedNestedQuery(NestedQueries nestedQueries, List<Object> argList, Object value) {
         String andSQL;
         String subquery = getNestedQueries(nestedQueries);
-        andSQL = (nestedQueries.column() + subquery + (nestedQueries.right().isEmpty() ? "" : " = " + REPLACE_HOLDER ))
+        andSQL = (nestedQueries.column() + subquery + (nestedQueries.right().isEmpty() ? EMPTY : " = " + REPLACE_HOLDER ))
             + StringUtils.repeat(')', nestedQueries.value().length);
         argList.add(value);
         return andSQL;
@@ -132,7 +130,7 @@ public class QueryBuilder {
             subquery.append(SPACE).append(lastOp).append(" (").append(getNestedQuery(nestedQuery));
             lastOp = nestedQuery.op();
         }
-        subquery.append((nestedQueries.right().isEmpty() ? "" : WHERE + nestedQueries.right()));
+        subquery.append((nestedQueries.right().isEmpty() ? EMPTY : WHERE + nestedQueries.right()));
         return subquery.toString();
     }
 
@@ -141,24 +139,40 @@ public class QueryBuilder {
             nestedQuery.left() +
             FROM +
             nestedQuery.table() +
-            (nestedQuery.extra().isEmpty() ? "" : " ") +
+            (nestedQuery.extra().isEmpty() ? EMPTY : SPACE) +
             nestedQuery.extra();
     }
 
-    static String resolvedSubQuery(Field field) {
+    static String resolvedSubQuery(Field field, List<Object> argList, Object value) {
         SubQuery subQuery = field.getAnnotation(SubQuery.class);
-        String clause = getSubQuery(subQuery);
-        return subQuery.column() + SPACE + subQuery.op() + SPACE + wrapWithParenthesis(clause + " = " + REPLACE_HOLDER);
-    }
+        StringBuilder clauseBuilder = new StringBuilder()
+            .append(SELECT).append(subQuery.left()).append(FROM).append(subQuery.table())
+            .append(subQuery.extra().isEmpty() ? EMPTY : SPACE).append(subQuery.extra());
 
-    private static String getSubQuery(SubQuery subQuery) {
-        return SELECT +
-            subQuery.left() +
-            FROM +
-            subQuery.table() +
-            (subQuery.extra().isEmpty() ? "" : " ") +
-            subQuery.extra() +
-            (subQuery.right().isEmpty() ? "" : WHERE + subQuery.right());
+        if (!subQuery.ignoreField()) {
+            clauseBuilder.append(WHERE);
+            boolean noColumn = subQuery.right().isEmpty();
+            if (!noColumn) {
+                clauseBuilder.append(subQuery.right());
+            }
+            if (value instanceof Collection) {
+                if (noColumn) {
+                    String singular = StringUtils.removeEnd(StringUtils.removeEnd(field.getName(), "s"), "List");
+                    clauseBuilder.append(convertColumn(singular));
+                }
+                Collection collection = (Collection) value;
+                clauseBuilder.append(IN);
+                clauseBuilder.append(generateReplaceHoldersForCollection(collection.size()));
+                argList.addAll(collection);
+            } else {
+                if (noColumn) {
+                    clauseBuilder.append(convertColumn(field.getName()));
+                }
+                clauseBuilder.append(" = ").append(REPLACE_HOLDER);
+                argList.add(value);
+            }
+        }
+        return subQuery.column() + SPACE + subQuery.op() + SPACE + wrapWithParenthesis(clauseBuilder.toString());
     }
 
     public String buildSelectAndArgs(PageQuery query, List<Object> argList) {

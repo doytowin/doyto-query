@@ -14,10 +14,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Transient;
+
+import static win.doyto.query.core.QueryBuilder.SEPARATOR;
 
 /**
  * CommonUtil
@@ -115,5 +119,9 @@ class CommonUtil {
 
     static boolean isValidValue(Object value, Field field) {
         return !ignoreValue(value, field);
+    }
+
+    static String generateReplaceHoldersForCollection(int size) {
+        return wrapWithParenthesis(StringUtils.trimToNull(StringUtils.join(IntStream.range(0, size).mapToObj(i -> QueryBuilder.REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR)));
     }
 }
