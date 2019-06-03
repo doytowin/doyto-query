@@ -18,6 +18,6 @@ public @interface NestedQuery {
 
     String extra() default "";
 
-    String op() default "IN";
+    String op() default Constant.IN;
 
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static win.doyto.query.core.CommonUtil.wrapWithParenthesis;
+import static win.doyto.query.core.Constant.SEPARATOR;
 
 /**
  * SqlAndArgs
@@ -24,7 +25,7 @@ public class SqlAndArgs {
         this.args = args.toArray();
         if (log.isDebugEnabled() && !args.isEmpty()) {
             String out = args.stream()
-                .map(arg -> arg + (arg == null ? "" : wrapWithParenthesis(arg.getClass().getName())) + ", ")
+                .map(arg -> arg + (arg == null ? "" : wrapWithParenthesis(arg.getClass().getName())) + SEPARATOR)
                 .collect(Collectors.joining());
             log.debug("SQL  : {}", sql);
             log.debug("Param: {}", out.substring(0, out.lastIndexOf(',')));

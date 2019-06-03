@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
 
 import static win.doyto.query.core.CommonUtil.*;
+import static win.doyto.query.core.Constant.*;
 
 /**
  * QueryBuilder
@@ -19,10 +20,6 @@ import static win.doyto.query.core.CommonUtil.*;
 @Slf4j
 public class QueryBuilder {
 
-    static final String SEPARATOR = ", ";
-    static final String REPLACE_HOLDER = "?";
-    static final String SPACE = " ";
-
     private static final Map<Class, Field[]> classFieldsMap = new ConcurrentHashMap<>();
     private static final Map<Class, String> tableMap = new ConcurrentHashMap<>();
     private static final String COUNT = "count(*)";
@@ -30,7 +27,6 @@ public class QueryBuilder {
     private static final String WHERE = " WHERE ";
     private static final String FROM = " FROM ";
     private static final String EMPTY = "";
-    private static final String IN = " IN ";
 
     private static String build(PageQuery pageQuery, List<Object> argList, String operation, String... columns) {
         @SuppressWarnings("unchecked")
@@ -119,7 +115,7 @@ public class QueryBuilder {
 
     private static String getNestedQueries(NestedQueries nestedQueries) {
         StringBuilder subquery = new StringBuilder();
-        String lastOp = "IN";
+        String lastOp = IN;
         NestedQuery[] value = nestedQueries.value();
         NestedQuery nestedQuery = value[0];
         subquery.append(SPACE).append(lastOp).append(" (").append(getNestedQuery(nestedQuery));
@@ -143,6 +139,7 @@ public class QueryBuilder {
             nestedQuery.extra();
     }
 
+    @SuppressWarnings("unchecked")
     static String resolvedSubQuery(Field field, List<Object> argList, Object value) {
         SubQuery subQuery = field.getAnnotation(SubQuery.class);
         StringBuilder clauseBuilder = new StringBuilder()
@@ -161,14 +158,14 @@ public class QueryBuilder {
                     clauseBuilder.append(convertColumn(singular));
                 }
                 Collection collection = (Collection) value;
-                clauseBuilder.append(IN);
+                clauseBuilder.append(" IN ");
                 clauseBuilder.append(generateReplaceHoldersForCollection(collection.size()));
                 argList.addAll(collection);
             } else {
                 if (noColumn) {
                     clauseBuilder.append(convertColumn(field.getName()));
                 }
-                clauseBuilder.append(" = ").append(REPLACE_HOLDER);
+                clauseBuilder.append(EQUAL).append(REPLACE_HOLDER);
                 argList.add(value);
             }
         }

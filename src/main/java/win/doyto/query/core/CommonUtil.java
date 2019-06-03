@@ -21,7 +21,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 
-import static win.doyto.query.core.QueryBuilder.SEPARATOR;
+import static win.doyto.query.core.Constant.SEPARATOR;
 
 /**
  * CommonUtil
@@ -122,6 +122,6 @@ class CommonUtil {
     }
 
     static String generateReplaceHoldersForCollection(int size) {
-        return wrapWithParenthesis(StringUtils.trimToNull(StringUtils.join(IntStream.range(0, size).mapToObj(i -> QueryBuilder.REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR)));
+        return wrapWithParenthesis(StringUtils.trimToNull(StringUtils.join(IntStream.range(0, size).mapToObj(i -> Constant.REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR)));
     }
 }

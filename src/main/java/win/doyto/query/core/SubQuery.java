@@ -17,7 +17,7 @@ public @interface SubQuery {
 
     String column() default "id";
 
-    String op() default "IN";
+    String op() default Constant.IN;
 
     String left();
 

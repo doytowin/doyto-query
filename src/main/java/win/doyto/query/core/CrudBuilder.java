@@ -13,8 +13,9 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import static org.apache.commons.lang3.StringUtils.SPACE;
 import static win.doyto.query.core.CommonUtil.*;
+import static win.doyto.query.core.Constant.SEPARATOR;
+import static win.doyto.query.core.Constant.SPACE;
 
 /**
  * CrudBuilder
@@ -25,7 +26,7 @@ import static win.doyto.query.core.CommonUtil.*;
 @Slf4j
 final class CrudBuilder<E extends Persistable> extends QueryBuilder {
 
-    private static final String EQUALS_REPLACE_HOLDER = " = " + REPLACE_HOLDER;
+    private static final String EQUALS_REPLACE_HOLDER = " = " + Constant.REPLACE_HOLDER;
 
     private final Field idField;
     private final String tableName;
@@ -51,11 +52,11 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
         fields = Collections.unmodifiableList(tempFields);
         fieldsSize = fields.size();
 
-        wildInsertValue = wrapWithParenthesis(StringUtils.join(IntStream.range(0, fieldsSize).mapToObj(i -> REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR));
+        wildInsertValue = wrapWithParenthesis(StringUtils.join(IntStream.range(0, fieldsSize).mapToObj(i -> Constant.REPLACE_HOLDER).collect(Collectors.toList()), Constant.SEPARATOR));
 
         List<String> columnList = fields.stream().map(CrudBuilder::resolveColumn).collect(Collectors.toList());
-        insertColumns = wrapWithParenthesis(StringUtils.join(columnList, SEPARATOR));
-        wildSetClause = StringUtils.join(columnList.stream().map(c -> c + EQUALS_REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR);
+        insertColumns = wrapWithParenthesis(StringUtils.join(columnList, Constant.SEPARATOR));
+        wildSetClause = StringUtils.join(columnList.stream().map(c -> c + EQUALS_REPLACE_HOLDER).collect(Collectors.toList()), Constant.SEPARATOR);
 
     }
 
@@ -122,7 +123,7 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
         while (iterator.hasNext()) {
             E entity = iterator.next();
             readValueToArgList(fields, entity, argList);
-            insertSql.append(", ").append(wildInsertValue);
+            insertSql.append(SEPARATOR).append(wildInsertValue);
         }
 
         return new SqlAndArgs(insertSql.toString(), argList);
@@ -144,7 +145,7 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
         String table = resolveTableName(entity);
         List<String> setClauses = new ArrayList<>(fieldsSize);
         readValueToArgList(fields, entity, argList, setClauses);
-        return buildUpdateSql(table, StringUtils.join(setClauses, SEPARATOR));
+        return buildUpdateSql(table, StringUtils.join(setClauses, Constant.SEPARATOR));
     }
 
     public String buildPatchAndArgsWithId(E entity, List<Object> argList) {

@@ -10,6 +10,7 @@ import java.util.List;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 import static win.doyto.query.core.CommonUtil.convertColumn;
 import static win.doyto.query.core.CommonUtil.wrapWithParenthesis;
+import static win.doyto.query.core.Constant.REPLACE_HOLDER;
 
 /**
  * ColumnMeta
@@ -23,7 +24,7 @@ final class ColumnMeta {
     final List<Object> argList;
 
     final String defaultSql(QuerySuffix querySuffix) {
-        return defaultSql(querySuffix, QueryBuilder.REPLACE_HOLDER);
+        return defaultSql(querySuffix, REPLACE_HOLDER);
     }
 
     final String defaultSql(QuerySuffix querySuffix, String ex) {
@@ -57,7 +58,7 @@ final class ColumnMeta {
     private static void appendArgs(String ex, Object value, List<Object> argList) {
         if (value instanceof Collection) {
             argList.addAll((Collection<Object>) value);
-        } else if (ex.contains("?")){
+        } else if (ex.contains(REPLACE_HOLDER)){
             argList.add(value);
         }
     }
