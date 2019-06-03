@@ -22,35 +22,41 @@ import static win.doyto.query.core.CommonUtil.*;
 @Slf4j
 public class QueryBuilder {
 
-    private static final Map<Class, Field[]> classFieldsMap = new ConcurrentHashMap<>();
-    private static final Map<Class, String> tableMap = new ConcurrentHashMap<>();
-
     static final String SEPARATOR = ", ";
     static final String REPLACE_HOLDER = "?";
+    static final String SPACE = " ";
 
-    private static String build(DatabaseOperation operation, PageQuery pageQuery, List<Object> argList, String... columns) {
+    private static final Map<Class, Field[]> classFieldsMap = new ConcurrentHashMap<>();
+    private static final Map<Class, String> tableMap = new ConcurrentHashMap<>();
+    private static final String COUNT = "count(*)";
+    private static final String SELECT = "SELECT ";
+
+    private static String build(PageQuery pageQuery, List<Object> argList, String operation, String... columns) {
+        @SuppressWarnings("unchecked")
         String table = tableMap.computeIfAbsent(pageQuery.getClass(), c -> ((QueryTable) c.getAnnotation(QueryTable.class)).table());
-        String sql = start(operation, table, columns);
 
+        String sql;
+        sql = buildStart(operation, columns, table);
         sql = buildWhere(sql, pageQuery, argList);
+        sql = buildOrderBy(sql, pageQuery, operation);
+        sql = buildPaging(sql, pageQuery, columns);
+        return sql;
+    }
 
-        if (operation == DatabaseOperation.SELECT && pageQuery.getSort() != null) {
+    private static String buildStart(String operation, String[] columns, String table) {
+        return operation + StringUtils.join(columns, SEPARATOR) + " FROM " + table;
+    }
+
+    private static String buildOrderBy(String sql, PageQuery pageQuery, String operation) {
+        if (SELECT == operation && pageQuery.getSort() != null) {
             sql += " ORDER BY " + pageQuery.getSort().replaceAll(",", " ").replaceAll(";", ", ");
-        }
-        if (operation != DatabaseOperation.COUNT && pageQuery.needPaging()) {
-            sql = GlobalConfiguration.instance().getDialect().buildPageSql(sql, pageQuery.getPageSize(), pageQuery.getOffset());
         }
         return sql;
     }
 
-    private static String start(DatabaseOperation operation, String table, String[] columns) {
-        String sql;
-        if (operation == DatabaseOperation.COUNT) {
-            sql = "SELECT count(*) FROM " + table;
-        } else if (operation == DatabaseOperation.DELETE) {
-            sql = "DELETE FROM " + table;
-        } else {
-            sql = "SELECT " + StringUtils.join(columns, SEPARATOR) + " FROM " + table;
+    private static String buildPaging(String sql, PageQuery pageQuery, String[] columns) {
+        if (!(columns.length == 1 && COUNT == columns[0]) && pageQuery.needPaging()) {
+            sql = GlobalConfiguration.instance().getDialect().buildPageSql(sql, pageQuery.getPageSize(), pageQuery.getOffset());
         }
         return sql;
     }
@@ -138,7 +144,7 @@ public class QueryBuilder {
     }
 
     public String buildCountAndArgs(PageQuery query, List<Object> argList) {
-        return build(DatabaseOperation.COUNT, query, argList);
+        return build(query, argList, SELECT, COUNT);
     }
 
     public SqlAndArgs buildCountAndArgs(PageQuery query) {
@@ -147,7 +153,7 @@ public class QueryBuilder {
     }
 
     public String buildDeleteAndArgs(PageQuery query, List<Object> argList) {
-        return build(DatabaseOperation.DELETE, query, argList);
+        return build(query, argList, "DELETE");
     }
 
     public SqlAndArgs buildDeleteAndArgs(PageQuery query) {
@@ -156,7 +162,7 @@ public class QueryBuilder {
     }
 
     public String buildSelectColumnsAndArgs(PageQuery query, List<Object> argList, String... columns) {
-        return build(DatabaseOperation.SELECT, query, argList, columns);
+        return build(query, argList, SELECT, columns);
     }
 
     public SqlAndArgs buildSelectColumnsAndArgs(PageQuery query, String[] columns) {
@@ -164,7 +170,4 @@ public class QueryBuilder {
         return new SqlAndArgs(buildSelectColumnsAndArgs(query, argList, columns), argList);
     }
 
-    private enum DatabaseOperation {
-        SELECT, COUNT, DELETE
-    }
 }
