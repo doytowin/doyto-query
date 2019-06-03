@@ -15,10 +15,19 @@ import win.doyto.query.core.QueryTable;
 @QueryTable(table = "permission")
 public class PermissionQuery extends PageQuery {
 
-   @NestedQueries({
-       @NestedQuery(left = "permId", table = "t_role_and_perm", right = "roleId"),
-       @NestedQuery(left = "roleId", table = "t_user_and_role", right = "userId"),
-   })
+   @NestedQueries(
+       value = {
+           @NestedQuery(left = "permId", table = "t_role_and_perm"),
+           @NestedQuery(left = "roleId", table = "t_user_and_role"),
+       }, right = "userId")
    private Integer userId;
+
+   @NestedQueries({
+       @NestedQuery(left = "permId", table = "t_role_and_perm"),
+       @NestedQuery(left = "roleId", table = "t_user_and_role ur",
+           extra = "inner join user u on u.id = ur.userId and u.valid = true"
+       )
+   })
+   private boolean validUser;
 
 }

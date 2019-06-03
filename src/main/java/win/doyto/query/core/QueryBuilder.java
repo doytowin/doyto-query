@@ -30,6 +30,8 @@ public class QueryBuilder {
     private static final Map<Class, String> tableMap = new ConcurrentHashMap<>();
     private static final String COUNT = "count(*)";
     private static final String SELECT = "SELECT ";
+    private static final String WHERE = " WHERE ";
+    private static final String FROM = " FROM ";
 
     private static String build(PageQuery pageQuery, List<Object> argList, String operation, String... columns) {
         @SuppressWarnings("unchecked")
@@ -44,7 +46,7 @@ public class QueryBuilder {
     }
 
     private static String buildStart(String operation, String[] columns, String table) {
-        return operation + StringUtils.join(columns, SEPARATOR) + " FROM " + table;
+        return operation + StringUtils.join(columns, SEPARATOR) + FROM + table;
     }
 
     private static String buildOrderBy(String sql, PageQuery pageQuery, String operation) {
@@ -77,7 +79,7 @@ public class QueryBuilder {
             }
         }
         if (!whereList.isEmpty()) {
-            sql += " WHERE " + StringUtils.join(whereList, " AND ");
+            sql += WHERE + StringUtils.join(whereList, " AND ");
         }
         return sql;
     }
@@ -95,9 +97,12 @@ public class QueryBuilder {
         if (queryField != null) {
             andSQL = queryField.and();
             IntStream.range(0, StringUtils.countMatches(andSQL, REPLACE_HOLDER)).mapToObj(i -> value).forEach(argList::add);
-        } else if (field.isAnnotationPresent(NestedQuery.class) || field.isAnnotationPresent(NestedQueries.class)) {
-            andSQL = resolvedNestedQuery(field);
+        } else if (field.isAnnotationPresent(SubQuery.class)) {
+            andSQL = resolvedSubQuery(field);
             argList.add(value);
+        } else if (field.isAnnotationPresent(NestedQueries.class)) {
+            NestedQueries nestedQueries = field.getAnnotation(NestedQueries.class);
+            andSQL = resolvedNestedQuery(nestedQueries, argList, value);
         } else {
             String fieldName = field.getName();
             andSQL = QuerySuffix.buildAndSql(fieldName, value, argList);
@@ -105,38 +110,55 @@ public class QueryBuilder {
         whereList.add(andSQL);
     }
 
-    static String resolvedNestedQuery(Field field) {
-        NestedQueries nestedQueries = field.getAnnotation(NestedQueries.class);
-        if (nestedQueries == null) {
-            NestedQuery nestedQuery = field.getAnnotation(NestedQuery.class);
-            String subquery = getSubquery(nestedQuery);
-            return concatNestedQueries(nestedQuery.column(), subquery);
-        }
-        String subquery = getSubquery(nestedQueries);
-        return concatNestedQueries(nestedQueries.column(), subquery) + StringUtils.repeat(')', nestedQueries.value().length - 1);
+    static String resolvedNestedQuery(NestedQueries nestedQueries, List<Object> argList, Object value) {
+        String andSQL;
+        String subquery = getNestedQueries(nestedQueries);
+        andSQL = (nestedQueries.column() + subquery + (nestedQueries.right().isEmpty() ? "" : " = " + REPLACE_HOLDER ))
+            + StringUtils.repeat(')', nestedQueries.value().length);
+        argList.add(value);
+        return andSQL;
     }
 
-    private static String concatNestedQueries(String column, String string) {
-        return column + string + " = " + REPLACE_HOLDER + ")";
-    }
-
-    private static String getSubquery(NestedQueries nestedQueries) {
+    private static String getNestedQueries(NestedQueries nestedQueries) {
         StringBuilder subquery = new StringBuilder();
-        for (NestedQuery nestedQuery : nestedQueries.value()) {
-            subquery.append(getSubquery(nestedQuery));
+        String lastOp = "IN";
+        NestedQuery[] value = nestedQueries.value();
+        NestedQuery nestedQuery = value[0];
+        subquery.append(SPACE).append(lastOp).append(" (").append(getNestedQuery(nestedQuery));
+        lastOp = nestedQuery.op();
+        for (int i = 1, valueLength = value.length; i < valueLength; i++) {
+            nestedQuery = value[i];
+            subquery.append(WHERE).append(nestedQuery.left());
+            subquery.append(SPACE).append(lastOp).append(" (").append(getNestedQuery(nestedQuery));
+            lastOp = nestedQuery.op();
         }
+        subquery.append((nestedQueries.right().isEmpty() ? "" : WHERE + nestedQueries.right()));
         return subquery.toString();
     }
 
-    private static String getSubquery(NestedQuery nestedQuery) {
-        return " IN (SELECT " +
+    private static String getNestedQuery(NestedQuery nestedQuery) {
+        return SELECT +
             nestedQuery.left() +
-            " FROM " +
+            FROM +
             nestedQuery.table() +
             (nestedQuery.extra().isEmpty() ? "" : " ") +
-            nestedQuery.extra() +
-            " WHERE " +
-            nestedQuery.right();
+            nestedQuery.extra();
+    }
+
+    static String resolvedSubQuery(Field field) {
+        SubQuery subQuery = field.getAnnotation(SubQuery.class);
+        String clause = getSubQuery(subQuery);
+        return subQuery.column() + SPACE + subQuery.op() + SPACE + wrapWithParenthesis(clause + " = " + REPLACE_HOLDER);
+    }
+
+    private static String getSubQuery(SubQuery subQuery) {
+        return SELECT +
+            subQuery.left() +
+            FROM +
+            subQuery.table() +
+            (subQuery.extra().isEmpty() ? "" : " ") +
+            subQuery.extra() +
+            (subQuery.right().isEmpty() ? "" : WHERE + subQuery.right());
     }
 
     public String buildSelectAndArgs(PageQuery query, List<Object> argList) {

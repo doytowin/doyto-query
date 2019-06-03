@@ -7,16 +7,18 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * NestedQueries
+ * SubQuery
  *
  * @author f0rb on 2019-05-28
  */
 @Target(FIELD)
 @Retention(RUNTIME)
-public @interface NestedQueries {
-    NestedQuery[] value();
-
-    String right() default "";
+public @interface SubQuery {
 
     String column() default "id";
+    String op() default "IN";
+    String left();
+    String table();
+    String right() default "";
+    String extra() default "";
 }
