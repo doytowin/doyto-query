@@ -117,7 +117,7 @@ class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q> impl
      */
     protected boolean filterByQuery(Q query, E entity) {
         for (Field field : query.getClass().getDeclaredFields()) {
-            if (!ignoreField(field)) {
+            if (!ignoreField(field) && supportFilter(field)) {
                 Object v1 = readField(field, query);
                 if (isValidValue(v1, field)) {
                     boolean shouldNotRemain = unsatisfied(entity, field.getName(), v1);
@@ -128,6 +128,10 @@ class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q> impl
             }
         }
         return true;
+    }
+
+    private boolean supportFilter(Field field) {
+        return !field.isAnnotationPresent(SubQuery.class) && !field.isAnnotationPresent(NestedQueries.class);
     }
 
     protected Boolean unsatisfied(E entity, String queryFieldName, Object queryFieldValue) {

@@ -94,4 +94,11 @@ class MemoryDataAccessTest {
         TestQuery byNoneNullMemo = TestQuery.builder().memoNotNull(true).build();
         assertEquals(1, mockUserDataAccess.count(byNoneNullMemo));
     }
+
+    @Test
+    void ignoreFieldWithSubQuery() {
+        TestQuery byNoneNullMemo = TestQuery.builder().roleId(1).build();
+        assertEquals(5, mockUserDataAccess.count(byNoneNullMemo));
+    }
+
 }

@@ -1,14 +1,18 @@
 package win.doyto.query.core;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.config.GlobalConfiguration;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
+import static org.apache.commons.lang3.StringUtils.SPACE;
 import static win.doyto.query.core.CommonUtil.*;
 import static win.doyto.query.core.Constant.*;
 
@@ -28,13 +32,36 @@ public class QueryBuilder {
     private static final String WHERE = " WHERE ";
     private static final String FROM = " FROM ";
     private static final String EMPTY = "";
+    private static final Pattern PTN_PLACE_HOLDER = Pattern.compile("#\\{(\\w+)}");
+
+    private static String resolveLastColumn(Object query, List<Object> argList, String lastColumn) {
+        Matcher matcher = PTN_PLACE_HOLDER.matcher(lastColumn);
+
+        StringBuffer sb = new StringBuffer(SPACE);
+        while (matcher.find()) {
+            String fieldName = matcher.group(1);
+            Field field = getField(query, fieldName);
+            Object value = readField(field, query);
+            argList.add(value);
+            writeField(field, query, null);
+            matcher = matcher.appendReplacement(sb, REPLACE_HOLDER);
+        }
+
+        return matcher.appendTail(sb).toString();
+    }
 
     @SuppressWarnings("squid:S4973")
     private static String build(PageQuery pageQuery, List<Object> argList, String operation, String... columns) {
         String table = tableMap.computeIfAbsent(pageQuery.getClass(), c -> ((QueryTable) c.getAnnotation(QueryTable.class)).table());
 
+        String join = "";
+        if (pageQuery.getJoin() != null) {
+            pageQuery = SerializationUtils.clone(pageQuery);
+            join = resolveLastColumn(pageQuery, argList, pageQuery.getJoin());
+        }
+
         String sql;
-        sql = buildStart(operation, columns, table);
+        sql = buildStart(operation, columns, table) + join;
         sql = buildWhere(sql, pageQuery, argList);
         // intentionally use ==
         if (!(columns.length == 1 && COUNT == columns[0])) {
@@ -202,6 +229,10 @@ public class QueryBuilder {
 
     public String buildSelectColumnsAndArgs(PageQuery query, List<Object> argList, String... columns) {
         return build(query, argList, SELECT, columns);
+    }
+
+    public String buildSelectColumnsAndArgsAndJoin(PageQuery query, List<Object> argList, String join, String... columns) {
+        return build(query.join(join), argList, SELECT, columns);
     }
 
     public SqlAndArgs buildSelectColumnsAndArgs(PageQuery query, String... columns) {

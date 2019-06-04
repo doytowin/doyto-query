@@ -372,4 +372,14 @@ public class QueryBuilderTest {
                      queryBuilder.buildSelectAndArgs(nullQuery, argList));
         assertThat(argList).isEmpty();
     }
+
+    @Test
+    public void buildSelectColumnsAndArgsWithJoin() {
+        TestQuery testQuery = TestQuery.builder().roleId(9).memoNotNull(true).build();
+        assertEquals("SELECT username, password FROM user LEFT JOIN user_and_role ur ON ur.roleId = ? WHERE memo IS NOT NULL",
+                     queryBuilder.buildSelectColumnsAndArgsAndJoin(testQuery, argList,
+                         "LEFT JOIN user_and_role ur ON ur.roleId = #{roleId}", "username", "password"));
+        assertThat(argList).containsExactly(9);
+        assertThat(testQuery.getRoleId()).isEqualTo(9);
+    }
 }

@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import win.doyto.query.validation.PageGroup;
 
+import java.io.Serializable;
 import javax.validation.constraints.Pattern;
 
 import static java.lang.Math.max;
@@ -15,18 +16,23 @@ import static java.lang.Math.max;
  *
  * @author f0rb
  */
-@Setter
 @Accessors(chain = true)
-public class PageQuery {
+public class PageQuery implements Serializable {
 
+    @Setter
     private Integer pageNumber;
 
+    @Setter
     private Integer pageSize;
 
     @ApiModelProperty(value = "Sorting field, format: field1,desc;field2,asc")
     @Pattern(regexp = "([_\\w]+,(asc|desc);)*[_\\w]+,(asc|desc)", message = "Sorting field format error", groups = PageGroup.class)
     @Getter
+    @Setter
     private String sort;
+
+    @Getter
+    private String join;
 
     public Integer getPageNumber() {
         return getDefault(pageNumber, 0, pageSize == null);
@@ -34,6 +40,11 @@ public class PageQuery {
 
     public Integer getPageSize() {
         return getDefault(pageSize, 10, pageNumber == null);
+    }
+
+    PageQuery join(String join) {
+        this.join = join;
+        return this;
     }
 
     private Integer getDefault(Integer number, int defaultValue, boolean canBeNull) {

@@ -81,8 +81,16 @@ class CommonUtil {
     }
 
     static Object readField(Object target, String fieldName) {
-        Field field = FieldUtils.getField(target.getClass(), fieldName, true);
-        return readField(field, target);
+        return readField(getField(target, fieldName), target);
+    }
+
+    static Field getField(Object target, String fieldName) {
+        return FieldUtils.getField(target.getClass(), fieldName, true);
+    }
+
+    @SneakyThrows
+    static void writeField(Field field, Object target, Object value) {
+        FieldUtils.writeField(field, target, value, true);
     }
 
     static boolean ignoreField(Field field) {
