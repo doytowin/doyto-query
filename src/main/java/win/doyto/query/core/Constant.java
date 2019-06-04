@@ -12,4 +12,9 @@ interface Constant {
     String REPLACE_HOLDER = "?";
     String SPACE = " ";
     String EQUAL = " = ";
+    String SELECT = "SELECT ";
+    String COUNT = "count(*)";
+    String FROM = " FROM ";
+    String WHERE = " WHERE ";
+    String EMPTY = "";
 }
