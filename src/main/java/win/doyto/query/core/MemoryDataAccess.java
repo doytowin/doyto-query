@@ -140,9 +140,9 @@ class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q> impl
         FilterExecutor.Matcher matcher = FilterExecutor.get(querySuffix);
 
         if (columnName.contains("Or")) {
-            String[] names = ColumnMeta.splitByOr(columnName);
+            String[] names = splitByOr(columnName);
             return Arrays.stream(names).
-                map(name -> readField(entity, ColumnMeta.camelize(name))).
+                map(name -> readField(entity, camelize(name))).
                 noneMatch(entityFieldValue -> matcher.match(queryFieldValue, entityFieldValue));
         } else {
             Object entityFieldValue = readField(entity, columnName);

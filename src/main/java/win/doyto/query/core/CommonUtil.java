@@ -34,6 +34,7 @@ class CommonUtil {
 
     private static final Pattern PTN_$EX = Pattern.compile("\\$\\{(\\w+)}");
     private static final Pattern PTN_CAPITAL_CHAR = Pattern.compile("([A-Z])");
+    private static final Pattern PTN_SPLIT_OR = Pattern.compile("Or(?=[A-Z])");
 
     static boolean isDynamicTable(String input) {
         return PTN_$EX.matcher(input).find();
@@ -131,5 +132,13 @@ class CommonUtil {
 
     static String generateReplaceHoldersForCollection(int size) {
         return wrapWithParenthesis(StringUtils.trimToNull(StringUtils.join(IntStream.range(0, size).mapToObj(i -> Constant.REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR)));
+    }
+
+    static String camelize(String or) {
+        return or.substring(0, 1).toLowerCase() + or.substring(1);
+    }
+
+    static String[] splitByOr(String columnName) {
+        return PTN_SPLIT_OR.split(columnName, 0);
     }
 }

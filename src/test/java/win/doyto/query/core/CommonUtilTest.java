@@ -3,6 +3,8 @@ package win.doyto.query.core;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static win.doyto.query.core.CommonUtil.escapeLike;
+import static win.doyto.query.core.CommonUtil.splitByOr;
 
 /**
  * CommonUtilTest
@@ -12,17 +14,22 @@ import static org.junit.jupiter.api.Assertions.*;
 class CommonUtilTest {
 
     @Test
-    void escapeLike() {
-        assertNull(CommonUtil.escapeLike(null));
-        assertEquals("", CommonUtil.escapeLike(""));
+    void testEscapeLike() {
+        assertNull(escapeLike(null));
+        assertEquals("", escapeLike(""));
 
-        assertEquals("%f0rb%", CommonUtil.escapeLike("f0rb"));
-        assertNotEquals("%%%", CommonUtil.escapeLike("%"));
-        assertEquals("%\\%%", CommonUtil.escapeLike("%"));
-        assertEquals("%f0rb\\%%", CommonUtil.escapeLike("f0rb%"));
+        assertEquals("%f0rb%", escapeLike("f0rb"));
+        assertNotEquals("%%%", escapeLike("%"));
+        assertEquals("%\\%%", escapeLike("%"));
+        assertEquals("%f0rb\\%%", escapeLike("f0rb%"));
 
-        assertNotEquals("%_%", CommonUtil.escapeLike("_"));
-        assertEquals("%\\_%", CommonUtil.escapeLike("_"));
+        assertNotEquals("%_%", escapeLike("_"));
+        assertEquals("%\\_%", escapeLike("_"));
+    }
+
+    @Test
+    void testSplitByOr() {
+        assertArrayEquals(new String[] {"user", "Email", "Order"}, splitByOr("userOrEmailOrOrder"));
     }
 
 }
