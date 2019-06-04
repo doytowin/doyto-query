@@ -8,7 +8,7 @@ import win.doyto.query.service.QueryService;
  *
  * @author f0rb on 2019-06-01
  */
-public interface CommonCrudService<E extends Persistable, Q> extends QueryService<E, Q> {
+public interface CommonCrudService<E extends Persistable, I, Q> extends QueryService<E, I, Q> {
 
     void create(E e);
 

@@ -34,11 +34,11 @@ import static win.doyto.query.core.CrudBuilder.resolveColumn;
  * @author f0rb on 2019-05-28
  */
 public abstract class AbstractService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery>
-    implements CommonCrudService<E, Q> {
-
-    private final RowMapper<I> rowMapperForId = new SingleColumnRowMapper<>();
+    implements CommonCrudService<E, I, Q> {
 
     protected DataAccess<E, I, Q> dataAccess;
+
+    protected final Class<E> entityType;
 
     protected final CacheWrapper<E> entityCacheWrapper = CacheWrapper.createInstance();
 
@@ -48,9 +48,10 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     @Autowired(required = false)
     protected List<EntityAspect<E>> entityAspects = new LinkedList<>();
 
-    protected Class<E> entityType;
-
     protected TransactionOperations transactionOperations = NoneTransactionOperations.instance;
+
+    private final RowMapper<I> rowMapperForId = new SingleColumnRowMapper<>();
+
     private final String idColumn;
 
     public AbstractService() {
@@ -106,11 +107,8 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     }
 
     public final <V> List<V> queryColumns(Q query, Class<V> clazz, String... columns) {
-        return queryColumns(query, new BeanPropertyRowMapper<>(clazz), columns);
-    }
-
-    public final <S> List<S> queryColumn(Q query, Class<S> clazz, String column) {
-        return queryColumns(query, new SingleColumnRowMapper<>(clazz), column);
+        RowMapper<V> rowMapper = columns.length == 1 ? new SingleColumnRowMapper<>(clazz) : new BeanPropertyRowMapper<>(clazz);
+        return queryColumns(query, rowMapper, columns);
     }
 
     public final void create(E e) {

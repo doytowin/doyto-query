@@ -10,7 +10,7 @@ import java.io.Serializable;
  *
  * @author f0rb on 2019-05-28
  */
-public interface DynamicService<E extends Persistable<I>, I extends Serializable, Q> extends CommonCrudService<E, Q> {
+public interface DynamicService<E extends Persistable<I>, I extends Serializable, Q> extends CommonCrudService<E, I, Q> {
 
     /**
      * Get origin entity from sharding table

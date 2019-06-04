@@ -31,7 +31,7 @@ class UserController extends AbstractRestService<UserEntity, Long, UserQuery, Us
 
     @Override
     public List<UserResponse> list(UserQuery q) {
-        return queryColumns(q, UserResponse.class,
+        return queryColumns(q, userResponseRowMapper,
             "id", "username", "mobile", "email", "nickname", "valid", "userLevel", "memo");
     }
 

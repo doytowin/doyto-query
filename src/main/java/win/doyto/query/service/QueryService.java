@@ -9,9 +9,11 @@ import java.util.stream.Collectors;
  *
  * @author f0rb
  */
-public interface QueryService<E, Q> {
+public interface QueryService<E, I, Q> {
 
     List<E> query(Q query);
+
+    List<I> queryIds(Q query);
 
     long count(Q query);
 
@@ -28,7 +30,5 @@ public interface QueryService<E, Q> {
     }
 
     <V> List<V> queryColumns(Q query, Class<V> clazz, String... columns);
-
-    <S> List<S> queryColumn(Q query, Class<S> clazz, String column);
 
 }
