@@ -121,11 +121,11 @@ public class QueryBuilderTest {
 
     @Test
     public void supportNotInSuffix() {
-        TestQuery testQuery = TestQuery.builder().idNotIn(Arrays.asList()).build();
+        TestQuery testQuery = TestQuery.builder().idNotIn(Arrays.asList(1, 2)).build();
 
-        assertEquals("SELECT * FROM user WHERE id NOT IN (null)",
+        assertEquals("SELECT * FROM user WHERE id NOT IN (?, ?)",
                      queryBuilder.buildSelectAndArgs(testQuery, argList));
-        assertThat(argList).isEmpty();
+        assertThat(argList).containsExactly(1, 2);
     }
 
     @Test
@@ -362,5 +362,16 @@ public class QueryBuilderTest {
                          "LEFT JOIN user_and_role ur ON ur.roleId = #{roleId}", "username", "password"));
         assertThat(argList).containsExactly(9);
         assertThat(testQuery.getRoleId()).isEqualTo(9);
+    }
+
+    @Test
+    public void ignoreNotInWhenEmpty() {
+        List<Integer> ids = Arrays.asList();
+        TestQuery testQuery = TestQuery.builder().idIn(ids).idNotIn(ids).build();
+
+        assertEquals("SELECT * FROM user WHERE id IN (null)",
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).isEmpty();
+
     }
 }

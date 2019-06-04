@@ -12,6 +12,7 @@ import win.doyto.query.config.GlobalConfiguration;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -127,7 +128,10 @@ class CommonUtil {
     }
 
     static boolean isValidValue(Object value, Field field) {
-        return !ignoreValue(value, field);
+        return !(value == null
+            || (value instanceof Boolean && field.getType().isPrimitive() && Boolean.FALSE.equals(value))
+            || (value instanceof Collection && field.getName().endsWith(QuerySuffix.NotIn.name()) && ((Collection) value).isEmpty())
+        );
     }
 
     static String generateReplaceHoldersForCollection(int size) {
