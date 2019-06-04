@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("squid:S00115")
 @Getter
 enum QuerySuffix {
+    Not("!="),
     NotLike("NOT LIKE"),
     Like,
     NotIn("NOT IN"),

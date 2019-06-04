@@ -29,7 +29,7 @@ public class TestEntity extends IntegerId {
     private String mobile;
     private String email;
     private String nickname;
-    private String userLevel;
+    private TestEnum userLevel;
     private String memo;
     private Boolean valid;
 
@@ -48,6 +48,7 @@ public class TestEntity extends IntegerId {
             testEntity.setPassword("password" + i);
             testEntity.setEmail("test" + i + "@163.com");
             testEntity.setMobile("1777888888" + i);
+            testEntity.setUserLevel(TestEnum.NORMAL);
             testEntity.setValid(i % 2 == 0);
             userEntities.add(testEntity);
         }
@@ -58,6 +59,7 @@ public class TestEntity extends IntegerId {
         testEntity.setPassword("123456");
         testEntity.setEmail("f0rb@163.com");
         testEntity.setMobile("17778888880");
+        testEntity.setUserLevel(TestEnum.VIP);
         testEntity.setValid(true);
         testEntity.setMemo("master");
         userEntities.add(testEntity);

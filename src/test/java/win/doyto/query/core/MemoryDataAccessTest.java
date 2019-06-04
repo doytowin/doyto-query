@@ -3,6 +3,7 @@ package win.doyto.query.core;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.core.test.TestEntity;
+import win.doyto.query.core.test.TestEnum;
 import win.doyto.query.core.test.TestQuery;
 
 import java.util.Arrays;
@@ -99,6 +100,15 @@ class MemoryDataAccessTest {
     void ignoreFieldWithSubQuery() {
         TestQuery byNoneNullMemo = TestQuery.builder().roleId(1).build();
         assertEquals(5, mockUserDataAccess.count(byNoneNullMemo));
+    }
+
+    @Test
+    void not() {
+        TestQuery byNotNormal = TestQuery.builder().userLevelNot(TestEnum.NORMAL).build();
+        assertEquals(1, mockUserDataAccess.count(byNotNormal));
+
+        TestQuery byNotNormalAndValid = TestQuery.builder().userLevelNot(TestEnum.VIP).valid(true).build();
+        assertEquals(2, mockUserDataAccess.count(byNotNormalAndValid));
     }
 
 }

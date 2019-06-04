@@ -255,6 +255,7 @@ class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q> impl
             map.put(Lt, (qv, ev) -> ((Comparable) ev).compareTo(qv) < 0);
             map.put(Ge, (qv, ev) -> ((Comparable) ev).compareTo(qv) >= 0);
             map.put(Le, (qv, ev) -> ((Comparable) ev).compareTo(qv) <= 0);
+            map.put(Not, (qv, ev) -> !qv.equals(ev));
             map.put(NONE, Object::equals);
         }
 

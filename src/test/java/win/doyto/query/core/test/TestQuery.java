@@ -47,6 +47,8 @@ public class TestQuery extends PageQuery {
 
     private TestEnum userLevel;
 
+    private TestEnum userLevelNot;
+
     private Date createTimeGt;
     private Date createTimeGe;
     private Date createTimeLt;

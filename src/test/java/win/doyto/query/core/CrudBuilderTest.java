@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.test.TestEntity;
+import win.doyto.query.core.test.TestEnum;
 import win.doyto.query.core.test.TestQuery;
 
 import java.util.ArrayList;
@@ -108,10 +109,11 @@ class CrudBuilderTest {
         try {
             TestEntity testEntity = new TestEntity();
             testEntity.setId(1);
-            testEntity.setUserLevel("vip");
+            testEntity.setUserLevel(TestEnum.VIP);
             testEntity.setValid(true);
             assertEquals("UPDATE user SET user_level = ?, valid = ? WHERE id = ?",
                          userEntityCrudBuilder.buildPatchAndArgsWithId(testEntity, argList));
+            assertThat(argList).containsExactly(0, true, 1);
         } finally {
             GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
         }

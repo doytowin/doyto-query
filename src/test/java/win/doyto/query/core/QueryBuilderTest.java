@@ -372,6 +372,13 @@ public class QueryBuilderTest {
         assertEquals("SELECT * FROM user WHERE id IN (null)",
                      queryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).isEmpty();
+    }
 
+    @Test
+    public void supportNot() {
+        TestQuery testQuery = TestQuery.builder().userLevelNot(TestEnum.VIP).build();
+        assertEquals("SELECT * FROM user WHERE userLevel != ?",
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly(0);
     }
 }
