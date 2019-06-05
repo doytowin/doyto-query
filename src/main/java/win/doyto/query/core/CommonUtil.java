@@ -123,10 +123,6 @@ class CommonUtil {
         return PTN_CAPITAL_CHAR.matcher(camel).replaceAll("_$1").toLowerCase();
     }
 
-    static boolean ignoreValue(Object value, Field field) {
-        return value == null || (value instanceof Boolean && field.getType().isPrimitive() && Boolean.FALSE.equals(value));
-    }
-
     static boolean isValidValue(Object value, Field field) {
         return !(value == null
             || (value instanceof Boolean && field.getType().isPrimitive() && Boolean.FALSE.equals(value))

@@ -24,15 +24,14 @@ import static win.doyto.query.core.Constant.*;
  * @author f0rb
  */
 @Slf4j
-@SuppressWarnings("unchecked")
 public class QueryBuilder {
 
     private static final Map<Class, Field[]> classFieldsMap = new ConcurrentHashMap<>();
     private static final Map<Class, String> tableMap = new ConcurrentHashMap<>();
     private static final Pattern PTN_PLACE_HOLDER = Pattern.compile("#\\{(\\w+)}");
 
-    private static String resolveLastColumn(Object query, List<Object> argList, String lastColumn) {
-        Matcher matcher = PTN_PLACE_HOLDER.matcher(lastColumn);
+    private static String resolveJoin(Object query, List<Object> argList, String join) {
+        Matcher matcher = PTN_PLACE_HOLDER.matcher(join);
 
         StringBuffer sb = new StringBuffer(SPACE);
         while (matcher.find()) {
@@ -47,18 +46,21 @@ public class QueryBuilder {
         return matcher.appendTail(sb).toString();
     }
 
-    @SuppressWarnings("squid:S4973")
+    @SuppressWarnings({"unchecked", "squid:S4973"})
     private static String build(PageQuery pageQuery, List<Object> argList, String operation, String... columns) {
         String table = tableMap.computeIfAbsent(pageQuery.getClass(), c -> ((QueryTable) c.getAnnotation(QueryTable.class)).table());
 
         String join = "";
         if (pageQuery.getJoin() != null) {
             pageQuery = SerializationUtils.clone(pageQuery);
-            join = resolveLastColumn(pageQuery, argList, pageQuery.getJoin());
+            join = resolveJoin(pageQuery, argList, pageQuery.getJoin());
         }
 
         String sql;
-        sql = buildStart(operation, columns, table) + join;
+        sql = buildStart(operation, columns, table);
+        if (join != null) {
+            sql += join;
+        }
         sql = buildWhere(sql, pageQuery, argList);
         // intentionally use ==
         if (!(columns.length == 1 && COUNT == columns[0])) {
@@ -146,13 +148,19 @@ public class QueryBuilder {
         return build(query, argList, SELECT, columns);
     }
 
+    public SqlAndArgs buildSelectColumnsAndArgs(PageQuery query, String... columns) {
+        ArrayList<Object> argList = new ArrayList<>();
+        return new SqlAndArgs(buildSelectColumnsAndArgs(query, argList, columns), argList);
+    }
+
     public String buildSelectColumnsAndArgsAndJoin(PageQuery query, List<Object> argList, String join, String... columns) {
         return build(query.join(join), argList, SELECT, columns);
     }
 
-    public SqlAndArgs buildSelectColumnsAndArgs(PageQuery query, String... columns) {
+    public SqlAndArgs buildSelectColumnsAndArgsAndJoin(PageQuery query, String join, String... columns) {
         ArrayList<Object> argList = new ArrayList<>();
-        return new SqlAndArgs(buildSelectColumnsAndArgs(query, argList, columns), argList);
+        String sql = buildSelectColumnsAndArgsAndJoin(query, argList, join, columns);
+        return new SqlAndArgs(sql, argList);
     }
 
 }
