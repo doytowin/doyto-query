@@ -1,7 +1,9 @@
 package win.doyto.query.core;
 
+import lombok.Setter;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.support.NoOpCache;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -45,6 +47,10 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     @Autowired(required = false)
     private UserIdProvider userIdProvider;
 
+    @Setter
+    @Autowired(required = false)
+    private CacheManager cacheManager;
+
     @Autowired(required = false)
     protected List<EntityAspect<E>> entityAspects = new LinkedList<>();
 
@@ -76,18 +82,21 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         transactionOperations = new TransactionTemplate(transactionManager);
     }
 
-    @Autowired(required = false)
-    public void setCacheManager(CacheManager cacheManager) {
-        String cacheName = getCacheName();
-        if (cacheName != null) {
-            entityCacheWrapper.setCache(cacheManager.getCache(cacheName));
+    @SuppressWarnings("squid:S4973")
+    @Value("${doyto.query.caches:}")
+    public void setCacheList(List<String> cacheList) {
+        if (cacheManager != null) {
+            String cacheName = getCacheName();
+            if (cacheList.contains(cacheName) || cacheName != entityType.getName()) {
+                entityCacheWrapper.setCache(cacheManager.getCache(cacheName));
+            }
         }
     }
 
     protected abstract String resolveCacheKey(E e);
 
     protected String getCacheName() {
-        return null;
+        return entityType.getSimpleName();
     }
 
     public List<E> query(Q query) {

@@ -12,3 +12,10 @@ spring:
 
   cache:
     type: simple
+
+#兼容缓存的继承方式和配置方式
+#doyto:
+#  query:
+#    caches:
+#      module:user,
+#      module:menu

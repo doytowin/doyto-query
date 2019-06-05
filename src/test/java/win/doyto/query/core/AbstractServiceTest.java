@@ -8,6 +8,7 @@ import win.doyto.query.core.test.TestQuery;
 import win.doyto.query.core.test.TestService;
 import win.doyto.query.entity.EntityAspect;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,6 +33,7 @@ class AbstractServiceTest {
     @Test
     void supportCache() {
         testService.setCacheManager(new ConcurrentMapCacheManager());
+        testService.setCacheList(Arrays.asList());
         testService.get(1);
         testService.get(1);
         verify(testService.dataAccess, times(1)).get(1);
