@@ -22,7 +22,7 @@ final class FieldProcessor {
 
     private static final Map<Field, Processor> FIELD_PROCESSOR_MAP = new ConcurrentHashMap<>();
 
-    static String resolvedNestedQuery(NestedQueries nestedQueries, List<Object> argList, Object value) {
+    static String resolvedNestedQuery(List<Object> argList, Object value, NestedQueries nestedQueries) {
         String andSQL;
         String subquery = getNestedQueries(nestedQueries);
         andSQL = (nestedQueries.column() + subquery + (nestedQueries.right().isEmpty() ? EMPTY : " = " + REPLACE_HOLDER ))
@@ -58,8 +58,7 @@ final class FieldProcessor {
     }
 
     @SuppressWarnings("unchecked")
-    static String resolvedSubQuery(Field field, List<Object> argList, Object value) {
-        SubQuery subQuery = field.getAnnotation(SubQuery.class);
+    static String resolvedSubQuery(List<Object> argList, Object value, SubQuery subQuery, String fieldName) {
         StringBuilder clauseBuilder = new StringBuilder()
             .append(SELECT).append(subQuery.left()).append(FROM).append(subQuery.table())
             .append(subQuery.extra().isEmpty() ? EMPTY : SPACE).append(subQuery.extra());
@@ -72,7 +71,7 @@ final class FieldProcessor {
             }
             if (value instanceof Collection) {
                 if (noColumn) {
-                    String singular = StringUtils.removeEnd(StringUtils.removeEnd(field.getName(), "s"), "List");
+                    String singular = StringUtils.removeEnd(StringUtils.removeEnd(fieldName, "s"), "List");
                     clauseBuilder.append(convertColumn(singular));
                 }
                 Collection collection = (Collection) value;
@@ -81,7 +80,7 @@ final class FieldProcessor {
                 argList.addAll(collection);
             } else {
                 if (noColumn) {
-                    clauseBuilder.append(convertColumn(field.getName()));
+                    clauseBuilder.append(convertColumn(fieldName));
                 }
                 clauseBuilder.append(EQUAL).append(REPLACE_HOLDER);
                 argList.add(value);
@@ -91,28 +90,30 @@ final class FieldProcessor {
     }
 
     static void init(Field field) {
+        String fieldName = field.getName();
         if (field.isAnnotationPresent(QueryField.class)) {
-            FIELD_PROCESSOR_MAP.put(field, (argList, field1, value) -> {
-                QueryField queryField = field1.getAnnotation(QueryField.class);
-                String andSQL = queryField.and();
+            String andSQL = field.getAnnotation(QueryField.class).and();
+            FIELD_PROCESSOR_MAP.put(field, (argList, value) -> {
                 IntStream.range(0, StringUtils.countMatches(andSQL, REPLACE_HOLDER)).mapToObj(i -> value).forEach(argList::add);
                 return andSQL;
             });
         } else if (field.isAnnotationPresent(SubQuery.class)) {
-            FIELD_PROCESSOR_MAP.put(field, (argList, field1, value) -> resolvedSubQuery(field1, argList, value));
+            SubQuery subQuery = field.getAnnotation(SubQuery.class);
+            FIELD_PROCESSOR_MAP.put(field, (argList, value) -> resolvedSubQuery(argList, value, subQuery, fieldName));
         } else if (field.isAnnotationPresent(NestedQueries.class)) {
-            FIELD_PROCESSOR_MAP.put(field, (argList, field1, value) -> resolvedNestedQuery(field.getAnnotation(NestedQueries.class), argList, value));
+            NestedQueries nestedQueries = field.getAnnotation(NestedQueries.class);
+            FIELD_PROCESSOR_MAP.put(field, (argList, value) -> resolvedNestedQuery(argList, value, nestedQueries));
         } else {
-            FIELD_PROCESSOR_MAP.put(field, (argList, field1, value) -> QuerySuffix.buildAndSql(field1.getName(), value, argList));
+            FIELD_PROCESSOR_MAP.put(field, (argList, value) -> QuerySuffix.buildAndSql(argList, value, fieldName));
         }
     }
 
     static String execute(List<Object> argList, Field field, Object value) {
-        return FIELD_PROCESSOR_MAP.get(field).process(argList, field, value);
+        return FIELD_PROCESSOR_MAP.get(field).process(argList, value);
     }
 
     private interface Processor {
-        String process(List<Object> args, Field field, Object value);
+        String process(List<Object> args, Object value);
     }
 
 }

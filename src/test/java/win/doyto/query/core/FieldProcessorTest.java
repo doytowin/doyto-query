@@ -12,8 +12,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static win.doyto.query.core.FieldProcessor.resolvedNestedQuery;
-import static win.doyto.query.core.FieldProcessor.resolvedSubQuery;
 
 /**
  * FieldProcessorTest
@@ -35,7 +33,7 @@ class FieldProcessorTest {
         TestQuery testQuery = TestQuery.builder().roleId(1).build();
         Field field = testQuery.getClass().getDeclaredField("roleId");
         assertEquals("id IN (SELECT userId FROM t_user_and_role WHERE roleId = ?)",
-                     resolvedSubQuery(field, argList, 1));
+                     FieldProcessor.resolvedSubQuery(argList, 1, field.getAnnotation(SubQuery.class), field.getName()));
     }
 
     @Test
@@ -43,7 +41,7 @@ class FieldProcessorTest {
         PermissionQuery permissionQuery = PermissionQuery.builder().userId(2).build();
         Field field = permissionQuery.getClass().getDeclaredField("userId");
         assertEquals("id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN (SELECT roleId FROM t_user_and_role WHERE userId = ?))",
-                     resolvedNestedQuery(field.getAnnotation(NestedQueries.class), argList, 2));
+                     FieldProcessor.resolvedNestedQuery(argList, 2, field.getAnnotation(NestedQueries.class)));
         assertThat(argList).containsExactly(2);
     }
 

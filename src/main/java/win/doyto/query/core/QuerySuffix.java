@@ -60,7 +60,7 @@ enum QuerySuffix {
         sqlFuncMap.put(NotIn, columnMeta -> buildSqlForCollection(columnMeta, NotIn));
     }
 
-    static String buildAndSql(String fieldName, Object value, List<Object> argList) {
+    static String buildAndSql(List<Object> argList, Object value, String fieldName) {
         QuerySuffix querySuffix = resolve(fieldName);
         if (querySuffix == Like) {
             value = CommonUtil.escapeLike(String.valueOf(value));
