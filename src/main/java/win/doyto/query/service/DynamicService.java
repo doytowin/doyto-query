@@ -1,6 +1,5 @@
 package win.doyto.query.service;
 
-import win.doyto.query.core.CommonCrudService;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;

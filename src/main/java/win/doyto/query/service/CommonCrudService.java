@@ -1,14 +1,13 @@
-package win.doyto.query.core;
+package win.doyto.query.service;
 
 import win.doyto.query.entity.Persistable;
-import win.doyto.query.service.QueryService;
 
 /**
  * CommonCrudService
  *
  * @author f0rb on 2019-06-01
  */
-public interface CommonCrudService<E extends Persistable, I, Q> extends QueryService<E, I, Q> {
+interface CommonCrudService<E extends Persistable, I, Q> extends QueryService<E, I, Q> {
 
     void create(E e);
 

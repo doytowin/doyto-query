@@ -28,7 +28,7 @@ import static win.doyto.query.core.QuerySuffix.*;
  */
 @Slf4j
 @SuppressWarnings({"unchecked", "squid:S1135"})
-class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
+public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
     protected static final Map<Object, Map> tableMap = new ConcurrentHashMap<>();
 
     protected final Map<I, E> entitiesMap = new ConcurrentHashMap<>();
@@ -70,6 +70,11 @@ class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q> impl
     public E fetch(I id) {
         E e = entitiesMap.get(id);
         return SerializationUtils.clone(e);
+    }
+
+    @Override
+    public List<I> queryIds(Q query) {
+        return queryColumns(query, new SingleColumnRowMapper<>(), "id");
     }
 
     @Override

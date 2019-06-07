@@ -57,4 +57,6 @@ public interface DataAccess<E extends Persistable<I>, I extends Serializable, Q>
      * @return a new entity object
      */
     E fetch(I id);
+
+    List<I> queryIds(Q query);
 }

@@ -3,7 +3,6 @@ package win.doyto.query.service;
 import org.springframework.beans.BeanUtils;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.ReflectionUtils;
-import win.doyto.query.core.AbstractService;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.entity.Persistable;
 

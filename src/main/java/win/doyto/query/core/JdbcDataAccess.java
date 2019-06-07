@@ -4,6 +4,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import win.doyto.query.entity.Persistable;
@@ -19,7 +20,7 @@ import java.util.List;
  *
  * @author f0rb
  */
-final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> implements DataAccess<E, I, Q> {
+public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> implements DataAccess<E, I, Q> {
 
     private final JdbcOperations jdbcOperations;
     private final RowMapper<E> rowMapper;
@@ -126,6 +127,12 @@ final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q e
     @Override
     public final E fetch(I id) {
         return get(id);
+    }
+
+    @Override
+    public List<I> queryIds(Q query) {
+        SqlAndArgs sqlAndArgs = crudBuilder.buildSelectIdAndArgs(query);
+        return jdbcOperations.query(sqlAndArgs.sql, sqlAndArgs.args, new SingleColumnRowMapper<>());
     }
 
 }

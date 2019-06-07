@@ -29,6 +29,7 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
     private static final String EQUALS_REPLACE_HOLDER = " = " + Constant.REPLACE_HOLDER;
 
     private final Field idField;
+    private final String idColumn;
     private final String tableName;
     private final List<Field> fields;
     private final int fieldsSize;
@@ -41,7 +42,8 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
     public CrudBuilder(Class<E> entityClass) {
         tableName = entityClass.getAnnotation(Table.class).name();
         idField = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0];
-        whereId = " WHERE " + resolveColumn(idField) + EQUALS_REPLACE_HOLDER;
+        idColumn = resolveColumn(idField);
+        whereId = " WHERE " + idColumn + EQUALS_REPLACE_HOLDER;
 
         isDynamicTable = isDynamicTable(tableName);
 
@@ -189,5 +191,9 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
 
     protected String buildDeleteById(E e) {
         return "DELETE FROM " + replaceTableName(e, tableName) + whereId;
+    }
+
+    protected SqlAndArgs buildSelectIdAndArgs(PageQuery query) {
+        return buildSelectColumnsAndArgs(query, idColumn);
     }
 }
