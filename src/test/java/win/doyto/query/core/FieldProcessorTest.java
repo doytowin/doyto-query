@@ -32,16 +32,21 @@ class FieldProcessorTest {
     void testResolveNestedQuery() throws NoSuchFieldException {
         TestQuery testQuery = TestQuery.builder().roleId(1).build();
         Field field = testQuery.getClass().getDeclaredField("roleId");
-        assertEquals("id IN (SELECT userId FROM t_user_and_role WHERE roleId = ?)",
-                     FieldProcessor.resolvedSubQuery(argList, 1, field.getAnnotation(SubQuery.class), field.getName()));
+        String sql = FieldProcessor.resolvedSubQuery(
+            argList, 1, field.getAnnotation(SubQuery.class), field.getName(),
+            !field.getType().isAssignableFrom(boolean.class));
+        assertEquals("id IN (SELECT userId FROM t_user_and_role WHERE roleId = ?)", sql);
     }
 
     @Test
     void testResolveNestedQueries() throws NoSuchFieldException {
         PermissionQuery permissionQuery = PermissionQuery.builder().userId(2).build();
         Field field = permissionQuery.getClass().getDeclaredField("userId");
-        assertEquals("id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN (SELECT roleId FROM t_user_and_role WHERE userId = ?))",
-                     FieldProcessor.resolvedNestedQuery(argList, 2, field.getAnnotation(NestedQueries.class)));
+        String sql = FieldProcessor.resolvedNestedQueries(
+            argList, 2, field.getAnnotation(NestedQueries.class), field.getName(),
+            !field.getType().isAssignableFrom(boolean.class));
+
+        assertEquals("id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN (SELECT roleId FROM t_user_and_role WHERE userId = ?))", sql);
         assertThat(argList).containsExactly(2);
     }
 

@@ -9,6 +9,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static win.doyto.query.core.Constant.EMPTY;
+import static win.doyto.query.core.Constant.WHERE;
+
 /**
  * QuerySuffix
  *
@@ -80,6 +83,10 @@ enum QuerySuffix {
     private static String buildSqlForCollection(ColumnMeta columnMeta, QuerySuffix querySuffix) {
         int size = ((Collection) columnMeta.value).size();
         return columnMeta.defaultSql(querySuffix, CommonUtil.generateReplaceHoldersForCollection(size));
+    }
+
+    static String buildWhereSql(List<Object> argList, Object value, String fieldName, boolean fieldTypeNotPrimitiveBoolean) {
+        return fieldTypeNotPrimitiveBoolean ? WHERE + buildAndSql(argList, value, fieldName) : EMPTY;
     }
 
     String resolveColumnName(String fieldName) {

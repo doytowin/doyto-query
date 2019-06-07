@@ -28,7 +28,7 @@ public class TestQuery extends PageQuery {
 
     private String username;
 
-    @SubQuery(left = "userId", table = "t_user_and_role", right = "roleId")
+    @SubQuery(left = "userId", table = "t_user_and_role")
     private Integer roleId;
 
     @QueryField(and = "(username = ? OR email = ? OR mobile = ?)")

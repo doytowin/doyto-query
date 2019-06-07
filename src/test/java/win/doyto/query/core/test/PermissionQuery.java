@@ -18,7 +18,7 @@ public class PermissionQuery extends PageQuery {
        value = {
            @NestedQuery(left = "permId", table = "t_role_and_perm"),
            @NestedQuery(left = "roleId", table = "t_user_and_role"),
-       }, right = "userId")
+       })
    private Integer userId;
 
    @NestedQueries({
@@ -30,6 +30,6 @@ public class PermissionQuery extends PageQuery {
    private boolean validUser;
 
    @SubQuery(left = "permId", table = "t_role_and_perm")
-   private List<Integer> roleIds;
+   private List<Integer> roleIdIn;
 
 }

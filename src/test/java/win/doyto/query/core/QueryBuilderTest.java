@@ -315,12 +315,12 @@ public class QueryBuilderTest {
         assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN " +
                          "(SELECT roleId FROM t_user_and_role ur inner join user u on u.id = ur.userId and u.valid = true))",
                      queryBuilder.buildSelectAndArgs(permissionQuery, argList));
-        assertThat(argList).containsExactly(true);
+        assertThat(argList).isEmpty();
     }
 
     @Test
     public void buildSubQueryWithCollection() {
-        PermissionQuery permissionQuery = PermissionQuery.builder().roleIds(Arrays.asList(1, 2, 3)).build();
+        PermissionQuery permissionQuery = PermissionQuery.builder().roleIdIn(Arrays.asList(1, 2, 3)).build();
         assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN (?, ?, ?))",
                      queryBuilder.buildSelectAndArgs(permissionQuery, argList));
         assertThat(argList).containsExactly(1, 2, 3);
@@ -330,7 +330,7 @@ public class QueryBuilderTest {
     public void buildSubQueryWithNullCollection() {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
 
-        PermissionQuery nullQuery = PermissionQuery.builder().roleIds(Arrays.asList()).build();
+        PermissionQuery nullQuery = PermissionQuery.builder().roleIdIn(Arrays.asList()).build();
         assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE role_id IN (null))",
                      queryBuilder.buildSelectAndArgs(nullQuery, argList));
         assertThat(argList).isEmpty();

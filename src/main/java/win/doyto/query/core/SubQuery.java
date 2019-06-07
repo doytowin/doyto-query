@@ -23,9 +23,4 @@ public @interface SubQuery {
 
     String table();
 
-    String right() default "";
-
-    boolean ignoreField() default false;
-
-    String extra() default "";
 }

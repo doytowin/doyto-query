@@ -14,9 +14,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(FIELD)
 @Retention(RUNTIME)
 public @interface NestedQueries {
-    NestedQuery[] value();
-
-    String right() default "";
 
     String column() default "id";
+
+    String op() default Constant.IN;
+
+    NestedQuery[] value();
+
 }
