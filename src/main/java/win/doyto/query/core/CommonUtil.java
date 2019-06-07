@@ -15,14 +15,10 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Transient;
-
-import static win.doyto.query.core.Constant.SEPARATOR;
 
 /**
  * CommonUtil
@@ -128,10 +124,6 @@ class CommonUtil {
             || (value instanceof Boolean && field.getType().isPrimitive() && Boolean.FALSE.equals(value))
             || (value instanceof Collection && field.getName().endsWith(QuerySuffix.NotIn.name()) && ((Collection) value).isEmpty())
         );
-    }
-
-    static String generateReplaceHoldersForCollection(int size) {
-        return wrapWithParenthesis(StringUtils.trimToNull(StringUtils.join(IntStream.range(0, size).mapToObj(i -> Constant.REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR)));
     }
 
     static String camelize(String or) {

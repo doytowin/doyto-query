@@ -8,9 +8,9 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import static win.doyto.query.core.Constant.EMPTY;
-import static win.doyto.query.core.Constant.WHERE;
+import static win.doyto.query.core.Constant.*;
 
 /**
  * QuerySuffix
@@ -33,17 +33,7 @@ enum QuerySuffix {
     Le("<="),
     NONE("=");
 
-    QuerySuffix() {
-        this.op = name().toUpperCase();
-    }
-
-    QuerySuffix(String op) {
-        this.op = op;
-    }
-
-    private final String op;
-
-    static final Pattern SUFFIX_PTN;
+    private static final Pattern SUFFIX_PTN;
 
     private static final Map<QuerySuffix, Function<ColumnMeta, String>> sqlFuncMap = new EnumMap<>(QuerySuffix.class);
 
@@ -63,26 +53,36 @@ enum QuerySuffix {
         sqlFuncMap.put(NotIn, columnMeta -> buildSqlForCollection(columnMeta, NotIn));
     }
 
+    private final String op;
+
+    QuerySuffix() {
+        this.op = name().toUpperCase();
+    }
+
+    QuerySuffix(String op) {
+        this.op = op;
+    }
+
+    private static String generateReplaceHoldersForCollection(int size) {
+        return CommonUtil.wrapWithParenthesis(StringUtils.trimToNull(StringUtils.join(IntStream.range(0, size).mapToObj(i -> REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR)));
+    }
+
+    private static String buildSqlForCollection(ColumnMeta columnMeta, QuerySuffix querySuffix) {
+        int size = ((Collection) columnMeta.value).size();
+        return columnMeta.defaultSql(querySuffix, generateReplaceHoldersForCollection(size));
+    }
+
+    static QuerySuffix resolve(String fieldName) {
+        Matcher matcher = SUFFIX_PTN.matcher(fieldName);
+        return matcher.find() ? valueOf(matcher.group()) : NONE;
+    }
+
     static String buildAndSql(List<Object> argList, Object value, String fieldName) {
         QuerySuffix querySuffix = resolve(fieldName);
         if (querySuffix == Like) {
             value = CommonUtil.escapeLike(String.valueOf(value));
         }
         return sqlFuncMap.get(querySuffix).apply(new ColumnMeta(fieldName, value, argList));
-    }
-
-    static QuerySuffix resolve(String fieldName) {
-        QuerySuffix querySuffix = NONE;
-        Matcher matcher = SUFFIX_PTN.matcher(fieldName);
-        if (matcher.find()) {
-            querySuffix = valueOf(matcher.group());
-        }
-        return querySuffix;
-    }
-
-    private static String buildSqlForCollection(ColumnMeta columnMeta, QuerySuffix querySuffix) {
-        int size = ((Collection) columnMeta.value).size();
-        return columnMeta.defaultSql(querySuffix, CommonUtil.generateReplaceHoldersForCollection(size));
     }
 
     static String buildWhereSql(List<Object> argList, Object value, String fieldName, boolean fieldTypeNotPrimitiveBoolean) {

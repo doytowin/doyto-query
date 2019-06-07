@@ -14,7 +14,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.apache.commons.lang3.StringUtils.SPACE;
 import static win.doyto.query.core.CommonUtil.*;
 import static win.doyto.query.core.Constant.*;
 
