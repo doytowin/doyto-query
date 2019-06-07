@@ -209,15 +209,6 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void supportDynamicTableName() {
-        DynamicQuery dynamicQuery = DynamicQuery.builder().user("f0rb").project("i18n").scoreLt(100).build();
-
-        assertEquals("SELECT * FROM t_dynamic_f0rb_i18n WHERE score < ?",
-                     queryBuilder.buildSelectAndArgs(dynamicQuery, argList));
-        assertThat(argList).containsExactly(100);
-    }
-
-    @Test
     public void buildDeleteAndArgs() {
         TestQuery testQuery = TestQuery.builder().username("test").build();
         testQuery.setPageNumber(3).setPageSize(10);
@@ -291,15 +282,6 @@ public class QueryBuilderTest {
                      queryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly(0);
 
-    }
-
-    @Test
-    public void fixSQLInject() {
-        DynamicQuery dynamicQuery = DynamicQuery.builder().user("f0rb").project("; DROP TABLE menu;").scoreLt(100).build();
-
-        assertEquals("SELECT * FROM t_dynamic_f0rb_${project} WHERE project = ? AND score < ?",
-                     queryBuilder.buildSelectAndArgs(dynamicQuery, argList));
-        assertThat(argList).containsExactly("; DROP TABLE menu;", 100);
     }
 
     @Test

@@ -2,7 +2,6 @@ package win.doyto.query.demo.module.user;
 
 import lombok.*;
 import win.doyto.query.core.PageQuery;
-import win.doyto.query.core.QueryTable;
 
 /**
  * TestQuery
@@ -14,7 +13,6 @@ import win.doyto.query.core.QueryTable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@QueryTable(table = UserEntity.TABLE)
 @SuppressWarnings("unused")
 public class UserQuery extends PageQuery {
     private String username;

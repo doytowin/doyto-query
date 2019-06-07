@@ -12,7 +12,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-@QueryTable(table = "t_dynamic_${user}_${project}")
 public class DynamicQuery extends PageQuery {
 
     private String user;

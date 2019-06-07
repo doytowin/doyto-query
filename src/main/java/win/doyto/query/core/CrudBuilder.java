@@ -102,6 +102,11 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
         }
     }
 
+    @Override
+    protected String getTableName(PageQuery pageQuery) {
+        return tableName;
+    }
+
     private String resolveTableName(E entity) {
         return isDynamicTable ? replaceTableName(entity, tableName) : tableName;
     }

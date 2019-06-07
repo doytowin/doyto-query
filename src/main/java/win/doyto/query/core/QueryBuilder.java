@@ -46,9 +46,17 @@ public class QueryBuilder {
         return matcher.appendTail(sb).toString();
     }
 
-    @SuppressWarnings({"unchecked", "squid:S4973"})
-    private static String build(PageQuery pageQuery, List<Object> argList, String operation, String... columns) {
-        String table = tableMap.computeIfAbsent(pageQuery.getClass(), c -> ((QueryTable) c.getAnnotation(QueryTable.class)).table());
+    @SuppressWarnings("unchecked")
+    protected String getTableName(PageQuery pageQuery) {
+        return tableMap.computeIfAbsent(pageQuery.getClass(), c -> ((QueryTable) c.getAnnotation(QueryTable.class)).table());
+    }
+
+    private String build(PageQuery pageQuery, List<Object> argList, String operation, String... columns) {
+        return build(getTableName(pageQuery), pageQuery, argList, operation, columns);
+    }
+
+    @SuppressWarnings("squid:S4973")
+    private static String build(String table, PageQuery pageQuery, List<Object> argList, String operation, String... columns) {
 
         String join = "";
         if (pageQuery.getJoin() != null) {
