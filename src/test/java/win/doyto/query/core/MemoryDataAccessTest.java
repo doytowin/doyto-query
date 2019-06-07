@@ -111,4 +111,12 @@ class MemoryDataAccessTest {
         assertEquals(2, mockUserDataAccess.count(byNotNormalAndValid));
     }
 
+    @Test
+    void filterByNotIn() {
+        TestQuery testQuery = TestQuery.builder().idNotIn(Arrays.asList(1, 2)).build();
+        assertEquals(3, mockUserDataAccess.count(testQuery));
+
+        testQuery.setIdNotIn(Arrays.asList());
+        assertEquals(5, mockUserDataAccess.count(testQuery));
+    }
 }
