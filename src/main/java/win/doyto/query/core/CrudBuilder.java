@@ -9,9 +9,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.persistence.Column;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
 import static win.doyto.query.core.CommonUtil.*;
 import static win.doyto.query.core.Constant.SEPARATOR;
@@ -26,24 +24,17 @@ import static win.doyto.query.core.Constant.SPACE;
 @Slf4j
 final class CrudBuilder<E extends Persistable> extends QueryBuilder {
 
-    private static final String EQUALS_REPLACE_HOLDER = " = " + Constant.REPLACE_HOLDER;
-
     private final Field idField;
-    private final String idColumn;
-    private final String tableName;
     private final List<Field> fields;
     private final int fieldsSize;
     private final boolean isDynamicTable;
     private final String wildInsertValue;   // ?, ?, ?
     private final String insertColumns;
     private final String wildSetClause;     // column1 = ?, column2 = ?
-    private final String whereId;
 
     public CrudBuilder(Class<E> entityClass) {
-        tableName = entityClass.getAnnotation(Table.class).name();
+        super(entityClass);
         idField = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0];
-        idColumn = resolveColumn(idField);
-        whereId = " WHERE " + idColumn + EQUALS_REPLACE_HOLDER;
 
         isDynamicTable = isDynamicTable(tableName);
 
@@ -56,19 +47,10 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
 
         wildInsertValue = wrapWithParenthesis(StringUtils.join(IntStream.range(0, fieldsSize).mapToObj(i -> Constant.REPLACE_HOLDER).collect(Collectors.toList()), Constant.SEPARATOR));
 
-        List<String> columnList = fields.stream().map(CrudBuilder::resolveColumn).collect(Collectors.toList());
+        List<String> columnList = fields.stream().map(QueryBuilder::resolveColumn).collect(Collectors.toList());
         insertColumns = wrapWithParenthesis(StringUtils.join(columnList, Constant.SEPARATOR));
         wildSetClause = StringUtils.join(columnList.stream().map(c -> c + EQUALS_REPLACE_HOLDER).collect(Collectors.toList()), Constant.SEPARATOR);
 
-    }
-
-    static String resolveColumn(Field field) {
-        Column column = field.getAnnotation(Column.class);
-        if (column != null && !column.name().isEmpty()) {
-            return column.name();
-        } else {
-            return convertColumn(field.getName());
-        }
     }
 
     private static String buildInsertSql(String table, String columns, String fields) {
@@ -102,11 +84,6 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
                 argList.add(o);
             }
         }
-    }
-
-    @Override
-    protected String getTableName(PageQuery pageQuery) {
-        return tableName;
     }
 
     private String resolveTableName(E entity) {
@@ -175,25 +152,5 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
         ArrayList<Object> argList = new ArrayList<>();
         String sql = buildPatchAndArgsWithQuery(entity, query, argList);
         return new SqlAndArgs(sql, argList);
-    }
-
-    public String buildSelectById() {
-        return "SELECT * FROM " + tableName + whereId;
-    }
-
-    public String buildDeleteById() {
-        return "DELETE FROM " + tableName + whereId;
-    }
-
-    protected String buildSelectById(E e) {
-        return "SELECT * FROM " + replaceTableName(e, tableName) + whereId;
-    }
-
-    protected String buildDeleteById(E e) {
-        return "DELETE FROM " + replaceTableName(e, tableName) + whereId;
-    }
-
-    protected SqlAndArgs buildSelectIdAndArgs(PageQuery query) {
-        return buildSelectColumnsAndArgs(query, idColumn);
     }
 }

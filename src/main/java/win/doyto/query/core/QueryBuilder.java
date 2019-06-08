@@ -3,6 +3,7 @@ package win.doyto.query.core;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.config.GlobalConfiguration;
 
 import java.lang.reflect.Field;
@@ -13,6 +14,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import static win.doyto.query.core.CommonUtil.*;
 import static win.doyto.query.core.Constant.*;
@@ -24,10 +28,35 @@ import static win.doyto.query.core.Constant.*;
  */
 @Slf4j
 public class QueryBuilder {
-
     private static final Map<Class, Field[]> classFieldsMap = new ConcurrentHashMap<>();
-    private static final Map<Class, String> tableMap = new ConcurrentHashMap<>();
     private static final Pattern PTN_PLACE_HOLDER = Pattern.compile("#\\{(\\w+)}");
+    protected static final String EQUALS_REPLACE_HOLDER = " = " + Constant.REPLACE_HOLDER;
+
+    protected final String tableName;
+    protected final String idColumn;
+    protected final String whereId;
+
+    public QueryBuilder(String tableName, String idColumn) {
+        this.tableName = tableName;
+        this.idColumn = idColumn;
+        this.whereId = " WHERE " + idColumn + EQUALS_REPLACE_HOLDER;
+    }
+
+    public QueryBuilder(Class<?> entityClass) {
+        tableName = entityClass.getAnnotation(Table.class).name();
+        Field idField = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0];
+        idColumn = resolveColumn(idField);
+        whereId = " WHERE " + idColumn + EQUALS_REPLACE_HOLDER;
+    }
+
+    static String resolveColumn(Field field) {
+        Column column = field.getAnnotation(Column.class);
+        if (column != null && !column.name().isEmpty()) {
+            return column.name();
+        } else {
+            return convertColumn(field.getName());
+        }
+    }
 
     private static String resolveJoin(Object query, List<Object> argList, String join) {
         Matcher matcher = PTN_PLACE_HOLDER.matcher(join);
@@ -45,13 +74,8 @@ public class QueryBuilder {
         return matcher.appendTail(sb).toString();
     }
 
-    @SuppressWarnings("unchecked")
-    protected String getTableName(PageQuery pageQuery) {
-        return tableMap.computeIfAbsent(pageQuery.getClass(), c -> ((QueryTable) c.getAnnotation(QueryTable.class)).table());
-    }
-
     private String build(PageQuery pageQuery, List<Object> argList, String operation, String... columns) {
-        return build(getTableName(pageQuery), pageQuery, argList, operation, columns);
+        return build(tableName, pageQuery, argList, operation, columns);
     }
 
     @SuppressWarnings("squid:S4973")
@@ -168,6 +192,26 @@ public class QueryBuilder {
         ArrayList<Object> argList = new ArrayList<>();
         String sql = buildSelectColumnsAndArgsAndJoin(query, argList, join, columns);
         return new SqlAndArgs(sql, argList);
+    }
+
+    public String buildSelectById() {
+        return "SELECT * FROM " + tableName + whereId;
+    }
+
+    public String buildDeleteById() {
+        return "DELETE FROM " + tableName + whereId;
+    }
+
+    protected String buildSelectById(Object entity) {
+        return "SELECT * FROM " + replaceTableName(entity, tableName) + whereId;
+    }
+
+    protected String buildDeleteById(Object entity) {
+        return "DELETE FROM " + replaceTableName(entity, tableName) + whereId;
+    }
+
+    protected SqlAndArgs buildSelectIdAndArgs(PageQuery query) {
+        return buildSelectColumnsAndArgs(query, idColumn);
     }
 
 }
