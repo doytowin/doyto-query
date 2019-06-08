@@ -22,6 +22,7 @@ import static win.doyto.query.core.Constant.*;
 enum QuerySuffix {
     Not("!="),
     NotLike("NOT LIKE"),
+    Start("LIKE"),
     Like,
     NotIn("NOT IN"),
     In,
@@ -81,6 +82,8 @@ enum QuerySuffix {
         QuerySuffix querySuffix = resolve(fieldName);
         if (querySuffix == Like) {
             value = CommonUtil.escapeLike(String.valueOf(value));
+        } else if (querySuffix == Start) {
+            value = CommonUtil.escapeStart(String.valueOf(value));
         }
         return sqlFuncMap.get(querySuffix).apply(new ColumnMeta(fieldName, value, argList));
     }

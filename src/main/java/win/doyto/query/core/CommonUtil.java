@@ -104,10 +104,15 @@ class CommonUtil {
     }
 
     static String escapeLike(String like) {
-        if (StringUtils.isBlank(like)) {
-            return like;
-        }
-        return "%" + like.replaceAll("[%|_]", "\\\\$0") + "%";
+        return StringUtils.isBlank(like) ? like : "%" + escape(like) + "%";
+    }
+
+    static String escapeStart(String like) {
+        return StringUtils.isBlank(like) ? like : escape(like) + "%";
+    }
+
+    private static String escape(String like) {
+        return like.replaceAll("[%|_]", "\\\\$0");
     }
 
     static String convertColumn(String columnName) {

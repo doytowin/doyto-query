@@ -364,4 +364,12 @@ public class QueryBuilderTest {
                      queryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly(0);
     }
+
+    @Test
+    public void supportStart() {
+        TestQuery testQuery = TestQuery.builder().usernameStart("test").build();
+        assertEquals("SELECT * FROM user WHERE username LIKE ?",
+                     queryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly("test%");
+    }
 }
