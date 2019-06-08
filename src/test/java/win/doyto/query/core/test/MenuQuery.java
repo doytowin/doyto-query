@@ -3,7 +3,10 @@ package win.doyto.query.core.test;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.core.*;
+import win.doyto.query.annotation.NestedQueries;
+import win.doyto.query.annotation.NestedQuery;
+import win.doyto.query.annotation.SubQuery;
+import win.doyto.query.core.PageQuery;
 
 /**
  * MenuQuery
@@ -13,7 +16,6 @@ import win.doyto.query.core.*;
 @Getter
 @Setter
 @Builder
-@QueryTable(table = "menu")
 public class MenuQuery extends PageQuery {
 
     @NestedQueries(value = {

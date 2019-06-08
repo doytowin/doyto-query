@@ -1,4 +1,4 @@
-package win.doyto.query.core;
+package win.doyto.query.annotation;
 
 import java.lang.annotation.Retention;
 
@@ -18,6 +18,6 @@ public @interface NestedQuery {
 
     String extra() default "";
 
-    String op() default Constant.IN;
+    String op() default "IN";
 
 }

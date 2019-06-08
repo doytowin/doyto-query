@@ -8,6 +8,8 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
+import win.doyto.query.annotation.NestedQueries;
+import win.doyto.query.annotation.SubQuery;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;

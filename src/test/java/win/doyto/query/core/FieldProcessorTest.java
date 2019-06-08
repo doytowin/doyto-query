@@ -2,6 +2,8 @@ package win.doyto.query.core;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import win.doyto.query.annotation.NestedQueries;
+import win.doyto.query.annotation.SubQuery;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.test.PermissionQuery;
 import win.doyto.query.core.test.TestQuery;

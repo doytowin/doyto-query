@@ -1,10 +1,9 @@
 package win.doyto.query.core.test;
 
 import lombok.*;
+import win.doyto.query.annotation.QueryField;
+import win.doyto.query.annotation.SubQuery;
 import win.doyto.query.core.PageQuery;
-import win.doyto.query.core.QueryField;
-import win.doyto.query.core.QueryTable;
-import win.doyto.query.core.SubQuery;
 
 import java.util.Date;
 import java.util.List;
@@ -19,7 +18,6 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@QueryTable(table = TestEntity.TABLE)
 public class TestQuery extends PageQuery {
     private List<Integer> idIn;
     private List<Integer> idNotIn;

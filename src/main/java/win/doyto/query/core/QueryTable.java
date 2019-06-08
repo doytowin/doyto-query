@@ -10,9 +10,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * QueryTable
  *
  * @author f0rb
+ * @deprecated useless
  */
+@Deprecated
 @Target(TYPE)
 @Retention(RUNTIME)
+@SuppressWarnings("squid:S1133")
 public @interface QueryTable {
     String table();
 }

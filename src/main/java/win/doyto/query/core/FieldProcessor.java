@@ -2,6 +2,10 @@ package win.doyto.query.core;
 
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import win.doyto.query.annotation.NestedQueries;
+import win.doyto.query.annotation.NestedQuery;
+import win.doyto.query.annotation.QueryField;
+import win.doyto.query.annotation.SubQuery;
 
 import java.lang.reflect.Field;
 import java.util.List;

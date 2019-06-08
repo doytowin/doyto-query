@@ -1,4 +1,4 @@
-package win.doyto.query.core;
+package win.doyto.query.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -7,12 +7,18 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * QueryField
+ * NestedQueries
  *
- * @author f0rb
+ * @author f0rb on 2019-05-28
  */
 @Target(FIELD)
 @Retention(RUNTIME)
-public @interface QueryField {
-    String and();
+public @interface NestedQueries {
+
+    String column() default "id";
+
+    String op() default "IN";
+
+    NestedQuery[] value();
+
 }
