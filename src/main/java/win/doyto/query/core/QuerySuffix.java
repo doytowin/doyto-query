@@ -85,8 +85,8 @@ enum QuerySuffix {
         return sqlFuncMap.get(querySuffix).apply(new ColumnMeta(fieldName, value, argList));
     }
 
-    static String buildWhereSql(List<Object> argList, Object value, String fieldName, boolean fieldTypeNotPrimitiveBoolean) {
-        return fieldTypeNotPrimitiveBoolean ? WHERE + buildAndSql(argList, value, fieldName) : EMPTY;
+    static String buildWhereSql(List<Object> argList, Object value, String fieldName) {
+        return WHERE + buildAndSql(argList, value, fieldName);
     }
 
     String resolveColumnName(String fieldName) {

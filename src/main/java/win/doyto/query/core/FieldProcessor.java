@@ -1,5 +1,6 @@
 package win.doyto.query.core;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
@@ -19,11 +20,12 @@ import static win.doyto.query.core.Constant.*;
 final class FieldProcessor {
 
     private static final Map<Field, Processor> FIELD_PROCESSOR_MAP = new ConcurrentHashMap<>();
+    public static final Processor EMPTY_PROCESSOR = ((argList, value) -> EMPTY);
 
-    static String resolvedNestedQueries(List<Object> argList, Object value, NestedQueries nestedQueries, String fieldName, boolean fieldTypeNotPrimitiveBoolean) {
+    static String resolvedNestedQueries(List<Object> argList, Object value, NestedQueries nestedQueries, Processor processor) {
         return nestedQueries.column() +
             resolvedNestedQueries(nestedQueries) +
-            QuerySuffix.buildWhereSql(argList, value, fieldName, fieldTypeNotPrimitiveBoolean) +
+            processor.process(argList, value) +
             StringUtils.repeat(')', nestedQueries.value().length);
     }
 
@@ -52,15 +54,15 @@ final class FieldProcessor {
     }
 
     @SuppressWarnings("unchecked")
-    static String resolvedSubQuery(List<Object> argList, Object value, SubQuery subQuery, String fieldName, boolean fieldTypeNotPrimitiveBoolean) {
-        String clause = SELECT + subQuery.left() + FROM + subQuery.table() +
-            QuerySuffix.buildWhereSql(argList, value, fieldName, fieldTypeNotPrimitiveBoolean);
+    static String resolvedSubQuery(List<Object> argList, Object value, SubQuery subQuery, Processor processor) {
+        String clause = SELECT + subQuery.left() + FROM + subQuery.table() + processor.process(argList, value);
         return subQuery.column() + SPACE + subQuery.op() + SPACE + wrapWithParenthesis(clause);
     }
 
     static void init(Field field) {
-        boolean fieldTypeNotPrimitiveBoolean = !field.getType().isAssignableFrom(boolean.class);
         String fieldName = field.getName();
+        Processor processor = !field.getType().isAssignableFrom(boolean.class) ?
+            new DefaultProcessor(fieldName) : EMPTY_PROCESSOR;
         if (field.isAnnotationPresent(QueryField.class)) {
             String andSQL = field.getAnnotation(QueryField.class).and();
             FIELD_PROCESSOR_MAP.put(field, (argList, value) -> {
@@ -69,10 +71,10 @@ final class FieldProcessor {
             });
         } else if (field.isAnnotationPresent(SubQuery.class)) {
             SubQuery subQuery = field.getAnnotation(SubQuery.class);
-            FIELD_PROCESSOR_MAP.put(field, (argList, value) -> resolvedSubQuery(argList, value, subQuery, fieldName, fieldTypeNotPrimitiveBoolean));
+            FIELD_PROCESSOR_MAP.put(field, (argList, value) -> resolvedSubQuery(argList, value, subQuery, processor));
         } else if (field.isAnnotationPresent(NestedQueries.class)) {
             NestedQueries nestedQueries = field.getAnnotation(NestedQueries.class);
-            FIELD_PROCESSOR_MAP.put(field, (argList, value) -> resolvedNestedQueries(argList, value, nestedQueries, fieldName, fieldTypeNotPrimitiveBoolean));
+            FIELD_PROCESSOR_MAP.put(field, (argList, value) -> resolvedNestedQueries(argList, value, nestedQueries, processor));
         } else {
             FIELD_PROCESSOR_MAP.put(field, (argList, value) -> QuerySuffix.buildAndSql(argList, value, fieldName));
         }
@@ -82,8 +84,18 @@ final class FieldProcessor {
         return FIELD_PROCESSOR_MAP.get(field).process(argList, value);
     }
 
-    private interface Processor {
-        String process(List<Object> args, Object value);
+    interface Processor {
+        String process(List<Object> argList, Object value);
+    }
+
+    @AllArgsConstructor
+    static class DefaultProcessor implements Processor {
+        private String fieldName;
+
+        @Override
+        public String process(List<Object> argList, Object value) {
+            return QuerySuffix.buildWhereSql(argList, value, fieldName);
+        }
     }
 
 }
