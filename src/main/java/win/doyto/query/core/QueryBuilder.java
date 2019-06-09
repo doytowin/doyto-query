@@ -1,7 +1,6 @@
 package win.doyto.query.core;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.config.GlobalConfiguration;
@@ -12,8 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -29,7 +26,6 @@ import static win.doyto.query.core.Constant.*;
 @Slf4j
 public class QueryBuilder {
     private static final Map<Class, Field[]> classFieldsMap = new ConcurrentHashMap<>();
-    private static final Pattern PTN_PLACE_HOLDER = Pattern.compile("#\\{(\\w+)}");
     protected static final String EQUALS_REPLACE_HOLDER = " = " + Constant.REPLACE_HOLDER;
 
     protected final String tableName;
@@ -58,40 +54,14 @@ public class QueryBuilder {
         }
     }
 
-    private static String resolveJoin(Object query, List<Object> argList, String join) {
-        Matcher matcher = PTN_PLACE_HOLDER.matcher(join);
-
-        StringBuffer sb = new StringBuffer(SPACE);
-        while (matcher.find()) {
-            String fieldName = matcher.group(1);
-            Field field = getField(query, fieldName);
-            Object value = readField(field, query);
-            argList.add(value);
-            writeField(field, query, null);
-            matcher = matcher.appendReplacement(sb, REPLACE_HOLDER);
-        }
-
-        return matcher.appendTail(sb).toString();
-    }
-
-    private String build(PageQuery pageQuery, List<Object> argList, String operation, String... columns) {
-        return build(tableName, pageQuery, argList, operation, columns);
+    private String build(PageQuery pageQuery, List<Object> argList, String... columns) {
+        return build(pageQuery, argList, Constant.SELECT, columns, tableName);
     }
 
     @SuppressWarnings("squid:S4973")
-    protected static String build(String table, PageQuery pageQuery, List<Object> argList, String operation, String... columns) {
-
-        String join = "";
-        if (pageQuery.getJoin() != null) {
-            pageQuery = SerializationUtils.clone(pageQuery);
-            join = resolveJoin(pageQuery, argList, pageQuery.getJoin());
-        }
-
+    static String build(PageQuery pageQuery, List<Object> argList, String operation, String[] columns, String from) {
         String sql;
-        sql = buildStart(operation, columns, table);
-        if (join != null) {
-            sql += join;
-        }
+        sql = buildStart(operation, columns, from);
         sql = buildWhere(sql, pageQuery, argList);
         // intentionally use ==
         if (!(columns.length == 1 && COUNT == columns[0])) {
@@ -158,7 +128,7 @@ public class QueryBuilder {
     }
 
     public String buildCountAndArgs(PageQuery query, List<Object> argList) {
-        return build(query, argList, SELECT, COUNT);
+        return build(query, argList, COUNT);
     }
 
     public SqlAndArgs buildCountAndArgs(PageQuery query) {
@@ -167,22 +137,12 @@ public class QueryBuilder {
     }
 
     public String buildSelectColumnsAndArgs(PageQuery query, List<Object> argList, String... columns) {
-        return build(query, argList, SELECT, columns);
+        return build(query, argList, columns);
     }
 
     public SqlAndArgs buildSelectColumnsAndArgs(PageQuery query, String... columns) {
         ArrayList<Object> argList = new ArrayList<>();
         return new SqlAndArgs(buildSelectColumnsAndArgs(query, argList, columns), argList);
-    }
-
-    public String buildSelectColumnsAndArgsAndJoin(PageQuery query, List<Object> argList, String join, String... columns) {
-        return build(query.join(join), argList, SELECT, columns);
-    }
-
-    public SqlAndArgs buildSelectColumnsAndArgsAndJoin(PageQuery query, String join, String... columns) {
-        ArrayList<Object> argList = new ArrayList<>();
-        String sql = buildSelectColumnsAndArgsAndJoin(query, argList, join, columns);
-        return new SqlAndArgs(sql, argList);
     }
 
     public String buildSelectById() {

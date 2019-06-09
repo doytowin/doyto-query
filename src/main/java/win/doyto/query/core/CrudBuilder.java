@@ -155,7 +155,7 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
     }
 
     public String buildDeleteAndArgs(PageQuery query, List<Object> argList) {
-        return build(tableName, query, argList, "DELETE");
+        return build(query, argList, "DELETE", new String[0], tableName);
     }
 
     public SqlAndArgs buildDeleteAndArgs(PageQuery query) {

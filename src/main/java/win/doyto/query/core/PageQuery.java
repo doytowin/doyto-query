@@ -31,20 +31,12 @@ public class PageQuery implements Serializable {
     @Setter
     private String sort;
 
-    @Getter
-    private String join;
-
     public Integer getPageNumber() {
         return getDefault(pageNumber, 0, pageSize == null);
     }
 
     public Integer getPageSize() {
         return getDefault(pageSize, 10, pageNumber == null);
-    }
-
-    PageQuery join(String join) {
-        this.join = join;
-        return this;
     }
 
     private Integer getDefault(Integer number, int defaultValue, boolean canBeNull) {
