@@ -23,13 +23,13 @@ public class PermissionQuery extends PageQuery {
        })
    private Integer userId;
 
-   @NestedQueries({
+   @NestedQueries(value = {
        @NestedQuery(left = "permId", table = "t_role_and_perm"),
        @NestedQuery(left = "roleId", table = "t_user_and_role ur",
-           extra = "inner join user u on u.id = ur.userId and u.valid = true"
+           extra = "inner join user u on u.id = ur.userId and u.valid = ?"
        )
-   })
-   private boolean validUser;
+   }, appendWhere = false)
+   private Boolean validUser;
 
    @SubQuery(left = "permId", table = "t_role_and_perm")
    private List<Integer> roleIdIn;

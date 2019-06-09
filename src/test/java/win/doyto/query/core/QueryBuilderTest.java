@@ -298,13 +298,13 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void buildNestedQueryMissLastRightColumn() {
+    public void buildNestedQueryIgnoreWhere() {
         PermissionQuery permissionQuery = PermissionQuery.builder().validUser(true).build();
 
         assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN " +
-                         "(SELECT roleId FROM t_user_and_role ur inner join user u on u.id = ur.userId and u.valid = true))",
+                         "(SELECT roleId FROM t_user_and_role ur inner join user u on u.id = ur.userId and u.valid = ?))",
                      permQueryBuilder.buildSelectAndArgs(permissionQuery, argList));
-        assertThat(argList).isEmpty();
+        assertThat(argList).containsExactly(true);
     }
 
     @Test

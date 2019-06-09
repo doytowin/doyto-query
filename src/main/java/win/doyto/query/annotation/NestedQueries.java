@@ -19,6 +19,8 @@ public @interface NestedQueries {
 
     String op() default "IN";
 
+    boolean appendWhere() default true;
+
     NestedQuery[] value();
 
 }

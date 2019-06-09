@@ -27,10 +27,12 @@ final class FieldProcessor {
     public static final Processor EMPTY_PROCESSOR = ((argList, value) -> EMPTY);
 
     static String resolvedNestedQueries(List<Object> argList, Object value, NestedQueries nestedQueries, Processor processor) {
-        return nestedQueries.column() +
-            resolvedNestedQueries(nestedQueries) +
-            processor.process(argList, value) +
-            StringUtils.repeat(')', nestedQueries.value().length);
+        String rest = resolvedNestedQueries(nestedQueries);
+        IntStream.range(0, StringUtils.countMatches(rest, REPLACE_HOLDER)).mapToObj(i -> value).forEach(argList::add);
+        if (nestedQueries.appendWhere()) {
+            rest += processor.process(argList, value);
+        }
+        return nestedQueries.column() + rest + StringUtils.repeat(')', nestedQueries.value().length);
     }
 
     private static String resolvedNestedQueries(NestedQueries nestedQueries) {
