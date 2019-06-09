@@ -79,7 +79,7 @@ public class QueryBuilder {
     }
 
     @SuppressWarnings("squid:S4973")
-    private static String build(String table, PageQuery pageQuery, List<Object> argList, String operation, String... columns) {
+    protected static String build(String table, PageQuery pageQuery, List<Object> argList, String operation, String... columns) {
 
         String join = "";
         if (pageQuery.getJoin() != null) {
@@ -166,15 +166,6 @@ public class QueryBuilder {
         return new SqlAndArgs(buildCountAndArgs(query, argList), argList);
     }
 
-    public String buildDeleteAndArgs(PageQuery query, List<Object> argList) {
-        return build(query, argList, "DELETE");
-    }
-
-    public SqlAndArgs buildDeleteAndArgs(PageQuery query) {
-        ArrayList<Object> argList = new ArrayList<>();
-        return new SqlAndArgs(buildDeleteAndArgs(query, argList), argList);
-    }
-
     public String buildSelectColumnsAndArgs(PageQuery query, List<Object> argList, String... columns) {
         return build(query, argList, SELECT, columns);
     }
@@ -198,16 +189,8 @@ public class QueryBuilder {
         return "SELECT * FROM " + tableName + whereId;
     }
 
-    public String buildDeleteById() {
-        return "DELETE FROM " + tableName + whereId;
-    }
-
     protected String buildSelectById(Object entity) {
         return "SELECT * FROM " + replaceTableName(entity, tableName) + whereId;
-    }
-
-    protected String buildDeleteById(Object entity) {
-        return "DELETE FROM " + replaceTableName(entity, tableName) + whereId;
     }
 
     protected SqlAndArgs buildSelectIdAndArgs(PageQuery query) {

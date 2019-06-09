@@ -156,4 +156,14 @@ class CrudBuilderTest {
                      dynamicEntityCrudBuilder.buildSelectAndArgs(dynamicQuery, argList));
         assertThat(argList).containsExactly("; DROP TABLE menu;", 100);
     }
+
+    @Test
+    public void buildDeleteAndArgs() {
+        TestQuery testQuery = TestQuery.builder().username("test").build();
+        testQuery.setPageNumber(3).setPageSize(10);
+        assertEquals("DELETE FROM user WHERE username = ? LIMIT 10",
+                     userEntityCrudBuilder.buildDeleteAndArgs(testQuery, argList));
+        assertEquals(1, argList.size());
+        assertEquals("test", argList.get(0));
+    }
 }

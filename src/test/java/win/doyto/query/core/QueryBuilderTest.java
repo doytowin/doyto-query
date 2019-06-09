@@ -208,16 +208,6 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void buildDeleteAndArgs() {
-        TestQuery testQuery = TestQuery.builder().username("test").build();
-        testQuery.setPageNumber(3).setPageSize(10);
-        assertEquals("DELETE FROM user WHERE username = ? LIMIT 10",
-                     testQueryBuilder.buildDeleteAndArgs(testQuery, argList));
-        assertEquals(1, argList.size());
-        assertEquals("test", argList.get(0));
-    }
-
-    @Test
     public void buildSubquery() {
         TestQuery testQuery = TestQuery.builder().roleId(1).build();
 

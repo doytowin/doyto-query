@@ -153,4 +153,21 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
         String sql = buildPatchAndArgsWithQuery(entity, query, argList);
         return new SqlAndArgs(sql, argList);
     }
+
+    public String buildDeleteAndArgs(PageQuery query, List<Object> argList) {
+        return build(tableName, query, argList, "DELETE");
+    }
+
+    public SqlAndArgs buildDeleteAndArgs(PageQuery query) {
+        ArrayList<Object> argList = new ArrayList<>();
+        return new SqlAndArgs(buildDeleteAndArgs(query, argList), argList);
+    }
+
+    public String buildDeleteById() {
+        return "DELETE FROM " + tableName + whereId;
+    }
+
+    protected String buildDeleteById(Object entity) {
+        return "DELETE FROM " + replaceTableName(entity, tableName) + whereId;
+    }
 }
