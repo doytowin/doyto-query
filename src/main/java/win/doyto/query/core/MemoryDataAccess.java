@@ -18,7 +18,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
 
 import static win.doyto.query.core.CommonUtil.*;
 import static win.doyto.query.core.QuerySuffix.*;
@@ -41,16 +41,14 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     }
 
     protected void generateNewId(E entity) {
-        Field[] fields = FieldUtils.getAllFields(entity.getClass());
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(Id.class)) {
-                try {
-                    Object newId = chooseIdValue(idGenerator.incrementAndGet(), field.getType());
-                    FieldUtils.writeField(field, entity, newId, true);
-                } catch (Exception e) {
-                    log.warn("写入id失败: {} - {}", entity.getClass(), e.getMessage());
-                }
-                break;
+        Field[] generatedFields = FieldUtils.getFieldsWithAnnotation(entity.getClass(), GeneratedValue.class);
+        if (generatedFields.length > 0) {
+            try {
+                Field field = generatedFields[0];
+                Object newId = chooseIdValue(idGenerator.incrementAndGet(), field.getType());
+                writeField(field, entity, newId);
+            } catch (Exception e) {
+                log.warn("写入id失败: {} - {}", entity.getClass(), e.getMessage());
             }
         }
     }

@@ -17,7 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Transient;
 
 /**
@@ -94,7 +94,7 @@ class CommonUtil {
     static boolean ignoreField(Field field) {
         return field.getName().startsWith("$")              // $jacocoData
             || Modifier.isStatic(field.getModifiers())      // static field
-            || field.isAnnotationPresent(Id.class)          // id
+            || field.isAnnotationPresent(GeneratedValue.class)// id
             || field.isAnnotationPresent(Transient.class)   // Transient field
             ;
     }
