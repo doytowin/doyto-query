@@ -76,7 +76,7 @@ public class UserControllerTest {
         userQuery.setPageNumber(1).setPageSize(2);
         PageList<UserResponse> page = userService.page(userQuery);
         assertEquals(4, page.getTotal());
-        assertEquals(2, page.getList().size());
+        assertThat(page.getList()).hasSize(2).extracting(UserResponse::getId).containsExactly(3L, 4L);
     }
 
     @Test

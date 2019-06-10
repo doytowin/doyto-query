@@ -190,11 +190,11 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
             return entities.stream().map(entity -> (V) readField(entity, columns[0])).collect(Collectors.toList());
         } else {
             Class<V> classV = (Class<V>) readField(rowMapper, "mappedClass");
-            V v = classV.getDeclaredConstructor().newInstance();
-            entities.forEach(e -> {
+            for (E e : entities) {
+                V v = classV.getDeclaredConstructor().newInstance();
                 BeanUtils.copyProperties(e, v);
                 objects.add(v);
-            });
+            }
         }
         return objects;
     }
