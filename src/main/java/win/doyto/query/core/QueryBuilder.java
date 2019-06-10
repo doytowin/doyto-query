@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -25,6 +26,8 @@ import static win.doyto.query.core.Constant.*;
  */
 @Slf4j
 public class QueryBuilder {
+    private static final Pattern PTN_REPLACE = Pattern.compile("\\w+");
+
     private static final Map<Class, Field[]> classFieldsMap = new ConcurrentHashMap<>();
     protected static final String EQUALS_REPLACE_HOLDER = " = " + Constant.REPLACE_HOLDER;
 
@@ -100,7 +103,7 @@ public class QueryBuilder {
             String fieldName = field.getName();
             Object value = readFieldGetter(field, query);
             if (isValidValue(value, field)) {
-                if (sql.contains("${" + fieldName + "}") && StringUtils.isAlphanumeric(String.valueOf(value))) {
+                if (sql.contains("${" + fieldName + "}") && value instanceof String && PTN_REPLACE.matcher((String) value).matches()) {
                     sql = sql.replaceAll("\\$\\{" + fieldName + "}", String.valueOf(value));
                 } else {
                     whereList.add(FieldProcessor.execute(argList, field, value));

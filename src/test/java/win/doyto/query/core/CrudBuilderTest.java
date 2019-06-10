@@ -166,4 +166,13 @@ class CrudBuilderTest {
         assertEquals(1, argList.size());
         assertEquals("test", argList.get(0));
     }
+
+    @Test
+    public void supportUnderlineScore() {
+        DynamicQuery dynamicQuery = DynamicQuery.builder().user("f0rb").project("i18n_0001").scoreLt(100).build();
+
+        assertEquals("SELECT * FROM t_dynamic_f0rb_i18n_0001 WHERE score < ?",
+                     dynamicEntityCrudBuilder.buildSelectAndArgs(dynamicQuery, argList));
+        assertThat(argList).containsExactly(100);
+    }
 }
