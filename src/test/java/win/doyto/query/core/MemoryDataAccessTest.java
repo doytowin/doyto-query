@@ -9,6 +9,7 @@ import win.doyto.query.core.test.TestQuery;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static win.doyto.query.core.test.TestEntity.initUserEntities;
 
@@ -127,5 +128,15 @@ class MemoryDataAccessTest {
 
         TestQuery byUsernameStart = TestQuery.builder().usernameStart("name").build();
         assertEquals(0, testMemoryDataAccess.count(byUsernameStart));
+    }
+
+    @Test
+    void patch() {
+        TestEntity testEntity = new TestEntity();
+        testEntity.setMemo("invalid");
+        TestQuery byNotValid = TestQuery.builder().valid(false).build();
+        testMemoryDataAccess.patch(testEntity, byNotValid);
+
+        assertThat(testMemoryDataAccess.query(byNotValid)).extracting(TestEntity::getMemo).containsExactly("invalid", "invalid");
     }
 }

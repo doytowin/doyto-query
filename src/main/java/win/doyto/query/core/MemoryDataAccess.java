@@ -31,13 +31,20 @@ import static win.doyto.query.core.QuerySuffix.*;
 @Slf4j
 @SuppressWarnings({"unchecked", "squid:S1135"})
 public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
-    protected static final Map<Object, Map> tableMap = new ConcurrentHashMap<>();
+    protected static final Map<Class<?>, Map> tableMap = new ConcurrentHashMap<>();
 
     protected final Map<I, E> entitiesMap = new ConcurrentHashMap<>();
     private final AtomicLong idGenerator = new AtomicLong(0);
+    private final List<Field> fields;
 
-    public MemoryDataAccess(Object table) {
-        tableMap.put(table, entitiesMap);
+    public MemoryDataAccess(Class<E> entityClass) {
+        tableMap.put(entityClass, entitiesMap);
+
+        // init fields
+        Field[] allFields = FieldUtils.getAllFields(entityClass);
+        List<Field> tempFields = new ArrayList<>(allFields.length);
+        Arrays.stream(allFields).filter(field -> !ignoreField(field)).forEachOrdered(tempFields::add);
+        fields = Collections.unmodifiableList(tempFields);
     }
 
     protected void generateNewId(E entity) {
@@ -89,15 +96,28 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     }
 
     @Override
-    public int patch(E e) {
-        // TODO patch
-        return update(e);
+    public int patch(E patch) {
+        E origin = get(patch.getId());
+        if (origin == null) {
+            return 0;
+        }
+
+        for (Field field : fields) {
+            Object value = readField(field, patch);
+            if (value != null) {
+                writeField(field, origin, value);
+            }
+        }
+        return 1;
     }
 
     @Override
-    public int patch(E e, Q q) {
+    public int patch(E p, Q q) {
         List<E> list = query(q);
-        list.forEach(this::patch);
+        for (E origin : list) {
+            p.setId(origin.getId());
+            patch(p);
+        }
         return list.size();
     }
 
@@ -148,7 +168,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
             String[] names = splitByOr(columnName);
             return Arrays.stream(names).
                 map(name -> readField(entity, camelize(name))).
-                noneMatch(entityFieldValue -> matcher.match(queryFieldValue, entityFieldValue));
+                             noneMatch(entityFieldValue -> matcher.match(queryFieldValue, entityFieldValue));
         } else {
             Object entityFieldValue = readField(entity, columnName);
             return !matcher.match(queryFieldValue, entityFieldValue);
@@ -281,7 +301,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
             /**
              * 实体对象筛选
              *
-             * @param qv  查询对象字段值
+             * @param qv 查询对象字段值
              * @param ev 实体对象字段值
              * @return true 符合过滤条件
              */
