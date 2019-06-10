@@ -14,8 +14,6 @@ import win.doyto.query.validation.UpdateGroup;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.List;
 
 /**
@@ -33,8 +31,7 @@ public abstract class AbstractRestService<E extends Persistable<I>, I extends Se
     @SuppressWarnings("unchecked")
     @SneakyThrows
     public AbstractRestService() {
-        Type type = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[4];
-        Class<S> clazz = (Class<S>) type;
+        Class<S> clazz = (Class<S>) getActualTypeArguments()[4];
         Constructor<S> constructor = clazz.getDeclaredConstructor();
         noumenon = constructor.newInstance();
     }

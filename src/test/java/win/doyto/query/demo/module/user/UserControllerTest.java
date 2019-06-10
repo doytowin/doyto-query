@@ -24,7 +24,7 @@ public class UserControllerTest {
     }
 
     private static List<UserRequest> initData() {
-        userService = new UserController();
+        userService = new UserController() {};
         List<UserRequest> userRequests = new ArrayList<>(INIT_SIZE);
         for (int i = 1; i < INIT_SIZE; i++) {
             UserRequest userRequest = new UserRequest();

@@ -27,6 +27,7 @@ import win.doyto.query.entity.UserIdProvider;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -57,14 +58,18 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
 
     protected TransactionOperations transactionOperations = NoneTransactionOperations.instance;
 
+    @SuppressWarnings("unchecked")
     public AbstractService() {
-        entityType = getEntityType();
+        entityType = (Class<E>) getActualTypeArguments()[0];
         dataAccess = new MemoryDataAccess<>(entityType);
     }
 
-    @SuppressWarnings("unchecked")
-    private Class<E> getEntityType() {
-        return (Class<E>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+    protected final Type[] getActualTypeArguments() {
+        Type genericSuperclass = getClass();
+        do {
+            genericSuperclass = ((Class) genericSuperclass).getGenericSuperclass();
+        } while (!(genericSuperclass instanceof ParameterizedType));
+        return ((ParameterizedType) genericSuperclass).getActualTypeArguments();
     }
 
     @Autowired
