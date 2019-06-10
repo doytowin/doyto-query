@@ -86,14 +86,14 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     }
 
     @Override
-    public void update(E e) {
-        entitiesMap.put(e.getId(), e);
+    public int update(E e) {
+        return entitiesMap.put(e.getId(), e) == null ? 0 : 1;
     }
 
     @Override
-    public void patch(E e) {
+    public int patch(E e) {
         // TODO patch
-        update(e);
+        return update(e);
     }
 
     @Override

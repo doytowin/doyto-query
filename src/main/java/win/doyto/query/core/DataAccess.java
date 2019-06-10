@@ -44,9 +44,9 @@ public interface DataAccess<E extends Persistable<I>, I extends Serializable, Q>
         return count;
     }
 
-    void update(E e);
+    int update(E e);
 
-    void patch(E e);
+    int patch(E e);
 
     int patch(E e, Q q);
 

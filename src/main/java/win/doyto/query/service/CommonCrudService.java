@@ -11,7 +11,7 @@ interface CommonCrudService<E extends Persistable, I, Q> extends QueryService<E,
 
     void create(E e);
 
-    void update(E e);
+    int update(E e);
 
     default E save(E e) {
         if (e.isNew()) {
@@ -22,7 +22,7 @@ interface CommonCrudService<E extends Persistable, I, Q> extends QueryService<E,
         return e;
     }
 
-    void patch(E e);
+    int patch(E e);
 
     /**
      * 执行<i>INSERT INTO [TABLE] (col1, col2) VALUES (?), (?)</i>

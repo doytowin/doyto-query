@@ -110,13 +110,13 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     }
 
     @Override
-    public final void update(E e) {
-        doUpdate(crudBuilder.buildUpdateAndArgs(e));
+    public final int update(E e) {
+        return doUpdate(crudBuilder.buildUpdateAndArgs(e));
     }
 
     @Override
-    public final void patch(E e) {
-        doUpdate(crudBuilder.buildPatchAndArgsWithId(e));
+    public final int patch(E e) {
+        return doUpdate(crudBuilder.buildPatchAndArgsWithId(e));
     }
 
     @Override

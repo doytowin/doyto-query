@@ -43,6 +43,18 @@ public abstract class AbstractRestService<E extends Persistable<I>, I extends Se
         return noumenon;
     }
 
+    protected void checkResult(int count) {
+        if (count < 1) {
+            throw new EntityNotFoundException();
+        }
+    }
+
+    protected void checkResult(E e) {
+        if (e == null) {
+            throw new EntityNotFoundException();
+        }
+    }
+
     @GetMapping
     public Object queryOrPage(@Validated(PageGroup.class) Q q) {
         return q.needPaging() ? new PageList<>(list(q), count(q)) : list(q);
@@ -57,20 +69,21 @@ public abstract class AbstractRestService<E extends Persistable<I>, I extends Se
     @GetMapping("{id}")
     public S getById(@PathVariable I id) {
         E e = get(id);
-        return e == null ? null : getEntityView().from(e);
+        checkResult(e);
+        return getEntityView().from(e);
     }
 
     @Override
     @DeleteMapping("{id}")
     public void deleteById(@PathVariable I id) {
-        delete(id);
+        checkResult(delete(id));
     }
 
     @Override
     @PutMapping("{id}")
     public void update(@PathVariable I id, @RequestBody @Validated(UpdateGroup.class) R request) {
         E e = get(id);
-        save(request.toEntity(e));
+        checkResult(update(request.toEntity(e)));
     }
 
     @Override
@@ -78,7 +91,7 @@ public abstract class AbstractRestService<E extends Persistable<I>, I extends Se
     public void patch(@PathVariable I id, @RequestBody @Validated(PatchGroup.class) R request) {
         E e = request.toEntity();
         e.setId(id);
-        patch(e);
+        checkResult(patch(e));
     }
 
     @Override

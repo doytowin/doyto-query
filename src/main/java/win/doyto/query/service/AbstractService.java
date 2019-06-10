@@ -16,6 +16,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 import win.doyto.query.cache.CacheWrapper;
+import win.doyto.query.cache.Invocable;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.JdbcDataAccess;
 import win.doyto.query.core.MemoryDataAccess;
@@ -28,6 +29,7 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * AbstractService
@@ -129,29 +131,31 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         entityCacheWrapper.evict(resolveCacheKey(e));
     }
 
-    public final void update(E e) {
-        doUpdate(e, () -> dataAccess.update(e));
+    public final int update(E e) {
+        return doUpdate(e, () -> dataAccess.update(e));
     }
 
-    public final void patch(E e) {
-        doUpdate(e, () -> dataAccess.patch(e));
+    public final int patch(E e) {
+        return doUpdate(e, () -> dataAccess.patch(e));
     }
 
-    private void doUpdate(E e, Runnable runnable) {
+    private int doUpdate(E e, Invocable<Integer> invocable) {
+        final AtomicInteger ret = new AtomicInteger();
         if (userIdProvider != null) {
             userIdProvider.setupUserId(e);
         }
         if (!entityAspects.isEmpty()) {
             transactionOperations.execute(s -> {
                 E origin = dataAccess.fetch(e.getId());
-                runnable.run();
+                ret.set(invocable.invoke());
                 entityAspects.forEach(entityAspect -> entityAspect.afterUpdate(origin, e));
                 return null;
             });
         } else {
-            runnable.run();
+            ret.set(invocable.invoke());
         }
         entityCacheWrapper.evict(resolveCacheKey(e));
+        return ret.get();
     }
 
     public int batchInsert(Iterable<E> entities) {

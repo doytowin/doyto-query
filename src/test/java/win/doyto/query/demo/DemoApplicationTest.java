@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import win.doyto.query.demo.exception.ServiceException;
 import win.doyto.query.demo.module.user.TestUserEntityAspect;
+import win.doyto.query.service.EntityNotFoundException;
 
 import javax.annotation.Resource;
 
@@ -191,7 +192,12 @@ class DemoApplicationTest {
         mockMvc.perform(get(URL_USER_1)).andExpect(jsonPath("$.username").value("f0rb"));
 
         mockMvc.perform(delete(URL_USER_2));
-        mockMvc.perform(get(URL_USER_2)).andDo(print()).andExpect(jsonPath("$").doesNotExist());
+        try {
+            mockMvc.perform(get(URL_USER_2)).andDo(print()).andExpect(jsonPath("$").doesNotExist());
+            fail();
+        } catch (Exception e) {
+            assertTrue(e.getCause() instanceof EntityNotFoundException);
+        }
 
     }
 
