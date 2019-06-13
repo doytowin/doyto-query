@@ -2,10 +2,7 @@ package win.doyto.query.core;
 
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import win.doyto.query.annotation.NestedQueries;
-import win.doyto.query.annotation.NestedQuery;
-import win.doyto.query.annotation.QueryField;
-import win.doyto.query.annotation.SubQuery;
+import win.doyto.query.annotation.*;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -69,7 +66,10 @@ final class FieldProcessor {
         String fieldName = field.getName();
         Processor processor = !field.getType().isAssignableFrom(boolean.class) ?
             new DefaultProcessor(fieldName) : EMPTY_PROCESSOR;
-        if (field.isAnnotationPresent(QueryField.class)) {
+        if (field.isAnnotationPresent(QueryTableAlias.class)) {
+            String columnName = field.getAnnotation(QueryTableAlias.class).value();
+            FIELD_PROCESSOR_MAP.put(field, (argList, value) -> QuerySuffix.buildAndSql(argList, value, columnName + "." + fieldName));
+        } else if (field.isAnnotationPresent(QueryField.class)) {
             String andSQL = field.getAnnotation(QueryField.class).and();
             FIELD_PROCESSOR_MAP.put(field, (argList, value) -> {
                 IntStream.range(0, StringUtils.countMatches(andSQL, REPLACE_HOLDER)).mapToObj(i -> value).forEach(argList::add);

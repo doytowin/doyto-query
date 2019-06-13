@@ -33,10 +33,16 @@ final class ColumnMeta {
         }
         String columnName = querySuffix.resolveColumnName(fieldName);
         if (columnName.contains("Or")) {
+            int indexOfDot = columnName.indexOf('.') + 1;
+            String alias = "";
+            if (indexOfDot > 0) {
+                alias = columnName.substring(0, indexOfDot);
+                columnName = columnName.substring(indexOfDot);
+            }
             String[] ors = CommonUtil.splitByOr(columnName);
             List<String> columns = new ArrayList<>(ors.length);
             for (String or : ors) {
-                columns.add(convertColumn(CommonUtil.camelize(or)) + SPACE + querySuffix.getOp() + ex);
+                columns.add(alias + convertColumn(CommonUtil.camelize(or)) + SPACE + querySuffix.getOp() + ex);
                 appendArgs(ex, value, argList);
             }
             return wrapWithParenthesis(StringUtils.join(columns, " OR "));
