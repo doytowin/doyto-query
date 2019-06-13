@@ -24,7 +24,7 @@ public class UserControllerTest {
     }
 
     private static List<UserRequest> initData() {
-        userService = new UserController() {};
+        userService = new UserController();
         List<UserRequest> userRequests = new ArrayList<>(INIT_SIZE);
         for (int i = 1; i < INIT_SIZE; i++) {
             UserRequest userRequest = new UserRequest();
@@ -91,5 +91,10 @@ public class UserControllerTest {
     void delete() {
         userService.deleteById(1L);
         assertThat(userService.page(UserQuery.builder().build()).getTotal()).isEqualTo(4);
+    }
+
+    @Test
+    void supportInheritanceOnConcreteSubClassOfAbstractService() {
+        new UserController() {};
     }
 }
