@@ -58,15 +58,11 @@ class StringJoinerTest {
     }
 
     static class TimeRecorder {
-        static long run(Invocable<String> runnable) {
+        static long run(Invocable<String> invocable) {
             long start = System.currentTimeMillis();
-            IntStream.range(0, TIMES).forEachOrdered(i -> runnable.invoke());
+            IntStream.range(0, TIMES).forEachOrdered(i -> invocable.invoke());
             return System.currentTimeMillis() - start;
         }
-    }
-
-    public interface Invocable<T> {
-        T invoke();
     }
 
 }

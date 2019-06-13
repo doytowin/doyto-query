@@ -1,4 +1,4 @@
-package win.doyto.query.cache;
+package win.doyto.query.core;
 
 /**
  * Invocable

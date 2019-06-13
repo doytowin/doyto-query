@@ -1,6 +1,7 @@
 package win.doyto.query.cache;
 
 import org.springframework.cache.Cache;
+import win.doyto.query.core.Invocable;
 
 /**
  * CacheWrapper

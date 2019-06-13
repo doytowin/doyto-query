@@ -2,6 +2,7 @@ package win.doyto.query.cache;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
+import win.doyto.query.core.Invocable;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
