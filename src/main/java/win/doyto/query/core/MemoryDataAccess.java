@@ -29,7 +29,7 @@ import static win.doyto.query.core.QuerySuffix.*;
  * @author f0rb
  */
 @Slf4j
-@SuppressWarnings({"unchecked", "squid:S1135"})
+@SuppressWarnings("unchecked")
 public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
     protected static final Map<Class<?>, Map> tableMap = new ConcurrentHashMap<>();
 
@@ -217,9 +217,19 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         return objects;
     }
 
-    @SuppressWarnings("unused")
     protected void doSort(List<E> queryList, String sort) {
-        // TODO support later
+        String[] orders = sort.split(";");
+        for (int i = orders.length - 1; i >= 0; i--) {
+            String order = orders[i];
+            queryList.sort((o1, o2) -> {
+                String[] pd = order.split(",");
+                String property = toCamelCase(pd[0]);
+                Comparable c1 = (Comparable) readField(o1, property);
+                Object c2 = readField(o2, property);
+                int ret = c1.compareTo(c2);
+                return "asc".equalsIgnoreCase(pd[1]) ? ret : -ret;
+            });
+        }
     }
 
     @Override

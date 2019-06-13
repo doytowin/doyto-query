@@ -138,4 +138,13 @@ class CommonUtil {
     static String[] splitByOr(String columnName) {
         return PTN_SPLIT_OR.split(columnName, 0);
     }
+
+    static String toCamelCase(String input) {
+        String[] parts = input.split("_");
+        StringBuilder result = new StringBuilder(parts[0]);
+        for (int i = 1; i < parts.length; i++) {
+            result.append(StringUtils.capitalize(parts[i]));
+        }
+        return result.toString();
+    }
 }

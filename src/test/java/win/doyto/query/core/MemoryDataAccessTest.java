@@ -139,4 +139,17 @@ class MemoryDataAccessTest {
 
         assertThat(testMemoryDataAccess.query(byNotValid)).extracting(TestEntity::getMemo).containsExactly("invalid", "invalid");
     }
+
+    @Test
+    void sort() {
+        TestQuery sort = TestQuery.builder().build();
+        sort.setSort("id,desc");
+        assertThat(testMemoryDataAccess.query(sort)).extracting(TestEntity::getId).containsExactly(5, 4, 3, 2, 1);
+
+        sort.setSort("valid,asc;id,desc");
+        assertThat(testMemoryDataAccess.query(sort)).extracting(TestEntity::getId).containsExactly(3, 1, 5, 4, 2);
+
+        sort.setValid(true);
+        assertThat(testMemoryDataAccess.query(sort)).extracting(TestEntity::getId).containsExactly(5, 4, 2);
+    }
 }
