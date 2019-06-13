@@ -16,17 +16,17 @@ public class JoinQueryExecutor<E, Q extends PageQuery> {
 
     private final JdbcOperations jdbcOperations;
     private final JoinQueryBuilder joinQueryBuilder;
-    private BeanPropertyRowMapper<E> tBeanPropertyRowMapper;
+    private BeanPropertyRowMapper<E> beanPropertyRowMapper;
 
     public JoinQueryExecutor(JdbcOperations jdbcOperations, Class<E> entityClass) {
         this.jdbcOperations = jdbcOperations;
         this.joinQueryBuilder = new JoinQueryBuilder(entityClass);
-        this.tBeanPropertyRowMapper = new BeanPropertyRowMapper<>(entityClass);
+        this.beanPropertyRowMapper = new BeanPropertyRowMapper<>(entityClass);
     }
 
     public List<E> execute(Q q) {
         SqlAndArgs sqlAndArgs = buildJoinSelectAndArgs(q);
-        return jdbcOperations.query(sqlAndArgs.getSql(), tBeanPropertyRowMapper, sqlAndArgs.getArgs());
+        return jdbcOperations.query(sqlAndArgs.getSql(), beanPropertyRowMapper, sqlAndArgs.getArgs());
     }
 
     public SqlAndArgs buildJoinSelectAndArgs(Q q) {
