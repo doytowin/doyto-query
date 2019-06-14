@@ -1,5 +1,6 @@
 package win.doyto.query.core;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -10,10 +11,14 @@ import org.springframework.jdbc.support.KeyHolder;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import javax.persistence.Transient;
 
 /**
  * JdbcDataAccess
@@ -25,16 +30,34 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     private final JdbcOperations jdbcOperations;
     private final RowMapper<E> rowMapper;
     private final CrudBuilder<E> crudBuilder;
+    private final String[] columnsForSelect;
 
     public JdbcDataAccess(JdbcOperations jdbcOperations, Class<E> entityClass) {
         this.jdbcOperations = jdbcOperations;
         rowMapper = new BeanPropertyRowMapper<>(entityClass);
         crudBuilder = new CrudBuilder<>(entityClass);
+        columnsForSelect = Arrays
+            .stream(FieldUtils.getAllFields(entityClass))
+            .filter(JdbcDataAccess::shouldRetain)
+            .map(this::selectAs)
+            .toArray(String[]::new);
+    }
+
+    protected String selectAs(Field field) {
+        String columnName = CommonUtil.resolveColumn(field);
+        return columnName.equalsIgnoreCase(field.getName()) ? columnName : columnName + " AS " + field.getName();
+    }
+
+    private static boolean shouldRetain(Field field) {
+        return !field.getName().startsWith("$")              // $jacocoData
+            && !Modifier.isStatic(field.getModifiers())      // static field
+            && !field.isAnnotationPresent(Transient.class)   // Transient field
+            ;
     }
 
     @Override
     public final List<E> query(Q q) {
-        return queryColumns(q, rowMapper, "*");
+        return queryColumns(q, rowMapper, columnsForSelect);
     }
 
     @Override

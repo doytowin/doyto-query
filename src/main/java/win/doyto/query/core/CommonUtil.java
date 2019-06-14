@@ -15,10 +15,7 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 /**
  * CommonUtil
@@ -146,5 +143,10 @@ class CommonUtil {
             result.append(StringUtils.capitalize(parts[i]));
         }
         return result.toString();
+    }
+
+    static String resolveColumn(Field field) {
+        Column column = field.getAnnotation(Column.class);
+        return column != null && !column.name().isEmpty() ? column.name() : convertColumn(field.getName());
     }
 }

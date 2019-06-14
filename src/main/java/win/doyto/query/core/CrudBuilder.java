@@ -47,7 +47,7 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
 
         wildInsertValue = wrapWithParenthesis(StringUtils.join(IntStream.range(0, fieldsSize).mapToObj(i -> Constant.REPLACE_HOLDER).collect(Collectors.toList()), Constant.SEPARATOR));
 
-        List<String> columnList = fields.stream().map(QueryBuilder::resolveColumn).collect(Collectors.toList());
+        List<String> columnList = fields.stream().map(CommonUtil::resolveColumn).collect(Collectors.toList());
         insertColumns = wrapWithParenthesis(StringUtils.join(columnList, Constant.SEPARATOR));
         wildSetClause = StringUtils.join(columnList.stream().map(c -> c + EQUALS_REPLACE_HOLDER).collect(Collectors.toList()), Constant.SEPARATOR);
 

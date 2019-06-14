@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
-import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -46,15 +45,6 @@ public class QueryBuilder {
         Field idField = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0];
         idColumn = resolveColumn(idField);
         whereId = " WHERE " + idColumn + EQUALS_REPLACE_HOLDER;
-    }
-
-    static String resolveColumn(Field field) {
-        Column column = field.getAnnotation(Column.class);
-        if (column != null && !column.name().isEmpty()) {
-            return column.name();
-        } else {
-            return convertColumn(field.getName());
-        }
     }
 
     private String build(PageQuery pageQuery, List<Object> argList, String... columns) {

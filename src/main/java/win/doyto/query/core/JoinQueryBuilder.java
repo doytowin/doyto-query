@@ -34,7 +34,7 @@ class JoinQueryBuilder {
         columnsForSelect = Arrays
             .stream(entityClass.getDeclaredFields())
             .filter(field -> !ignoreField(field))
-            .map(field -> QueryBuilder.resolveColumn(field) + " AS " + field.getName())
+            .map(field -> resolveColumn(field) + " AS " + field.getName())
             .toArray(String[]::new);
     }
 
