@@ -96,7 +96,10 @@ public class QueryBuilder {
                 if (sql.contains("${" + fieldName + "}") && value instanceof String && PTN_REPLACE.matcher((String) value).matches()) {
                     sql = sql.replaceAll("\\$\\{" + fieldName + "}", String.valueOf(value));
                 } else {
-                    whereList.add(FieldProcessor.execute(argList, field, value));
+                    String and = FieldProcessor.execute(argList, field, value);
+                    if (and != null) {
+                        whereList.add(and);
+                    }
                 }
             }
         }

@@ -350,4 +350,12 @@ public class QueryBuilderTest {
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test%");
     }
+
+    @Test
+    public void ignoreFieldWhenLikeValueIsEmpty() {
+        TestQuery testQuery = TestQuery.builder().email("").usernameLike("").build();
+        SqlAndArgs sqlAndArgs = testQueryBuilder.buildSelectIdAndArgs(testQuery);
+        assertEquals("SELECT id FROM user WHERE email = ?", sqlAndArgs.getSql());
+        assertThat(sqlAndArgs.getArgs()).containsExactly("");
+    }
 }

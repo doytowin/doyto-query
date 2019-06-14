@@ -28,6 +28,9 @@ final class ColumnMeta {
     }
 
     final String defaultSql(QuerySuffix querySuffix, String ex) {
+        if (querySuffix.getOp().contains("LIKE") && value instanceof String && StringUtils.isBlank((String) value)) {
+            return null;
+        }
         if (!ex.isEmpty()) {
             ex = SPACE + ex;
         }
@@ -56,7 +59,7 @@ final class ColumnMeta {
     private static void appendArgs(String ex, Object value, List<Object> argList) {
         if (value instanceof Collection) {
             argList.addAll((Collection<Object>) value);
-        } else if (ex.contains(REPLACE_HOLDER)){
+        } else if (ex.contains(REPLACE_HOLDER)) {
             argList.add(value);
         }
     }
