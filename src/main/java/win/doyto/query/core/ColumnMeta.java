@@ -24,7 +24,7 @@ final class ColumnMeta {
     final List<Object> argList;
 
     final String defaultSql(QuerySuffix querySuffix) {
-        return defaultSql(querySuffix, REPLACE_HOLDER);
+        return defaultSql(querySuffix, querySuffix.getEx(value));
     }
 
     final String defaultSql(QuerySuffix querySuffix, String ex) {

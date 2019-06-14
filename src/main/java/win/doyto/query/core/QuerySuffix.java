@@ -24,10 +24,10 @@ enum QuerySuffix {
     NotLike("NOT LIKE"),
     Start("LIKE"),
     Like,
-    NotIn("NOT IN"),
-    In,
-    NotNull("IS NOT NULL"),
-    Null("IS NULL"),
+    NotIn("NOT IN", Ex.collection),
+    In("IN", Ex.collection),
+    NotNull("IS NOT NULL", Ex.empty),
+    Null("IS NULL", Ex.empty),
     Gt(">"),
     Ge(">="),
     Lt("<"),
@@ -35,42 +35,30 @@ enum QuerySuffix {
     NONE("=");
 
     private static final Pattern SUFFIX_PTN;
-
     private static final Map<QuerySuffix, Function<ColumnMeta, String>> sqlFuncMap = new EnumMap<>(QuerySuffix.class);
 
     static {
         List<String> suffixList = Arrays.stream(values()).filter(querySuffix -> querySuffix != NONE).map(Enum::name).collect(Collectors.toList());
         String suffixPtn = StringUtils.join(suffixList, "|");
         SUFFIX_PTN = Pattern.compile("(" + suffixPtn + ")$");
-
-        for (QuerySuffix querySuffix : values()) {
-            sqlFuncMap.put(querySuffix, columnMeta -> columnMeta.defaultSql(querySuffix));
-        }
-
-        sqlFuncMap.put(Null, columnMeta -> columnMeta.defaultSql(Null, ""));
-        sqlFuncMap.put(NotNull, columnMeta -> columnMeta.defaultSql(NotNull, ""));
-
-        sqlFuncMap.put(In, columnMeta -> buildSqlForCollection(columnMeta, In));
-        sqlFuncMap.put(NotIn, columnMeta -> buildSqlForCollection(columnMeta, NotIn));
+        Arrays.stream(values()).forEach(querySuffix -> sqlFuncMap.put(querySuffix, columnMeta -> columnMeta.defaultSql(querySuffix)));
     }
 
     private final String op;
+    private final Ex ex;
 
     QuerySuffix() {
         this.op = name().toUpperCase();
+        this.ex = Ex.placeHolder;
     }
 
     QuerySuffix(String op) {
+        this(op, Ex.placeHolder);
+    }
+
+    QuerySuffix(String op, Ex ex) {
         this.op = op;
-    }
-
-    private static String generateReplaceHoldersForCollection(int size) {
-        return CommonUtil.wrapWithParenthesis(StringUtils.trimToNull(StringUtils.join(IntStream.range(0, size).mapToObj(i -> REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR)));
-    }
-
-    private static String buildSqlForCollection(ColumnMeta columnMeta, QuerySuffix querySuffix) {
-        int size = ((Collection) columnMeta.value).size();
-        return columnMeta.defaultSql(querySuffix, generateReplaceHoldersForCollection(size));
+        this.ex = ex;
     }
 
     static QuerySuffix resolve(String fieldName) {
@@ -96,4 +84,21 @@ enum QuerySuffix {
         String suffix = this.name();
         return fieldName.endsWith(suffix) ? fieldName.substring(0, fieldName.length() - suffix.length()) : fieldName;
     }
+
+    String getEx(Object value) {
+        return ex.getEx(value);
+    }
+
+    @SuppressWarnings("squid:S1214")
+    interface Ex {
+        String getEx(Object value);
+
+        Ex placeHolder = value -> REPLACE_HOLDER;
+        Ex empty = value -> EMPTY;
+        Ex collection = value -> {
+            int size = ((Collection) value).size();
+            return CommonUtil.wrapWithParenthesis(StringUtils.trimToNull(StringUtils.join(IntStream.range(0, size).mapToObj(i -> REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR)));
+        };
+    }
+
 }
