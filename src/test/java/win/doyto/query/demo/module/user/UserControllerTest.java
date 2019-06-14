@@ -9,6 +9,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * UserControllerTest
@@ -95,6 +96,6 @@ public class UserControllerTest {
 
     @Test
     void supportInheritanceOnConcreteSubClassOfAbstractService() {
-        new UserController() {};
+        assertNotNull(new UserController() {});
     }
 }
