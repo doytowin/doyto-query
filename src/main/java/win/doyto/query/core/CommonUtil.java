@@ -34,10 +34,10 @@ class CommonUtil {
         return PTN_$EX.matcher(input).find();
     }
 
-    static String replaceTableName(Object entity, String tableName) {
-        Matcher matcher = PTN_$EX.matcher(tableName);
+    static String replaceHolderInString(Object entity, String input) {
+        Matcher matcher = PTN_$EX.matcher(input);
         if (!matcher.find()) {
-            return tableName;
+            return input;
         }
 
         StringBuffer sb = new StringBuffer();

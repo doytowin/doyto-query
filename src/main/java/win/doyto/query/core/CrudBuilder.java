@@ -12,8 +12,7 @@ import java.util.stream.IntStream;
 import javax.persistence.Id;
 
 import static win.doyto.query.core.CommonUtil.*;
-import static win.doyto.query.core.Constant.SEPARATOR;
-import static win.doyto.query.core.Constant.SPACE;
+import static win.doyto.query.core.Constant.*;
 
 /**
  * CrudBuilder
@@ -87,7 +86,7 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
     }
 
     private String resolveTableName(E entity) {
-        return isDynamicTable ? replaceTableName(entity, tableName) : tableName;
+        return isDynamicTable ? replaceHolderInString(entity, tableName) : tableName;
     }
 
     public String buildCreateAndArgs(E entity, List<Object> argList) {
@@ -96,21 +95,29 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
         return buildInsertSql(table, insertColumns, wildInsertValue);
     }
 
-    public SqlAndArgs buildCreateAndArgs(Iterable<E> entities) {
-        Iterator<E> iterator = entities.iterator();
-        E next = iterator.next();
-        String table = resolveTableName(next);
-        StringBuilder insertSql = new StringBuilder(buildInsertSql(table, insertColumns, wildInsertValue));
+    public SqlAndArgs buildCreateAndArgs(Iterable<E> entities, String... columns) {
+        StringBuilder insertSql = new StringBuilder(buildInsertSql(tableName, insertColumns, wildInsertValue));
 
         ArrayList<Object> argList = new ArrayList<>();
+        Iterator<E> iterator = entities.iterator();
+        E next = iterator.next();
         readValueToArgList(fields, next, argList);
         while (iterator.hasNext()) {
             E entity = iterator.next();
             readValueToArgList(fields, entity, argList);
             insertSql.append(SEPARATOR).append(wildInsertValue);
         }
+        if (columns.length > 0) {
+            insertSql.append(" ON DUPLICATE KEY UPDATE ");
+            StringJoiner stringJoiner = new StringJoiner(", ", columns.length);
+            for (String column : columns) {
+                stringJoiner.append(column + EQUAL + "VALUES (" + column + ")");
+            }
+            insertSql.append(stringJoiner.toString());
+        }
 
-        return new SqlAndArgs(insertSql.toString(), argList);
+        String sql = replaceHolderInString(next, insertSql.toString());
+        return new SqlAndArgs(sql, argList);
     }
 
     public String buildUpdateAndArgs(E entity, List<Object> argList) {
@@ -168,6 +175,6 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
     }
 
     protected String buildDeleteById(Object entity) {
-        return "DELETE FROM " + replaceTableName(entity, tableName) + whereId;
+        return "DELETE FROM " + replaceHolderInString(entity, tableName) + whereId;
     }
 }

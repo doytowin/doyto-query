@@ -143,7 +143,7 @@ public class QueryBuilder {
     }
 
     protected String buildSelectById(Object entity) {
-        return "SELECT * FROM " + replaceTableName(entity, tableName) + whereId;
+        return "SELECT * FROM " + replaceHolderInString(entity, tableName) + whereId;
     }
 
     protected SqlAndArgs buildSelectIdAndArgs(PageQuery query) {

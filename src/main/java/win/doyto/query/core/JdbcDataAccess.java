@@ -124,8 +124,11 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     }
 
     @Override
-    public int batchInsert(Iterable<E> entities) {
-        return doUpdate(crudBuilder.buildCreateAndArgs(entities));
+    public int batchInsert(Iterable<E> entities, String... columns) {
+        if (!entities.iterator().hasNext()) {
+            return 0;
+        }
+        return doUpdate(crudBuilder.buildCreateAndArgs(entities, columns));
     }
 
     private int doUpdate(SqlAndArgs sqlAndArgs) {

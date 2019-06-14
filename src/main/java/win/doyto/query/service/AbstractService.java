@@ -159,8 +159,8 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         return ret.get();
     }
 
-    public int batchInsert(Iterable<E> entities) {
-        int insert = dataAccess.batchInsert(entities);
+    public int batchInsert(Iterable<E> entities, String... columns) {
+        int insert = dataAccess.batchInsert(entities, columns);
         entityCacheWrapper.clear();
         return insert;
     }

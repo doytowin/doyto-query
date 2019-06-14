@@ -33,9 +33,10 @@ interface CommonCrudService<E extends Persistable, I, Q> extends QueryService<E,
      * </ol>
      *
      * @param entities entities to insert
+     * @param columns update columns on duplicate
      * @return amount of updated entities
      */
-    int batchInsert(Iterable<E> entities);
+    int batchInsert(Iterable<E> entities, String... columns);
 
     /**
      * 执行<i>UPDATE [TABLE] SET ... WHERE ...</i>

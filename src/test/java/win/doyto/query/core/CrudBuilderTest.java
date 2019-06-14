@@ -86,8 +86,8 @@ class CrudBuilderTest {
         entity.setUser("f0rb");
         entity.setProject("i18n");
 
-        assertEquals("t_dynamic_f0rb_i18n", CommonUtil.replaceTableName(entity, DynamicEntity.TABLE));
-        assertEquals("user", CommonUtil.replaceTableName(new TestEntity(), TestEntity.TABLE));
+        assertEquals("t_dynamic_f0rb_i18n", CommonUtil.replaceHolderInString(entity, DynamicEntity.TABLE));
+        assertEquals("user", CommonUtil.replaceHolderInString(new TestEntity(), TestEntity.TABLE));
 
     }
     @Test
@@ -98,7 +98,7 @@ class CrudBuilderTest {
         entity.setUser("f0rb");
         entity.setProject("i18n");
 
-        assertEquals("t_dynamic_f0rb_i18n_any", CommonUtil.replaceTableName(entity, DynamicEntity.TABLE + "_any"));
+        assertEquals("t_dynamic_f0rb_i18n_any", CommonUtil.replaceHolderInString(entity, DynamicEntity.TABLE + "_any"));
 
     }
 
@@ -175,4 +175,20 @@ class CrudBuilderTest {
                      dynamicEntityCrudBuilder.buildSelectAndArgs(dynamicQuery, argList));
         assertThat(argList).containsExactly(100);
     }
+
+    @Test
+    void createMultiOnDuplicate() {
+        SqlAndArgs sqlAndArgs = userEntityCrudBuilder.buildCreateAndArgs(
+            Arrays.asList(new TestEntity(), new TestEntity(), new TestEntity()),
+            "mobile", "email"
+        );
+        assertEquals(
+            "INSERT INTO user (username, password, mobile, email, nickname, userLevel, memo, valid) VALUES " +
+                "(?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?)" +
+                " ON DUPLICATE KEY UPDATE " +
+                "mobile = VALUES (mobile), " +
+                "email = VALUES (email)",
+            sqlAndArgs.sql);
+    }
+
 }
