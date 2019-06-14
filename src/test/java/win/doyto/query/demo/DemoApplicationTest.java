@@ -21,12 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import win.doyto.query.demo.exception.ServiceException;
 import win.doyto.query.demo.module.user.TestUserEntityAspect;
+import win.doyto.query.service.AssociativeService;
 import win.doyto.query.service.EntityNotFoundException;
 
+import java.util.Arrays;
 import javax.annotation.Resource;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static java.util.Collections.emptyList;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -299,5 +301,42 @@ class DemoApplicationTest {
                .andExpect(jsonPath("$.id").value("1"))
                .andExpect(jsonPath("$.nickname").value("测试1"))
         ;
+    }
+
+    /*=============== AssociativeService ==================*/
+    @Resource
+    AssociativeService<Long, Integer> userAndRoleAssociativeService;
+
+    @Test
+    void associativeService$count() {
+        assertEquals(0L, userAndRoleAssociativeService.count(emptyList(), emptyList()));
+    }
+
+    @Test
+    void associativeService$exists() {
+        assertTrue(userAndRoleAssociativeService.exists(1L, 1));
+
+        assertEquals(1, userAndRoleAssociativeService.allocate(1L, 2));
+        assertTrue(userAndRoleAssociativeService.exists(1L, Arrays.asList(1, 2)));
+        assertArrayEquals(new Object[]{1, 2}, userAndRoleAssociativeService.getByLeftId(1L).toArray());
+        assertArrayEquals(new Object[]{1L}, userAndRoleAssociativeService.getByRightId(2).toArray());
+
+        userAndRoleAssociativeService.deallocate(1L, 1);
+        assertTrue(userAndRoleAssociativeService.exists(1L, Arrays.asList(1, 2)));
+        assertFalse(userAndRoleAssociativeService.exists(1L, 1));
+    }
+
+    @Test
+    void associativeService$reallocate() {
+        assertTrue(userAndRoleAssociativeService.exists(1L, 1));
+
+        assertEquals(2, userAndRoleAssociativeService.reallocateForLeft(1L, Arrays.asList(2, 3)));
+        assertFalse(userAndRoleAssociativeService.exists(1L, 1));
+        assertTrue(userAndRoleAssociativeService.exists(1L, Arrays.asList(1, 2)));
+        assertTrue(userAndRoleAssociativeService.exists(1L, Arrays.asList(2, 3)));
+
+        assertEquals(0, userAndRoleAssociativeService.reallocateForRight(2, emptyList()));
+        assertEquals(0, userAndRoleAssociativeService.reallocateForRight(3, emptyList()));
+        assertFalse(userAndRoleAssociativeService.exists(1L, Arrays.asList(1, 2, 3)));
     }
 }
