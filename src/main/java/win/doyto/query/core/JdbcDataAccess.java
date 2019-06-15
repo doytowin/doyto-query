@@ -1,7 +1,6 @@
 package win.doyto.query.core;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
@@ -92,11 +91,8 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     }
 
     private E getEntity(String sql, I id) {
-        try {
-            return jdbcOperations.queryForObject(sql, rowMapper, id);
-        } catch (DataAccessException ex) {
-            return null;
-        }
+        List<E> list = jdbcOperations.query(sql, new Object[]{id}, rowMapper);
+        return list.isEmpty() ? null : list.get(0);
     }
 
     @Override
