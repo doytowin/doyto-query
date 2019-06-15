@@ -16,6 +16,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface Joins {
     Join[] value();
 
+    String groupBy() default "";
+
+    String having() default "";
+
     @interface Join {
         String value();
     }

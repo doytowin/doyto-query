@@ -12,8 +12,8 @@ import java.util.regex.Pattern;
 import javax.persistence.Table;
 
 import static win.doyto.query.core.CommonUtil.*;
-import static win.doyto.query.core.Constant.REPLACE_HOLDER;
-import static win.doyto.query.core.Constant.SPACE;
+import static win.doyto.query.core.Constant.*;
+import static win.doyto.query.core.QueryBuilder.*;
 
 /**
  * JoinQueryBuilder
@@ -54,13 +54,37 @@ class JoinQueryBuilder {
         return matcher.appendTail(sb).toString();
     }
 
+    @SuppressWarnings("squid:S4973")
     private String build(PageQuery pageQuery, List<Object> argList, String... columns) {
+        pageQuery = SerializationUtils.clone(pageQuery);
+
+        String join = buildJoin(pageQuery, argList);
+        String from = tableName + join;
+        String sql;
+        sql = buildStart(Constant.SELECT, columns, from);
+        sql = buildWhere(sql, pageQuery, argList);
+
+        Joins joins = entityClass.getAnnotation(Joins.class);
+        if (!joins.groupBy().isEmpty()) {
+            sql += " GROUP BY " + joins.groupBy();
+        }
+        if (!joins.having().isEmpty()) {
+            sql += " HAVING " + joins.having();
+        }
+        // intentionally use ==
+        if (!(columns.length == 1 && COUNT == columns[0])) {
+            // not SELECT COUNT(*)
+            sql = buildOrderBy(sql, pageQuery, Constant.SELECT);
+            sql = buildPaging(sql, pageQuery);
+        }
+        return sql;
+    }
+
+    private String buildJoin(PageQuery pageQuery, List<Object> argList) {
         Joins.Join[] joins = entityClass.getAnnotation(Joins.class).value();
         StringJoiner joiner = new StringJoiner(SPACE, joins.length);
         Arrays.stream(joins).map(Joins.Join::value).forEachOrdered(joiner::append);
-        pageQuery = SerializationUtils.clone(pageQuery);
-        String join = resolveJoin(pageQuery, argList, joiner.toString());
-        return QueryBuilder.build(pageQuery, argList, Constant.SELECT, columns, tableName + join);
+        return resolveJoin(pageQuery, argList, joiner.toString());
     }
 
     public SqlAndArgs buildJoinSelectAndArgs(PageQuery query) {

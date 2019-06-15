@@ -65,12 +65,12 @@ public class QueryBuilder {
         return sql;
     }
 
-    private static String buildStart(String operation, String[] columns, String table) {
-        return operation + StringUtils.join(columns, SEPARATOR) + FROM + table;
+    static String buildStart(String operation, String[] columns, String from) {
+        return operation + StringUtils.join(columns, SEPARATOR) + FROM + from;
     }
 
     @SuppressWarnings("squid:S4973")
-    private static String buildOrderBy(String sql, PageQuery pageQuery, String operation) {
+    static String buildOrderBy(String sql, PageQuery pageQuery, String operation) {
         // intentionally use ==
         if (SELECT == operation && pageQuery.getSort() != null) {
             sql += " ORDER BY " + pageQuery.getSort().replaceAll(",", SPACE).replaceAll(";", ", ");
@@ -78,7 +78,7 @@ public class QueryBuilder {
         return sql;
     }
 
-    private static String buildPaging(String sql, PageQuery pageQuery) {
+    static String buildPaging(String sql, PageQuery pageQuery) {
         if (pageQuery.needPaging()) {
             sql = GlobalConfiguration.instance().getDialect().buildPageSql(sql, pageQuery.getPageSize(), pageQuery.getOffset());
         }
