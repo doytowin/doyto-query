@@ -92,4 +92,8 @@ class JoinQueryBuilder {
         return new SqlAndArgs(build(query, argList, columnsForSelect), argList);
     }
 
+    public SqlAndArgs buildJoinCountAndArgs(PageQuery query) {
+        ArrayList<Object> argList = new ArrayList<>();
+        return new SqlAndArgs(build(query, argList, COUNT), argList);
+    }
 }

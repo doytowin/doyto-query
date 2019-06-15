@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
+import win.doyto.query.service.PageList;
 
 import java.util.List;
 
@@ -30,13 +31,21 @@ public class JoinQueryExecutor<E, Q extends PageQuery> {
         this.jdbcOperations = jdbcOperations;
     }
 
+    public PageList<E> page(Q q) {
+        return new PageList<>(query(q), count(q));
+    }
 
-    public List<E> execute(Q q) {
+    public List<E> query(Q q) {
         SqlAndArgs sqlAndArgs = buildJoinSelectAndArgs(q);
         return jdbcOperations.query(sqlAndArgs.getSql(), beanPropertyRowMapper, sqlAndArgs.getArgs());
     }
 
-    public SqlAndArgs buildJoinSelectAndArgs(Q q) {
+    public Long count(Q q) {
+        SqlAndArgs sqlAndArgs = joinQueryBuilder.buildJoinCountAndArgs(q);
+        return jdbcOperations.queryForObject(sqlAndArgs.getSql(), sqlAndArgs.getArgs(), Long.class);
+    }
+
+    SqlAndArgs buildJoinSelectAndArgs(Q q) {
         return joinQueryBuilder.buildJoinSelectAndArgs(q);
     }
 }

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
@@ -19,15 +20,23 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import win.doyto.query.core.JoinQueryExecutor;
+import win.doyto.query.core.test.TestJoinQuery;
+import win.doyto.query.core.test.TestJoinView;
+import win.doyto.query.core.test.UserCountByRoleView;
 import win.doyto.query.demo.exception.ServiceException;
 import win.doyto.query.demo.module.user.TestUserEntityAspect;
 import win.doyto.query.service.AssociativeService;
+import win.doyto.query.service.AssociativeServiceTemplate;
 import win.doyto.query.service.EntityNotFoundException;
+import win.doyto.query.service.PageList;
 
 import java.util.Arrays;
+import java.util.List;
 import javax.annotation.Resource;
 
 import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -50,6 +59,14 @@ class DemoApplicationTest {
     protected WebApplicationContext wac;
     private MockMvc mockMvc;
     private MockHttpSession session;
+
+    private JdbcOperations jdbcOperations;
+
+    @Resource
+    public void setJdbcOperations(JdbcOperations jdbcOperations) {
+        this.jdbcOperations = jdbcOperations;
+        userAndRoleAssociativeService = new AssociativeServiceTemplate<>(jdbcOperations, "t_user_and_role", "userId", "roleId");
+    }
 
     private ResultActions requestJson(MockHttpServletRequestBuilder builder, String content, MockHttpSession session) throws Exception {
         return mockMvc.perform(builder.content(content).contentType(MediaType.APPLICATION_JSON_UTF8).session(session));
@@ -304,7 +321,6 @@ class DemoApplicationTest {
     }
 
     /*=============== AssociativeService ==================*/
-    @Resource
     AssociativeService<Long, Integer> userAndRoleAssociativeService;
 
     @Test
@@ -316,10 +332,9 @@ class DemoApplicationTest {
     void associativeService$exists() {
         assertTrue(userAndRoleAssociativeService.exists(1L, 1));
 
-        assertEquals(1, userAndRoleAssociativeService.allocate(1L, 2));
         assertTrue(userAndRoleAssociativeService.exists(1L, Arrays.asList(1, 2)));
         assertArrayEquals(new Object[]{1, 2}, userAndRoleAssociativeService.getByLeftId(1L).toArray());
-        assertArrayEquals(new Object[]{1L}, userAndRoleAssociativeService.getByRightId(2).toArray());
+        assertArrayEquals(new Object[]{1L, 4L}, userAndRoleAssociativeService.getByRightId(2).toArray());
 
         userAndRoleAssociativeService.deallocate(1L, 1);
         assertTrue(userAndRoleAssociativeService.exists(1L, Arrays.asList(1, 2)));
@@ -338,5 +353,24 @@ class DemoApplicationTest {
         assertEquals(0, userAndRoleAssociativeService.reallocateForRight(2, emptyList()));
         assertEquals(0, userAndRoleAssociativeService.reallocateForRight(3, emptyList()));
         assertFalse(userAndRoleAssociativeService.exists(1L, Arrays.asList(1, 2, 3)));
+    }
+
+    /*=============== Join ==================*/
+    @Test
+    void queryForJoin() {
+        TestJoinQuery query = new TestJoinQuery();
+        query.setSort("userCount,desc");
+
+        List<UserCountByRoleView> list = new JoinQueryExecutor<>(jdbcOperations, UserCountByRoleView.class).query(query);
+        assertThat(list).extracting(UserCountByRoleView::getUserCount).containsExactly(3, 2);
+    }
+
+    @Test
+    void pageForJoin() {
+        TestJoinQuery testJoinQuery = new TestJoinQuery();
+        testJoinQuery.setRoleName("高级");
+        PageList<TestJoinView> page = new JoinQueryExecutor<>(jdbcOperations, TestJoinView.class).page(testJoinQuery);
+        assertThat(page.getTotal()).isEqualTo(2);
+        assertThat(page.getList()).extracting(TestJoinView::getUsername).containsExactly("f0rb", "user4");
     }
 }

@@ -16,8 +16,8 @@ import javax.persistence.Table;
 @Setter
 @Table(name = "user u")
 @Joins({
-    @Joins.Join("left join user_and_role ur on ur.userId = u.id"),
-    @Joins.Join("left join role r on r.id = ur.roleId and r.roleName = #{roleName}")
+    @Joins.Join("left join t_user_and_role ur on ur.userId = u.id"),
+    @Joins.Join("inner join role r on r.id = ur.roleId and r.roleName = #{roleName}")
 })
 public class TestJoinView {
 

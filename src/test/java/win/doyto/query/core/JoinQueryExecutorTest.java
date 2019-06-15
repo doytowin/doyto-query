@@ -26,8 +26,8 @@ class JoinQueryExecutorTest {
 
         String expected = "SELECT u.username AS username, r.roleName AS roleName " +
             "FROM user u " +
-            "left join user_and_role ur on ur.userId = u.id " +
-            "left join role r on r.id = ur.roleId and r.roleName = ? " +
+            "left join t_user_and_role ur on ur.userId = u.id " +
+            "inner join role r on r.id = ur.roleId and r.roleName = ? " +
             "WHERE u.userLevel = ?";
         SqlAndArgs sqlAndArgs = joinQueryExecutor.buildJoinSelectAndArgs(testJoinQuery);
         assertEquals(expected, sqlAndArgs.getSql());
@@ -46,8 +46,8 @@ class JoinQueryExecutorTest {
 
         String expected = "SELECT u.username AS username, r.roleName AS roleName " +
             "FROM user u " +
-            "left join user_and_role ur on ur.userId = u.id " +
-            "left join role r on r.id = ur.roleId and r.roleName = ? " +
+            "left join t_user_and_role ur on ur.userId = u.id " +
+            "inner join role r on r.id = ur.roleId and r.roleName = ? " +
             "WHERE u.userLevel = ? AND (r.roleName LIKE ? OR r.roleCode LIKE ?)";
         SqlAndArgs sqlAndArgs = joinQueryExecutor.buildJoinSelectAndArgs(testJoinQuery);
         assertEquals(expected, sqlAndArgs.getSql());
