@@ -24,7 +24,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
 
     public AbstractDynamicService() {
         try {
-            constructor = ReflectionUtils.accessibleConstructor(entityType);
+            constructor = ReflectionUtils.accessibleConstructor(entityClass);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }

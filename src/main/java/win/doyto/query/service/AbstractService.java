@@ -38,7 +38,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
 
     protected DataAccess<E, I, Q> dataAccess;
 
-    protected final Class<E> entityType;
+    protected final Class<E> entityClass;
 
     protected final CacheWrapper<E> entityCacheWrapper = CacheWrapper.createInstance();
 
@@ -56,8 +56,8 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
 
     @SuppressWarnings("unchecked")
     public AbstractService() {
-        entityType = (Class<E>) getActualTypeArguments()[0];
-        dataAccess = new MemoryDataAccess<>(entityType);
+        entityClass = (Class<E>) getActualTypeArguments()[0];
+        dataAccess = new MemoryDataAccess<>(entityClass);
     }
 
     protected final Type[] getActualTypeArguments() {
@@ -70,7 +70,11 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
 
     @Autowired
     public void setJdbcOperations(JdbcOperations jdbcOperations) {
-        dataAccess = new JdbcDataAccess<>(jdbcOperations, entityType);
+        dataAccess = new JdbcDataAccess<>(jdbcOperations, entityClass, getRowMapper());
+    }
+
+    protected RowMapper<E> getRowMapper() {
+        return new BeanPropertyRowMapper<>(entityClass);
     }
 
     @Autowired(required = false)
@@ -83,7 +87,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     public void setCacheList(List<String> cacheList) {
         if (cacheManager != null) {
             String cacheName = getCacheName();
-            if (cacheList.contains(cacheName) || cacheName != entityType.getName()) {
+            if (cacheList.contains(cacheName) || cacheName != entityClass.getName()) {
                 entityCacheWrapper.setCache(cacheManager.getCache(cacheName));
             }
         }
@@ -92,7 +96,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     protected abstract String resolveCacheKey(E e);
 
     protected String getCacheName() {
-        return entityType.getSimpleName();
+        return entityClass.getSimpleName();
     }
 
     public List<E> query(Q query) {

@@ -2,7 +2,6 @@ package win.doyto.query.core;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
@@ -32,9 +31,9 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     private final CrudBuilder<E> crudBuilder;
     private final String[] columnsForSelect;
 
-    public JdbcDataAccess(JdbcOperations jdbcOperations, Class<E> entityClass) {
+    public JdbcDataAccess(JdbcOperations jdbcOperations, Class<E> entityClass, RowMapper<E> rowMapper) {
         this.jdbcOperations = jdbcOperations;
-        rowMapper = new BeanPropertyRowMapper<>(entityClass);
+        this.rowMapper = rowMapper;
         crudBuilder = new CrudBuilder<>(entityClass);
         columnsForSelect = Arrays
             .stream(FieldUtils.getAllFields(entityClass))

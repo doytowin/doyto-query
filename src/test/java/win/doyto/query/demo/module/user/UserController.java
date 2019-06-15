@@ -2,6 +2,7 @@ package win.doyto.query.demo.module.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,23 @@ class UserController extends AbstractRestService<UserEntity, Long, UserQuery, Us
     @Override
     protected String getCacheName() {
         return "module:user";
+    }
+
+    @Override
+    protected RowMapper<UserEntity> getRowMapper() {
+        return (rs, rn) -> {
+            UserEntity userEntity = new UserEntity();
+            userEntity.setId(rs.getLong("id"));
+            userEntity.setUsername(rs.getString("username"));
+            userEntity.setPassword(rs.getString("password"));
+            userEntity.setNickname(rs.getString("nickname"));
+            userEntity.setMobile(rs.getString("mobile"));
+            userEntity.setEmail(rs.getString("email"));
+            userEntity.setMemo(rs.getString("memo"));
+            userEntity.setUserLevel(UserLevel.valueOf(rs.getString("userLevel")));
+            userEntity.setValid(rs.getBoolean("valid"));
+            return userEntity;
+        };
     }
 
     @Override
