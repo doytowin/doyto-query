@@ -45,7 +45,7 @@ public class JoinQueryExecutor<E, Q extends PageQuery> {
         return jdbcOperations.queryForObject(sqlAndArgs.getSql(), sqlAndArgs.getArgs(), Long.class);
     }
 
-    SqlAndArgs buildJoinSelectAndArgs(Q q) {
+    public SqlAndArgs buildJoinSelectAndArgs(Q q) {
         return joinQueryBuilder.buildJoinSelectAndArgs(q);
     }
 }
