@@ -309,6 +309,17 @@ class DemoApplicationTest {
         return status().is(200);
     }
 
+    /*=============== role ==================*/
+    @Test
+    public void pageRole() throws Exception {
+        mockMvc.perform(get("/role?pageNumber=0&pageSize=5"))
+               .andExpect(statusIs200())
+               .andExpect(jsonPath("$.list[0].roleName").value("测试"))
+               .andExpect(jsonPath("$.list[1].roleName").value("高级"))
+               .andExpect(jsonPath("$.total").value(2))
+        ;
+    }
+
     /*=============== login ==================*/
     @Test
     void login() throws Exception {
