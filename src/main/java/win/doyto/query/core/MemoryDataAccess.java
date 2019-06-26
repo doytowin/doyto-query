@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 import static win.doyto.query.core.CommonUtil.*;
 import static win.doyto.query.core.QuerySuffix.*;
@@ -36,6 +37,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     protected final Map<I, E> entitiesMap = new ConcurrentHashMap<>();
     private final AtomicLong idGenerator = new AtomicLong(0);
     private final List<Field> fields;
+    private final Field idField;
 
     public MemoryDataAccess(Class<E> entityClass) {
         tableMap.put(entityClass, entitiesMap);
@@ -45,18 +47,16 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         List<Field> tempFields = new ArrayList<>(allFields.length);
         Arrays.stream(allFields).filter(field -> !ignoreField(field)).forEachOrdered(tempFields::add);
         fields = Collections.unmodifiableList(tempFields);
+        Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
+        idField = idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class) ? idFields[0] : null;
     }
 
     protected void generateNewId(E entity) {
-        Field[] generatedFields = FieldUtils.getFieldsWithAnnotation(entity.getClass(), GeneratedValue.class);
-        if (generatedFields.length > 0) {
-            try {
-                Field field = generatedFields[0];
-                Object newId = chooseIdValue(idGenerator.incrementAndGet(), field.getType());
-                writeField(field, entity, newId);
-            } catch (Exception e) {
-                log.warn("写入id失败: {} - {}", entity.getClass(), e.getMessage());
-            }
+        try {
+            Object newId = chooseIdValue(idGenerator.incrementAndGet(), idField.getType());
+            writeField(idField, entity, newId);
+        } catch (Exception e) {
+            log.warn("写入id失败: {} - {}", entity.getClass(), e.getMessage());
         }
     }
 
@@ -86,7 +86,9 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
 
     @Override
     public void create(E e) {
-        generateNewId(e);
+        if (idField != null) {
+            generateNewId(e);
+        }
         entitiesMap.put(e.getId(), e);
     }
 
