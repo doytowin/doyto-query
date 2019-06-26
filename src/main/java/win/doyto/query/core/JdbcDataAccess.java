@@ -16,6 +16,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.Transient;
 
 /**
@@ -29,6 +31,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     private final RowMapper<E> rowMapper;
     private final CrudBuilder<E> crudBuilder;
     private final String[] columnsForSelect;
+    private final boolean isGeneratedId;
 
     public JdbcDataAccess(JdbcOperations jdbcOperations, Class<E> entityClass, RowMapper<E> rowMapper) {
         this.jdbcOperations = jdbcOperations;
@@ -39,6 +42,10 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
             .filter(JdbcDataAccess::shouldRetain)
             .map(this::selectAs)
             .toArray(String[]::new);
+
+        Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
+        isGeneratedId = idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class);
+
     }
 
     protected String selectAs(Field field) {
@@ -106,16 +113,20 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
         List<Object> args = new ArrayList<>();
         String sql = crudBuilder.buildCreateAndArgs(e, args);
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcOperations.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            int i = 1;
-            for (Object arg : args) {
-                ps.setObject(i++, arg);
-            }
-            return ps;
-        }, keyHolder);
-        e.setId((I) keyHolder.getKey());
+        if (isGeneratedId) {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcOperations.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                int i = 1;
+                for (Object arg : args) {
+                    ps.setObject(i++, arg);
+                }
+                return ps;
+            }, keyHolder);
+            e.setId((I) keyHolder.getKey());
+        } else {
+            jdbcOperations.update(sql, args.toArray());
+        }
     }
 
     @Override

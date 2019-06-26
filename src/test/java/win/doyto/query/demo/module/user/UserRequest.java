@@ -23,6 +23,7 @@ public class UserRequest implements EntityRequest<UserEntity> {
     private String memo;
     private boolean valid = true;
     private UserLevel userLevel;
+    private String address;
 
     @Override
     public UserEntity toEntity() {

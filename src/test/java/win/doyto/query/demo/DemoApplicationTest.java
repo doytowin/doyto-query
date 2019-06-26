@@ -159,6 +159,18 @@ class DemoApplicationTest {
         ;
     }
 
+    @Test
+    public void createUserAndDetail() throws Exception {
+        requestJson(post(URL_USER), "{\"username\": \"test\",\"userLevel\": \"普通\",\"address\": \"上海市\"}");
+
+        mockMvc.perform(get(URL_USER + "5"))
+               .andDo(print())
+               .andExpect(jsonPath("$.username").value("test"))
+               .andExpect(jsonPath("$.userLevel").value("普通"))
+               .andExpect(jsonPath("$.address").value("上海市"))
+        ;
+    }
+
     @Resource
     TestUserEntityAspect testUserEntityAspect;
 

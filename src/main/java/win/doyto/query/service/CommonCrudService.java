@@ -14,12 +14,16 @@ interface CommonCrudService<E extends Persistable, I, Q> extends QueryService<E,
     int update(E e);
 
     default E save(E e) {
-        if (e.isNew()) {
+        if (isNewEntity(e)) {
             create(e);
         } else {
             update(e);
         }
         return e;
+    }
+
+    default boolean isNewEntity(E e) {
+        return e.isNew();
     }
 
     int patch(E e);

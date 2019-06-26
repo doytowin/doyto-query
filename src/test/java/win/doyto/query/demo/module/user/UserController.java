@@ -3,15 +3,15 @@ package win.doyto.query.demo.module.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 import win.doyto.query.demo.exception.ServiceAsserts;
 import win.doyto.query.service.AbstractRestService;
+import win.doyto.query.validation.CreateGroup;
 
 import java.util.List;
 import java.util.Objects;
+import javax.annotation.Resource;
 
 /**
  * UserController
@@ -25,9 +25,30 @@ class UserController extends AbstractRestService<UserEntity, Long, UserQuery, Us
 
     private BeanPropertyRowMapper<UserResponse> userResponseRowMapper = new BeanPropertyRowMapper<>(UserResponse.class);
 
+    @Resource
+    UserDetailService userDetailService;
+
     @Override
     protected String getCacheName() {
         return "module:user";
+    }
+
+    @Override
+    @GetMapping("{id}")
+    public UserResponse getById(@PathVariable Long id) {
+        UserResponse userResponse = super.getById(id);
+        UserDetailEntity userDetailEntity = userDetailService.get(id);
+        if (userDetailEntity != null) {
+            userResponse.setAddress(userDetailEntity.getAddress());
+        }
+        return userResponse;
+    }
+
+    @Override
+    @PostMapping
+    public void create(@RequestBody @Validated(CreateGroup.class) UserRequest request) {
+        UserEntity userEntity = save(request.toEntity());
+        userDetailService.save(UserDetailEntity.build(userEntity.getId(), request));
     }
 
     @Override

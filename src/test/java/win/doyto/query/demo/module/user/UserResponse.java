@@ -23,6 +23,7 @@ public class UserResponse implements EntityResponse<UserEntity, UserResponse> {
     private String memo;
     private Boolean valid;
     private UserLevel userLevel;
+    private String address;
 
     @Override
     public UserResponse from(UserEntity userEntity) {
