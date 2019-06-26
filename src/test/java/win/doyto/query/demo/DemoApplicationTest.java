@@ -1,10 +1,12 @@
 package win.doyto.query.demo;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.support.NoOpCache;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.mock.web.MockHttpSession;
@@ -20,11 +22,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import win.doyto.query.cache.CacheWrapper;
 import win.doyto.query.core.JoinQueryExecutor;
 import win.doyto.query.core.test.TestJoinQuery;
 import win.doyto.query.core.test.TestJoinView;
 import win.doyto.query.core.test.UserCountByRoleView;
 import win.doyto.query.demo.exception.ServiceException;
+import win.doyto.query.demo.module.role.RoleController;
 import win.doyto.query.demo.module.user.TestUserEntityAspect;
 import win.doyto.query.service.AssociativeService;
 import win.doyto.query.service.AssociativeServiceTemplate;
@@ -383,5 +387,13 @@ class DemoApplicationTest {
         PageList<TestJoinView> page = new JoinQueryExecutor<>(jdbcOperations, TestJoinView.class).page(testJoinQuery);
         assertThat(page.getTotal()).isEqualTo(2);
         assertThat(page.getList()).extracting(TestJoinView::getUsername).containsExactly("f0rb", "user4");
+    }
+
+    /*=============== Cache ==================*/
+    @Test
+    void defaultNoCache() throws IllegalAccessException {
+        RoleController roleController = wac.getBean(RoleController.class);
+        CacheWrapper entityCacheWrapper = (CacheWrapper) FieldUtils.readField(roleController, "entityCacheWrapper", true);
+        assertThat(entityCacheWrapper.getCache()).isInstanceOf(NoOpCache.class);
     }
 }

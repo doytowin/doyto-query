@@ -87,7 +87,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     public void setCacheList(List<String> cacheList) {
         if (cacheManager != null) {
             String cacheName = getCacheName();
-            if (cacheList.contains(cacheName) || cacheName != entityClass.getName()) {
+            if (cacheList.contains(cacheName) || cacheName != entityClass.getSimpleName().intern()) {
                 entityCacheWrapper.setCache(cacheManager.getCache(cacheName));
             }
         }
@@ -96,7 +96,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     protected abstract String resolveCacheKey(E e);
 
     protected String getCacheName() {
-        return entityClass.getSimpleName();
+        return entityClass.getSimpleName().intern();
     }
 
     public List<E> query(Q query) {
