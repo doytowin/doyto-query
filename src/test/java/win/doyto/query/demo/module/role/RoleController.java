@@ -13,6 +13,6 @@ import win.doyto.query.service.SimpleRestController;
 @Slf4j
 @RestController
 @RequestMapping("role")
-public class RoleController extends SimpleRestController<RoleEntity, Integer, RoleQuery> {
+public class RoleController extends SimpleRestController<RoleEntity, Long, RoleQuery> {
 
 }

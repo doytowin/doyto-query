@@ -10,10 +10,13 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import win.doyto.query.annotation.NestedQueries;
 import win.doyto.query.annotation.SubQuery;
+import win.doyto.query.entity.CommonEntity;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -38,6 +41,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     private final AtomicLong idGenerator = new AtomicLong(0);
     private final List<Field> fields;
     private final Field idField;
+    private Class<?> idFieldType;
 
     public MemoryDataAccess(Class<E> entityClass) {
         tableMap.put(entityClass, entitiesMap);
@@ -48,12 +52,24 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         Arrays.stream(allFields).filter(field -> !ignoreField(field)).forEachOrdered(tempFields::add);
         fields = Collections.unmodifiableList(tempFields);
         Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
-        idField = idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class) ? idFields[0] : null;
+        if (idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class)) {
+            idField = idFields[0];
+            if (CommonEntity.class.isAssignableFrom(entityClass)) {
+                ParameterizedType parameterizedType = (ParameterizedType) entityClass.getGenericSuperclass();
+                Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+                idFieldType = (Class<?>) actualTypeArguments[0];
+            } else {
+                idFieldType = idField.getType();
+            }
+        } else {
+            idField = null;
+        }
+
     }
 
     protected void generateNewId(E entity) {
         try {
-            Object newId = chooseIdValue(idGenerator.incrementAndGet(), idField.getType());
+            Object newId = chooseIdValue(idGenerator.incrementAndGet(), idFieldType);
             writeField(idField, entity, newId);
         } catch (Exception e) {
             log.warn("写入id失败: {} - {}", entity.getClass(), e.getMessage());

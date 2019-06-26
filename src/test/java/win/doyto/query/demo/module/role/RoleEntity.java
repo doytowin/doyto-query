@@ -2,7 +2,7 @@ package win.doyto.query.demo.module.role;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.entity.IntegerId;
+import win.doyto.query.entity.CommonEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Setter
 @Entity
 @Table(name = "role")
-public class RoleEntity extends IntegerId {
+public class RoleEntity extends CommonEntity<Long, Long> {
     private String roleName;
     private String roleCode;
     private Boolean valid;
