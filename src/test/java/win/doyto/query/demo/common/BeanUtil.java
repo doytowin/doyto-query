@@ -1,6 +1,7 @@
 package win.doyto.query.demo.common;
 
-import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 
 /**
  * BeanUtil
@@ -11,7 +12,10 @@ public class BeanUtil {
     private BeanUtil() {
     }
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    @SneakyThrows
     public static <T> T copyFields(Object source, Class<T> target) {
-       return JSON.parseObject(JSON.toJSONString(source), target);
+       return objectMapper.readValue(objectMapper.writeValueAsString(source), target);
     }
 }
