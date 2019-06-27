@@ -23,16 +23,26 @@ class AssociativeSqlBuilder {
     private final String deallocateFormat;
     private final String count;
     private final String insert;
+    private final String insertPlaceholders;
+    private final boolean insertCreateUser;
 
     final String getByLeftId;
     final String deleteByLeftId;
     final String getByRightId;
     final String deleteByRightId;
 
-    public AssociativeSqlBuilder(String table, String left, String right) {
+    public AssociativeSqlBuilder(String table, String left, String right, String createUserColumn) {
         deallocateFormat = DELETE_FROM + table + WHERE + left + IN_S + " AND " + right + IN_S;
         count = "SELECT COUNT(*) FROM " + table + WHERE + left + IN_S + " AND " + right + IN_S;
-        insert = "INSERT INTO " + table + " (" + left + ", " + right + ") values (?, ?)";
+        if (createUserColumn == null) {
+            insert = "INSERT INTO " + table + " (" + left + ", " + right + ") values (?, ?)";
+            insertPlaceholders = ", (?, ?)";
+            insertCreateUser = false;
+        } else {
+            insert = "INSERT INTO " + table + " (" + left + ", " + right + ", " + createUserColumn  + ") values (?, ?, ?)";
+            insertPlaceholders = ", (?, ?, ?)";
+            insertCreateUser = true;
+        }
 
         getByLeftId = "SELECT " + right + " FROM " + table + WHERE + left + " = ?";
         deleteByLeftId = DELETE_FROM + table + WHERE + left + " = ?";
@@ -61,18 +71,21 @@ class AssociativeSqlBuilder {
         return new SqlAndArgs(sql, unionArgs(leftIds, rightIds));
     }
 
-    public SqlAndArgs buildAllocate(Collection leftIds, Collection rightIds) {
+    public SqlAndArgs buildAllocate(Collection leftIds, Collection rightIds, Long userId) {
         StringBuilder sql = new StringBuilder(insert);
         int totalSize = leftIds.size() * rightIds.size();
         for (int i = 0; i < totalSize - 1; i++) {
-            sql.append(", (?, ?)");
+            sql.append(insertPlaceholders);
         }
 
-        List<Object> args = new ArrayList<>(totalSize * 2);
+        List<Object> args = new ArrayList<>(totalSize * (insertCreateUser ? 3 : 2));
         for (Object leftId : leftIds) {
             for (Object rightId : rightIds) {
                 args.add(leftId);
                 args.add(rightId);
+                if (insertCreateUser) {
+                    args.add(userId);
+                }
             }
         }
         return new SqlAndArgs(sql.toString(), args);

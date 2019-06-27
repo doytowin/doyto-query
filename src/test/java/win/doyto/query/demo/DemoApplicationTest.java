@@ -31,7 +31,6 @@ import win.doyto.query.demo.exception.ServiceException;
 import win.doyto.query.demo.module.role.RoleController;
 import win.doyto.query.demo.module.user.TestUserEntityAspect;
 import win.doyto.query.service.AssociativeService;
-import win.doyto.query.service.AssociativeServiceTemplate;
 import win.doyto.query.service.EntityNotFoundException;
 import win.doyto.query.service.PageList;
 
@@ -69,7 +68,6 @@ class DemoApplicationTest {
     @Resource
     public void setJdbcOperations(JdbcOperations jdbcOperations) {
         this.jdbcOperations = jdbcOperations;
-        userAndRoleAssociativeService = new AssociativeServiceTemplate<>(jdbcOperations, "t_user_and_role", "userId", "roleId");
     }
 
     private ResultActions requestJson(MockHttpServletRequestBuilder builder, String content, MockHttpSession session) throws Exception {
@@ -348,6 +346,7 @@ class DemoApplicationTest {
     }
 
     /*=============== AssociativeService ==================*/
+    @Resource
     AssociativeService<Long, Integer> userAndRoleAssociativeService;
 
     @Test

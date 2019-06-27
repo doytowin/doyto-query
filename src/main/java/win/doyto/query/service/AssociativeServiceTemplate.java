@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 import win.doyto.query.core.SqlAndArgs;
+import win.doyto.query.entity.UserIdProvider;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,20 +20,24 @@ import static java.util.Collections.singleton;
  */
 public class AssociativeServiceTemplate<L, R> implements AssociativeService<L, R> {
 
-    @Autowired
-    private JdbcOperations jdbcOperations;
     private final AssociativeSqlBuilder sqlBuilder;
     private final SingleColumnRowMapper<L> leftRowMapper = new SingleColumnRowMapper<>();
     private final SingleColumnRowMapper<R> rightRowMapper = new SingleColumnRowMapper<>();
 
+    @Autowired
+    private JdbcOperations jdbcOperations;
+
+    @Autowired(required = false)
+    private UserIdProvider userIdProvider;
+
     public AssociativeServiceTemplate(String table, String left, String right) {
-        this.sqlBuilder = new AssociativeSqlBuilder(table, left, right);
+        this(table, left, right, null);
     }
 
-    public AssociativeServiceTemplate(JdbcOperations jdbcOperations, String table, String left, String right) {
-        this(table, left, right);
-        this.jdbcOperations = jdbcOperations;
+    public AssociativeServiceTemplate(String table, String left, String right, String createUserColumn) {
+        this.sqlBuilder = new AssociativeSqlBuilder(table, left, right, createUserColumn);
     }
+
     public boolean exists(Collection<L> leftIds, Collection<R> rightIds) {
         return count(leftIds, rightIds) > 0;
     }
@@ -107,7 +112,8 @@ public class AssociativeServiceTemplate<L, R> implements AssociativeService<L, R
     }
 
     public int allocate(Collection<L> leftIds, Collection<R> rightIds) {
-        SqlAndArgs sqlAndArgs = sqlBuilder.buildAllocate(leftIds, rightIds);
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildAllocate(
+            leftIds, rightIds, (Long) (userIdProvider == null ? null : userIdProvider.getUserId()));
         return jdbcOperations.update(sqlAndArgs.getSql(), sqlAndArgs.getArgs());
     }
 
