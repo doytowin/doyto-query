@@ -23,10 +23,6 @@ final class ColumnMeta {
     final Object value;
     final List<Object> argList;
 
-    final String defaultSql(QuerySuffix querySuffix) {
-        return defaultSql(querySuffix, querySuffix.getEx(value));
-    }
-
     final String defaultSql(QuerySuffix querySuffix, String ex) {
         if (querySuffix.getOp().contains("LIKE") && value instanceof String && StringUtils.isBlank((String) value)) {
             return null;

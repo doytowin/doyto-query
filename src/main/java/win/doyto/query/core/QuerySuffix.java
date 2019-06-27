@@ -41,7 +41,7 @@ enum QuerySuffix {
         List<String> suffixList = Arrays.stream(values()).filter(querySuffix -> querySuffix != NONE).map(Enum::name).collect(Collectors.toList());
         String suffixPtn = StringUtils.join(suffixList, "|");
         SUFFIX_PTN = Pattern.compile("(" + suffixPtn + ")$");
-        Arrays.stream(values()).forEach(querySuffix -> sqlFuncMap.put(querySuffix, columnMeta -> columnMeta.defaultSql(querySuffix)));
+        Arrays.stream(values()).forEach(querySuffix -> sqlFuncMap.put(querySuffix, querySuffix::buildAndSql));
     }
 
     private final String op;
@@ -80,6 +80,10 @@ enum QuerySuffix {
         return WHERE + buildAndSql(argList, value, fieldName);
     }
 
+    private String buildAndSql(ColumnMeta columnMeta) {
+        return columnMeta.defaultSql(this, this.getEx(columnMeta.value));
+    }
+
     String resolveColumnName(String fieldName) {
         String suffix = this.name();
         return fieldName.endsWith(suffix) ? fieldName.substring(0, fieldName.length() - suffix.length()) : fieldName;
@@ -91,14 +95,14 @@ enum QuerySuffix {
 
     @SuppressWarnings("squid:S1214")
     interface Ex {
-        String getEx(Object value);
-
         Ex placeHolder = value -> REPLACE_HOLDER;
         Ex empty = value -> EMPTY;
         Ex collection = value -> {
             int size = ((Collection) value).size();
             return CommonUtil.wrapWithParenthesis(StringUtils.trimToNull(StringUtils.join(IntStream.range(0, size).mapToObj(i -> REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR)));
         };
+
+        String getEx(Object value);
     }
 
 }
