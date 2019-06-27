@@ -157,8 +157,8 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     }
 
     @Override
-    public final E fetch(I id) {
-        return get(id);
+    public final E fetch(E e) {
+        return getEntity(crudBuilder.buildSelectById(e), e.getId());
     }
 
     @Override

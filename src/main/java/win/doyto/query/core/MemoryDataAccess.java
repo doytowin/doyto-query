@@ -90,9 +90,8 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     }
 
     @Override
-    public E fetch(I id) {
-        E e = entitiesMap.get(id);
-        return SerializationUtils.clone(e);
+    public E fetch(E e) {
+        return SerializationUtils.clone(entitiesMap.get(e.getId()));
     }
 
     @Override

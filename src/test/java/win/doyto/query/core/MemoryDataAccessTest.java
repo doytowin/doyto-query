@@ -71,7 +71,7 @@ class MemoryDataAccessTest {
         TestEntity u2 = testMemoryDataAccess.get(1);
         assertSame(u1, u2);
 
-        TestEntity f1 = testMemoryDataAccess.fetch(1);
+        TestEntity f1 = testMemoryDataAccess.fetch(u1);
         assertNotSame(u1, f1);
     }
 

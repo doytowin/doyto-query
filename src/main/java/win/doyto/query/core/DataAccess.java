@@ -53,10 +53,12 @@ public interface DataAccess<E extends Persistable<I>, I extends Serializable, Q>
     /**
      * force to get a new entity object from database
      *
-     * @param id entity id
+     * @param e entity with id info
      * @return a new entity object
      */
-    E fetch(I id);
+    default E fetch(E e) {
+        return get(e.getId());
+    }
 
     List<I> queryIds(Q query);
 }

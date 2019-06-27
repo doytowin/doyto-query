@@ -61,7 +61,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     }
 
     /**
-     * NOTICE: You'd better to overwrite this method to make it faster
+     * NOTICE: You'd better overwrite this method to make it faster
      */
     @Override
     public List<E> query(Q query) {

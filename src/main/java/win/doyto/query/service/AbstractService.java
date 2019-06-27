@@ -151,7 +151,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         }
         if (!entityAspects.isEmpty()) {
             transactionOperations.execute(s -> {
-                E origin = dataAccess.fetch(e.getId());
+                E origin = dataAccess.fetch(e);
                 ret.set(invocable.invoke());
                 entityAspects.forEach(entityAspect -> entityAspect.afterUpdate(origin, e));
                 return null;
