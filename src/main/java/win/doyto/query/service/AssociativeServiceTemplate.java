@@ -99,12 +99,15 @@ public class AssociativeServiceTemplate<L, R> implements AssociativeService<L, R
     }
 
     public int allocate(L leftId, Collection<R> rightIds) {
-        SqlAndArgs sqlAndArgs = sqlBuilder.buildAllocate(singleton(leftId), rightIds);
-        return jdbcOperations.update(sqlAndArgs.getSql(), sqlAndArgs.getArgs());
+        return allocate(singleton(leftId), rightIds);
     }
 
     public int allocate(Collection<L> leftId, R rightId) {
-        SqlAndArgs sqlAndArgs = sqlBuilder.buildAllocate(leftId, singleton(rightId));
+        return allocate(leftId, singleton(rightId));
+    }
+
+    public int allocate(Collection<L> leftIds, Collection<R> rightIds) {
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildAllocate(leftIds, rightIds);
         return jdbcOperations.update(sqlAndArgs.getSql(), sqlAndArgs.getArgs());
     }
 
