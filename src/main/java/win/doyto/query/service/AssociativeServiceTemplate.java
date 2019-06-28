@@ -85,6 +85,7 @@ public class AssociativeServiceTemplate<L, R> implements AssociativeService<L, R
         deallocate(leftIds.toArray(), rightIds.toArray());
     }
 
+    @Override
     @Transactional
     public int reallocateForLeft(L leftId, Collection<R> rightIds) {
         deleteByLeftId(leftId);
@@ -95,6 +96,7 @@ public class AssociativeServiceTemplate<L, R> implements AssociativeService<L, R
     }
 
     @Override
+    @Transactional
     public int reallocateForRight(R rightId, Collection<L> leftIds) {
         deleteByRightId(rightId);
         if (leftIds.isEmpty()) {

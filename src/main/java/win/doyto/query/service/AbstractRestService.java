@@ -40,12 +40,6 @@ public abstract class AbstractRestService<E extends Persistable<I>, I extends Se
         return noumenon;
     }
 
-    protected void checkResult(int count) {
-        if (count < 1) {
-            throw new EntityNotFoundException();
-        }
-    }
-
     protected void checkResult(E e) {
         if (e == null) {
             throw new EntityNotFoundException();
@@ -80,7 +74,8 @@ public abstract class AbstractRestService<E extends Persistable<I>, I extends Se
     @PutMapping("{id}")
     public void update(@PathVariable I id, @RequestBody @Validated(UpdateGroup.class) R request) {
         E e = get(id);
-        checkResult(update(request.toEntity(e)));
+        checkResult(e);
+        update(request.toEntity(e));
     }
 
     @Override
@@ -88,7 +83,7 @@ public abstract class AbstractRestService<E extends Persistable<I>, I extends Se
     public void patch(@PathVariable I id, @RequestBody @Validated(PatchGroup.class) R request) {
         E e = request.toEntity();
         e.setId(id);
-        checkResult(patch(e));
+        patch(e);
     }
 
     @Override

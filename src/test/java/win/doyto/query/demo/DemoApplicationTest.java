@@ -39,6 +39,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singleton;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -364,7 +365,10 @@ class DemoApplicationTest {
 
         userAndRoleAssociativeService.deallocate(1L, 1);
         assertTrue(userAndRoleAssociativeService.exists(1L, Arrays.asList(1, 2)));
-        assertFalse(userAndRoleAssociativeService.exists(1L, 1));
+        assertFalse(userAndRoleAssociativeService.exists(singleton(1L), 1));
+
+        userAndRoleAssociativeService.allocate(1L, 1);
+        assertTrue(userAndRoleAssociativeService.exists(singleton(1L), 1));
     }
 
     @Test
