@@ -289,7 +289,7 @@ class DemoApplicationTest {
         mockMvc.perform(get(menuUri + "3"))
                .andExpect(statusIs200())
                .andExpect(jsonPath("$.createUserId").value("1"))
-               .andExpect(jsonPath("$.updateUserId").doesNotExist());
+               .andExpect(jsonPath("$.updateUserId").value("1"));
 
         mockMvc.perform(delete(menuUri + "3")).andExpect(statusIs200());
 
@@ -351,9 +351,12 @@ class DemoApplicationTest {
 
     @Test
     public void createRole() throws Exception {
-        requestJson(post("/role/"), "{\"roleName\":\"超级\",\"roleCode\":\"VVIP\",\"valid\":true}")
+        requestJson(post("/role/"), "{\"roleName\":\"超级\",\"roleCode\":\"VVIP\",\"valid\":true}", session)
             .andExpect(statusIs200());
-        mockMvc.perform(get("/role/3")).andExpect(jsonPath("$.roleCode").value("VVIP"));
+        mockMvc.perform(get("/role/3"))
+               .andExpect(jsonPath("$.roleCode").value("VVIP"))
+               .andExpect(jsonPath("$.createUserId").value(1))
+               .andExpect(jsonPath("$.updateUserId").value(1));
     }
 
     @Test

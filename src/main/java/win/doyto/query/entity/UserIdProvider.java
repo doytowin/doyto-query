@@ -16,16 +16,13 @@ public interface UserIdProvider<I extends Serializable> {
     default void setupUserId(Object e) {
         I userId = getUserId();
         if (userId != null) {
-            if (e instanceof Persistable && ((Persistable) e).isNew()) {
-                if( e instanceof CreateUserAware) {
-                    ((CreateUserAware<I>) e).setCreateUserId(userId);
-                    ((CreateUserAware) e).setCreateTime(new Date());
-                }
-            } else {
-                if (e instanceof UpdateUserAware) {
-                    ((UpdateUserAware<I>) e).setUpdateUserId(userId);
-                    ((UpdateUserAware) e).setUpdateTime(new Date());
-                }
+            if (e instanceof Persistable && ((Persistable) e).isNew() && e instanceof CreateUserAware) {
+                ((CreateUserAware<I>) e).setCreateUserId(userId);
+                ((CreateUserAware) e).setCreateTime(new Date());
+            }
+            if (e instanceof UpdateUserAware) {
+                ((UpdateUserAware<I>) e).setUpdateUserId(userId);
+                ((UpdateUserAware) e).setUpdateTime(new Date());
             }
         }
     }
