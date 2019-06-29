@@ -19,16 +19,11 @@ import java.io.Serializable;
 public abstract class SimpleRestController<E extends Persistable<I>, I extends Serializable, Q extends PageQuery>
     extends AbstractCrudService<E, I, Q> {
 
-    protected void checkResult(int count) {
-        if (count < 1) {
-            throw new EntityNotFoundException();
-        }
-    }
-
-    protected void checkResult(E e) {
+    protected E checkResult(E e) {
         if (e == null) {
             throw new EntityNotFoundException();
         }
+        return e;
     }
 
     @GetMapping
@@ -38,9 +33,7 @@ public abstract class SimpleRestController<E extends Persistable<I>, I extends S
 
     @GetMapping("{id}")
     public E getById(@PathVariable I id) {
-        E e = get(id);
-        checkResult(e);
-        return e;
+        return checkResult(get(id));
     }
 
     @DeleteMapping("{id}")
@@ -49,20 +42,20 @@ public abstract class SimpleRestController<E extends Persistable<I>, I extends S
     }
 
     @PostMapping
-    public void create(@RequestBody @Validated(CreateGroup.class) E request) {
-        super.create(request);
+    public void post(@RequestBody @Validated(CreateGroup.class) E request) {
+        save(request);
     }
 
     @PutMapping("{id}")
     public void update(@PathVariable I id, @RequestBody @Validated(UpdateGroup.class) E e) {
         e.setId(id);
-        checkResult(update(e));
+        save(e);
     }
 
     @PatchMapping("{id}")
     public void patch(@PathVariable I id, @RequestBody @Validated(PatchGroup.class) E e) {
         e.setId(id);
-        checkResult(patch(e));
+        patch(e);
     }
 
 }

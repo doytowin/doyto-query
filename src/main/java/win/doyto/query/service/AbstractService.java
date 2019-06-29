@@ -120,7 +120,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         return queryColumns(query, rowMapper, columns);
     }
 
-    public void create(E e) {
+    public final void create(E e) {
         if (userIdProvider != null) {
             userIdProvider.setupUserId(e);
         }

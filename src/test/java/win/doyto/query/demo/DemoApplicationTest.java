@@ -326,12 +326,52 @@ class DemoApplicationTest {
 
     /*=============== role ==================*/
     @Test
-    public void pageRole() throws Exception {
+    public void queryRole() throws Exception {
+        mockMvc.perform(get("/role"))
+               .andExpect(statusIs200())
+               .andExpect(jsonPath("$[0].roleName").value("测试"));
         mockMvc.perform(get("/role?pageNumber=0&pageSize=5"))
                .andExpect(statusIs200())
                .andExpect(jsonPath("$.list[0].roleName").value("测试"))
                .andExpect(jsonPath("$.list[1].roleName").value("高级"))
                .andExpect(jsonPath("$.total").value(2))
+        ;
+    }
+
+    @Test
+    public void deleteRole() {
+        try {
+            mockMvc.perform(delete("/role/1")).andExpect(statusIs200());
+            mockMvc.perform(delete("/role/0"));
+            fail();
+        } catch (Exception e) {
+            assertTrue(e.getCause() instanceof EntityNotFoundException);
+        }
+    }
+
+    @Test
+    public void createRole() throws Exception {
+        requestJson(post("/role/"), "{\"roleName\":\"超级\",\"roleCode\":\"VVIP\",\"valid\":true}")
+            .andExpect(statusIs200());
+        mockMvc.perform(get("/role/3")).andExpect(jsonPath("$.roleCode").value("VVIP"));
+    }
+
+    @Test
+    public void patchAndUpdate() throws Exception {
+        requestJson(patch("/role/2"), "{\"roleName\":\"超级\",\"roleCode\":\"VVIP\"}", session)
+            .andExpect(statusIs200());
+        mockMvc.perform(get("/role/2"))
+               .andExpect(jsonPath("$.roleCode").value("VVIP"))
+               .andExpect(jsonPath("$.roleName").value("超级"))
+               .andExpect(jsonPath("$.valid").value(true))
+        ;
+
+        requestJson(put("/role/2"), "{\"roleName\":\"超级\",\"roleCode\":\"VVVIP\"}", session)
+            .andExpect(statusIs200());
+        mockMvc.perform(get("/role/2"))
+               .andExpect(jsonPath("$.roleCode").value("VVVIP"))
+               .andExpect(jsonPath("$.roleName").value("超级"))
+               .andExpect(jsonPath("$.valid").doesNotExist())
         ;
     }
 
