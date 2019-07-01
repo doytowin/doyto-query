@@ -24,6 +24,7 @@
         <slf4j-api.version>1.7.25</slf4j-api.version>
         <spring-boot.version>2.1.3.RELEASE</spring-boot.version>
         <spring.version>5.1.5.RELEASE</spring.version>
+        <sourceDirectory>src/main/java</sourceDirectory>
     </properties>
 
     <dependencies>
@@ -156,6 +157,7 @@
     </dependencyManagement>
 
     <build>
+        <sourceDirectory>${sourceDirectory}</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
