@@ -40,17 +40,12 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
         columnsForSelect = Arrays
             .stream(FieldUtils.getAllFields(entityClass))
             .filter(JdbcDataAccess::shouldRetain)
-            .map(this::selectAs)
+            .map(CommonUtil::selectAs)
             .toArray(String[]::new);
 
         Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
         isGeneratedId = idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class);
 
-    }
-
-    protected String selectAs(Field field) {
-        String columnName = CommonUtil.resolveColumn(field);
-        return columnName.equalsIgnoreCase(field.getName()) ? columnName : columnName + " AS " + field.getName();
     }
 
     private static boolean shouldRetain(Field field) {

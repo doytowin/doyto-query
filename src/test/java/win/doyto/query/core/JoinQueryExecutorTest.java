@@ -24,7 +24,7 @@ class JoinQueryExecutorTest {
         testJoinQuery.setRoleName("VIP");
         testJoinQuery.setUserLevel(TestEnum.VIP);
 
-        String expected = "SELECT u.username AS username, r.roleName AS roleName " +
+        String expected = "SELECT username, r.roleName AS roleName " +
             "FROM user u " +
             "left join t_user_and_role ur on ur.userId = u.id " +
             "inner join role r on r.id = ur.roleId and r.roleName = ? " +
@@ -44,7 +44,7 @@ class JoinQueryExecutorTest {
         testJoinQuery.setRoleNameOrRoleCodeLike("VIP");
         testJoinQuery.setUserLevel(TestEnum.VIP);
 
-        String expected = "SELECT u.username AS username, r.roleName AS roleName " +
+        String expected = "SELECT username, r.roleName AS roleName " +
             "FROM user u " +
             "left join t_user_and_role ur on ur.userId = u.id " +
             "inner join role r on r.id = ur.roleId and r.roleName = ? " +

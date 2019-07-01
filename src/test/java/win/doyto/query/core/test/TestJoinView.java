@@ -21,7 +21,6 @@ import javax.persistence.Table;
 })
 public class TestJoinView {
 
-    @Column(name = "u.username")
     private String username;
 
     @Column(name = "r.roleName")

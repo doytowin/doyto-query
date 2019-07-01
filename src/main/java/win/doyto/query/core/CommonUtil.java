@@ -149,4 +149,9 @@ class CommonUtil {
         Column column = field.getAnnotation(Column.class);
         return column != null && !column.name().isEmpty() ? column.name() : convertColumn(field.getName());
     }
+
+    static String selectAs(Field field) {
+        String columnName = resolveColumn(field);
+        return columnName.equalsIgnoreCase(field.getName()) ? columnName : columnName + " AS " + field.getName();
+    }
 }
