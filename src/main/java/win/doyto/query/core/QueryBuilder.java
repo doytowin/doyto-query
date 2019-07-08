@@ -4,12 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.entity.Persistable;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import javax.persistence.Id;
@@ -141,12 +139,13 @@ public class QueryBuilder {
         return new SqlAndArgs(buildSelectColumnsAndArgs(query, argList, columns), argList);
     }
 
-    public String buildSelectById() {
-        return "SELECT * FROM " + tableName + whereId;
-    }
-
-    protected String buildSelectById(Object entity) {
-        return "SELECT * FROM " + replaceHolderInString(entity, tableName) + whereId;
+    protected SqlAndArgs buildSelectById(Object entity) {
+        if (entity instanceof Persistable) {
+            return new SqlAndArgs(
+                "SELECT * FROM " + replaceHolderInString(entity, tableName) + whereId,
+                Collections.singletonList(((Persistable) entity).getId()));
+        }
+        return new SqlAndArgs("SELECT * FROM " + tableName + whereId, Collections.singletonList(entity));
     }
 
     protected SqlAndArgs buildSelectIdAndArgs(PageQuery query) {

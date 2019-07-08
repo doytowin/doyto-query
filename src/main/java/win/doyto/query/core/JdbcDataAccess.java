@@ -79,7 +79,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
 
     @Override
     public final E get(I id) {
-        return getEntity(crudBuilder.buildSelectById(), id);
+        return getEntity(crudBuilder.buildSelectById(id));
     }
 
     @Override
@@ -89,11 +89,11 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
 
     @Override
     public final E get(E e) {
-        return getEntity(crudBuilder.buildSelectById(e), e.getId());
+        return getEntity(crudBuilder.buildSelectById(e));
     }
 
-    private E getEntity(String sql, I id) {
-        List<E> list = jdbcOperations.query(sql, new Object[]{id}, rowMapper);
+    private E getEntity(SqlAndArgs sqlAndArgs) {
+        List<E> list = jdbcOperations.query(sqlAndArgs.sql, sqlAndArgs.args, rowMapper);
         return list.isEmpty() ? null : list.get(0);
     }
 
@@ -153,7 +153,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
 
     @Override
     public final E fetch(E e) {
-        return getEntity(crudBuilder.buildSelectById(e), e.getId());
+        return getEntity(crudBuilder.buildSelectById(e));
     }
 
     @Override
