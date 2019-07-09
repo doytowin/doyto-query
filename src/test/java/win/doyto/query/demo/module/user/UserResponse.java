@@ -26,7 +26,7 @@ public class UserResponse implements EntityResponse<UserEntity, UserResponse> {
     private String address;
 
     @Override
-    public UserResponse from(UserEntity userEntity) {
+    public UserResponse buildBy(UserEntity userEntity) {
         UserResponse userResponse = new UserResponse();
         BeanUtils.copyProperties(userEntity, userResponse);
         return userResponse;

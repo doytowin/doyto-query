@@ -53,7 +53,7 @@ public abstract class AbstractRestService<E extends Persistable<I>, I extends Se
 
     @Override
     public List<S> list(Q q) {
-        return query(q, getEntityView()::from);
+        return query(q, getEntityView()::buildBy);
     }
 
     @Override
@@ -61,7 +61,7 @@ public abstract class AbstractRestService<E extends Persistable<I>, I extends Se
     public S getById(@PathVariable I id) {
         E e = get(id);
         checkResult(e);
-        return getEntityView().from(e);
+        return getEntityView().buildBy(e);
     }
 
     @Override

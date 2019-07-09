@@ -9,6 +9,6 @@ import java.io.Serializable;
  */
 public interface EntityResponse<E, V extends EntityResponse<E, V>> extends Serializable, Cloneable {
 
-    V from(E e);
+    V buildBy(E e);
 
 }

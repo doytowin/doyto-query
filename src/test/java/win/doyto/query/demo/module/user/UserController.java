@@ -80,7 +80,7 @@ class UserController extends AbstractRestService<UserEntity, Long, UserQuery, Us
         ServiceAsserts.notNull(userEntity, "账号不存在");
         ServiceAsserts.isTrue(userEntity.getValid(), "账号被禁用");
         ServiceAsserts.isTrue(Objects.equals(userEntity.getPassword(), password), "密码错误");
-        return getEntityView().from(userEntity);
+        return getEntityView().buildBy(userEntity);
     }
 
     @PostMapping("memo")
