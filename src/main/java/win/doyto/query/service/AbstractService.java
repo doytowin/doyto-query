@@ -8,7 +8,6 @@ import org.springframework.cache.support.NoOpCache;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.SimpleTransactionStatus;
@@ -113,11 +112,6 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
 
     public final <V> List<V> queryColumns(Q query, RowMapper<V> rowMapper, String... columns) {
         return dataAccess.queryColumns(query, rowMapper, columns);
-    }
-
-    public final <V> List<V> queryColumns(Q query, Class<V> clazz, String... columns) {
-        RowMapper<V> rowMapper = columns.length == 1 ? new SingleColumnRowMapper<>(clazz) : new BeanPropertyRowMapper<>(clazz);
-        return queryColumns(query, rowMapper, columns);
     }
 
     public final void create(E e) {

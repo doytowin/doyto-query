@@ -29,6 +29,4 @@ public interface QueryService<E, I, Q> {
         return new PageList<>(query(query, transfer), count(query));
     }
 
-    <V> List<V> queryColumns(Q query, Class<V> clazz, String... columns);
-
 }
