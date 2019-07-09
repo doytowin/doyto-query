@@ -54,7 +54,7 @@ public abstract class AbstractCrudService<E extends Persistable<I>, I extends Se
     @Override
     public final List<E> query(Q query) {
         if (caching() && !TransactionSynchronizationManager.isActualTransactionActive()) {
-            return queryIds(query).stream().map(dataAccess::get).collect(Collectors.toList());
+            return queryIds(query).stream().map(this::get).collect(Collectors.toList());
         }
         return dataAccess.query(query);
     }
