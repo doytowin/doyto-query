@@ -21,6 +21,10 @@ public interface QueryService<E, I, Q> {
         return CollectionUtil.first(query(query));
     }
 
+    default <V> V get(Q query, Function<E, V> transfer) {
+        return CollectionUtil.first(query(query, transfer));
+    }
+
     default <V> List<V> query(Q query, Function<E, V> transfer) {
         return query(query).stream().map(transfer).collect(Collectors.toList());
     }

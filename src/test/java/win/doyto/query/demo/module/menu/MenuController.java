@@ -41,9 +41,8 @@ class MenuController extends AbstractDynamicService<MenuEntity, Integer, MenuQue
 
     @GetMapping("{id}")
     public MenuResponse getByQuery(MenuQuery menuQuery) {
-        MenuEntity menuEntity = get(menuQuery);
-        ServiceAsserts.notNull(menuEntity, "菜单不存在");
-        return MenuResponse.build(menuEntity);
+        MenuResponse menuResponse = get(menuQuery, MenuResponse::build);
+        return ServiceAsserts.notNull(menuResponse, "菜单不存在");
     }
 
     @DeleteMapping("{id}")

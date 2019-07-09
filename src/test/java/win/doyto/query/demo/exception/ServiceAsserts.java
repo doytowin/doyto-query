@@ -7,8 +7,9 @@ package win.doyto.query.demo.exception;
  */
 public class ServiceAsserts {
 
-    public static void notNull(Object target, String message) {
+    public static <T> T notNull(T target, String message) {
         isTrue(target != null, message);
+        return target;
     }
 
     public static void isTrue(boolean condition, String message) {
