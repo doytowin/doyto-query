@@ -23,7 +23,7 @@ enum QuerySuffix {
     Not("!="),
     NotLike("NOT LIKE"),
     Start("LIKE"),
-    Like,
+    Like("LIKE"),
     NotIn("NOT IN", Ex.collection),
     In("IN", Ex.collection),
     NotNull("IS NOT NULL", Ex.empty),
@@ -46,11 +46,6 @@ enum QuerySuffix {
 
     private final String op;
     private final Ex ex;
-
-    QuerySuffix() {
-        this.op = name().toUpperCase();
-        this.ex = Ex.placeHolder;
-    }
 
     QuerySuffix(String op) {
         this(op, Ex.placeHolder);
