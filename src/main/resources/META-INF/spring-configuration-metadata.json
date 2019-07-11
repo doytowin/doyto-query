@@ -4,5 +4,11 @@
       "name": "doyto.query.config.map-camel-case-to-underscore",
       "type": "java.lang.Boolean",
       "description": "True to map camelCase to under_score."
-  }]
+    },
+    {
+      "name": "doyto.query.caches",
+      "type": "java.util.List<String>",
+      "description": "Entity cache list."
+    }
+  ]
 }
