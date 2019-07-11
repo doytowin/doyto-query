@@ -358,4 +358,18 @@ public class QueryBuilderTest {
         assertEquals("SELECT id FROM user WHERE email = ?", sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly("");
     }
+
+    @Test
+    public void supportResolveEnumListToOrdinalList() {
+        TestQuery testQuery = TestQuery.builder().userLevelIn(Arrays.asList(TestEnum.NORMAL)).build();
+        assertEquals("SELECT * FROM user WHERE userLevel IN (?)", testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly(1);
+    }
+
+    @Test
+    public void supportResolveEnumListToStringList() {
+        TestQuery testQuery = TestQuery.builder().statusIn(Arrays.asList(TestStringEnum.E1)).build();
+        assertEquals("SELECT * FROM user WHERE status IN (?)", testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly("E1");
+    }
 }
