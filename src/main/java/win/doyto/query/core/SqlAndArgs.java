@@ -20,15 +20,16 @@ public class SqlAndArgs {
     String sql;
     Object[] args;
 
-    public SqlAndArgs(String sql, List<?> args) {
+    public SqlAndArgs(String sql, List<?> argList) {
         this.sql = sql;
-        this.args = args.toArray();
-        if (log.isDebugEnabled() && !args.isEmpty()) {
-            String out = args.stream()
-                .map(arg -> arg + (arg == null ? "" : wrapWithParenthesis(arg.getClass().getName())) + SEPARATOR)
-                .collect(Collectors.joining());
+        this.args = argList.toArray();
+        if (log.isDebugEnabled()) {
             log.debug("SQL  : {}", sql);
-            log.debug("Param: {}", out.substring(0, out.lastIndexOf(',')));
+            String params = argList
+                .stream()
+                .map(arg -> arg + (arg == null ? "" : wrapWithParenthesis(arg.getClass().getName())))
+                .collect(Collectors.joining(SEPARATOR));
+            log.debug("Param: {}", params);
         }
     }
 }
