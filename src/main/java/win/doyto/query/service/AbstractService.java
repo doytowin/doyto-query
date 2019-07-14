@@ -143,15 +143,19 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         if (userIdProvider != null) {
             userIdProvider.setupUserId(e);
         }
+        E origin;
+        if (e == null || (origin = dataAccess.fetch(e)) == null) {
+            return 0;
+        }
         if (!entityAspects.isEmpty()) {
             transactionOperations.execute(s -> {
-                E origin = dataAccess.fetch(e);
-                ret.set(invocable.invoke());
-                entityAspects.forEach(entityAspect -> entityAspect.afterUpdate(origin, e));
+                invocable.invoke();
+                E current = dataAccess.fetch(e);
+                entityAspects.forEach(entityAspect -> entityAspect.afterUpdate(origin, current));
                 return null;
             });
         } else {
-            ret.set(invocable.invoke());
+            invocable.invoke();
         }
         entityCacheWrapper.evict(resolveCacheKey(e));
         return ret.get();

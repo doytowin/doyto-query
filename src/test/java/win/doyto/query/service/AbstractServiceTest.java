@@ -69,7 +69,7 @@ class AbstractServiceTest {
         u.setId(e.getId());
         u.setUsername("test2");
         testService.update(u);
-        verify(entityAspect, times(1)).afterUpdate(any(), eq(u));
+        verify(entityAspect, times(1)).afterUpdate(any(), any());
 
         testService.delete(e.getId());
         verify(entityAspect, times(1)).afterDelete(u);

@@ -31,4 +31,12 @@ public class UserRequest implements EntityRequest<UserEntity> {
         BeanUtils.copyProperties(this, userEntity);
         return userEntity;
     }
+
+    @Override
+    public UserEntity toEntity(UserEntity userEntity) {
+        String password = userEntity.getPassword();
+        BeanUtils.copyProperties(this, userEntity);
+        userEntity.setPassword(password);
+        return userEntity;
+    }
 }

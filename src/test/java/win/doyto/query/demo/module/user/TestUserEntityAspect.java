@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.springframework.stereotype.Component;
 import win.doyto.query.entity.EntityAspect;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 /**
@@ -19,6 +20,12 @@ public class TestUserEntityAspect implements EntityAspect<UserEntity> {
     @Override
     public void afterUpdate(UserEntity origin, UserEntity current) {
         assertNotSame(origin, current);
+        if (origin.getPassword() != null) {
+            assertNotNull(current.getPassword());
+        }
+        if (origin.getEmail() != null) {
+            assertNotNull(current.getEmail());
+        }
         times++;
     }
 
