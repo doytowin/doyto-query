@@ -6,8 +6,6 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.SingleColumnRowMapper;
 import win.doyto.query.annotation.NestedQueries;
 import win.doyto.query.annotation.SubQuery;
 import win.doyto.query.entity.CommonEntity;
@@ -41,7 +39,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     private final AtomicLong idGenerator = new AtomicLong(0);
     private final List<Field> fields;
     private final Field idField;
-    private Class<?> idFieldType;
+    private Class<I> idFieldType;
 
     public MemoryDataAccess(Class<E> entityClass) {
         tableMap.put(entityClass, entitiesMap);
@@ -57,9 +55,9 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
             if (CommonEntity.class.isAssignableFrom(entityClass)) {
                 ParameterizedType parameterizedType = (ParameterizedType) entityClass.getGenericSuperclass();
                 Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-                idFieldType = (Class<?>) actualTypeArguments[0];
+                idFieldType = (Class<I>) actualTypeArguments[0];
             } else {
-                idFieldType = idField.getType();
+                idFieldType = (Class<I>) idField.getType();
             }
         } else {
             idField = null;
@@ -96,7 +94,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
 
     @Override
     public List<I> queryIds(Q query) {
-        return queryColumns(query, new SingleColumnRowMapper<>(), "id");
+        return queryColumns(query, idFieldType, "id");
     }
 
     @Override
@@ -218,13 +216,12 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
 
     @Override
     @SneakyThrows
-    public <V> List<V> queryColumns(Q q, RowMapper<V> rowMapper, String... columns) {
+    public <V> List<V> queryColumns(Q q, Class<V> classV, String... columns) {
         List<E> entities = query(q);
         List<V> objects = new ArrayList<>(entities.size());
-        if (rowMapper instanceof SingleColumnRowMapper) {
+        if (columns.length == 1) {
             return entities.stream().map(entity -> (V) readField(entity, columns[0])).collect(Collectors.toList());
         } else {
-            Class<V> classV = (Class<V>) readField(rowMapper, "mappedClass");
             for (E e : entities) {
                 V v = classV.getDeclaredConstructor().newInstance();
                 BeanUtils.copyProperties(e, v);

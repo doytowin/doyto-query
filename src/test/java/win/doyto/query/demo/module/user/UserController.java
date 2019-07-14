@@ -1,7 +1,6 @@
 package win.doyto.query.demo.module.user;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +21,6 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("user")
 class UserController extends AbstractRestController<UserEntity, Long, UserQuery, UserRequest, UserResponse> implements UserService {
-
-    private BeanPropertyRowMapper<UserResponse> userResponseRowMapper = new BeanPropertyRowMapper<>(UserResponse.class);
 
     @Resource
     UserDetailService userDetailService;
@@ -70,8 +67,7 @@ class UserController extends AbstractRestController<UserEntity, Long, UserQuery,
 
     @Override
     public List<UserResponse> list(UserQuery q) {
-        return queryColumns(q, userResponseRowMapper,
-            "id", "username", "mobile", "email", "nickname", "valid", "userLevel", "memo");
+        return queryColumns(q, UserResponse.class, "id", "username", "mobile", "email", "nickname", "valid", "userLevel", "memo");
     }
 
     @Override

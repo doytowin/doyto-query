@@ -134,8 +134,8 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         return dataAccess.queryIds(query);
     }
 
-    public <V> List<V> queryColumns(Q query, RowMapper<V> rowMapper, String... columns) {
-        return dataAccess.queryColumns(query, rowMapper, columns);
+    public <V> List<V> queryColumns(Q query, Class<V> clazz, String... columns) {
+        return dataAccess.queryColumns(query, clazz, columns);
     }
 
     public void create(E e) {

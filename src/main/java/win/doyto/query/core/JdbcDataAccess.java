@@ -1,6 +1,7 @@
 package win.doyto.query.core;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
@@ -16,6 +17,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -28,6 +31,7 @@ import javax.persistence.Transient;
  */
 public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> implements DataAccess<E, I, Q> {
 
+    private static final Map<Class, RowMapper> classRowMapperMap = new ConcurrentHashMap<>();
     private final JdbcOperations jdbcOperations;
     private final RowMapper<E> rowMapper;
     private final CrudBuilder<E> crudBuilder;
@@ -80,6 +84,11 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public final <V> List<V> queryColumns(Q q, Class<V> clazz, String... columns) {
+        return queryColumns(q, classRowMapperMap.computeIfAbsent(clazz, BeanPropertyRowMapper::new), columns);
+    }
+
     public final <V> List<V> queryColumns(Q q, RowMapper<V> rowMapper, String... columns) {
         SqlAndArgs sqlAndArgs = crudBuilder.buildSelectColumnsAndArgs(q, columns);
         return jdbcOperations.query(sqlAndArgs.sql, sqlAndArgs.args, rowMapper);
