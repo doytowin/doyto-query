@@ -1,6 +1,7 @@
 package win.doyto.query.service;
 
 import lombok.Setter;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
@@ -10,10 +11,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.SimpleTransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionOperations;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.support.*;
 import win.doyto.query.cache.CacheWrapper;
 import win.doyto.query.core.*;
 import win.doyto.query.entity.EntityAspect;
@@ -40,6 +38,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     protected final Class<E> entityClass;
 
     protected final CacheWrapper<E> entityCacheWrapper = CacheWrapper.createInstance();
+    protected final CacheWrapper<List<E>> queryCacheWrapper = CacheWrapper.createInstance();
 
     @Autowired(required = false)
     private UserIdProvider userIdProvider;
@@ -88,6 +87,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
             String cacheName = getCacheName();
             if (cacheList.contains(cacheName) || cacheName != entityClass.getSimpleName().intern()) {
                 entityCacheWrapper.setCache(cacheManager.getCache(cacheName));
+                queryCacheWrapper.setCache(cacheManager.getCache(getQueryCacheName()));
             }
         }
     }
@@ -98,8 +98,31 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         return entityClass.getSimpleName().intern();
     }
 
-    public List<E> query(Q query) {
-        return dataAccess.query(query);
+    private String getQueryCacheName() {
+        return getCacheName() + ":query";
+    }
+
+    protected void clearCache() {
+        entityCacheWrapper.clear();
+        queryCacheWrapper.clear();
+    }
+
+    protected void evictCache(String key) {
+        entityCacheWrapper.evict(key);
+        queryCacheWrapper.clear();
+    }
+
+    protected boolean caching() {
+        return !(entityCacheWrapper.getCache() instanceof NoOpCache);
+    }
+
+    @Override
+    public final List<E> query(Q query) {
+        String key = null;
+        if (caching() && !TransactionSynchronizationManager.isActualTransactionActive()) {
+            key = ToStringBuilder.reflectionToString(query, NonNullToStringStyle.NO_CLASS_NAME_NON_NULL_STYLE);
+        }
+        return queryCacheWrapper.execute(key, () -> dataAccess.query(query));
     }
 
     public long count(Q query) {
@@ -127,7 +150,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         } else {
             dataAccess.create(e);
         }
-        entityCacheWrapper.evict(resolveCacheKey(e));
+        evictCache(resolveCacheKey(e));
     }
 
     public int update(E e) {
@@ -157,34 +180,30 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         } else {
             invocable.invoke();
         }
-        entityCacheWrapper.evict(resolveCacheKey(e));
+        evictCache(resolveCacheKey(e));
         return ret.get();
     }
 
     public int batchInsert(Iterable<E> entities, String... columns) {
         int insert = dataAccess.batchInsert(entities, columns);
-        entityCacheWrapper.clear();
+        clearCache();
         return insert;
     }
 
     public int patch(E e, Q q) {
         int patch = dataAccess.patch(e, q);
-        entityCacheWrapper.clear();
+        clearCache();
         return patch;
     }
 
     public int delete(Q query) {
         int delete = dataAccess.delete(query);
-        entityCacheWrapper.clear();
+        clearCache();
         return delete;
     }
 
     public boolean exists(Q query) {
         return count(query) > 0;
-    }
-
-    protected boolean caching() {
-        return !(entityCacheWrapper.getCache() instanceof NoOpCache);
     }
 
     private static class NoneTransactionOperations implements TransactionOperations {

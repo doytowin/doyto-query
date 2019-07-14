@@ -2,6 +2,7 @@ package win.doyto.query.cache;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.cache.support.NoOpCache;
 import win.doyto.query.core.Invocable;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,8 +33,8 @@ public class CacheWrapperTest {
     }
 
     @Test
-    public void whenCacheIsNull() {
-        assertEquals(Integer.valueOf(1), CacheWrapper.invoke(null, "key", () -> 1));
+    public void whenCacheIsNoOpCache() {
+        assertEquals(Integer.valueOf(1), CacheWrapper.invoke(new NoOpCache("noop"), "key", () -> 1));
     }
 
     @Test

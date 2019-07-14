@@ -1,6 +1,7 @@
 package win.doyto.query.cache;
 
 import org.springframework.cache.Cache;
+import org.springframework.cache.support.NoOpCache;
 import win.doyto.query.core.Invocable;
 
 /**
@@ -11,7 +12,7 @@ import win.doyto.query.core.Invocable;
 public interface CacheWrapper<T> {
     @SuppressWarnings("unchecked")
     static <V> V invoke(Cache cache, Object key, Invocable<V> invocable) {
-        if (cache == null || key == null) {
+        if (cache instanceof NoOpCache || key == null) {
             return invocable.invoke();
         }
         Cache.ValueWrapper valueWrapper = cache.get(key);
