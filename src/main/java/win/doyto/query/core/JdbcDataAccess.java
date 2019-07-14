@@ -16,6 +16,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Transient;
@@ -32,8 +33,10 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     private final CrudBuilder<E> crudBuilder;
     private final String[] columnsForSelect;
     private final boolean isGeneratedId;
+    private final BiFunction<E, Number, Void> setIdFunc;
 
-    public JdbcDataAccess(JdbcOperations jdbcOperations, Class<E> entityClass, RowMapper<E> rowMapper) {
+    @SuppressWarnings("unchecked")
+    public JdbcDataAccess(JdbcOperations jdbcOperations, Class<E> entityClass, Class<I> idClass, RowMapper<E> rowMapper) {
         this.jdbcOperations = jdbcOperations;
         this.rowMapper = rowMapper;
         crudBuilder = new CrudBuilder<>(entityClass);
@@ -46,6 +49,22 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
         Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
         isGeneratedId = idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class);
 
+        if (idClass.isAssignableFrom(Integer.class)) {
+            setIdFunc = (e, key) -> {
+                e.setId((I) (Integer) key.intValue());
+                return null;
+            };
+        } else if (idClass.isAssignableFrom(Long.class)) {
+            setIdFunc = (e, key) -> {
+                e.setId((I) (Long) key.longValue());
+                return null;
+            };
+        } else {
+            setIdFunc = (e, key) -> {
+                e.setId((I) key);
+                return null;
+            };
+        }
     }
 
     private static boolean shouldRetain(Field field) {
@@ -103,7 +122,6 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public final void create(E e) {
         List<Object> args = new ArrayList<>();
         String sql = crudBuilder.buildCreateAndArgs(e, args);
@@ -118,7 +136,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
                 }
                 return ps;
             }, keyHolder);
-            e.setId((I) keyHolder.getKey());
+            setIdFunc.apply(e, keyHolder.getKey());
         } else {
             jdbcOperations.update(sql, args.toArray());
         }

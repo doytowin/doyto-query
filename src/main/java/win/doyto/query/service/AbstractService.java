@@ -67,8 +67,9 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     }
 
     @Autowired
+    @SuppressWarnings("unchecked")
     public void setJdbcOperations(JdbcOperations jdbcOperations) {
-        dataAccess = new JdbcDataAccess<>(jdbcOperations, entityClass, getRowMapper());
+        dataAccess = new JdbcDataAccess<>(jdbcOperations, entityClass, (Class<I>) getActualTypeArguments()[1], getRowMapper());
     }
 
     protected RowMapper<E> getRowMapper() {
