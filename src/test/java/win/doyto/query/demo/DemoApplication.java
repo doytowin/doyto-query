@@ -6,6 +6,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import win.doyto.query.service.AssociativeService;
 import win.doyto.query.service.AssociativeServiceTemplate;
 
@@ -19,6 +20,7 @@ import javax.sql.DataSource;
  */
 @SpringBootApplication
 @EnableCaching(proxyTargetClass = true)
+@EnableTransactionManagement(proxyTargetClass = true)
 public class DemoApplication {
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class);

@@ -31,17 +31,17 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     }
 
     @Override
-    public final E get(E param) {
+    public E get(E param) {
         return entityCacheWrapper.execute(resolveCacheKey(param), () -> fetch(param));
     }
 
     @Override
-    public final E fetch(E param) {
+    public E fetch(E param) {
         return dataAccess.get(param);
     }
 
     @Override
-    public final E delete(E param) {
+    public E delete(E param) {
         E e = get(param);
         if (e != null) {
             if (!entityAspects.isEmpty()) {

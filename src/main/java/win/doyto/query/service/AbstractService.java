@@ -102,19 +102,19 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         return dataAccess.query(query);
     }
 
-    public final long count(Q query) {
+    public long count(Q query) {
         return dataAccess.count(query);
     }
 
-    public final List<I> queryIds(Q query) {
+    public List<I> queryIds(Q query) {
         return dataAccess.queryIds(query);
     }
 
-    public final <V> List<V> queryColumns(Q query, RowMapper<V> rowMapper, String... columns) {
+    public <V> List<V> queryColumns(Q query, RowMapper<V> rowMapper, String... columns) {
         return dataAccess.queryColumns(query, rowMapper, columns);
     }
 
-    public final void create(E e) {
+    public void create(E e) {
         if (userIdProvider != null) {
             userIdProvider.setupUserId(e);
         }
@@ -130,11 +130,11 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         entityCacheWrapper.evict(resolveCacheKey(e));
     }
 
-    public final int update(E e) {
+    public int update(E e) {
         return doUpdate(e, () -> dataAccess.update(e));
     }
 
-    public final int patch(E e) {
+    public int patch(E e) {
         return doUpdate(e, () -> dataAccess.patch(e));
     }
 
@@ -167,19 +167,19 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         return insert;
     }
 
-    public final int patch(E e, Q q) {
+    public int patch(E e, Q q) {
         int patch = dataAccess.patch(e, q);
         entityCacheWrapper.clear();
         return patch;
     }
 
-    public final int delete(Q query) {
+    public int delete(Q query) {
         int delete = dataAccess.delete(query);
         entityCacheWrapper.clear();
         return delete;
     }
 
-    public final boolean exists(Q query) {
+    public boolean exists(Q query) {
         return count(query) > 0;
     }
 
