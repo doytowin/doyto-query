@@ -3,6 +3,7 @@ package win.doyto.query.service;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.Iterator;
 
@@ -21,6 +22,11 @@ class CollectionUtil {
         } finally {
             if (iterator.hasNext()) {
                 log.warn("Find more than one element of {}", iterator.next().getClass());
+                StringBuilder sb = new StringBuilder();
+                for (E e : iterable) {
+                    sb.append("\n").append(e instanceof String ? e : ToStringBuilder.reflectionToString(e, NonNullToStringStyle.NON_NULL_STYLE));
+                }
+                log.warn("Repetitive elements: {}", sb.toString());
             }
         }
     }
