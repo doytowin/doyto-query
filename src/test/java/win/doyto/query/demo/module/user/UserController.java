@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import win.doyto.query.demo.exception.ServiceAsserts;
-import win.doyto.query.service.AbstractRestService;
+import win.doyto.query.service.AbstractRestController;
 import win.doyto.query.validation.CreateGroup;
 
 import java.util.List;
@@ -21,7 +21,7 @@ import javax.annotation.Resource;
 @Slf4j
 @RestController
 @RequestMapping("user")
-class UserController extends AbstractRestService<UserEntity, Long, UserQuery, UserRequest, UserResponse> implements UserService {
+class UserController extends AbstractRestController<UserEntity, Long, UserQuery, UserRequest, UserResponse> implements UserService {
 
     private BeanPropertyRowMapper<UserResponse> userResponseRowMapper = new BeanPropertyRowMapper<>(UserResponse.class);
 

@@ -21,8 +21,7 @@ import java.util.List;
  *
  * @author f0rb on 2019-05-26
  */
-@SuppressWarnings("squid:S4529")
-public abstract class AbstractRestService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery,
+public abstract class AbstractRestController<E extends Persistable<I>, I extends Serializable, Q extends PageQuery,
     R extends EntityRequest<E>, S extends EntityResponse<E, S>>
     extends AbstractCrudService<E, I, Q> implements RestService<E, I, Q, R, S> {
 
@@ -30,7 +29,7 @@ public abstract class AbstractRestService<E extends Persistable<I>, I extends Se
 
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public AbstractRestService() {
+    public AbstractRestController() {
         Class<S> clazz = (Class<S>) getActualTypeArguments()[4];
         Constructor<S> constructor = clazz.getDeclaredConstructor();
         noumenon = constructor.newInstance();
