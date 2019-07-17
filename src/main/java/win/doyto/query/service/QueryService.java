@@ -21,6 +21,10 @@ public interface QueryService<E, I, Q> {
         return count(query) > 0;
     }
 
+    default boolean notExists(Q query) {
+        return !exists(query);
+    }
+
     default E get(Q query) {
         return CollectionUtil.first(query(query));
     }

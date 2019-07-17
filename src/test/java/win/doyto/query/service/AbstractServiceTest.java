@@ -86,6 +86,11 @@ class AbstractServiceTest {
     }
 
     @Test
+    void notExists() {
+        assertFalse(testService.notExists(TestQuery.builder().username("username1").build()));
+    }
+
+    @Test
     void deleteByQuery() {
         TestQuery testQuery = TestQuery.builder().usernameLike("username").build();
         assertEquals(4, testService.delete(testQuery));
