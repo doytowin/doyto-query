@@ -203,10 +203,6 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         return delete;
     }
 
-    public boolean exists(Q query) {
-        return count(query) > 0;
-    }
-
     private static class NoneTransactionOperations implements TransactionOperations {
         private static final TransactionOperations instance = new NoneTransactionOperations();
         private static final TransactionStatus TRANSACTION_STATUS = new SimpleTransactionStatus();
