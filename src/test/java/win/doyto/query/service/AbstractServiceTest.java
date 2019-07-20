@@ -45,7 +45,7 @@ class AbstractServiceTest {
         TestEntity testEntity = testService.get(1);
         testService.update(testEntity);
         testService.get(1);
-        verify(testService.dataAccess, times(2)).get(1);
+        verify(testService.dataAccess, times(3)).get(1);
     }
 
     @Test
@@ -72,7 +72,7 @@ class AbstractServiceTest {
         verify(entityAspect, times(1)).afterUpdate(any(), any());
 
         testService.delete(e.getId());
-        verify(entityAspect, times(1)).afterDelete(u);
+        verify(entityAspect, times(1)).afterDelete(any(TestEntity.class));
     }
 
     @Test

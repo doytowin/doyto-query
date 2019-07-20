@@ -10,7 +10,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static win.doyto.query.core.test.TestEntity.initUserEntities;
 
 /**
@@ -66,13 +67,10 @@ class MemoryDataAccessTest {
     }
 
     @Test
-    public void fetch() {
+    public void getShouldReturnDifferentEntityObject() {
         TestEntity u1 = testMemoryDataAccess.get(1);
         TestEntity u2 = testMemoryDataAccess.get(1);
-        assertSame(u1, u2);
-
-        TestEntity f1 = testMemoryDataAccess.fetch(u1);
-        assertNotSame(u1, f1);
+        assertNotSame(u1, u2);
     }
 
     @Test

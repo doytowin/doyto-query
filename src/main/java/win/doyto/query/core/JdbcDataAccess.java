@@ -179,11 +179,6 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     }
 
     @Override
-    public final E fetch(E e) {
-        return getEntity(crudBuilder.buildSelectById(e));
-    }
-
-    @Override
     public List<I> queryIds(Q query) {
         SqlAndArgs sqlAndArgs = crudBuilder.buildSelectIdAndArgs(query);
         return jdbcOperations.query(sqlAndArgs.sql, sqlAndArgs.args, new SingleColumnRowMapper<>());

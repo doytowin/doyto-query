@@ -23,7 +23,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * AbstractService
@@ -163,18 +162,17 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     }
 
     private int doUpdate(E e, Invocable<Integer> invocable) {
-        final AtomicInteger ret = new AtomicInteger();
         if (userIdProvider != null) {
             userIdProvider.setupUserId(e);
         }
         E origin;
-        if (e == null || (origin = dataAccess.fetch(e)) == null) {
+        if (e == null || (origin = dataAccess.get(e)) == null) {
             return 0;
         }
         if (!entityAspects.isEmpty()) {
             transactionOperations.execute(s -> {
                 invocable.invoke();
-                E current = dataAccess.fetch(e);
+                E current = dataAccess.get(e);
                 entityAspects.forEach(entityAspect -> entityAspect.afterUpdate(origin, current));
                 return null;
             });
@@ -182,7 +180,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
             invocable.invoke();
         }
         evictCache(resolveCacheKey(e));
-        return ret.get();
+        return 1;
     }
 
     public int batchInsert(Iterable<E> entities, String... columns) {

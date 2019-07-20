@@ -84,12 +84,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
 
     @Override
     public E get(I id) {
-        return entitiesMap.get(id);
-    }
-
-    @Override
-    public E fetch(E e) {
-        return SerializationUtils.clone(entitiesMap.get(e.getId()));
+        return SerializationUtils.clone(entitiesMap.get(id));
     }
 
     @Override
@@ -112,7 +107,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
 
     @Override
     public int patch(E patch) {
-        E origin = get(patch.getId());
+        E origin = entitiesMap.get(patch.getId());
         if (origin == null) {
             return 0;
         }
