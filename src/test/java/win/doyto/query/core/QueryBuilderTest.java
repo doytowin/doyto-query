@@ -248,6 +248,21 @@ public class QueryBuilderTest {
         assertThat(argList).isEmpty();
     }
 
+    /**
+     * 感觉这个测试用例对TDD本身也是一个挑战,
+     * 随着设计的不断抽象, 小步迭代式开发也不那么直观了
+     * 必须要熟悉源码才能准确找到修改哪里
+     */
+    @Test
+    public void buildSubQueryWithQueryObject() {
+        MenuQuery parentQuery = MenuQuery.builder().nameLike("test").valid(true).build();
+        MenuQuery menuQuery = MenuQuery.builder().parent(parentQuery).build();
+
+        String expected = "SELECT * FROM menu WHERE id IN (SELECT parent_id FROM menu WHERE name LIKE ? AND valid = ?)";
+        assertEquals(expected, menuQueryBuilder.buildSelectAndArgs(menuQuery, argList));
+        assertThat(argList).containsExactly("%test%", true);
+    }
+
     @Test
     public void buildSelectIdWithArgs() {
         TestQuery testQuery = TestQuery.builder().username("test").build();

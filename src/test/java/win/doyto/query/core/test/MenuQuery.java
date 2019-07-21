@@ -28,5 +28,12 @@ public class MenuQuery extends PageQuery {
     @SubQuery(left = "parent_id", table = "menu")
     private boolean onlyParent;
 
+    @SubQuery(left = "parent_id", table = "menu")
+    private MenuQuery parent;
+
+    private String nameLike;
+
+    private Boolean valid;
+
     private boolean parentIdNull;
 }

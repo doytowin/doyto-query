@@ -64,8 +64,18 @@ final class FieldProcessor {
 
     static void init(Field field) {
         String fieldName = field.getName();
-        Processor processor = !field.getType().isAssignableFrom(boolean.class) ?
-            new DefaultProcessor(fieldName) : EMPTY_PROCESSOR;
+        Class<?> fieldType = field.getType();
+        //Ternary operators should not be nested
+        //squid:S3358
+        //You can do something, doesn't mean you should
+        Processor processor;
+        if (boolean.class.isAssignableFrom(fieldType)) {
+            processor = EMPTY_PROCESSOR;
+        } else if (PageQuery.class.isAssignableFrom(fieldType)){
+            processor = (argList, value) -> QueryBuilder.buildWhere("", value, argList);
+        } else {
+            processor = new DefaultProcessor(fieldName);
+        }
         if (field.isAnnotationPresent(QueryTableAlias.class)) {
             String columnName = field.getAnnotation(QueryTableAlias.class).value();
             FIELD_PROCESSOR_MAP.put(field, (argList, value) -> QuerySuffix.buildAndSql(argList, value, columnName + "." + fieldName));
