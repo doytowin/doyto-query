@@ -35,16 +35,17 @@ class StringJoinerTest {
     void timeCost() {
         String separator = " ";
         int size = 5;
-        long joinerCost = TimeRecorder.run(() -> new StringJoiner(separator, size)
+
+        Invocable<String> runJoiner = () -> new StringJoiner(separator, size)
             .append("INSERT INTO")
             .append("user")
             .append("(username, password)")
             .append("VALUES")
             .append("(?, ?)")
-            .toString());
-        System.out.println("Time for StringJoiner :" + joinerCost);
+            .toString();
+        runJoiner.invoke();
 
-        long joinCost = TimeRecorder.run(() -> {
+        Invocable<String> runJoinList = () -> {
             ArrayList<String> insertList = new ArrayList<>(size);
             insertList.add("INSERT INTO");
             insertList.add("user");
@@ -52,7 +53,13 @@ class StringJoinerTest {
             insertList.add("VALUES");
             insertList.add("(?, ?)");
             return StringUtils.join(insertList, separator);
-        });
+        };
+        runJoinList.invoke();
+
+        long joinerCost = TimeRecorder.run(runJoiner);
+        System.out.println("Time for StringJoiner :" + joinerCost);
+
+        long joinCost = TimeRecorder.run(runJoinList);
         System.out.println("Time for StringUtils.join :" + joinCost);
         assertTrue(joinerCost < joinCost);
     }
