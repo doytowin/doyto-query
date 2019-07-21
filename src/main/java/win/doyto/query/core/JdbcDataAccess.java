@@ -107,7 +107,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
 
     @Override
     public final E get(I id) {
-        return getEntity(crudBuilder.buildSelectById(id));
+        return getEntity(crudBuilder.buildSelectById(id, columnsForSelect));
     }
 
     @Override
@@ -117,7 +117,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
 
     @Override
     public final E get(E e) {
-        return getEntity(crudBuilder.buildSelectById(e));
+        return getEntity(crudBuilder.buildSelectById(e, columnsForSelect));
     }
 
     private E getEntity(SqlAndArgs sqlAndArgs) {

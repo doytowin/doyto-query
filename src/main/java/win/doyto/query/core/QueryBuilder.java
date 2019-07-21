@@ -139,13 +139,17 @@ public class QueryBuilder {
         return new SqlAndArgs(buildSelectColumnsAndArgs(query, argList, columns), argList);
     }
 
-    protected SqlAndArgs buildSelectById(Object entity) {
+    protected SqlAndArgs buildSelectById(Object entity, String... columns) {
+        if (columns.length == 0) {
+            columns = new String[]{"*"};
+        }
+        String selectFrom = SELECT + StringUtils.join(columns, SEPARATOR) + FROM;
         if (entity instanceof Persistable) {
             return new SqlAndArgs(
-                "SELECT * FROM " + replaceHolderInString(entity, tableName) + whereId,
+                selectFrom + replaceHolderInString(entity, tableName) + whereId,
                 Collections.singletonList(((Persistable) entity).getId()));
         }
-        return new SqlAndArgs("SELECT * FROM " + tableName + whereId, Collections.singletonList(entity));
+        return new SqlAndArgs(selectFrom + tableName + whereId, Collections.singletonList(entity));
     }
 
     protected SqlAndArgs buildSelectIdAndArgs(PageQuery query) {
