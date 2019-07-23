@@ -14,7 +14,7 @@ import win.doyto.query.core.Dialect;
 public class GlobalConfiguration {
 
     private boolean mapCamelCaseToUnderscore;
-    private Dialect dialect = (sql, limit, offset) -> sql + " LIMIT " + limit + (sql.startsWith("SELECT") ? " OFFSET " + offset : "");
+    private Dialect dialect = new MySQLDialect();
 
     private GlobalConfiguration() {
     }

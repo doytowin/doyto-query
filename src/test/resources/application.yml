@@ -14,8 +14,10 @@ spring:
     type: simple
 
 #兼容缓存的继承方式和配置方式
-#doyto:
-#  query:
+doyto:
+  query:
+    config:
+      dialect: win.doyto.query.demo.common.HSQLDBDialect
 #    caches:
 #      module:user,
 #      module:menu

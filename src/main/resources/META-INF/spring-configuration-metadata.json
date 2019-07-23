@@ -6,6 +6,11 @@
       "description": "True to map camelCase to under_score."
     },
     {
+      "name": "doyto.query.config.dialect",
+      "type": "win.doyto.query.core.Dialect",
+      "description": "Database dialect implementation."
+    },
+    {
       "name": "doyto.query.caches",
       "type": "java.util.List<String>",
       "description": "Entity cache list."
