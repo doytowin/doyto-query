@@ -19,6 +19,8 @@ import static java.lang.Math.max;
 @Accessors(chain = true)
 public class PageQuery implements Serializable {
 
+    static final String RX_SORT = "(\\w+,(asc|desc);|field\\(\\w+(,[\\w']+)+\\);)*\\w+,(asc|desc)";
+
     @Setter
     private Integer pageNumber;
 
@@ -26,7 +28,7 @@ public class PageQuery implements Serializable {
     private Integer pageSize;
 
     @ApiModelProperty(value = "Sorting field, format: field1,desc;field2,asc")
-    @Pattern(regexp = "([_\\w]+,(asc|desc);)*[_\\w]+,(asc|desc)", message = "Sorting field format error", groups = PageGroup.class)
+    @Pattern(regexp = RX_SORT, message = "Sorting field format error", groups = PageGroup.class)
     @Getter
     @Setter
     private String sort;

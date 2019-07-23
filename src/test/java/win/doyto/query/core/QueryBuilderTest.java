@@ -387,4 +387,13 @@ public class QueryBuilderTest {
         assertEquals("SELECT * FROM user WHERE status IN (?)", testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("E1");
     }
+
+    @Test
+    void buildOrderByForFieldSorting() {
+        PageQuery pageQuery = TestQuery.builder().build().setSort("FIELD(status,1,3,2,0);id,DESC");
+        assertEquals(" ORDER BY FIELD(status,1,3,2,0), id DESC", QueryBuilder.buildOrderBy("", pageQuery, Constant.SELECT));
+
+        pageQuery.setSort("FIELD(gender,'male','female');id,DESC");
+        assertEquals(" ORDER BY FIELD(gender,'male','female'), id DESC", QueryBuilder.buildOrderBy("", pageQuery, Constant.SELECT));
+    }
 }

@@ -2,6 +2,8 @@ package win.doyto.query.core;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.regex.Pattern;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -34,5 +36,13 @@ class PageQueryTest {
         assertTrue(pageQuery.needPaging());
         assertEquals(0, (int) pageQuery.getPageNumber());
         assertEquals(10, (int) pageQuery.getPageSize());
+    }
+
+    @Test
+    void regex() {
+        String sort = "user_type,desc;field(user_status,2,0,11);id,asc";
+        assertTrue(Pattern.compile(PageQuery.RX_SORT).matcher(sort).matches());
+
+        assertTrue(Pattern.compile(PageQuery.RX_SORT).matcher("field(gender,'male','female');id,desc").matches());
     }
 }

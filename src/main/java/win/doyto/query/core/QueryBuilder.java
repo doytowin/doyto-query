@@ -24,6 +24,7 @@ import static win.doyto.query.core.Constant.*;
 @Slf4j
 public class QueryBuilder {
     private static final Pattern PTN_REPLACE = Pattern.compile("\\w+");
+    private static final Pattern PTN_SORT = Pattern.compile(",(asc|desc)", Pattern.CASE_INSENSITIVE);
 
     private static final Map<Class, Field[]> classFieldsMap = new ConcurrentHashMap<>();
     protected static final String EQUALS_REPLACE_HOLDER = " = " + Constant.REPLACE_HOLDER;
@@ -71,7 +72,7 @@ public class QueryBuilder {
     static String buildOrderBy(String sql, PageQuery pageQuery, String operation) {
         // intentionally use ==
         if (SELECT == operation && pageQuery.getSort() != null) {
-            sql += " ORDER BY " + pageQuery.getSort().replaceAll(",", SPACE).replaceAll(";", ", ");
+            sql += " ORDER BY " + PTN_SORT.matcher(pageQuery.getSort()).replaceAll(" $1").replaceAll(";", ", ");
         }
         return sql;
     }
