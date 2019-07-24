@@ -184,12 +184,20 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     }
 
     public int batchInsert(Iterable<E> entities, String... columns) {
+        if (userIdProvider != null) {
+            for (E e : entities) {
+                userIdProvider.setupUserId(e);
+            }
+        }
         int insert = dataAccess.batchInsert(entities, columns);
         clearCache();
         return insert;
     }
 
     public int patch(E e, Q q) {
+        if (userIdProvider != null) {
+            userIdProvider.setupUserId(e);
+        }
         int patch = dataAccess.patch(e, q);
         clearCache();
         return patch;
