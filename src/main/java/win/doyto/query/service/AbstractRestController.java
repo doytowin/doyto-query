@@ -56,6 +56,11 @@ public abstract class AbstractRestController<E extends Persistable<I>, I extends
     }
 
     @Override
+    public PageList<S> page(Q q) {
+        return new PageList<>(list(q), count(q));
+    }
+
+    @Override
     @GetMapping("{id}")
     public S getById(@PathVariable I id) {
         E e = get(id);

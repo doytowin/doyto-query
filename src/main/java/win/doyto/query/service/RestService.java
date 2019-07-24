@@ -17,11 +17,7 @@ public interface RestService<E extends Persistable<I>, I extends Serializable, Q
 
     List<S> list(Q q);
 
-    long count(Q q);
-
-    default PageList<S> page(Q q) {
-        return new PageList<>(list(q), count(q));
-    }
+    PageList<S> page(Q q);
 
     S getById(I id);
 
