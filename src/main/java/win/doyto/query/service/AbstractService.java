@@ -117,7 +117,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     }
 
     @Override
-    public final List<E> query(Q query) {
+    public List<E> query(Q query) {
         String key = null;
         if (caching() && !TransactionSynchronizationManager.isActualTransactionActive()) {
             key = ToStringBuilder.reflectionToString(query, NonNullToStringStyle.NO_CLASS_NAME_NON_NULL_STYLE);
