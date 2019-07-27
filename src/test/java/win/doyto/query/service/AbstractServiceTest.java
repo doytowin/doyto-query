@@ -31,10 +31,14 @@ class AbstractServiceTest {
     }
 
     @Test
-    void supportCache() {
+    @SuppressWarnings("squid:S2925")
+    void supportCache() throws InterruptedException {
         testService.setCacheManager(new ConcurrentMapCacheManager());
         testService.setCacheList(Arrays.asList());
         testService.get(1);
+
+        Thread.sleep(5L);
+
         testService.get(1);
         verify(testService.dataAccess, times(1)).get(1);
     }
