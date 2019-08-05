@@ -17,6 +17,8 @@ public interface QueryService<E, I, Q> {
 
     long count(Q query);
 
+    <V> List<V> queryColumns(Q query, Class<V> clazz, String... columns);
+
     default boolean exists(Q query) {
         return count(query) > 0;
     }

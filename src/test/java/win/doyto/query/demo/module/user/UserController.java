@@ -70,6 +70,11 @@ class UserController extends AbstractRestController<UserEntity, Long, UserQuery,
         return queryColumns(q, UserResponse.class, "id", "username", "mobile", "email", "nickname", "valid", "userLevel", "memo");
     }
 
+    @GetMapping("column/{column:\\w+}")
+    public List<String> listColumn(UserQuery q, @PathVariable String column) {
+        return queryColumns(q, String.class, column);
+    }
+
     @Override
     public UserResponse auth(String account, String password) {
         UserEntity userEntity = get(UserQuery.builder().usernameOrEmailOrMobile(account).build());

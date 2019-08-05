@@ -86,10 +86,11 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     @Override
     @SuppressWarnings("unchecked")
     public final <V> List<V> queryColumns(Q q, Class<V> clazz, String... columns) {
-        return queryColumns(q, classRowMapperMap.computeIfAbsent(clazz, BeanPropertyRowMapper::new), columns);
+        RowMapper customRowMapper = classRowMapperMap.computeIfAbsent(clazz, columns.length == 1 ? SingleColumnRowMapper::new : BeanPropertyRowMapper::new);
+        return queryColumns(q, customRowMapper, columns);
     }
 
-    public final <V> List<V> queryColumns(Q q, RowMapper<V> rowMapper, String... columns) {
+    private <V> List<V> queryColumns(Q q, RowMapper<V> rowMapper, String... columns) {
         SqlAndArgs sqlAndArgs = crudBuilder.buildSelectColumnsAndArgs(q, columns);
         return jdbcOperations.query(sqlAndArgs.sql, sqlAndArgs.args, rowMapper);
     }

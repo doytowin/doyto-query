@@ -44,8 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * DemoApplicationTest
@@ -168,6 +167,16 @@ class DemoApplicationTest {
                .andExpect(jsonPath("$.userLevel").value("普通"))
                .andExpect(jsonPath("$.address").value("上海市"))
         ;
+    }
+
+    @Test
+    public void querySingleColumn() throws Exception {
+        mockMvc.perform(get(URL_USER + "column/username"))
+               .andDo(print())
+               .andExpect(content().string("[\"f0rb\",\"user2\",\"user3\",\"user4\"]"));
+        mockMvc.perform(get(URL_USER + "column/nickname"))
+               .andDo(print())
+               .andExpect(content().string("[\"测试1\",\"测试2\",\"测试3\",\"测试4\"]"));
     }
 
     @Resource
