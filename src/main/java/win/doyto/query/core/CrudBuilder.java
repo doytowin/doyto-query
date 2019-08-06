@@ -109,7 +109,7 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
         }
         if (columns.length > 0) {
             insertSql.append(" ON DUPLICATE KEY UPDATE ");
-            StringJoiner stringJoiner = new StringJoiner(", ", columns.length);
+            StringJoiner stringJoiner = new StringJoiner(SEPARATOR, columns.length);
             for (String column : columns) {
                 stringJoiner.append(column + EQUAL + "VALUES (" + column + ")");
             }
