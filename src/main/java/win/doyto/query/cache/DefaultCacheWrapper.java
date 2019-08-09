@@ -21,7 +21,8 @@ class DefaultCacheWrapper<V> implements CacheWrapper<V> {
 
     private static final int MAXIMUM_POOL_SIZE = 4;
     private static final ExecutorService executorService = new ThreadPoolExecutor(
-        Math.min(Runtime.getRuntime().availableProcessors() / 4 + 1, MAXIMUM_POOL_SIZE), MAXIMUM_POOL_SIZE, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(),
+        Math.min(Runtime.getRuntime().availableProcessors() / 4 + 1, MAXIMUM_POOL_SIZE), MAXIMUM_POOL_SIZE,
+        1, TimeUnit.MINUTES, new SynchronousQueue<>(),
         new RenameThreadFactory(), new ThreadPoolExecutor.DiscardOldestPolicy());
 
     private Cache cache = new NoOpCache("noop");
