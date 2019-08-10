@@ -1,10 +1,8 @@
 package win.doyto.query.core;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.SingleColumnRowMapper;
+import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import win.doyto.query.entity.Persistable;
@@ -23,6 +21,8 @@ import java.util.function.BiFunction;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Transient;
+
+import static win.doyto.query.core.Constant.SEPARATOR;
 
 /**
  * JdbcDataAccess
@@ -86,7 +86,13 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     @Override
     @SuppressWarnings("unchecked")
     public final <V> List<V> queryColumns(Q q, Class<V> clazz, String... columns) {
-        RowMapper customRowMapper = classRowMapperMap.computeIfAbsent(clazz, columns.length == 1 ? SingleColumnRowMapper::new : BeanPropertyRowMapper::new);
+        columns = StringUtils.join(columns, SEPARATOR).split(",");
+        RowMapper customRowMapper;
+        if (Map.class.isAssignableFrom(clazz)) {
+            customRowMapper = new ColumnMapRowMapper();
+        } else {
+            customRowMapper = classRowMapperMap.computeIfAbsent(clazz, columns.length == 1 ? SingleColumnRowMapper::new : BeanPropertyRowMapper::new);
+        }
         return queryColumns(q, customRowMapper, columns);
     }
 

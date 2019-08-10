@@ -9,6 +9,7 @@ import win.doyto.query.service.AbstractRestController;
 import win.doyto.query.validation.CreateGroup;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Resource;
 
@@ -73,6 +74,11 @@ class UserController extends AbstractRestController<UserEntity, Long, UserQuery,
     @GetMapping("column/{column:\\w+}")
     public List<String> listColumn(UserQuery q, @PathVariable String column) {
         return queryColumns(q, String.class, column);
+    }
+
+    @GetMapping("columns/{columns:[\\w,]+}")
+    public List<Map> listColumns(UserQuery q, @PathVariable String columns) {
+        return queryColumns(q, Map.class, columns);
     }
 
     @Override

@@ -179,6 +179,17 @@ class DemoApplicationTest {
                .andExpect(content().string("[\"测试1\",\"测试2\",\"测试3\",\"测试4\"]"));
     }
 
+    @Test
+    public void queryColumns() throws Exception {
+        mockMvc.perform(get(URL_USER + "columns/username,userLevel"))
+               .andDo(print())
+               .andExpect(jsonPath("$.size()").value(4))
+               .andExpect(jsonPath("$[0].USERNAME").value("f0rb"))
+               .andExpect(jsonPath("$[1].USERNAME").value("user2"))
+        ;
+
+    }
+
     @Resource
     TestUserEntityAspect testUserEntityAspect;
 
