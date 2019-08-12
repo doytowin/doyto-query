@@ -1,5 +1,7 @@
 package win.doyto.query.service;
 
+import win.doyto.query.core.PageQuery;
+
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -9,7 +11,7 @@ import java.util.stream.Collectors;
  *
  * @author f0rb
  */
-public interface QueryService<E, I, Q> {
+public interface QueryService<E, I, Q extends PageQuery> {
 
     List<E> query(Q query);
 
@@ -40,6 +42,9 @@ public interface QueryService<E, I, Q> {
     }
 
     default <V> PageList<V> page(Q query, Function<E, V> transfer) {
+        if (!query.needPaging()) {
+            query.setPageNumber(0);
+        }
         return new PageList<>(query(query, transfer), count(query));
     }
 

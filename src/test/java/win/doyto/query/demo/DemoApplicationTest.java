@@ -465,6 +465,8 @@ class DemoApplicationTest {
         PageList<TestJoinView> page = new JoinQueryExecutor<>(jdbcOperations, TestJoinView.class).page(testJoinQuery);
         assertThat(page.getTotal()).isEqualTo(2);
         assertThat(page.getList()).extracting(TestJoinView::getUsername).containsExactly("f0rb", "user4");
+        assertThat(testJoinQuery.getPageNumber()).isEqualTo(0);
+        assertThat(testJoinQuery.getPageSize()).isEqualTo(10);
     }
 
     /*=============== Cache ==================*/

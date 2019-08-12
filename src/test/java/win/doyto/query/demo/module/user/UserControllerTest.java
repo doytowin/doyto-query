@@ -101,4 +101,11 @@ public class UserControllerTest {
     void supportInheritanceOnConcreteSubClassOfAbstractService() {
         assertNotNull(new UserController() {});
     }
+
+    @Test
+    void forcePage() {
+        UserQuery userQuery = UserQuery.builder().build();
+        userService.page(userQuery);
+        assertEquals(0, (int) userQuery.getPageNumber());
+    }
 }

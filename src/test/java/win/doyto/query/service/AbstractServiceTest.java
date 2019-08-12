@@ -114,4 +114,13 @@ class AbstractServiceTest {
         assertEquals(1, ids.size());
         assertEquals(5, (int) ids.get(0));
     }
+
+    @Test
+    void forcePage() {
+        TestQuery testQuery = new TestQuery();
+        PageList<TestEntity> pageList = testService.page(testQuery, testEntity -> testEntity);
+        assertEquals(5, pageList.getTotal());
+        assertEquals(0, (int) testQuery.getPageNumber());
+        assertEquals(10, (int) testQuery.getPageSize());
+    }
 }

@@ -57,6 +57,9 @@ public abstract class AbstractRestController<E extends Persistable<I>, I extends
 
     @Override
     public PageList<S> page(Q q) {
+        if (!q.needPaging()) {
+            q.setPageNumber(0);
+        }
         return new PageList<>(list(q), count(q));
     }
 

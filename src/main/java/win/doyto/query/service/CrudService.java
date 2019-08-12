@@ -1,5 +1,6 @@
 package win.doyto.query.service;
 
+import win.doyto.query.core.PageQuery;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
@@ -9,7 +10,7 @@ import java.io.Serializable;
  *
  * @author f0rb
  */
-public interface CrudService<E extends Persistable<I>, I extends Serializable, Q> extends CommonCrudService<E, I, Q> {
+public interface CrudService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> extends CommonCrudService<E, I, Q> {
 
     E get(I id);
 
