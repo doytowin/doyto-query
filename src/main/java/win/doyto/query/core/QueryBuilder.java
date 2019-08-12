@@ -79,7 +79,7 @@ public class QueryBuilder {
 
     static String buildPaging(String sql, PageQuery pageQuery) {
         if (pageQuery.needPaging()) {
-            sql = GlobalConfiguration.instance().getDialect().buildPageSql(sql, pageQuery.getPageSize(), pageQuery.getOffset());
+            sql = GlobalConfiguration.instance().getDialect().buildPageSql(sql, pageQuery.getPageSize(), pageQuery.calcOffset());
         }
         return sql;
     }

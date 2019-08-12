@@ -52,7 +52,7 @@ public class PageQuery implements Serializable {
         return max(0, number);
     }
 
-    public int getOffset() {
+    public int calcOffset() {
         return needPaging() ? getPageSize() * getPageNumber() : 0;
     }
 

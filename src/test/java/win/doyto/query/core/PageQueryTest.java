@@ -17,7 +17,7 @@ class PageQueryTest {
     void needPaging() {
         PageQuery pageQuery = new PageQuery();
         assertFalse(pageQuery.needPaging());
-        assertEquals(0, pageQuery.getOffset());
+        assertEquals(0, pageQuery.calcOffset());
     }
 
     @Test
