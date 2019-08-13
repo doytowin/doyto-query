@@ -92,7 +92,7 @@ public class AssociativeServiceTemplate<L, R> implements AssociativeService<L, R
         if (rightIds.isEmpty()) {
             return 0;
         }
-        return allocate(leftId, rightIds);
+        return allocate(singleton(leftId), rightIds);
     }
 
     @Override
@@ -102,15 +102,12 @@ public class AssociativeServiceTemplate<L, R> implements AssociativeService<L, R
         if (leftIds.isEmpty()) {
             return 0;
         }
-        return allocate(leftIds, rightId);
+        return allocate(leftIds, singleton(rightId));
     }
 
-    public int allocate(L leftId, Collection<R> rightIds) {
-        return allocate(singleton(leftId), rightIds);
-    }
-
-    public int allocate(Collection<L> leftId, R rightId) {
-        return allocate(leftId, singleton(rightId));
+    @Override
+    public int allocate(L leftId, R rightId) {
+        return !exists(leftId, rightId) ? allocate(singleton(leftId), singleton(rightId)) : 0;
     }
 
     public int allocate(Collection<L> leftIds, Collection<R> rightIds) {

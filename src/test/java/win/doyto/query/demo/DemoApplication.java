@@ -35,4 +35,9 @@ public class DemoApplication {
     public AssociativeService<Long, Integer> userAndRoleAssociativeService() {
         return new AssociativeServiceTemplate<>("t_user_and_role", "userId", "roleId", "createUserId");
     }
+
+    @Bean
+    public AssociativeService<Integer, Integer> roleAndPermissionAssociativeService() {
+        return new AssociativeServiceTemplate<>("t_role_and_permission", "roleId", "permissionId");
+    }
 }

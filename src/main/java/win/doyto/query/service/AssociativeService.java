@@ -36,13 +36,7 @@ public interface AssociativeService<L, R> {
 
     long count(Collection<L> leftIds, Collection<R> rightIds);
 
-    default int allocate(L leftId, R rightId) {
-        return allocate(leftId, singleton(rightId));
-    }
-
-    int allocate(L leftId, Collection<R> rightIds);
-
-    int allocate(Collection<L> leftIds, R rightId);
+    int allocate(L leftId, R rightId);
 
     default void deallocate(L leftId, R rightId) {
         deallocate(singleton(leftId), singleton(rightId));
