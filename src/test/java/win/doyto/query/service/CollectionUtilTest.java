@@ -45,13 +45,13 @@ class CollectionUtilTest {
         //then
         //通过ArgumentCaptor捕获所有log
         ArgumentCaptor<ILoggingEvent> logCaptor = ArgumentCaptor.forClass(ILoggingEvent.class);
-        verify(appender, times(2)).doAppend(logCaptor.capture());
+        verify(appender, times(3)).doAppend(logCaptor.capture());
 
         assertThat(logCaptor.getAllValues())
-            .hasSize(2)
+            .hasSize(3)
             .extracting(ILoggingEvent::getFormattedMessage)
-            .containsExactly(
-                "Find more than one element of class win.doyto.query.core.test.TestEntity",
+            .contains(
+                "Find 2 elements of class win.doyto.query.core.test.TestEntity",
                 "Repetitive elements: \nwin.doyto.query.core.test.TestEntity[]\nwin.doyto.query.core.test.TestEntity[username=test,password=password]"
             );
 

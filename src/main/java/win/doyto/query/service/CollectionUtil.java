@@ -3,8 +3,10 @@ package win.doyto.query.service;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 /**
@@ -21,12 +23,19 @@ class CollectionUtil {
             return iterator.hasNext() ? iterator.next() : null;
         } finally {
             if (iterator.hasNext()) {
-                log.warn("Find more than one element of {}", iterator.next().getClass());
                 StringBuilder sb = new StringBuilder();
+                int cnt = 0;
                 for (E e : iterable) {
-                    sb.append("\n").append(e instanceof String ? e : ToStringBuilder.reflectionToString(e, NonNullToStringStyle.NON_NULL_STYLE));
+                    if (cnt < 3) {
+                        sb.append("\n").append(e instanceof String ? e : ToStringBuilder.reflectionToString(e, NonNullToStringStyle.NON_NULL_STYLE));
+                    }
+                    cnt++;
                 }
+
+                Class<?> clazz = iterator.next().getClass();
+                log.warn(String.format("Find %d elements of %s", cnt, clazz));
                 log.warn("Repetitive elements: {}", sb.toString());
+                log.warn("\n  - {}", StringUtils.join(Arrays.copyOfRange(new Exception().getStackTrace(), 0, 5), "\n  - "));
             }
         }
     }
