@@ -40,9 +40,12 @@ class PageQueryTest {
 
     @Test
     void regex() {
-        String sort = "user_type,desc;field(user_status,2,0,11);id,asc";
-        assertTrue(Pattern.compile(PageQuery.RX_SORT).matcher(sort).matches());
+        Pattern sortPtn = Pattern.compile(PageQuery.RX_SORT);
 
-        assertTrue(Pattern.compile(PageQuery.RX_SORT).matcher("field(gender,'male','female');id,desc").matches());
+        assertTrue(sortPtn.matcher("user_type,desc;field(user_status,2,0,11);id,asc").matches());
+
+        assertTrue(sortPtn.matcher("field(gender,'male','female');id,desc").matches());
+
+        assertTrue(sortPtn.matcher("field(gender,'male','female')").matches());
     }
 }
