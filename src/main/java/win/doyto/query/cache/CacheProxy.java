@@ -27,9 +27,6 @@ public class CacheProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         try {
-            if (Object.class.equals(method.getDeclaringClass())) {
-                return method.invoke(this, args);
-            }
             return method.invoke(delegate, args);
         } catch (InvocationTargetException e) {
             log.error("{}#{}[cache={}, key={}] failed: {}",

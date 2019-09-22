@@ -72,7 +72,7 @@ public class QueryBuilder {
     static String buildOrderBy(String sql, PageQuery pageQuery, String operation) {
         // intentionally use ==
         if (SELECT == operation && pageQuery.getSort() != null) {
-            sql += " ORDER BY " + PTN_SORT.matcher(pageQuery.getSort()).replaceAll(" $1").replaceAll(";", SEPARATOR);
+            sql += " ORDER BY " + PTN_SORT.matcher(pageQuery.getSort()).replaceAll(" $1").replace(";", SEPARATOR);
         }
         return sql;
     }
