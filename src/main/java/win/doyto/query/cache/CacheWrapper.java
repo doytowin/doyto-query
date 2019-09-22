@@ -22,6 +22,12 @@ public interface CacheWrapper<T> {
 
     Cache getCache();
 
+    @SuppressWarnings("unchecked")
+    default T get(String key) {
+        Cache.ValueWrapper valueWrapper = getCache().get(key);
+        return valueWrapper != null ? (T) valueWrapper.get() : null;
+    }
+
     default void evict(String key) {
         getCache().evict(key);
     }

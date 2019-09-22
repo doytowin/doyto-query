@@ -23,6 +23,9 @@ public class DoytoQueryInitializer implements ApplicationContextInitializer<Conf
         String enabled = environment.getProperty(MAP_CAMEL_CASE_TO_UNDERSCORE, "false");
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(Boolean.valueOf(enabled));
 
+        String ignoreCacheException = environment.getProperty(DOYTO_QUERY_CONFIG + "ignore-cache-exception", "false");
+        GlobalConfiguration.instance().setIgnoreCacheException(Boolean.valueOf(ignoreCacheException));
+
         String dialectClass = environment.getProperty(DIALECT, "win.doyto.query.config.MySQLDialect");
         final Dialect dialect = (Dialect) Class.forName(dialectClass).getDeclaredConstructor().newInstance();
         GlobalConfiguration.instance().setDialect(dialect);

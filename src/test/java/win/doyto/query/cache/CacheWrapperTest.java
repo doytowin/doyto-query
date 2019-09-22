@@ -8,6 +8,7 @@ import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.support.NoOpCache;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.Invocable;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -103,6 +104,8 @@ public class CacheWrapperTest {
     @Test
     @SuppressWarnings("squid:S2925")
     public void checkLogForPutException() throws InterruptedException {
+        GlobalConfiguration.instance().setIgnoreCacheException(false);
+
         //given
         @SuppressWarnings("unchecked")
         Appender<ILoggingEvent> appender = mock(Appender.class);
@@ -130,13 +133,15 @@ public class CacheWrapperTest {
         //then
         //通过ArgumentCaptor捕获所有log
         ArgumentCaptor<ILoggingEvent> logCaptor = ArgumentCaptor.forClass(ILoggingEvent.class);
-        verify(appender, times(2)).doAppend(logCaptor.capture());
+        verify(appender, times(1)).doAppend(logCaptor.capture());
         assertThat(logCaptor.getAllValues())
-            .hasSize(2)
+            .hasSize(1)
             .extracting(ILoggingEvent::getMessage)
             .containsExactly(
-                "Cache#get failed: [cache=checkLog, key=hello]",
-                "Cache#put failed: [cache=checkLog, key=hello]"
+                "Cache#get failed: [cache=checkLog, key=hello]"
             );
+
+        GlobalConfiguration.instance().setIgnoreCacheException(true);
+
     }
 }

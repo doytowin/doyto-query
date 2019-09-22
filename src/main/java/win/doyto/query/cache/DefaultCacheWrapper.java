@@ -1,10 +1,10 @@
 package win.doyto.query.cache;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.support.NoOpCache;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.Invocable;
 
 import java.util.concurrent.*;
@@ -16,7 +16,6 @@ import java.util.concurrent.*;
  */
 @Slf4j
 @Getter
-@Setter
 class DefaultCacheWrapper<V> implements CacheWrapper<V> {
 
     private static final int MAXIMUM_POOL_SIZE = 4;
@@ -41,14 +40,13 @@ class DefaultCacheWrapper<V> implements CacheWrapper<V> {
             log.error(String.format("Cache#get failed: [cache=%s, key=%s]", cache.getName(), key), e);
         }
         V value = invocable.invoke();
-        executorService.execute(() -> {
-            try {
-                cache.put(key, value);
-            } catch (Exception e) {
-                log.error(String.format("Cache#put failed: [cache=%s, key=%s]", cache.getName(), key), e);
-            }
-        });
+        executorService.execute(() -> cache.put(key, value));
         return value;
+    }
+
+    @Override
+    public void setCache(Cache cache) {
+        this.cache = GlobalConfiguration.instance().isIgnoreCacheException() ? CacheProxy.wrap(cache) : cache;
     }
 
     private static class RenameThreadFactory implements ThreadFactory {

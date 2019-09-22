@@ -14,6 +14,7 @@ import win.doyto.query.core.Dialect;
 public class GlobalConfiguration {
 
     private boolean mapCamelCaseToUnderscore;
+    private boolean ignoreCacheException = true;
     private Dialect dialect = new MySQLDialect();
 
     private GlobalConfiguration() {

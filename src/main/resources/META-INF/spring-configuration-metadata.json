@@ -6,6 +6,11 @@
       "description": "True to map camelCase to under_score."
     },
     {
+      "name": "doyto.query.config.ignore-cache-exception",
+      "type": "java.lang.Boolean",
+      "description": "Ignore cache operation exception, e.g. timeout. Default: true"
+    },
+    {
       "name": "doyto.query.config.dialect",
       "type": "win.doyto.query.core.Dialect",
       "description": "Database dialect implementation."
