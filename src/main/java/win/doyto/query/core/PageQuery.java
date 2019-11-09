@@ -1,13 +1,16 @@
 package win.doyto.query.core;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
 import win.doyto.query.validation.PageGroup;
 
-import java.io.Serializable;
 import javax.validation.constraints.Pattern;
+import java.io.Serializable;
 
 import static java.lang.Math.max;
 
@@ -16,12 +19,15 @@ import static java.lang.Math.max;
  *
  * @author f0rb
  */
+@Setter
 @Accessors(chain = true)
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PageQuery implements Serializable {
 
     static final String RX_SORT = "(\\w+,(asc|desc);|field\\(\\w+(,[\\w']+)+\\);)*(\\w+,(asc|desc)|field\\(\\w+(,[\\w']+)+\\))";
 
-    @Setter
     private Integer pageNumber;
 
     @Setter

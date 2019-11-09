@@ -1,6 +1,10 @@
 package win.doyto.query.core.test;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.QueryField;
 import win.doyto.query.annotation.SubQuery;
 import win.doyto.query.core.PageQuery;
@@ -15,7 +19,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class TestQuery extends PageQuery {

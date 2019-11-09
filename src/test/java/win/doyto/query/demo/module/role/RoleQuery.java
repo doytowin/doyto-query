@@ -1,6 +1,10 @@
 package win.doyto.query.demo.module.role;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.NestedQuery;
 import win.doyto.query.core.PageQuery;
 
@@ -11,7 +15,7 @@ import win.doyto.query.core.PageQuery;
  */
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoleQuery extends PageQuery {

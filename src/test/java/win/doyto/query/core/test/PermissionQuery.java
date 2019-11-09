@@ -1,6 +1,10 @@
 package win.doyto.query.core.test;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.NestedQueries;
 import win.doyto.query.annotation.NestedQuery;
 import win.doyto.query.annotation.SubQuery;
@@ -13,7 +17,11 @@ import java.util.List;
  *
  * @author f0rb on 2019-05-28
  */
-@Builder
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PermissionQuery extends PageQuery {
 
    @NestedQueries(

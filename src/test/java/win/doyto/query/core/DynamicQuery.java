@@ -1,8 +1,10 @@
 package win.doyto.query.core;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 /**
  * DynamicQuery
@@ -11,7 +13,9 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@Builder
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DynamicQuery extends PageQuery {
 
     private String user;
