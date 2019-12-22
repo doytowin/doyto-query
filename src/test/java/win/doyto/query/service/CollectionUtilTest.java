@@ -56,4 +56,28 @@ class CollectionUtilTest {
             );
 
     }
+
+    @Test
+    void logThreeElementsAtMost() {
+        //given
+        @SuppressWarnings("unchecked")
+        Appender<ILoggingEvent> appender = mock(Appender.class);
+        ((Logger) LoggerFactory.getLogger(CollectionUtil.class)).addAppender(appender);
+
+        //when
+        assertEquals("hello", CollectionUtil.first(Arrays.asList("hello", "three", "logs", "at most")));
+
+        //then
+        //通过ArgumentCaptor捕获所有log
+        ArgumentCaptor<ILoggingEvent> logCaptor = ArgumentCaptor.forClass(ILoggingEvent.class);
+        verify(appender, times(3)).doAppend(logCaptor.capture());
+
+        assertThat(logCaptor.getAllValues())
+                .hasSize(3)
+                .extracting(ILoggingEvent::getFormattedMessage)
+                .contains(
+                        "Find 4 elements of class java.lang.String",
+                        "Repetitive elements: \nhello\nthree\nlogs\n..."
+                );
+    }
 }

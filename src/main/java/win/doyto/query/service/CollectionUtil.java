@@ -31,6 +31,9 @@ class CollectionUtil {
                     }
                     cnt++;
                 }
+                if (cnt > 3) {
+                    sb.append("\n...");
+                }
 
                 Class<?> clazz = iterator.next().getClass();
                 log.warn(String.format("Find %d elements of %s", cnt, clazz));
