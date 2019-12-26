@@ -40,7 +40,7 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
         // init fields
         Field[] allFields = FieldUtils.getAllFields(entityClass);
         List<Field> tempFields = new ArrayList<>(allFields.length);
-        Arrays.stream(allFields).filter(field -> !ignoreField(field)).forEachOrdered(tempFields::add);
+        Arrays.stream(allFields).filter(CommonUtil::fieldFilter).forEachOrdered(tempFields::add);
         fields = Collections.unmodifiableList(tempFields);
         fieldsSize = fields.size();
 

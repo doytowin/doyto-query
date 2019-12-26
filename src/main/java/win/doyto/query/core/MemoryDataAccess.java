@@ -47,7 +47,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         // init fields
         Field[] allFields = FieldUtils.getAllFields(entityClass);
         List<Field> tempFields = new ArrayList<>(allFields.length);
-        Arrays.stream(allFields).filter(field -> !ignoreField(field)).forEachOrdered(tempFields::add);
+        Arrays.stream(allFields).filter(CommonUtil::fieldFilter).forEachOrdered(tempFields::add);
         fields = Collections.unmodifiableList(tempFields);
         Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
         if (idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class)) {
@@ -152,7 +152,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
      */
     protected boolean filterByQuery(Q query, E entity) {
         for (Field field : query.getClass().getDeclaredFields()) {
-            if (!ignoreField(field) && supportFilter(field)) {
+            if (supportFilter(field)) {
                 Object v1 = readField(field, query);
                 if (isValidValue(v1, field)) {
                     boolean shouldNotRemain = unsatisfied(entity, field.getName(), v1);
@@ -166,7 +166,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     }
 
     private boolean supportFilter(Field field) {
-        return !field.isAnnotationPresent(SubQuery.class) && !field.isAnnotationPresent(NestedQueries.class);
+        return fieldFilter(field) && !field.isAnnotationPresent(SubQuery.class) && !field.isAnnotationPresent(NestedQueries.class);
     }
 
     protected Boolean unsatisfied(E entity, String queryFieldName, Object queryFieldValue) {

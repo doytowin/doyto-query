@@ -88,12 +88,12 @@ class CommonUtil {
         FieldUtils.writeField(field, target, value, true);
     }
 
-    static boolean ignoreField(Field field) {
-        return field.getName().startsWith("$")              // $jacocoData
+    public static boolean fieldFilter(Field field) {
+        return !(field.getName().startsWith("$")              // $jacocoData
             || Modifier.isStatic(field.getModifiers())      // static field
             || field.isAnnotationPresent(GeneratedValue.class)// id
             || field.isAnnotationPresent(Transient.class)   // Transient field
-            ;
+        );
     }
 
     static String wrapWithParenthesis(String input) {
@@ -114,7 +114,7 @@ class CommonUtil {
 
     static String convertColumn(String columnName) {
         return GlobalConfiguration.instance().isMapCamelCaseToUnderscore() ?
-            camelCaseToUnderscore(columnName) : columnName;
+                camelCaseToUnderscore(columnName) : columnName;
     }
 
     private static String camelCaseToUnderscore(String camel) {
@@ -123,8 +123,8 @@ class CommonUtil {
 
     static boolean isValidValue(Object value, Field field) {
         return !(value == null
-            || (value instanceof Boolean && field.getType().isPrimitive() && Boolean.FALSE.equals(value))
-            || (value instanceof Collection && field.getName().endsWith(QuerySuffix.NotIn.name()) && ((Collection) value).isEmpty())
+                || (value instanceof Boolean && field.getType().isPrimitive() && Boolean.FALSE.equals(value))
+                || (value instanceof Collection && field.getName().endsWith(QuerySuffix.NotIn.name()) && ((Collection) value).isEmpty())
         );
     }
 

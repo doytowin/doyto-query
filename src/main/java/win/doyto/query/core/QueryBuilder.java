@@ -111,7 +111,7 @@ public class QueryBuilder {
     private static void initFields(Object query) {
         Class<?> clazz = query.getClass();
         if (!classFieldsMap.containsKey(clazz)) {
-            classFieldsMap.put(clazz, Arrays.stream(clazz.getDeclaredFields()).filter(field -> !ignoreField(field)).toArray(Field[]::new));
+            classFieldsMap.put(clazz, Arrays.stream(clazz.getDeclaredFields()).filter(CommonUtil::fieldFilter).toArray(Field[]::new));
             for (Field field : classFieldsMap.get(clazz)) {
                 FieldProcessor.init(field);
             }
