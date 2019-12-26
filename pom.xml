@@ -158,6 +158,24 @@
 
     <build>
         <sourceDirectory>${sourceDirectory}</sourceDirectory>
+        <testResources>
+            <testResource>
+                <directory>./src/test/java</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.json</include>
+                </includes>
+            </testResource>
+            <testResource>
+                <directory>./src/test/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.yml</include>
+                    <include>**/*.sql</include>
+                    <include>**/*.xml</include>
+                </includes>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -1,6 +1,11 @@
 package win.doyto.query.demo.module.menu;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import win.doyto.query.demo.common.BeanUtil;
+
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -11,16 +16,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class MenuControllerTest {
     String platform = "01";
+    MenuController menuController = new MenuController();
+
+    @BeforeEach
+    void setUp() throws IOException {
+        menuController.batchInsert(BeanUtil.loadJsonData("menu.json", new TypeReference<Iterable<MenuEntity>>() {}));
+    }
 
     @Test
     void get() {
-        MenuController menuController = new MenuController();
-
-        MenuRequest menuRequest = new MenuRequest();
-        menuRequest.setParentId(0);
-        menuRequest.setMenuName("root");
-        menuController.create(menuRequest, platform);
-
         MenuQuery menuQuery = new MenuQuery();
         menuQuery.setId(1);
         menuQuery.setPlatform(platform);
