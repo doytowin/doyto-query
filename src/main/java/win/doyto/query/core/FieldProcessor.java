@@ -1,6 +1,8 @@
 package win.doyto.query.core;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.*;
 
@@ -18,6 +20,7 @@ import static win.doyto.query.core.Constant.*;
  *
  * @author f0rb on 2019-06-04
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class FieldProcessor {
 
     private static final Map<Field, Processor> FIELD_PROCESSOR_MAP = new ConcurrentHashMap<>();
