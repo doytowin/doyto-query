@@ -14,7 +14,7 @@ public abstract class AbstractCrudService<E extends Persistable<I>, I extends Se
     extends AbstractService<E, I, Q> implements CrudService<E, I, Q> {
 
     @Override
-    protected final String resolveCacheKey(E e) {
+    protected String resolveCacheKey(E e) {
         return String.valueOf(e.getId());
     }
 

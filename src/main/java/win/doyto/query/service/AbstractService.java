@@ -57,7 +57,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         dataAccess = new MemoryDataAccess<>(entityClass);
     }
 
-    protected final Type[] getActualTypeArguments() {
+    protected Type[] getActualTypeArguments() {
         Type genericSuperclass = getClass();
         do {
             genericSuperclass = ((Class) genericSuperclass).getGenericSuperclass();
