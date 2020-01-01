@@ -393,7 +393,7 @@ public class QueryBuilderTest {
         PageQuery pageQuery = TestQuery.builder().build().setSort("FIELD(status,1,3,2,0);id,DESC");
         assertEquals(" ORDER BY FIELD(status,1,3,2,0), id DESC", QueryBuilder.buildOrderBy("", pageQuery, Constant.SELECT));
 
-        pageQuery.setSort("FIELD(gender,'male','female');id,DESC");
+        pageQuery.setSort(OrderBy.create().field("gender,'male','female'").desc("id").toString());
         assertEquals(" ORDER BY FIELD(gender,'male','female'), id DESC", QueryBuilder.buildOrderBy("", pageQuery, Constant.SELECT));
     }
 }
