@@ -10,24 +10,25 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static win.doyto.query.core.Constant.*;
+import static win.doyto.query.core.Constant.SEPARATOR;
+import static win.doyto.query.core.Constant.WHERE;
 
 /**
  * QuerySuffix
  *
  * @author f0rb
  */
-@SuppressWarnings("squid:S00115")
+@SuppressWarnings("java:S115")
 @Getter
 enum QuerySuffix {
     Not("!="),
     NotLike("NOT LIKE"),
     Start("LIKE"),
     Like("LIKE"),
-    NotIn("NOT IN", Ex.collection),
-    In("IN", Ex.collection),
-    NotNull("IS NOT NULL", Ex.empty),
-    Null("IS NULL", Ex.empty),
+    NotIn("NOT IN", Ex.COLLECTION),
+    In("IN", Ex.COLLECTION),
+    NotNull("IS NOT NULL", Ex.EMPTY),
+    Null("IS NULL", Ex.EMPTY),
     Gt(">"),
     Ge(">="),
     Lt("<"),
@@ -48,7 +49,7 @@ enum QuerySuffix {
     private final Ex ex;
 
     QuerySuffix(String op) {
-        this(op, Ex.placeHolder);
+        this(op, Ex.REPLACE_HOLDER);
     }
 
     QuerySuffix(String op, Ex ex) {
@@ -88,13 +89,14 @@ enum QuerySuffix {
         return ex.getEx(value);
     }
 
-    @SuppressWarnings("squid:S1214")
+    @SuppressWarnings("java:S1214")
     interface Ex {
-        Ex placeHolder = value -> REPLACE_HOLDER;
-        Ex empty = value -> EMPTY;
-        Ex collection = value -> {
-            int size = ((Collection) value).size();
-            return CommonUtil.wrapWithParenthesis(StringUtils.trimToNull(StringUtils.join(IntStream.range(0, size).mapToObj(i -> REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR)));
+        Ex REPLACE_HOLDER = value -> Constant.REPLACE_HOLDER;
+        Ex EMPTY = value -> Constant.EMPTY;
+        Ex COLLECTION = value -> {
+            int size = ((Collection<?>) value).size();
+            String replaceHolders = IntStream.range(0, size).mapToObj(i -> Constant.REPLACE_HOLDER).collect(Collectors.joining(SEPARATOR));
+            return CommonUtil.wrapWithParenthesis(StringUtils.trimToNull(replaceHolders));
         };
 
         String getEx(Object value);

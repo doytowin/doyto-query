@@ -22,6 +22,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <argLine/>
 
+        <sonar.exclusions>pom.xml</sonar.exclusions>
+
         <slf4j-api.version>1.7.25</slf4j-api.version>
         <spring-boot.version>2.1.3.RELEASE</spring-boot.version>
         <spring.version>5.1.5.RELEASE</spring.version>
@@ -229,6 +231,25 @@
                             <sourceDirectory>src/main/java</sourceDirectory>
                             <outputDirectory>${project.build.directory}/delombok</outputDirectory>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.5</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

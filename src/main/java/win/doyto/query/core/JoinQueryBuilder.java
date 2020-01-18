@@ -54,7 +54,7 @@ class JoinQueryBuilder {
         return matcher.appendTail(sb).toString();
     }
 
-    @SuppressWarnings("squid:S4973")
+    @SuppressWarnings("java:S4973")
     private String build(PageQuery pageQuery, List<Object> argList, String... columns) {
         pageQuery = SerializationUtils.clone(pageQuery);
 

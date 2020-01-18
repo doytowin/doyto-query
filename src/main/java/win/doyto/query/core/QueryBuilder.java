@@ -50,7 +50,7 @@ public class QueryBuilder {
         return build(pageQuery, argList, Constant.SELECT, columns, tableName);
     }
 
-    @SuppressWarnings("squid:S4973")
+    @SuppressWarnings("java:S4973")
     static String build(PageQuery pageQuery, List<Object> argList, String operation, String[] columns, String from) {
         String sql;
         sql = buildStart(operation, columns, from);
@@ -68,7 +68,7 @@ public class QueryBuilder {
         return operation + StringUtils.join(columns, SEPARATOR) + FROM + from;
     }
 
-    @SuppressWarnings("squid:S4973")
+    @SuppressWarnings("java:S4973")
     static String buildOrderBy(String sql, PageQuery pageQuery, String operation) {
         // intentionally use ==
         if (SELECT == operation && pageQuery.getSort() != null) {

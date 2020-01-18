@@ -17,7 +17,6 @@ import java.util.List;
 @RestController
 @RequestMapping("{platform}/menu")
 @AllArgsConstructor
-@SuppressWarnings("squid:S4529")
 class MenuController extends AbstractDynamicService<MenuEntity, Integer, MenuQuery> {
 
     @Override

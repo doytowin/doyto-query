@@ -8,7 +8,7 @@ import win.doyto.query.entity.Persistable;
  *
  * @author f0rb on 2019-06-01
  */
-interface CommonCrudService<E extends Persistable, I, Q extends PageQuery> extends QueryService<E, I, Q> {
+interface CommonCrudService<E extends Persistable<I>, I, Q extends PageQuery> extends QueryService<E, I, Q> {
 
     void create(E e);
 

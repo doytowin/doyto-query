@@ -5,7 +5,7 @@ package win.doyto.query.core;
  *
  * @author f0rb on 2019-06-03
  */
-@SuppressWarnings("squid:S1214")
+@SuppressWarnings("java:S1214")
 interface Constant {
     String IN = "IN";
     String SEPARATOR = ", ";

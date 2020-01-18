@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
  *
  * @author f0rb
  */
-@SuppressWarnings("squid:S2925")
+@SuppressWarnings("java:S2925")
 public class CacheWrapperTest {
 
     private static class TestInvocable implements Invocable<String> {
@@ -102,7 +102,6 @@ public class CacheWrapperTest {
     }
 
     @Test
-    @SuppressWarnings("squid:S2925")
     public void checkLogForPutException() throws InterruptedException {
         GlobalConfiguration.instance().setIgnoreCacheException(false);
 

@@ -80,7 +80,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         transactionOperations = new TransactionTemplate(transactionManager);
     }
 
-    @SuppressWarnings("squid:S4973")
+    @SuppressWarnings("java:S4973")
     @Value("${doyto.query.caches:}")
     public void setCacheList(List<String> cacheList) {
         if (cacheManager != null) {
