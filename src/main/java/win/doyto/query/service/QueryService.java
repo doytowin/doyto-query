@@ -30,11 +30,11 @@ public interface QueryService<E, I, Q extends PageQuery> {
     }
 
     default E get(Q query) {
-        return CollectionUtil.first(query(query));
+        return CollectionUtil.first(query(query), query);
     }
 
     default <V> V get(Q query, Function<E, V> transfer) {
-        return CollectionUtil.first(query(query, transfer));
+        return CollectionUtil.first(query(query, transfer), query);
     }
 
     default <V> List<V> query(Q query, Function<E, V> transfer) {

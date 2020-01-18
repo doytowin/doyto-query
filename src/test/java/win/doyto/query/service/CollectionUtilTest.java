@@ -7,8 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
 import win.doyto.query.core.test.TestEntity;
+import win.doyto.query.core.test.TestQuery;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,11 +24,18 @@ import static org.mockito.Mockito.*;
  */
 class CollectionUtilTest {
 
+    private static final int LOG_COUNT = 3;
+
     @Test
     void first() {
+        @SuppressWarnings("unchecked")
+        Appender<ILoggingEvent> appender = mock(Appender.class);
+        ((Logger) LoggerFactory.getLogger(CollectionUtil.class)).addAppender(appender);
         assertNull(CollectionUtil.first(Arrays.asList()));
         assertEquals("hello", CollectionUtil.first(Arrays.asList("hello")));
         assertEquals("hello", CollectionUtil.first(Arrays.asList("hello", "world")));
+        ArgumentCaptor<ILoggingEvent> logCaptor = ArgumentCaptor.forClass(ILoggingEvent.class);
+        verify(appender, times(LOG_COUNT)).doAppend(logCaptor.capture());
     }
 
     @Test
@@ -36,24 +45,33 @@ class CollectionUtilTest {
         Appender<ILoggingEvent> appender = mock(Appender.class);
         ((Logger) LoggerFactory.getLogger(CollectionUtil.class)).addAppender(appender);
 
-        //when
         TestEntity testEntity = new TestEntity();
-        testEntity.setUsername("test");
+        testEntity.setUsername("test1");
         testEntity.setPassword("password");
-        assertNull(CollectionUtil.first(Arrays.asList(new TestEntity(), testEntity)).getUsername());
+
+        TestEntity testEntity2 = new TestEntity();
+        testEntity2.setUsername("test2");
+
+        List<TestEntity> queryResult = Arrays.asList(testEntity2, testEntity);
+        TestQuery query = TestQuery.builder().usernameLike("test").build();
+
+        //when
+        CollectionUtil.debugRepetitiveElements(queryResult, query);
 
         //then
         //通过ArgumentCaptor捕获所有log
         ArgumentCaptor<ILoggingEvent> logCaptor = ArgumentCaptor.forClass(ILoggingEvent.class);
-        verify(appender, times(3)).doAppend(logCaptor.capture());
+        verify(appender, times(LOG_COUNT)).doAppend(logCaptor.capture());
 
         assertThat(logCaptor.getAllValues())
-            .hasSize(3)
-            .extracting(ILoggingEvent::getFormattedMessage)
-            .contains(
-                "Find 2 elements of class win.doyto.query.core.test.TestEntity",
-                "Repetitive elements: \nwin.doyto.query.core.test.TestEntity[]\nwin.doyto.query.core.test.TestEntity[username=test,password=password]"
-            );
+                .hasSize(LOG_COUNT)
+                .extracting(ILoggingEvent::getFormattedMessage)
+                .contains(
+                        "Found 2 elements of class win.doyto.query.core.test.TestEntity for query: " +
+                                "win.doyto.query.core.test.TestQuery[usernameLike=test,memoNull=false,memoNotNull=false]",
+                        "Repetitive elements: \nwin.doyto.query.core.test.TestEntity[username=test2]\n" +
+                                "win.doyto.query.core.test.TestEntity[username=test1,password=password]"
+                );
 
     }
 
@@ -65,18 +83,18 @@ class CollectionUtilTest {
         ((Logger) LoggerFactory.getLogger(CollectionUtil.class)).addAppender(appender);
 
         //when
-        assertEquals("hello", CollectionUtil.first(Arrays.asList("hello", "three", "logs", "at most")));
+        CollectionUtil.debugRepetitiveElements(Arrays.asList("hello", "three", "logs", "at most"), null);
 
         //then
         //通过ArgumentCaptor捕获所有log
         ArgumentCaptor<ILoggingEvent> logCaptor = ArgumentCaptor.forClass(ILoggingEvent.class);
-        verify(appender, times(3)).doAppend(logCaptor.capture());
+        verify(appender, times(LOG_COUNT)).doAppend(logCaptor.capture());
 
         assertThat(logCaptor.getAllValues())
-                .hasSize(3)
+                .hasSize(LOG_COUNT)
                 .extracting(ILoggingEvent::getFormattedMessage)
                 .contains(
-                        "Find 4 elements of class java.lang.String",
+                        "Found 4 elements of class java.lang.String",
                         "Repetitive elements: \nhello\nthree\nlogs\n..."
                 );
     }
