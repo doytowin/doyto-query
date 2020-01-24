@@ -2,6 +2,7 @@ package win.doyto.query.core;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import win.doyto.query.config.GlobalConfiguration;
 
 import java.util.*;
 import java.util.function.Function;
@@ -10,8 +11,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static win.doyto.query.core.Constant.SEPARATOR;
-import static win.doyto.query.core.Constant.WHERE;
+import static win.doyto.query.core.Constant.*;
 
 /**
  * QuerySuffix
@@ -63,6 +63,21 @@ enum QuerySuffix {
     }
 
     static String buildAndSql(List<Object> argList, Object value, String fieldName) {
+        if (GlobalConfiguration.instance().isSplitOrFirst() && fieldName.contains(OR)) {
+            final String alias;
+            int indexOfDot = fieldName.indexOf('.');
+            if (indexOfDot > 0) {
+                alias = fieldName.substring(0, indexOfDot + 1);
+                fieldName = fieldName.substring(indexOfDot);
+            } else {
+                alias = "";
+            }
+            Object finalValue = value;
+            String andSql = Arrays.stream(CommonUtil.splitByOr(fieldName))
+                                  .map(s -> buildAndSql(argList, finalValue, alias + s))
+                                  .collect(Collectors.joining(Constant.SPACE_OR));
+            return CommonUtil.wrapWithParenthesis(andSql);
+        }
         QuerySuffix querySuffix = resolve(fieldName);
         if (querySuffix == Like) {
             value = CommonUtil.escapeLike(String.valueOf(value));

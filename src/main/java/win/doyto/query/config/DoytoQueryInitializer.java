@@ -26,6 +26,9 @@ public class DoytoQueryInitializer implements ApplicationContextInitializer<Conf
         String ignoreCacheException = environment.getProperty(DOYTO_QUERY_CONFIG + "ignore-cache-exception", "false");
         GlobalConfiguration.instance().setIgnoreCacheException(Boolean.valueOf(ignoreCacheException));
 
+        String splitOrFirst = environment.getProperty(DOYTO_QUERY_CONFIG + "split-or-first", "true");
+        GlobalConfiguration.instance().setSplitOrFirst(Boolean.valueOf(splitOrFirst));
+
         String dialectClass = environment.getProperty(DIALECT, "win.doyto.query.config.MySQLDialect");
         final Dialect dialect = (Dialect) Class.forName(dialectClass).getDeclaredConstructor().newInstance();
         GlobalConfiguration.instance().setDialect(dialect);

@@ -9,10 +9,8 @@ import java.util.Collection;
 import java.util.List;
 import javax.persistence.EnumType;
 
-import static win.doyto.query.core.CommonUtil.convertColumn;
-import static win.doyto.query.core.CommonUtil.wrapWithParenthesis;
-import static win.doyto.query.core.Constant.REPLACE_HOLDER;
-import static win.doyto.query.core.Constant.SPACE;
+import static win.doyto.query.core.CommonUtil.*;
+import static win.doyto.query.core.Constant.*;
 
 /**
  * ColumnMeta
@@ -33,20 +31,20 @@ final class ColumnMeta {
             ex = SPACE + ex;
         }
         String columnName = querySuffix.resolveColumnName(fieldName);
-        if (columnName.contains("Or")) {
+        if (columnName.contains(OR)) {
             int indexOfDot = columnName.indexOf('.') + 1;
             String alias = "";
             if (indexOfDot > 0) {
                 alias = columnName.substring(0, indexOfDot);
                 columnName = columnName.substring(indexOfDot);
             }
-            String[] ors = CommonUtil.splitByOr(columnName);
+            String[] ors = splitByOr(columnName);
             List<String> columns = new ArrayList<>(ors.length);
             for (String or : ors) {
-                columns.add(alias + convertColumn(CommonUtil.camelize(or)) + SPACE + querySuffix.getOp() + ex);
+                columns.add(alias + convertColumn(or) + SPACE + querySuffix.getOp() + ex);
                 appendArgs(ex, value, argList);
             }
-            return wrapWithParenthesis(StringUtils.join(columns, " OR "));
+            return wrapWithParenthesis(StringUtils.join(columns, SPACE_OR));
         }
 
         appendArgs(ex, value, argList);

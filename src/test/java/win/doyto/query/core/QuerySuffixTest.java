@@ -2,8 +2,10 @@ package win.doyto.query.core;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -18,5 +20,13 @@ class QuerySuffixTest {
         assertEquals("(null)", QuerySuffix.Ex.COLLECTION.getEx(Arrays.asList()));
         assertEquals("(?)", QuerySuffix.Ex.COLLECTION.getEx(Arrays.asList(1)));
         assertEquals("(?, ?)", QuerySuffix.Ex.COLLECTION.getEx(Arrays.asList(1, 2)));
+    }
+
+    @Test
+    void buildAndSql() {
+        ArrayList<Object> argList = new ArrayList<>();
+        String andSql = QuerySuffix.buildAndSql(argList, "test", "usernameOrUserCodeLike");
+        assertEquals("(username = ? OR userCode LIKE ?)", andSql);
+        assertThat(argList).containsExactly("test", "%test%");
     }
 }

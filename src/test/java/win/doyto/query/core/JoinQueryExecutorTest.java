@@ -1,6 +1,7 @@
 package win.doyto.query.core;
 
 import org.junit.jupiter.api.Test;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.test.TestEnum;
 import win.doyto.query.core.test.TestJoinQuery;
 import win.doyto.query.core.test.TestJoinView;
@@ -37,6 +38,9 @@ class JoinQueryExecutorTest {
 
     @Test
     void buildJoinSelectAndArgsWithAlias() {
+        // Backward compatible
+        GlobalConfiguration.instance().setSplitOrFirst(false);
+
         JoinQueryExecutor<TestJoinView, TestJoinQuery> joinQueryExecutor = new JoinQueryExecutor<>(null, TestJoinView.class);
 
         TestJoinQuery testJoinQuery = new TestJoinQuery();
@@ -52,6 +56,8 @@ class JoinQueryExecutorTest {
         SqlAndArgs sqlAndArgs = joinQueryExecutor.buildJoinSelectAndArgs(testJoinQuery);
         assertEquals(expected, sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly("VIP", TestEnum.VIP.ordinal(), "%VIP%", "%VIP%");
+
+        GlobalConfiguration.instance().setSplitOrFirst(true);
     }
 
     @Test

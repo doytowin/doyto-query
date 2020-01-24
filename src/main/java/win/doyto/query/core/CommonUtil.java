@@ -12,6 +12,7 @@ import win.doyto.query.config.GlobalConfiguration;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -133,7 +134,7 @@ class CommonUtil {
     }
 
     static String[] splitByOr(String columnName) {
-        return PTN_SPLIT_OR.split(columnName, 0);
+        return Arrays.stream(PTN_SPLIT_OR.split(columnName, 0)).map(CommonUtil::camelize).toArray(String[]::new);
     }
 
     static String toCamelCase(String input) {

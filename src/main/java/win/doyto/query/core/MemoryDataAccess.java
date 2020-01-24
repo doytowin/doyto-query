@@ -23,6 +23,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import static win.doyto.query.core.CommonUtil.*;
+import static win.doyto.query.core.Constant.OR;
 import static win.doyto.query.core.QuerySuffix.*;
 
 /**
@@ -174,11 +175,10 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         String columnName = querySuffix.resolveColumnName(queryFieldName);
         FilterExecutor.Matcher matcher = FilterExecutor.get(querySuffix);
 
-        if (columnName.contains("Or")) {
-            String[] names = splitByOr(columnName);
-            return Arrays.stream(names).
-                map(name -> readField(entity, camelize(name))).
-                             noneMatch(entityFieldValue -> matcher.match(queryFieldValue, entityFieldValue));
+        if (columnName.contains(OR)) {
+            return Arrays.stream(splitByOr(columnName))
+                         .map(name -> readField(entity, name))
+                         .noneMatch(entityFieldValue -> matcher.match(queryFieldValue, entityFieldValue));
         } else {
             Object entityFieldValue = readField(entity, columnName);
             return !matcher.match(queryFieldValue, entityFieldValue);

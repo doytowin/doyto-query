@@ -181,9 +181,9 @@ public class QueryBuilderTest {
     void supportOrWithLike() {
         TestQuery testQuery = TestQuery.builder().usernameOrEmailOrMobileLike("test").build();
 
-        assertEquals("SELECT * FROM user WHERE (username LIKE ? OR email LIKE ? OR mobile LIKE ?)",
+        assertEquals("SELECT * FROM user WHERE (username = ? OR email = ? OR mobile LIKE ?)",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
-        assertThat(argList).containsExactly("%test%", "%test%", "%test%");
+        assertThat(argList).containsExactly("test", "test", "%test%");
 
     }
 
@@ -202,9 +202,9 @@ public class QueryBuilderTest {
         Date date = new Date();
         TestQuery testQuery = TestQuery.builder().userNameOrUserCodeLike("test").createTimeLt(date).build();
 
-        assertEquals("SELECT * FROM user WHERE (user_name LIKE ? OR user_code LIKE ?) AND create_time < ?",
+        assertEquals("SELECT * FROM user WHERE (user_name = ? OR user_code LIKE ?) AND create_time < ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
-        assertThat(argList).containsExactly("%test%", "%test%", date);
+        assertThat(argList).containsExactly("test", "%test%", date);
     }
 
     @Test

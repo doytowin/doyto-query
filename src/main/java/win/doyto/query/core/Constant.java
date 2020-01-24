@@ -7,7 +7,6 @@ package win.doyto.query.core;
  */
 @SuppressWarnings("java:S1214")
 interface Constant {
-    String IN = "IN";
     String SEPARATOR = ", ";
     String REPLACE_HOLDER = "?";
     String SPACE = " ";
@@ -17,4 +16,6 @@ interface Constant {
     String FROM = " FROM ";
     String WHERE = " WHERE ";
     String EMPTY = "";
+    String SPACE_OR = " OR ";
+    String OR = "Or";
 }
