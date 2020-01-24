@@ -299,7 +299,9 @@ public class QueryBuilderTest {
 
     @Test
     void customPageDialect() {
-        GlobalConfiguration.instance().setDialect(
+        GlobalConfiguration globalConfiguration = GlobalConfiguration.instance();
+        Dialect origin = globalConfiguration.getDialect();
+        globalConfiguration.setDialect(
             (sql, limit, offset) -> String.format("SELECT LIMIT %d %d %s", offset, offset + limit, sql.substring("SELECT ".length())));
 
         PageQuery pageQuery = TestQuery.builder().build().setPageNumber(2).setPageSize(10);
@@ -307,8 +309,7 @@ public class QueryBuilderTest {
                      testQueryBuilder.buildSelectAndArgs(pageQuery, argList));
 
         // reset
-        GlobalConfiguration.instance().setDialect(
-            (sql, limit, offset) -> sql + " LIMIT " + limit + (sql.startsWith("SELECT") ? " OFFSET " + offset : ""));
+        globalConfiguration.setDialect(origin);
 
     }
 

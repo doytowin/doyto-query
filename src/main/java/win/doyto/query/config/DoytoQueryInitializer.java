@@ -13,24 +13,21 @@ import win.doyto.query.core.Dialect;
  */
 public class DoytoQueryInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
     private static final String DOYTO_QUERY_CONFIG = "doyto.query.config.";
-    private static final String MAP_CAMEL_CASE_TO_UNDERSCORE = DOYTO_QUERY_CONFIG + "map-camel-case-to-underscore";
-    private static final String DIALECT = DOYTO_QUERY_CONFIG + "dialect";
 
     @Override
     @SneakyThrows
     public void initialize(ConfigurableApplicationContext context) {
+        GlobalConfiguration globalConfiguration = GlobalConfiguration.instance();
         ConfigurableEnvironment environment = context.getEnvironment();
-        String enabled = environment.getProperty(MAP_CAMEL_CASE_TO_UNDERSCORE, "false");
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(Boolean.valueOf(enabled));
 
-        String ignoreCacheException = environment.getProperty(DOYTO_QUERY_CONFIG + "ignore-cache-exception", "false");
-        GlobalConfiguration.instance().setIgnoreCacheException(Boolean.valueOf(ignoreCacheException));
+        globalConfiguration.setMapCamelCaseToUnderscore(environment.getProperty(DOYTO_QUERY_CONFIG + "map-camel-case-to-underscore", boolean.class, globalConfiguration.isMapCamelCaseToUnderscore()));
 
-        String splitOrFirst = environment.getProperty(DOYTO_QUERY_CONFIG + "split-or-first", "true");
-        GlobalConfiguration.instance().setSplitOrFirst(Boolean.valueOf(splitOrFirst));
+        globalConfiguration.setIgnoreCacheException(environment.getProperty(DOYTO_QUERY_CONFIG + "ignore-cache-exception", boolean.class, globalConfiguration.isIgnoreCacheException()));
 
-        String dialectClass = environment.getProperty(DIALECT, "win.doyto.query.config.MySQLDialect");
-        final Dialect dialect = (Dialect) Class.forName(dialectClass).getDeclaredConstructor().newInstance();
-        GlobalConfiguration.instance().setDialect(dialect);
+        globalConfiguration.setSplitOrFirst(environment.getProperty(DOYTO_QUERY_CONFIG + "split-or-first", boolean.class, globalConfiguration.isSplitOrFirst()));
+
+        String dialectClass = environment.getProperty(DOYTO_QUERY_CONFIG + "dialect", globalConfiguration.getDialect().getClass().getName());
+        Dialect dialect = (Dialect) Class.forName(dialectClass).getDeclaredConstructor().newInstance();
+        globalConfiguration.setDialect(dialect);
     }
 }
