@@ -17,5 +17,4 @@ interface Constant {
     String WHERE = " WHERE ";
     String EMPTY = "";
     String SPACE_OR = " OR ";
-    String OR = "Or";
 }

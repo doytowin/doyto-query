@@ -41,6 +41,7 @@ public class TestQuery extends PageQuery {
     private String usernameOrEmailOrMobile;
 
     private String usernameOrEmailOrMobileLike;
+    private String usernameLikeOrEmailLikeOrMobileLike;
 
     private String usernameLike;
     private String usernameStart;

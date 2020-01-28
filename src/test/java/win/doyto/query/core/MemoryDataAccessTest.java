@@ -2,6 +2,7 @@ package win.doyto.query.core;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.test.TestEntity;
 import win.doyto.query.core.test.TestEnum;
 import win.doyto.query.core.test.TestQuery;
@@ -42,6 +43,18 @@ class MemoryDataAccessTest {
     }
 
     @Test
+    void filterByOrFirst() {
+        GlobalConfiguration.instance().setSplitOrFirst(false);
+        TestQuery testQuery = TestQuery.builder().usernameOrEmailOrMobileLike("username").build();
+        assertEquals(4, testMemoryDataAccess.query(testQuery).size());
+        GlobalConfiguration.instance().setSplitOrFirst(true);
+        assertEquals(0, testMemoryDataAccess.query(testQuery).size());
+
+        testQuery.setUsernameOrEmailOrMobileLike("1777888888");
+        assertEquals(5, testMemoryDataAccess.query(testQuery).size());
+    }
+
+    @Test
     void filterByLike() {
         TestQuery testQuery = TestQuery.builder().usernameLike("name").build();
         assertEquals(4, testMemoryDataAccess.query(testQuery).size());
@@ -75,7 +88,7 @@ class MemoryDataAccessTest {
 
     @Test
     void filterByMultiConditions() {
-        TestQuery testQuery = TestQuery.builder().valid(true).usernameOrEmailOrMobileLike("username").build();
+        TestQuery testQuery = TestQuery.builder().valid(true).usernameLikeOrEmailLikeOrMobileLike("username").build();
         List<TestEntity> userEntities = testMemoryDataAccess.query(testQuery);
         assertEquals(2, userEntities.size());
     }

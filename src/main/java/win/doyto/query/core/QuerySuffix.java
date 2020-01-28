@@ -11,7 +11,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static win.doyto.query.core.Constant.*;
+import static win.doyto.query.core.CommonUtil.containsOr;
+import static win.doyto.query.core.Constant.SEPARATOR;
+import static win.doyto.query.core.Constant.WHERE;
 
 /**
  * QuerySuffix
@@ -63,7 +65,7 @@ enum QuerySuffix {
     }
 
     static String buildAndSql(List<Object> argList, Object value, String fieldName) {
-        if (GlobalConfiguration.instance().isSplitOrFirst() && fieldName.contains(OR)) {
+        if (GlobalConfiguration.instance().isSplitOrFirst() && containsOr(fieldName)) {
             final String alias;
             int indexOfDot = fieldName.indexOf('.');
             if (indexOfDot > 0) {

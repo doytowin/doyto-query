@@ -31,7 +31,7 @@ final class ColumnMeta {
             ex = SPACE + ex;
         }
         String columnName = querySuffix.resolveColumnName(fieldName);
-        if (columnName.contains(OR)) {
+        if (containsOr(columnName)) {
             int indexOfDot = columnName.indexOf('.') + 1;
             String alias = "";
             if (indexOfDot > 0) {

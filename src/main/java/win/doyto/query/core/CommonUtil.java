@@ -137,6 +137,10 @@ class CommonUtil {
         return Arrays.stream(PTN_SPLIT_OR.split(columnName, 0)).map(CommonUtil::camelize).toArray(String[]::new);
     }
 
+    static boolean containsOr(String input) {
+        return PTN_SPLIT_OR.matcher(input).find();
+    }
+
     static String toCamelCase(String input) {
         String[] parts = input.split("_");
         StringBuilder result = new StringBuilder(parts[0]);
