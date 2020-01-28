@@ -137,13 +137,16 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
 
     @Override
     public final int delete(E e) {
-        return jdbcOperations.update(crudBuilder.buildDeleteById(e), e.getId());
+        String sql = crudBuilder.buildDeleteById(e);
+        SqlAndArgs.logSqlInfo(sql, Arrays.asList(e.getId()));
+        return jdbcOperations.update(sql, e.getId());
     }
 
     @Override
     public final void create(E e) {
         List<Object> args = new ArrayList<>();
         String sql = crudBuilder.buildCreateAndArgs(e, args);
+        SqlAndArgs.logSqlInfo(sql, args);
 
         if (isGeneratedId) {
             KeyHolder keyHolder = new GeneratedKeyHolder();
