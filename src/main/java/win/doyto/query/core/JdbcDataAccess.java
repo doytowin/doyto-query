@@ -86,14 +86,17 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     @Override
     @SuppressWarnings("unchecked")
     public final <V> List<V> queryColumns(Q q, Class<V> clazz, String... columns) {
-        columns = StringUtils.join(columns, SEPARATOR).split(",");
-        RowMapper customRowMapper;
-        if (Map.class.isAssignableFrom(clazz)) {
-            customRowMapper = new ColumnMapRowMapper();
-        } else {
-            customRowMapper = classRowMapperMap.computeIfAbsent(clazz, columns.length == 1 ? SingleColumnRowMapper::new : BeanPropertyRowMapper::new);
+        columns = StringUtils.join(columns, SEPARATOR).split("\\s*,\\s*");
+        if (!classRowMapperMap.containsKey(clazz)) {
+            if (Map.class.isAssignableFrom(clazz)) {
+                classRowMapperMap.put(clazz, new ColumnMapRowMapper());
+            } else if (columns.length == 1) {
+                classRowMapperMap.put(clazz, new SingleColumnRowMapper<>(clazz));
+            } else {
+                classRowMapperMap.put(clazz, new BeanPropertyRowMapper<>(clazz));
+            }
         }
-        return queryColumns(q, customRowMapper, columns);
+        return queryColumns(q, classRowMapperMap.get(clazz), columns);
     }
 
     private <V> List<V> queryColumns(Q q, RowMapper<V> rowMapper, String... columns) {
