@@ -29,4 +29,12 @@ class QuerySuffixTest {
         assertEquals("(username = ? OR userCode LIKE ?)", andSql);
         assertThat(argList).containsExactly("test", "%test%");
     }
+
+    @Test
+    void buildAndSqlWithAlias() {
+        ArrayList<Object> argList = new ArrayList<>();
+        String andSql = QuerySuffix.buildAndSql(argList, "test", "u.usernameOrUserCodeLike");
+        assertEquals("(u.username = ? OR u.userCode LIKE ?)", andSql);
+        assertThat(argList).containsExactly("test", "%test%");
+    }
 }

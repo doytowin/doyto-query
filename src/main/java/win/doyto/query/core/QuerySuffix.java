@@ -67,9 +67,9 @@ enum QuerySuffix {
     static String buildAndSql(List<Object> argList, Object value, String fieldName) {
         if (GlobalConfiguration.instance().isSplitOrFirst() && containsOr(fieldName)) {
             final String alias;
-            int indexOfDot = fieldName.indexOf('.');
+            int indexOfDot = fieldName.indexOf('.') + 1;
             if (indexOfDot > 0) {
-                alias = fieldName.substring(0, indexOfDot + 1);
+                alias = fieldName.substring(0, indexOfDot);
                 fieldName = fieldName.substring(indexOfDot);
             } else {
                 alias = "";
