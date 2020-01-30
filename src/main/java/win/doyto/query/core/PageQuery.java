@@ -9,8 +9,8 @@ import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.validation.PageGroup;
 
-import javax.validation.constraints.Pattern;
 import java.io.Serializable;
+import javax.validation.constraints.Pattern;
 
 import static java.lang.Math.max;
 
@@ -19,6 +19,7 @@ import static java.lang.Math.max;
  *
  * @author f0rb
  */
+@Getter
 @Setter
 @Accessors(chain = true)
 @SuperBuilder
@@ -26,17 +27,15 @@ import static java.lang.Math.max;
 @AllArgsConstructor
 public class PageQuery implements Serializable {
 
-    static final String RX_SORT = "(\\w+,(asc|desc);|field\\(\\w+(,[\\w']+)+\\);)*(\\w+,(asc|desc)|field\\(\\w+(,[\\w']+)+\\))";
+    protected static final String SORT_RX = "(\\w+,(asc|desc);|field\\(\\w+(,[\\w']+)+\\);)*(\\w+,(asc|desc)|field\\(\\w+(,[\\w']+)+\\))";
+    protected static final java.util.regex.Pattern SORT_PTN = java.util.regex.Pattern.compile(PageQuery.SORT_RX);
 
     private Integer pageNumber;
 
-    @Setter
     private Integer pageSize;
 
     @ApiModelProperty(value = "Sorting field, format: field1,desc;field2,asc;field(col,'v1','v2')")
-    @Pattern(regexp = RX_SORT, message = "Sorting field format error", groups = PageGroup.class)
-    @Getter
-    @Setter
+    @Pattern(regexp = SORT_RX, message = "Sorting field format error", groups = PageGroup.class)
     private String sort;
 
     public Integer getPageNumber() {

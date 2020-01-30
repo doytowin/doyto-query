@@ -40,7 +40,7 @@ class PageQueryTest {
 
     @Test
     void regex() {
-        Pattern sortPtn = Pattern.compile(PageQuery.RX_SORT);
+        Pattern sortPtn = PageQuery.SORT_PTN;
 
         assertTrue(sortPtn.matcher("user_type,desc;field(user_status,2,0,11);id,asc").matches());
 
