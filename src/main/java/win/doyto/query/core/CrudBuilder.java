@@ -21,12 +21,11 @@ import static win.doyto.query.core.Constant.*;
  */
 @SuppressWarnings("squid:CommentedOutCodeLine")
 @Slf4j
-final class CrudBuilder<E extends Persistable> extends QueryBuilder {
+final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
 
     private final Field idField;
     private final List<Field> fields;
     private final int fieldsSize;
-    private final boolean isDynamicTable;
     private final String wildInsertValue;   // ?, ?, ?
     private final String insertColumns;
     private final String wildSetClause;     // column1 = ?, column2 = ?
@@ -34,8 +33,6 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
     public CrudBuilder(Class<E> entityClass) {
         super(entityClass);
         idField = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0];
-
-        isDynamicTable = isDynamicTable(tableName);
 
         // init fields
         Field[] allFields = FieldUtils.getAllFields(entityClass);
@@ -83,10 +80,6 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
                 argList.add(o);
             }
         }
-    }
-
-    private String resolveTableName(E entity) {
-        return isDynamicTable ? replaceHolderInString(entity, tableName) : tableName;
     }
 
     public String buildCreateAndArgs(E entity, List<Object> argList) {
@@ -170,11 +163,7 @@ final class CrudBuilder<E extends Persistable> extends QueryBuilder {
         return new SqlAndArgs(buildDeleteAndArgs(query, argList), argList);
     }
 
-    public String buildDeleteById() {
-        return "DELETE FROM " + tableName + whereId;
-    }
-
-    protected String buildDeleteById(Object entity) {
-        return "DELETE FROM " + replaceHolderInString(entity, tableName) + whereId;
+    protected String buildDeleteById(Object idIdWrapper) {
+        return "DELETE FROM " + resolveTableName(idIdWrapper) + whereId;
     }
 }

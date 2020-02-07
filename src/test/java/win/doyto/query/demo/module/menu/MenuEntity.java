@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.entity.CommonEntity;
 
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -32,4 +33,10 @@ class MenuEntity extends CommonEntity<Integer, Long> {
 
     private Boolean valid;
 
+    @Override
+    public MenuIdWrapper toIdWrapper() {
+        Objects.requireNonNull(id);
+        Objects.requireNonNull(platform);
+        return new MenuIdWrapper(id, platform);
+    }
 }

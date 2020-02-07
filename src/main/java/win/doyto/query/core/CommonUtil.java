@@ -44,10 +44,24 @@ class CommonUtil {
         StringBuffer sb = new StringBuffer();
         do {
             String fieldName = matcher.group(1);
-            String replacement = StringUtils.remove(String.valueOf(readField(entity, fieldName)), ' ');
-            matcher.appendReplacement(sb, replacement);
+            Object value = readFieldGetter(entity, fieldName);
+            String replacement = String.valueOf(value);
+            if (QueryBuilder.PTN_REPLACE.matcher(replacement).matches()) {
+                matcher.appendReplacement(sb, replacement);
+            }
         } while (matcher.find());
         return matcher.appendTail(sb).toString();
+    }
+
+    static Object readFieldGetter(Object target, String fieldName) {
+        Object value;
+        try {
+            value = MethodUtils.invokeMethod(target, true, "get" + StringUtils.capitalize(fieldName));
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            log.warn("is/get调用异常 : {}-{}", e.getClass().getName(), e.getMessage());
+            value = readField(target, fieldName);
+        }
+        return value;
     }
 
     static Object readFieldGetter(Field field, Object target) {
@@ -81,7 +95,11 @@ class CommonUtil {
     }
 
     static Field getField(Object target, String fieldName) {
-        return FieldUtils.getField(target.getClass(), fieldName, true);
+        Field field = FieldUtils.getField(target.getClass(), fieldName, true);
+        if (field == null) {
+            log.warn("Field [{}] not found", fieldName);
+        }
+        return field;
     }
 
     @SneakyThrows

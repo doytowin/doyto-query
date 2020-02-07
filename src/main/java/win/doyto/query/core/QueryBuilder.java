@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.entity.Persistable;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -23,7 +22,7 @@ import static win.doyto.query.core.Constant.*;
  */
 @Slf4j
 public class QueryBuilder {
-    private static final Pattern PTN_REPLACE = Pattern.compile("\\w+");
+    static final Pattern PTN_REPLACE = Pattern.compile("\\w*");
     private static final Pattern PTN_SORT = Pattern.compile(",(asc|desc)", Pattern.CASE_INSENSITIVE);
 
     private static final Map<Class, Field[]> classFieldsMap = new ConcurrentHashMap<>();
@@ -32,22 +31,25 @@ public class QueryBuilder {
     protected final String tableName;
     protected final String idColumn;
     protected final String whereId;
+    protected final boolean isDynamicTable;
 
     public QueryBuilder(String tableName, String idColumn) {
         this.tableName = tableName;
+        this.isDynamicTable = isDynamicTable(tableName);
         this.idColumn = idColumn;
-        this.whereId = " WHERE " + idColumn + EQUALS_REPLACE_HOLDER;
+        this.whereId = WHERE + idColumn + EQUALS_REPLACE_HOLDER;
     }
 
     public QueryBuilder(Class<?> entityClass) {
-        tableName = entityClass.getAnnotation(Table.class).name();
+        this.tableName = entityClass.getAnnotation(Table.class).name();
+        this.isDynamicTable = isDynamicTable(tableName);
         Field idField = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0];
-        idColumn = resolveColumn(idField);
-        whereId = " WHERE " + idColumn + EQUALS_REPLACE_HOLDER;
+        this.idColumn = resolveColumn(idField);
+        this.whereId = WHERE + idColumn + EQUALS_REPLACE_HOLDER;
     }
 
     private String build(PageQuery pageQuery, List<Object> argList, String... columns) {
-        return build(pageQuery, argList, Constant.SELECT, columns, tableName);
+        return build(pageQuery, argList, Constant.SELECT, columns, resolveTableName(pageQuery));
     }
 
     @SuppressWarnings("java:S4973")
@@ -140,21 +142,20 @@ public class QueryBuilder {
         return new SqlAndArgs(buildSelectColumnsAndArgs(query, argList, columns), argList);
     }
 
-    protected SqlAndArgs buildSelectById(Object entity, String... columns) {
+    protected SqlAndArgs buildSelectById(IdWrapper<?> idOrIdWrapper, String... columns) {
         if (columns.length == 0) {
             columns = new String[]{"*"};
         }
         String selectFrom = SELECT + StringUtils.join(columns, SEPARATOR) + FROM;
-        if (entity instanceof Persistable) {
-            return new SqlAndArgs(
-                selectFrom + replaceHolderInString(entity, tableName) + whereId,
-                Collections.singletonList(((Persistable) entity).getId()));
-        }
-        return new SqlAndArgs(selectFrom + tableName + whereId, Collections.singletonList(entity));
+        String sql = selectFrom + resolveTableName(idOrIdWrapper) + whereId;
+        return new SqlAndArgs(sql, Collections.singletonList(idOrIdWrapper.getId()));
     }
 
     protected SqlAndArgs buildSelectIdAndArgs(PageQuery query) {
         return buildSelectColumnsAndArgs(query, idColumn);
     }
 
+    protected String resolveTableName(Object entity) {
+        return isDynamicTable ? replaceHolderInString(entity, tableName) : tableName;
+    }
 }

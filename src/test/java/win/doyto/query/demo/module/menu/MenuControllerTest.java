@@ -25,10 +25,10 @@ class MenuControllerTest {
 
     @Test
     void get() {
-        MenuQuery menuQuery = new MenuQuery();
-        menuQuery.setId(1);
-        menuQuery.setPlatform(platform);
-        MenuResponse menuResponse = menuController.getByQuery(menuQuery);
+        MenuRequest menuRequest = new MenuRequest();
+        menuRequest.setId(1);
+        menuRequest.setPlatform(platform);
+        MenuResponse menuResponse = menuController.get(menuRequest);
         assertEquals("root", menuResponse.getMenuName());
         assertEquals(0, (int) menuResponse.getParentId());
     }

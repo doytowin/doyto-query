@@ -3,12 +3,12 @@ package win.doyto.query.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.test.TestEntity;
 import win.doyto.query.core.test.TestQuery;
 import win.doyto.query.core.test.TestService;
 import win.doyto.query.entity.EntityAspect;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,13 +34,13 @@ class AbstractServiceTest {
     @SuppressWarnings("java:S2925")
     void supportCache() throws InterruptedException {
         testService.setCacheManager(new ConcurrentMapCacheManager());
-        testService.setCacheList(Arrays.asList());
+        testService.setCacheList("");
         testService.get(1);
 
         Thread.sleep(5L);
 
         testService.get(1);
-        verify(testService.dataAccess, times(1)).get(1);
+        verify(testService.dataAccess, times(1)).get(IdWrapper.build(1));
     }
 
     @Test
@@ -49,7 +49,7 @@ class AbstractServiceTest {
         TestEntity testEntity = testService.get(1);
         testService.update(testEntity);
         testService.get(1);
-        verify(testService.dataAccess, times(3)).get(1);
+        verify(testService.dataAccess, times(3)).get(IdWrapper.build(1));;
     }
 
     @Test

@@ -84,8 +84,8 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     }
 
     @Override
-    public E get(I id) {
-        return SerializationUtils.clone(entitiesMap.get(id));
+    public E get(IdWrapper<I> idWrapper) {
+        return SerializationUtils.clone(entitiesMap.get(idWrapper.getId()));
     }
 
     @Override
@@ -133,8 +133,8 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     }
 
     @Override
-    public int delete(I id) {
-        return entitiesMap.remove(id) == null ? 0 : 1;
+    public int delete(IdWrapper<I> idWrapper) {
+        return entitiesMap.remove(idWrapper.getId()) == null ? 0 : 1;
     }
 
     @Override

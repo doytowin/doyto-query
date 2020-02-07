@@ -16,19 +16,19 @@ public interface DataAccess<E extends Persistable<I>, I extends Serializable, Q>
 
     long count(Q query);
 
-    E get(I id);
-
     <V> List<V> queryColumns(Q q, Class<V> clazz, String... columns);
 
-    default E get(E e) {
-        return get(e.getId());
+    default E get(I id) {
+        return get(IdWrapper.build(id));
     }
 
-    int delete(I id);
+    E get(IdWrapper<I> w);
 
-    default int delete(E e) {
-        return delete(e.getId());
+    default int delete(I id) {
+        return delete(IdWrapper.build(id));
     }
+
+    int delete(IdWrapper<I> w);
 
     int delete(Q query);
 

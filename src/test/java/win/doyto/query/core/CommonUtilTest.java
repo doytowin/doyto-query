@@ -1,10 +1,12 @@
 package win.doyto.query.core;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static win.doyto.query.core.CommonUtil.escapeLike;
-import static win.doyto.query.core.CommonUtil.splitByOr;
+import static win.doyto.query.core.CommonUtil.*;
 
 /**
  * CommonUtilTest
@@ -32,4 +34,24 @@ class CommonUtilTest {
         assertArrayEquals(new String[] {"user", "emailAddress", "order"}, splitByOr("userOrEmailAddressOrOrder"));
     }
 
+    @Test
+    void testReplaceHolderInString() {
+        assertEquals("_test1_", replaceHolderInString(new ReplaceHolderObject("test1"), "_${part1}_"));
+    }
+
+    @Test
+    void replaceHolderInStringShouldReadGetterFirst() {
+        assertEquals("_test1_test2_", replaceHolderInString(new ReplaceHolderObject("test1"), "_${part1}_${part2}_"));
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    static class ReplaceHolderObject {
+        private String part1;
+
+        public String getPart2() {
+            return "test2";
+        }
+    }
 }

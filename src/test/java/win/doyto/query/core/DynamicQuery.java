@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import javax.persistence.Transient;
+
 /**
  * DynamicQuery
  *
@@ -18,8 +20,10 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class DynamicQuery extends PageQuery {
 
+    @Transient
     private String user;
 
+    @Transient
     private String project;
 
     private Integer scoreLt;

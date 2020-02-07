@@ -7,6 +7,8 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.core.PageQuery;
 
+import javax.persistence.Transient;
+
 /**
  * MenuQuery
  *
@@ -19,8 +21,7 @@ import win.doyto.query.core.PageQuery;
 @AllArgsConstructor
 public class MenuQuery extends PageQuery {
 
-    private Integer id;
-
+    @Transient
     private String platform;
 
     private String menuNameLike;

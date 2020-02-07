@@ -116,18 +116,8 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     }
 
     @Override
-    public final E get(I id) {
-        return getEntity(crudBuilder.buildSelectById(id, columnsForSelect));
-    }
-
-    @Override
-    public final int delete(I id) {
-        return jdbcOperations.update(crudBuilder.buildDeleteById(), id);
-    }
-
-    @Override
-    public final E get(E e) {
-        return getEntity(crudBuilder.buildSelectById(e, columnsForSelect));
+    public final E get(IdWrapper<I> w) {
+        return getEntity(crudBuilder.buildSelectById(w, columnsForSelect));
     }
 
     private E getEntity(SqlAndArgs sqlAndArgs) {
@@ -136,10 +126,10 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     }
 
     @Override
-    public final int delete(E e) {
-        String sql = crudBuilder.buildDeleteById(e);
-        SqlAndArgs.logSqlInfo(sql, Arrays.asList(e.getId()));
-        return jdbcOperations.update(sql, e.getId());
+    public int delete(IdWrapper<I> w) {
+        String sql = crudBuilder.buildDeleteById(w);
+        SqlAndArgs.logSqlInfo(sql, Arrays.asList(w.getId()));
+        return jdbcOperations.update(sql, w.getId());
     }
 
     @Override

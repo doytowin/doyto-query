@@ -1,14 +1,17 @@
 package win.doyto.query.service;
 
+import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.entity.Persistable;
+
+import java.io.Serializable;
 
 /**
  * CommonCrudService
  *
  * @author f0rb on 2019-06-01
  */
-interface CommonCrudService<E extends Persistable<I>, I, Q extends PageQuery> extends QueryService<E, I, Q> {
+interface CommonCrudService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> extends QueryService<E, I, Q> {
 
     void create(E e);
 
@@ -70,5 +73,29 @@ interface CommonCrudService<E extends Persistable<I>, I, Q extends PageQuery> ex
      * @return amount of updated entities
      */
     int delete(Q q);
+
+    /**
+     * Get origin entity from sharding table
+     *
+     * @param w an entity just contains id and information of sharding table
+     * @return origin entity
+     */
+    E get(IdWrapper<I> w);
+
+    /**
+     * force to get a new entity object from database
+     *
+     * @param w entity id
+     * @return a new entity object
+     */
+    E fetch(IdWrapper<I> w);
+
+    /**
+     * Delete entity from sharding table
+     *
+     * @param w an entity just contains id and information of sharding table
+     * @return origin entity
+     */
+    E delete(IdWrapper<I> w);
 
 }

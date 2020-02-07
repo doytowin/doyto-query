@@ -30,4 +30,8 @@ public class MenuRequest implements EntityRequest<MenuEntity> {
     public MenuEntity toEntity() {
         return BeanUtil.copyFields(this, MenuEntity.class);
     }
+
+    public MenuIdWrapper toIdWrapper() {
+        return new MenuIdWrapper(this.id, this.platform);
+    }
 }

@@ -3,7 +3,7 @@ package win.doyto.query.demo.module.menu;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import win.doyto.query.demo.exception.ServiceAsserts;
-import win.doyto.query.service.AbstractDynamicService;
+import win.doyto.query.service.AbstractService;
 import win.doyto.query.service.PageList;
 
 import java.util.ArrayList;
@@ -17,12 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("{platform}/menu")
 @AllArgsConstructor
-class MenuController extends AbstractDynamicService<MenuEntity, Integer, MenuQuery> {
-
-    @Override
-    protected String resolveCacheKey(MenuEntity menuEntity) {
-        return menuEntity.getId() + menuEntity.getPlatform();
-    }
+class MenuController extends AbstractService<MenuEntity, Integer, MenuQuery> {
 
     @Override
     protected String getCacheName() {
@@ -39,14 +34,15 @@ class MenuController extends AbstractDynamicService<MenuEntity, Integer, MenuQue
     }
 
     @GetMapping("{id}")
-    public MenuResponse getByQuery(MenuQuery menuQuery) {
-        MenuResponse menuResponse = get(menuQuery, MenuResponse::build);
-        return ServiceAsserts.notNull(menuResponse, "菜单不存在");
+    public MenuResponse get(MenuRequest menuRequest) {
+        MenuEntity menuEntity = get(menuRequest.toIdWrapper());
+        ServiceAsserts.notNull(menuEntity, "菜单不存在");
+        return MenuResponse.build(menuEntity);
     }
 
     @DeleteMapping("{id}")
     public void delete(MenuRequest menuRequest) {
-        MenuEntity menuEntity = delete(menuRequest.toEntity());
+        MenuEntity menuEntity = delete(menuRequest.toIdWrapper());
         ServiceAsserts.notNull(menuEntity, "菜单不存在");
     }
 

@@ -21,8 +21,10 @@ import win.doyto.query.entity.UserIdProvider;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * AbstractService
@@ -30,7 +32,7 @@ import java.util.List;
  * @author f0rb on 2019-05-28
  */
 public abstract class AbstractService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery>
-    implements CommonCrudService<E, I, Q> {
+        implements CommonCrudService<E, I, Q> {
 
     protected DataAccess<E, I, Q> dataAccess;
 
@@ -82,7 +84,8 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
 
     @SuppressWarnings("java:S4973")
     @Value("${doyto.query.caches:}")
-    public void setCacheList(List<String> cacheList) {
+    public void setCacheList(String caches) {
+        List<String> cacheList = Arrays.stream(caches.split("[,\\s]")).filter(s -> !s.isEmpty()).collect(Collectors.toList());
         if (cacheManager != null) {
             String cacheName = getCacheName();
             if (cacheList.contains(cacheName) || cacheName != entityClass.getSimpleName().intern()) {
@@ -92,7 +95,9 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         }
     }
 
-    protected abstract String resolveCacheKey(E e);
+    protected String resolveCacheKey(IdWrapper<I> w) {
+        return w.toCacheKey();
+    }
 
     protected String getCacheName() {
         return entityClass.getSimpleName().intern();
@@ -150,7 +155,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         } else {
             dataAccess.create(e);
         }
-        evictCache(resolveCacheKey(e));
+        evictCache(resolveCacheKey(e.toIdWrapper()));
     }
 
     public int update(E e) {
@@ -166,20 +171,20 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
             userIdProvider.setupUserId(e);
         }
         E origin;
-        if (e == null || (origin = dataAccess.get(e)) == null) {
+        if (e == null || (origin = dataAccess.get(e.toIdWrapper())) == null) {
             return 0;
         }
         if (!entityAspects.isEmpty()) {
             transactionOperations.execute(s -> {
                 invocable.invoke();
-                E current = dataAccess.get(e);
+                E current = dataAccess.get(e.toIdWrapper());
                 entityAspects.forEach(entityAspect -> entityAspect.afterUpdate(origin, current));
                 return null;
             });
         } else {
             invocable.invoke();
         }
-        evictCache(resolveCacheKey(e));
+        evictCache(resolveCacheKey(e.toIdWrapper()));
         return 1;
     }
 
@@ -207,6 +212,36 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
         int delete = dataAccess.delete(query);
         clearCache();
         return delete;
+    }
+
+    @Override
+    public E get(IdWrapper<I> w) {
+        return entityCacheWrapper.execute(resolveCacheKey(w), () -> fetch(w));
+    }
+
+    @Override
+    public E fetch(IdWrapper<I> w) {
+        return dataAccess.get(w);
+    }
+
+    @Override
+    public E delete(IdWrapper<I> w) {
+        E e = get(w);
+        if (e != null) {
+            if (!entityAspects.isEmpty()) {
+                transactionOperations.execute(s -> {
+                    dataAccess.delete(w);
+                    entityAspects.forEach(entityAspect -> entityAspect.afterDelete(e));
+                    return null;
+                });
+            } else {
+                dataAccess.delete(w);
+            }
+            String key = resolveCacheKey(w);
+            evictCache(key);
+            entityCacheWrapper.execute(key, () -> null);
+        }
+        return e;
     }
 
     private static class NoneTransactionOperations implements TransactionOperations {
