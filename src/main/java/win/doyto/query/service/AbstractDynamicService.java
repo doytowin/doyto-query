@@ -27,12 +27,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * AbstractService
+ * AbstractDynamicService
  *
  * @author f0rb on 2019-05-28
  */
-public abstract class AbstractService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery>
-        implements CommonCrudService<E, I, Q> {
+public abstract class AbstractDynamicService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery>
+    implements DynamicService<E, I, Q> {
 
     protected DataAccess<E, I, Q> dataAccess;
 
@@ -54,7 +54,7 @@ public abstract class AbstractService<E extends Persistable<I>, I extends Serial
     protected TransactionOperations transactionOperations = NoneTransactionOperations.instance;
 
     @SuppressWarnings("unchecked")
-    public AbstractService() {
+    public AbstractDynamicService() {
         entityClass = (Class<E>) getActualTypeArguments()[0];
         dataAccess = new MemoryDataAccess<>(entityClass);
     }

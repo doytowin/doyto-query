@@ -11,7 +11,7 @@ import java.io.Serializable;
  *
  * @author f0rb on 2019-06-01
  */
-interface CommonCrudService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> extends QueryService<E, I, Q> {
+interface DynamicService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> extends QueryService<E, I, Q> {
 
     void create(E e);
 

@@ -12,7 +12,7 @@ import java.io.Serializable;
  * @author f0rb
  */
 public interface CrudService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery>
-        extends CommonCrudService<E, I, Q> {
+        extends DynamicService<E, I, Q> {
 
     default E get(I id) {
         return get(IdWrapper.build(id));

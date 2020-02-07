@@ -20,7 +20,7 @@ import static win.doyto.query.core.test.TestEntity.initUserEntities;
  *
  * @author f0rb
  */
-class AbstractServiceTest {
+class AbstractDynamicServiceTest {
     TestService testService;
 
     @BeforeEach

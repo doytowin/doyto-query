@@ -3,7 +3,7 @@ package win.doyto.query.demo.module.menu;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import win.doyto.query.demo.exception.ServiceAsserts;
-import win.doyto.query.service.AbstractService;
+import win.doyto.query.service.AbstractDynamicService;
 import win.doyto.query.service.PageList;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("{platform}/menu")
 @AllArgsConstructor
-class MenuController extends AbstractService<MenuEntity, Integer, MenuQuery> {
+class MenuController extends AbstractDynamicService<MenuEntity, Integer, MenuQuery> {
 
     @Override
     protected String getCacheName() {
