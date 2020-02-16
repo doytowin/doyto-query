@@ -2,8 +2,8 @@ package win.doyto.query.demo.module.user;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.BeanUtils;
-import win.doyto.query.entity.EntityResponse;
+
+import java.io.Serializable;
 
 /**
  * UserResponse
@@ -12,7 +12,7 @@ import win.doyto.query.entity.EntityResponse;
  */
 @Getter
 @Setter
-public class UserResponse implements EntityResponse<UserEntity, UserResponse> {
+public class UserResponse implements Serializable {
     private static final long serialVersionUID = -1L;
 
     private Long id;
@@ -25,10 +25,4 @@ public class UserResponse implements EntityResponse<UserEntity, UserResponse> {
     private UserLevel userLevel;
     private String address;
 
-    @Override
-    public UserResponse buildBy(UserEntity userEntity) {
-        UserResponse userResponse = new UserResponse();
-        BeanUtils.copyProperties(userEntity, userResponse);
-        return userResponse;
-    }
 }

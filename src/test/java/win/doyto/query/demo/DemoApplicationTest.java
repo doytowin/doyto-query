@@ -31,12 +31,12 @@ import win.doyto.query.demo.exception.ServiceException;
 import win.doyto.query.demo.module.role.RoleController;
 import win.doyto.query.demo.module.user.TestUserEntityAspect;
 import win.doyto.query.service.AssociativeService;
-import win.doyto.query.service.EntityNotFoundException;
 import win.doyto.query.service.PageList;
 
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Resource;
+import javax.persistence.EntityNotFoundException;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;

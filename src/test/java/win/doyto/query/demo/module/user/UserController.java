@@ -1,11 +1,11 @@
 package win.doyto.query.demo.module.user;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import win.doyto.query.demo.controller.AbstractRestController;
 import win.doyto.query.demo.exception.ServiceAsserts;
-import win.doyto.query.service.AbstractRestController;
 import win.doyto.query.validation.CreateGroup;
 
 import java.util.List;
@@ -21,14 +21,39 @@ import javax.annotation.Resource;
 @Slf4j
 @RestController
 @RequestMapping("user")
-class UserController extends AbstractRestController<UserEntity, Long, UserQuery, UserRequest, UserResponse> implements UserService {
+class UserController extends AbstractRestController<UserEntity, Long, UserQuery, UserRequest, UserResponse> implements UserApi {
+
+    @Resource
+    UserService userService;
 
     @Resource
     UserDetailService userDetailService;
 
     @Override
-    protected String getCacheName() {
-        return "module:user";
+    protected UserService getService() {
+        return userService;
+    }
+
+    @Override
+    protected UserResponse buildResponse(UserEntity userEntity) {
+        UserResponse userResponse = new UserResponse();
+        BeanUtils.copyProperties(userEntity, userResponse);
+        return userResponse;
+    }
+
+    @Override
+    public UserEntity buildEntity(UserRequest userRequest) {
+        UserEntity userEntity = new UserEntity();
+        BeanUtils.copyProperties(userRequest, userEntity);
+        return userEntity;
+    }
+
+    @Override
+    public UserEntity buildEntity(UserEntity userEntity, UserRequest userRequest) {
+        String password = userEntity.getPassword();
+        BeanUtils.copyProperties(userRequest, userEntity);
+        userEntity.setPassword(password);
+        return userEntity;
     }
 
     @Override
@@ -44,50 +69,33 @@ class UserController extends AbstractRestController<UserEntity, Long, UserQuery,
 
     @Override
     @PostMapping
-    public void create(@RequestBody @Validated(CreateGroup.class) UserRequest request) {
-        UserEntity userEntity = save(request.toEntity());
+    public void add(@RequestBody @Validated(CreateGroup.class) UserRequest request) {
+        UserEntity userEntity = userService.save(buildEntity(request));
         userDetailService.save(UserDetailEntity.build(userEntity.getId(), request));
     }
 
     @Override
-    protected RowMapper<UserEntity> getRowMapper() {
-        return (rs, rn) -> {
-            UserEntity userEntity = new UserEntity();
-            userEntity.setId(rs.getLong("id"));
-            userEntity.setUsername(rs.getString("username"));
-            userEntity.setPassword(rs.getString("password"));
-            userEntity.setNickname(rs.getString("nickname"));
-            userEntity.setMobile(rs.getString("mobile"));
-            userEntity.setEmail(rs.getString("email"));
-            userEntity.setMemo(rs.getString("memo"));
-            userEntity.setUserLevel(UserLevel.valueOf(rs.getString("userLevel")));
-            userEntity.setValid(rs.getBoolean("valid"));
-            return userEntity;
-        };
-    }
-
-    @Override
     public List<UserResponse> list(UserQuery q) {
-        return queryColumns(q, UserResponse.class, "id", "username", "mobile", "email", "nickname", "valid", "userLevel", "memo");
+        return userService.queryColumns(q, UserResponse.class, "id", "username", "mobile", "email", "nickname", "valid", "userLevel", "memo");
     }
 
     @GetMapping("column/{column:\\w+}")
     public List<String> listColumn(UserQuery q, @PathVariable String column) {
-        return queryColumns(q, String.class, column);
+        return userService.queryColumns(q, String.class, column);
     }
 
     @GetMapping("columns/{columns:[\\w,]+}")
     public List<Map> listColumns(UserQuery q, @PathVariable String columns) {
-        return queryColumns(q, Map.class, columns);
+        return userService.queryColumns(q, Map.class, columns);
     }
 
     @Override
     public UserResponse auth(String account, String password) {
-        UserEntity userEntity = get(UserQuery.builder().usernameOrEmailOrMobile(account).build());
+        UserEntity userEntity = userService.get(UserQuery.builder().usernameOrEmailOrMobile(account).build());
         ServiceAsserts.notNull(userEntity, "账号不存在");
         ServiceAsserts.isTrue(userEntity.getValid(), "账号被禁用");
         ServiceAsserts.isTrue(Objects.equals(userEntity.getPassword(), password), "密码错误");
-        return getEntityView().buildBy(userEntity);
+        return buildResponse(userEntity);
     }
 
     @PostMapping("memo")
@@ -95,7 +103,7 @@ class UserController extends AbstractRestController<UserEntity, Long, UserQuery,
         UserEntity userEntity = new UserEntity();
         userEntity.setMemo(request.getMemo());
         UserQuery byEmail = UserQuery.builder().emailLike(request.getEmail()).memoNull(true).build();
-        patch(userEntity, byEmail);
+        userService.patch(userEntity, byEmail);
     }
 
 }

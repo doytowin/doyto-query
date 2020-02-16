@@ -1,7 +1,9 @@
 package win.doyto.query.demo.module.menu;
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
+import win.doyto.query.demo.common.BeanUtil;
 import win.doyto.query.demo.exception.ServiceAsserts;
 import win.doyto.query.service.AbstractDynamicService;
 import win.doyto.query.service.PageList;
@@ -19,25 +21,38 @@ import java.util.List;
 @AllArgsConstructor
 class MenuController extends AbstractDynamicService<MenuEntity, Integer, MenuQuery> {
 
+    public MenuEntity buildEntity(MenuRequest menuRequest) {
+        return BeanUtil.copyFields(menuRequest, MenuEntity.class);
+    }
+
+    public MenuResponse buildResponse(MenuEntity menuEntity) {
+        MenuResponse menuResponse = new MenuResponse();
+        BeanUtils.copyProperties(menuEntity, menuResponse);
+        menuResponse.setId(menuEntity.getId());
+        menuResponse.setCreateUserId(menuEntity.getCreateUserId());
+        menuResponse.setUpdateUserId(menuEntity.getUpdateUserId());
+        return menuResponse;
+    }
+
     @Override
     protected String getCacheName() {
         return "module:menu";
     }
 
     @GetMapping
-    public Object list(MenuQuery q) {
-        return q.needPaging() ? page(q) : query(q, MenuResponse::build);
+    public Object pageOrQuery(MenuQuery q) {
+        return q.needPaging() ? page(q) : query(q, this::buildResponse);
     }
 
     public PageList<MenuResponse> page(MenuQuery q) {
-        return page(q, MenuResponse::build);
+        return page(q, this::buildResponse);
     }
 
     @GetMapping("{id}")
     public MenuResponse get(MenuRequest menuRequest) {
         MenuEntity menuEntity = get(menuRequest.toIdWrapper());
         ServiceAsserts.notNull(menuEntity, "菜单不存在");
-        return MenuResponse.build(menuEntity);
+        return buildResponse(menuEntity);
     }
 
     @DeleteMapping("{id}")
@@ -49,7 +64,7 @@ class MenuController extends AbstractDynamicService<MenuEntity, Integer, MenuQue
     @PostMapping
     public void create(@RequestBody MenuRequest request, @PathVariable String platform) {
         request.setPlatform(platform);
-        create(request.toEntity());
+        create(buildEntity(request));
     }
 
     @PostMapping("import")
@@ -57,7 +72,7 @@ class MenuController extends AbstractDynamicService<MenuEntity, Integer, MenuQue
         ArrayList<MenuEntity> menuEntities = new ArrayList<>(requests.size());
         for (MenuRequest request : requests) {
             request.setPlatform(platform);
-            menuEntities.add(request.toEntity());
+            menuEntities.add(buildEntity(request));
         }
         batchInsert(menuEntities);
     }
@@ -65,7 +80,7 @@ class MenuController extends AbstractDynamicService<MenuEntity, Integer, MenuQue
     @PutMapping("{id}")
     public void update(@RequestBody MenuRequest request, @PathVariable String platform) {
         request.setPlatform(platform);
-        update(request.toEntity());
+        update(buildEntity(request));
     }
 
 }

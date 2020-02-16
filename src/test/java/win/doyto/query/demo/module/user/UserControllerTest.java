@@ -18,17 +18,21 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 public class UserControllerTest {
     public static final int INIT_SIZE = 5;
-    public static UserService userService;
+    public static UserApi userApi;
 
     static {
-        initData().forEach(userService::create);
+        initData();
     }
 
-    private static List<UserRequest> initData() {
+    private static void initData() {
         UserController userController = new UserController();
+        userController.userService = new UserService();
         userController.userDetailService = new UserDetailService();
+        userController.add(getUserRequests());
+        UserControllerTest.userApi = userController;
+    }
 
-        UserControllerTest.userService = userController;
+    private static List<UserRequest> getUserRequests() {
         List<UserRequest> userRequests = new ArrayList<>(INIT_SIZE);
         for (int i = 1; i < INIT_SIZE; i++) {
             UserRequest userRequest = new UserRequest();
@@ -51,13 +55,13 @@ public class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        initData().forEach(userService::create);
+        initData();
     }
 
     @Test
     void query() {
         UserQuery userQuery = UserQuery.builder().username("username1").build();
-        assertThat(userService.list(userQuery))
+        assertThat(userApi.list(userQuery))
             .hasSize(1)
             .first()
             .hasFieldOrPropertyWithValue("id", 1L)
@@ -69,7 +73,7 @@ public class UserControllerTest {
     void pageUser() {
         UserQuery userQuery = UserQuery.builder().build();
         userQuery.setPageNumber(0).setPageSize(2);
-        PageList<UserResponse> page = userService.page(userQuery);
+        PageList<UserResponse> page = userApi.page(userQuery);
         assertEquals(INIT_SIZE, page.getTotal());
         assertEquals(2, page.getList().size());
     }
@@ -78,14 +82,14 @@ public class UserControllerTest {
     void pageUserWithCriteria() {
         UserQuery userQuery = UserQuery.builder().usernameLike("username").build();
         userQuery.setPageNumber(1).setPageSize(2);
-        PageList<UserResponse> page = userService.page(userQuery);
+        PageList<UserResponse> page = userApi.page(userQuery);
         assertEquals(4, page.getTotal());
         assertThat(page.getList()).hasSize(2).extracting(UserResponse::getId).containsExactly(3L, 4L);
     }
 
     @Test
     void get() {
-        assertThat(userService.getById(1L))
+        assertThat(userApi.getById(1L))
             .hasFieldOrPropertyWithValue("id", 1L)
             .hasFieldOrPropertyWithValue("username", "username1")
         ;
@@ -93,8 +97,8 @@ public class UserControllerTest {
 
     @Test
     void delete() {
-        userService.deleteById(1L);
-        assertThat(userService.page(UserQuery.builder().build()).getTotal()).isEqualTo(4);
+        userApi.deleteById(1L);
+        assertThat(userApi.page(UserQuery.builder().build()).getTotal()).isEqualTo(4);
     }
 
     @Test
@@ -105,7 +109,7 @@ public class UserControllerTest {
     @Test
     void forcePage() {
         UserQuery userQuery = UserQuery.builder().build();
-        userService.page(userQuery);
+        userApi.page(userQuery);
         assertEquals(0, (int) userQuery.getPageNumber());
     }
 }

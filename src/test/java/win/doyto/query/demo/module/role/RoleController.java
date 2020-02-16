@@ -3,7 +3,7 @@ package win.doyto.query.demo.module.role;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import win.doyto.query.service.SimpleRestController;
+import win.doyto.query.demo.controller.AbstractIQEEController;
 
 /**
  * RoleController
@@ -13,6 +13,6 @@ import win.doyto.query.service.SimpleRestController;
 @Slf4j
 @RestController
 @RequestMapping("role")
-public class RoleController extends SimpleRestController<RoleEntity, Long, RoleQuery> {
+public class RoleController extends AbstractIQEEController<RoleEntity, Long, RoleQuery> {
 
 }

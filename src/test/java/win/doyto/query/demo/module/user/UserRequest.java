@@ -2,8 +2,6 @@ package win.doyto.query.demo.module.user;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.BeanUtils;
-import win.doyto.query.entity.EntityRequest;
 
 /**
  * UserRequest
@@ -12,9 +10,8 @@ import win.doyto.query.entity.EntityRequest;
  */
 @Getter
 @Setter
-public class UserRequest implements EntityRequest<UserEntity> {
+public class UserRequest {
 
-    private Long id;
     private String username;
     private String password;
     private String mobile;
@@ -25,18 +22,4 @@ public class UserRequest implements EntityRequest<UserEntity> {
     private UserLevel userLevel;
     private String address;
 
-    @Override
-    public UserEntity toEntity() {
-        UserEntity userEntity = new UserEntity();
-        BeanUtils.copyProperties(this, userEntity);
-        return userEntity;
-    }
-
-    @Override
-    public UserEntity toEntity(UserEntity userEntity) {
-        String password = userEntity.getPassword();
-        BeanUtils.copyProperties(this, userEntity);
-        userEntity.setPassword(password);
-        return userEntity;
-    }
 }

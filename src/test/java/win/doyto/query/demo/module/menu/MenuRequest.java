@@ -2,8 +2,6 @@ package win.doyto.query.demo.module.menu;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.demo.common.BeanUtil;
-import win.doyto.query.entity.EntityRequest;
 
 /**
  * MenuRequest
@@ -12,7 +10,7 @@ import win.doyto.query.entity.EntityRequest;
  */
 @Getter
 @Setter
-public class MenuRequest implements EntityRequest<MenuEntity> {
+public class MenuRequest {
 
     private Integer id;
 
@@ -25,11 +23,6 @@ public class MenuRequest implements EntityRequest<MenuEntity> {
     private String memo;
 
     private Boolean valid = true;
-
-    @Override
-    public MenuEntity toEntity() {
-        return BeanUtil.copyFields(this, MenuEntity.class);
-    }
 
     public MenuIdWrapper toIdWrapper() {
         return new MenuIdWrapper(this.id, this.platform);
