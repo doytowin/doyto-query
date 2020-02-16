@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.support.NoOpCache;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
@@ -48,6 +49,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     @Autowired(required = false)
     private CacheManager cacheManager;
 
+    @Lazy
     @Autowired(required = false)
     protected List<EntityAspect<E>> entityAspects = new LinkedList<>();
 
