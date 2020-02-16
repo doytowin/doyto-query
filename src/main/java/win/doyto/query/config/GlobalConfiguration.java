@@ -1,6 +1,8 @@
 package win.doyto.query.config;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import win.doyto.query.core.Dialect;
 
@@ -11,15 +13,12 @@ import win.doyto.query.core.Dialect;
  */
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GlobalConfiguration {
 
     private boolean mapCamelCaseToUnderscore;
     private boolean ignoreCacheException = true;
-    private boolean splitOrFirst = true;
     private Dialect dialect = new MySQLDialect();
-
-    private GlobalConfiguration() {
-    }
 
     public static GlobalConfiguration instance() {
         return Singleton.instance;

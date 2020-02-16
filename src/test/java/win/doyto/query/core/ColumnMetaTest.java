@@ -14,10 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ColumnMetaTest {
 
     @Test
-    void supportOr() {
-        ColumnMeta columnMeta = new ColumnMeta("usernameOrEmailOrMobile", "test", new ArrayList<>());
+    void defaultSql() {
+        ColumnMeta columnMeta = new ColumnMeta("username", "test", new ArrayList<>());
         String andSql = columnMeta.defaultSql(QuerySuffix.Like, "?");
-        assertEquals("(username LIKE ? OR email LIKE ? OR mobile LIKE ?)", andSql);
+        assertEquals("username LIKE ?", andSql);
     }
 
 }

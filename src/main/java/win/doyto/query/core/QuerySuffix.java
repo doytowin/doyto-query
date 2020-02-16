@@ -2,7 +2,6 @@ package win.doyto.query.core;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
-import win.doyto.query.config.GlobalConfiguration;
 
 import java.util.*;
 import java.util.function.Function;
@@ -65,7 +64,7 @@ enum QuerySuffix {
     }
 
     static String buildAndSql(List<Object> argList, Object value, String fieldName) {
-        if (GlobalConfiguration.instance().isSplitOrFirst() && containsOr(fieldName)) {
+        if (containsOr(fieldName)) {
             final String alias;
             int indexOfDot = fieldName.indexOf('.') + 1;
             if (indexOfDot > 0) {

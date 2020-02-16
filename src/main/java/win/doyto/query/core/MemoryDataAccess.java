@@ -8,7 +8,6 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.BeanUtils;
 import win.doyto.query.annotation.NestedQueries;
 import win.doyto.query.annotation.SubQuery;
-import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.entity.CommonEntity;
 import win.doyto.query.entity.Persistable;
 
@@ -171,7 +170,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     }
 
     protected Boolean unsatisfied(E entity, String queryFieldName, Object queryFieldValue) {
-        if (GlobalConfiguration.instance().isSplitOrFirst() && containsOr(queryFieldName)) {
+        if (containsOr(queryFieldName)) {
             boolean result = true;
             for (String s : splitByOr(queryFieldName)) {
                 result &= unsatisfied(entity, s, queryFieldValue);
@@ -182,14 +181,8 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         String columnName = querySuffix.resolveColumnName(queryFieldName);
         FilterExecutor.Matcher matcher = FilterExecutor.get(querySuffix);
 
-        if (containsOr(columnName)) {
-            return Arrays.stream(splitByOr(columnName))
-                         .map(name -> readField(entity, name))
-                         .noneMatch(entityFieldValue -> matcher.match(queryFieldValue, entityFieldValue));
-        } else {
-            Object entityFieldValue = readField(entity, columnName);
-            return !matcher.match(queryFieldValue, entityFieldValue);
-        }
+        Object entityFieldValue = readField(entity, columnName);
+        return !matcher.match(queryFieldValue, entityFieldValue);
     }
 
     @Override

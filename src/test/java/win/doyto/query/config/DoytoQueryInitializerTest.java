@@ -24,7 +24,6 @@ class DoytoQueryInitializerTest {
         GlobalConfiguration globalConfiguration = GlobalConfiguration.instance();
         assertFalse(globalConfiguration.isMapCamelCaseToUnderscore());
         assertTrue(globalConfiguration.isIgnoreCacheException());
-        assertTrue(globalConfiguration.isSplitOrFirst());
         assertTrue(globalConfiguration.getDialect() instanceof Dialect);
     }
 }

@@ -2,7 +2,6 @@ package win.doyto.query.core;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.test.TestEntity;
 import win.doyto.query.core.test.TestEnum;
 import win.doyto.query.core.test.TestQuery;
@@ -40,14 +39,9 @@ class MemoryDataAccessTest {
     void filterByOr() {
         TestQuery testQuery = TestQuery.builder().usernameOrEmailOrMobile("f0rb").build();
         assertEquals(1, testMemoryDataAccess.query(testQuery).size());
-    }
 
-    @Test
-    void filterByOrFirst() {
-        GlobalConfiguration.instance().setSplitOrFirst(false);
-        TestQuery testQuery = TestQuery.builder().usernameOrEmailOrMobileLike("username").build();
-        assertEquals(4, testMemoryDataAccess.query(testQuery).size());
-        GlobalConfiguration.instance().setSplitOrFirst(true);
+        testQuery.setUsernameOrEmailOrMobile(null);
+        testQuery.setUsernameOrEmailOrMobileLike("username");
         assertEquals(0, testMemoryDataAccess.query(testQuery).size());
 
         testQuery.setUsernameOrEmailOrMobileLike("1777888888");

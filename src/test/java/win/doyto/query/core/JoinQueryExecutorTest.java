@@ -1,7 +1,6 @@
 package win.doyto.query.core;
 
 import org.junit.jupiter.api.Test;
-import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.test.TestEnum;
 import win.doyto.query.core.test.TestJoinQuery;
 import win.doyto.query.core.test.TestJoinView;
@@ -38,14 +37,12 @@ class JoinQueryExecutorTest {
 
     @Test
     void buildJoinSelectAndArgsWithAlias() {
-        // Backward compatible
-        GlobalConfiguration.instance().setSplitOrFirst(false);
 
         JoinQueryExecutor<TestJoinView, TestJoinQuery> joinQueryExecutor = new JoinQueryExecutor<>(null, TestJoinView.class);
 
         TestJoinQuery testJoinQuery = new TestJoinQuery();
         testJoinQuery.setRoleName("VIP");
-        testJoinQuery.setRoleNameOrRoleCodeLike("VIP");
+        testJoinQuery.setRoleNameLikeOrRoleCodeLike("VIP");
         testJoinQuery.setUserLevel(TestEnum.VIP);
 
         String expected = "SELECT username, r.roleName AS roleName " +
@@ -57,7 +54,6 @@ class JoinQueryExecutorTest {
         assertEquals(expected, sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly("VIP", TestEnum.VIP.ordinal(), "%VIP%", "%VIP%");
 
-        GlobalConfiguration.instance().setSplitOrFirst(true);
     }
 
     @Test

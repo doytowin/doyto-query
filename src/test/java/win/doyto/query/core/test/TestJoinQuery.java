@@ -20,5 +20,5 @@ public class TestJoinQuery extends PageQuery {
     private TestEnum userLevel;
 
     @QueryTableAlias("r")
-    private String roleNameOrRoleCodeLike;
+    private String roleNameLikeOrRoleCodeLike;
 }

@@ -11,11 +11,6 @@
       "description": "Ignore cache operation exception, e.g. timeout. Default: true."
     },
     {
-      "name": "doyto.query.config.split-or-first",
-      "type": "java.lang.Boolean",
-      "description": "Split the field name of the Query object by Or first. Default: true. Will be deprecated in the future."
-    },
-    {
       "name": "doyto.query.config.dialect",
       "type": "win.doyto.query.core.Dialect",
       "description": "Database dialect implementation."
