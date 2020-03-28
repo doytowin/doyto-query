@@ -20,7 +20,7 @@ import static win.doyto.query.core.QueryBuilder.*;
  *
  * @author f0rb on 2019-06-09
  */
-class JoinQueryBuilder {
+public class JoinQueryBuilder {
 
     private static final Pattern PTN_PLACE_HOLDER = Pattern.compile("#\\{(\\w+)}");
 

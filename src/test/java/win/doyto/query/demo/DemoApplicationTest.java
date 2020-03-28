@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import win.doyto.query.cache.CacheWrapper;
-import win.doyto.query.core.JoinQueryExecutor;
 import win.doyto.query.core.test.TestJoinQuery;
 import win.doyto.query.core.test.TestJoinView;
 import win.doyto.query.core.test.UserCountByRoleView;
@@ -31,6 +30,7 @@ import win.doyto.query.demo.exception.ServiceException;
 import win.doyto.query.demo.module.role.RoleController;
 import win.doyto.query.demo.module.user.TestUserEntityAspect;
 import win.doyto.query.service.AssociativeService;
+import win.doyto.query.service.JoinQueryService;
 import win.doyto.query.service.PageList;
 
 import java.util.Arrays;
@@ -454,7 +454,7 @@ class DemoApplicationTest {
         TestJoinQuery query = new TestJoinQuery();
         query.setSort("userCount,desc");
 
-        List<UserCountByRoleView> list = new JoinQueryExecutor<>(jdbcOperations, UserCountByRoleView.class).query(query);
+        List<UserCountByRoleView> list = new JoinQueryService<>(jdbcOperations, UserCountByRoleView.class).query(query);
         assertThat(list).extracting(UserCountByRoleView::getUserCount).containsExactly(3, 2);
     }
 
@@ -462,7 +462,7 @@ class DemoApplicationTest {
     void pageForJoin() {
         TestJoinQuery testJoinQuery = new TestJoinQuery();
         testJoinQuery.setRoleName("高级");
-        PageList<TestJoinView> page = new JoinQueryExecutor<>(jdbcOperations, TestJoinView.class).page(testJoinQuery);
+        PageList<TestJoinView> page = new JoinQueryService<>(jdbcOperations, TestJoinView.class).page(testJoinQuery);
         assertThat(page.getTotal()).isEqualTo(2);
         assertThat(page.getList()).extracting(TestJoinView::getUsername).containsExactly("f0rb", "user4");
         assertThat(testJoinQuery.getPageNumber()).isEqualTo(0);
