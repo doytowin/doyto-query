@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "roleName": "admin",
+    "roleCode": "ADMIN",
+    "valid": true
+  },
+  {
+    "id": 2,
+    "roleName": "vip",
+    "roleCode": "VIP",
+    "valid": true
+  },
+  {
+    "id": 3,
+    "roleName": "vip2",
+    "roleCode": "VIP2",
+    "valid": true
+  }
+]

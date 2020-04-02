@@ -1,0 +1,21 @@
+logging:
+  level:
+    root: info
+
+spring:
+  http:
+    encoding:
+      enabled: true
+      charset: UTF-8
+      force: true
+
+  cache:
+    type: simple
+
+doyto:
+  query:
+    config:
+      dialect: win.doyto.query.demo.common.HSQLDBDialect
+      map-camel-case-to-underscore: true
+    caches:
+      win.doyto.query.demo.module.user.UserEntity
