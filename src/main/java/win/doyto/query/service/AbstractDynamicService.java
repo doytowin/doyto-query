@@ -18,10 +18,9 @@ import win.doyto.query.core.*;
 import win.doyto.query.entity.EntityAspect;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.entity.UserIdProvider;
+import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,22 +56,14 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
 
     @SuppressWarnings("unchecked")
     public AbstractDynamicService() {
-        entityClass = (Class<E>) getActualTypeArguments()[0];
+        entityClass = (Class<E>) BeanUtil.getActualTypeArguments(getClass())[0];
         dataAccess = new MemoryDataAccess<>(entityClass);
-    }
-
-    protected Type[] getActualTypeArguments() {
-        Type genericSuperclass = getClass();
-        do {
-            genericSuperclass = ((Class) genericSuperclass).getGenericSuperclass();
-        } while (!(genericSuperclass instanceof ParameterizedType));
-        return ((ParameterizedType) genericSuperclass).getActualTypeArguments();
     }
 
     @Autowired
     @SuppressWarnings("unchecked")
     public void setJdbcOperations(JdbcOperations jdbcOperations) {
-        dataAccess = new JdbcDataAccess<>(jdbcOperations, entityClass, (Class<I>) getActualTypeArguments()[1], getRowMapper());
+        dataAccess = new JdbcDataAccess<>(jdbcOperations, entityClass, (Class<I>) BeanUtil.getActualTypeArguments(getClass())[1], getRowMapper());
     }
 
     protected RowMapper<E> getRowMapper() {

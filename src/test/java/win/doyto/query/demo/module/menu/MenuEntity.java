@@ -18,7 +18,7 @@ import javax.persistence.Transient;
 @Setter
 @Entity
 @Table(name = MenuEntity.TABLE)
-class MenuEntity extends CommonEntity<Integer, Long> {
+public class MenuEntity extends CommonEntity<Integer, Long> {
 
     public static final String TABLE = "menu_${platform}";
 

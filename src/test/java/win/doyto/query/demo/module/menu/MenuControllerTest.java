@@ -3,7 +3,7 @@ package win.doyto.query.demo.module.menu;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import win.doyto.query.demo.common.BeanUtil;
+import win.doyto.query.util.BeanUtil;
 
 import java.io.IOException;
 

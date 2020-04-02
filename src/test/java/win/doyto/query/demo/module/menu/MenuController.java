@@ -3,10 +3,10 @@ package win.doyto.query.demo.module.menu;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
-import win.doyto.query.demo.common.BeanUtil;
 import win.doyto.query.demo.exception.ServiceAsserts;
 import win.doyto.query.service.AbstractDynamicService;
 import win.doyto.query.service.PageList;
+import win.doyto.query.util.BeanUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.List;
 class MenuController extends AbstractDynamicService<MenuEntity, Integer, MenuQuery> {
 
     public MenuEntity buildEntity(MenuRequest menuRequest) {
-        return BeanUtil.copyFields(menuRequest, MenuEntity.class);
+        return BeanUtil.convertTo(menuRequest, MenuEntity.class);
     }
 
     public MenuResponse buildResponse(MenuEntity menuEntity) {
