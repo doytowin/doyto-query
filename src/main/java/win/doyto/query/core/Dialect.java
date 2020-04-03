@@ -7,4 +7,8 @@ package win.doyto.query.core;
  */
 public interface Dialect {
     String buildPageSql(String sql, int limit, long offset);
+
+    default String wrapLabel(String fieldName) {
+        return fieldName;
+    }
 }

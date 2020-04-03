@@ -28,4 +28,7 @@ public class GlobalConfiguration {
         private static GlobalConfiguration instance = new GlobalConfiguration();
     }
 
+    public static Dialect dialect() {
+        return instance().dialect;
+    }
 }

@@ -170,11 +170,14 @@ class CommonUtil {
 
     static String resolveColumn(Field field) {
         Column column = field.getAnnotation(Column.class);
-        return column != null && !column.name().isEmpty() ? column.name() : convertColumn(field.getName());
+        String columnName = column != null && !column.name().isEmpty() ? column.name() : convertColumn(field.getName());
+        return GlobalConfiguration.dialect().wrapLabel(columnName);
     }
 
     static String selectAs(Field field) {
         String columnName = resolveColumn(field);
-        return columnName.equalsIgnoreCase(field.getName()) ? columnName : columnName + " AS " + field.getName();
+        Dialect dialect = GlobalConfiguration.dialect();
+        String fieldName = dialect.wrapLabel(field.getName());
+        return columnName.equalsIgnoreCase(fieldName) ? columnName : columnName + " AS " + fieldName;
     }
 }
