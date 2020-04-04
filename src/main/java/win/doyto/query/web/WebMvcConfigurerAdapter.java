@@ -18,7 +18,6 @@ import java.util.*;
  * WebMvcConfigurerAdapter
  *
  * @author f0rb
- * @date 2018-11-02
  */
 public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
 
