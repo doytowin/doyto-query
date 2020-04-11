@@ -38,6 +38,7 @@ public class AssociativeServiceTemplate<L, R> implements AssociativeService<L, R
         this.sqlBuilder = new AssociativeSqlBuilder(table, left, right, createUserColumn);
     }
 
+    @Override
     public boolean exists(Collection<L> leftIds, Collection<R> rightIds) {
         return count(leftIds, rightIds) > 0;
     }
@@ -61,8 +62,8 @@ public class AssociativeServiceTemplate<L, R> implements AssociativeService<L, R
     }
 
     @Override
-    public void deleteByLeftId(L leftId) {
-        jdbcOperations.update(sqlBuilder.deleteByLeftId, leftId);
+    public int deleteByLeftId(L leftId) {
+        return jdbcOperations.update(sqlBuilder.deleteByLeftId, leftId);
     }
 
     @Override
@@ -71,18 +72,14 @@ public class AssociativeServiceTemplate<L, R> implements AssociativeService<L, R
     }
 
     @Override
-    public void deleteByRightId(R rightId) {
-        jdbcOperations.update(sqlBuilder.deleteByRightId, rightId);
-    }
-
-    private void deallocate(Object[] leftIds, Object[] rightIds) {
-        SqlAndArgs sqlAndArgs = sqlBuilder.buildDeallocate(leftIds, rightIds);
-        jdbcOperations.update(sqlAndArgs.getSql(), sqlAndArgs.getArgs());
+    public int deleteByRightId(R rightId) {
+        return jdbcOperations.update(sqlBuilder.deleteByRightId, rightId);
     }
 
     @Override
-    public void deallocate(Collection<L> leftIds, Collection<R> rightIds) {
-        deallocate(leftIds.toArray(), rightIds.toArray());
+    public int deallocate(Collection<L> leftIds, Collection<R> rightIds) {
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildDeallocate(leftIds.toArray(), rightIds.toArray());
+        return jdbcOperations.update(sqlAndArgs.getSql(), sqlAndArgs.getArgs());
     }
 
     @Override
@@ -106,10 +103,6 @@ public class AssociativeServiceTemplate<L, R> implements AssociativeService<L, R
     }
 
     @Override
-    public int allocate(L leftId, R rightId) {
-        return !exists(leftId, rightId) ? allocate(singleton(leftId), singleton(rightId)) : 0;
-    }
-
     public int allocate(Collection<L> leftIds, Collection<R> rightIds) {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildAllocate(
             leftIds, rightIds, (Long) (userIdProvider == null ? null : userIdProvider.getUserId()));

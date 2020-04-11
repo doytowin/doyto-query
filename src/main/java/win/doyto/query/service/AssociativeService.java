@@ -14,11 +14,11 @@ public interface AssociativeService<L, R> {
 
     List<R> getByLeftId(L leftId);
 
-    void deleteByLeftId(L leftId);
+    int deleteByLeftId(L leftId);
 
     List<L> getByRightId(R rightId);
 
-    void deleteByRightId(R rightId);
+    int deleteByRightId(R rightId);
 
     boolean exists(Collection<L> leftIds, Collection<R> rightIds);
 
@@ -36,13 +36,17 @@ public interface AssociativeService<L, R> {
 
     long count(Collection<L> leftIds, Collection<R> rightIds);
 
-    int allocate(L leftId, R rightId);
+    default int allocate(L leftId, R rightId) {
+        return !exists(leftId, rightId) ? allocate(singleton(leftId), singleton(rightId)) : 0;
+    }
+
+    int allocate(Collection<L> leftIds, Collection<R> rightIds);
 
     default void deallocate(L leftId, R rightId) {
         deallocate(singleton(leftId), singleton(rightId));
     }
 
-    void deallocate(Collection<L> leftIds, Collection<R> rightIds);
+    int deallocate(Collection<L> leftIds, Collection<R> rightIds);
 
     int reallocateForLeft(L leftId, Collection<R> rightIds);
 
