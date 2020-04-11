@@ -89,11 +89,12 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
     }
 
     public SqlAndArgs buildCreateAndArgs(Iterable<E> entities, String... columns) {
-        StringBuilder insertSql = new StringBuilder(buildInsertSql(tableName, insertColumns, wildInsertValue));
 
         ArrayList<Object> argList = new ArrayList<>();
         Iterator<E> iterator = entities.iterator();
         E next = iterator.next();
+
+        StringBuilder insertSql = new StringBuilder(buildInsertSql(resolveTableName(next.toIdWrapper()), insertColumns, wildInsertValue));
         readValueToArgList(fields, next, argList);
         while (iterator.hasNext()) {
             E entity = iterator.next();
@@ -109,8 +110,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
             insertSql.append(stringJoiner.toString());
         }
 
-        String sql = replaceHolderInString(next, insertSql.toString());
-        return new SqlAndArgs(sql, argList);
+        return new SqlAndArgs(insertSql.toString(), argList);
     }
 
     public String buildUpdateAndArgs(E entity, List<Object> argList) {
@@ -163,7 +163,11 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
         return new SqlAndArgs(buildDeleteAndArgs(query, argList), argList);
     }
 
-    protected String buildDeleteById(Object idIdWrapper) {
-        return "DELETE FROM " + resolveTableName(idIdWrapper) + whereId;
+    protected String buildDeleteById(IdWrapper<?> w) {
+        return "DELETE FROM " + resolveTableName(w) + whereId;
+    }
+
+    protected String resolveTableName(E e) {
+        return resolveTableName(e.toIdWrapper());
     }
 }

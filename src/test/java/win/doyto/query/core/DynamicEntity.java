@@ -36,4 +36,8 @@ public class DynamicEntity extends IntegerId {
     @Transient
     private Date createTime;
 
+    @Override
+    public IdWrapper<Integer> toIdWrapper() {
+        return new DynamicIdWrapper(id, user, project);
+    }
 }

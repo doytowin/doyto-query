@@ -49,7 +49,7 @@ public class QueryBuilder {
     }
 
     private String build(PageQuery pageQuery, List<Object> argList, String... columns) {
-        return build(pageQuery, argList, Constant.SELECT, columns, resolveTableName(pageQuery));
+        return build(pageQuery, argList, Constant.SELECT, columns, resolveTableName(pageQuery.toIdWrapper()));
     }
 
     @SuppressWarnings("java:S4973")
@@ -142,20 +142,22 @@ public class QueryBuilder {
         return new SqlAndArgs(buildSelectColumnsAndArgs(query, argList, columns), argList);
     }
 
-    protected SqlAndArgs buildSelectById(IdWrapper<?> idOrIdWrapper, String... columns) {
+    protected SqlAndArgs buildSelectById(IdWrapper<?> idWrapper, String... columns) {
         if (columns.length == 0) {
             columns = new String[]{"*"};
         }
         String selectFrom = SELECT + StringUtils.join(columns, SEPARATOR) + FROM;
-        String sql = selectFrom + resolveTableName(idOrIdWrapper) + whereId;
-        return new SqlAndArgs(sql, Collections.singletonList(idOrIdWrapper.getId()));
+        String sql = selectFrom + resolveTableName(idWrapper) + whereId;
+        return new SqlAndArgs(sql, Collections.singletonList(idWrapper.getId()));
     }
 
     protected SqlAndArgs buildSelectIdAndArgs(PageQuery query) {
         return buildSelectColumnsAndArgs(query, idColumn);
     }
 
-    protected String resolveTableName(Object entity) {
-        return isDynamicTable ? replaceHolderInString(entity, tableName) : tableName;
+
+    protected String resolveTableName(IdWrapper<?> idWrapper) {
+        return isDynamicTable ? replaceHolderInString(idWrapper, tableName) : tableName;
     }
+
 }

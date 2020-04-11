@@ -10,6 +10,10 @@ public class MenuIdWrapper implements IdWrapper<Integer> {
     private Integer id;
     private String platform;
 
+    public String getPlatform() {
+        return "01".equals(platform) ? "_" + platform : "";
+    }
+
     @Override
     public String toCacheKey() {
         return id + "-" + platform;

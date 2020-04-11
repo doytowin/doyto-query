@@ -7,7 +7,6 @@ import win.doyto.query.entity.CommonEntity;
 import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 /**
  * MenuEntity
@@ -17,12 +16,9 @@ import javax.persistence.Transient;
 @Getter
 @Setter
 @Entity
-@Table(name = MenuEntity.TABLE)
+@Table(name = "menu${platform}")
 public class MenuEntity extends CommonEntity<Integer, Long> {
 
-    public static final String TABLE = "menu_${platform}";
-
-    @Transient
     private String platform;
 
     private Integer parentId;
@@ -35,7 +31,6 @@ public class MenuEntity extends CommonEntity<Integer, Long> {
 
     @Override
     public MenuIdWrapper toIdWrapper() {
-        Objects.requireNonNull(id);
         Objects.requireNonNull(platform);
         return new MenuIdWrapper(id, platform);
     }

@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.core.PageQuery;
 
+import java.util.Objects;
 import javax.persistence.Transient;
 
 /**
@@ -25,5 +26,11 @@ public class MenuQuery extends PageQuery {
     private String platform;
 
     private String menuNameLike;
+
+    @Override
+    public MenuIdWrapper toIdWrapper() {
+        Objects.requireNonNull(platform);
+        return new MenuIdWrapper(null, platform);
+    }
 
 }

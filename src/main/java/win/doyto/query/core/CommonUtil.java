@@ -35,7 +35,7 @@ class CommonUtil {
         return PTN_$EX.matcher(input).find();
     }
 
-    static String replaceHolderInString(Object entity, String input) {
+    static String replaceHolderInString(Object target, String input) {
         Matcher matcher = PTN_$EX.matcher(input);
         if (!matcher.find()) {
             return input;
@@ -44,7 +44,7 @@ class CommonUtil {
         StringBuffer sb = new StringBuffer();
         do {
             String fieldName = matcher.group(1);
-            Object value = readFieldGetter(entity, fieldName);
+            Object value = readFieldGetter(target, fieldName);
             String replacement = String.valueOf(value);
             if (QueryBuilder.PTN_REPLACE.matcher(replacement).matches()) {
                 matcher.appendReplacement(sb, replacement);
