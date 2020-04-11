@@ -312,7 +312,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         }
 
         static Matcher get(QuerySuffix querySuffix) {
-            return map.get(querySuffix);
+            return map.getOrDefault(querySuffix, Object::equals);
         }
 
         interface Matcher {

@@ -36,6 +36,12 @@ class MemoryDataAccessTest {
     }
 
     @Test
+    void filterByUsernameEq() {
+        TestQuery testQuery = TestQuery.builder().usernameEq("f0rb").build();
+        assertEquals(1, testMemoryDataAccess.query(testQuery).size());
+    }
+
+    @Test
     void filterByOr() {
         TestQuery testQuery = TestQuery.builder().usernameOrEmailOrMobile("f0rb").build();
         assertEquals(1, testMemoryDataAccess.query(testQuery).size());

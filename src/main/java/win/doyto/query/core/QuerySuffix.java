@@ -34,6 +34,7 @@ enum QuerySuffix {
     Ge(">="),
     Lt("<"),
     Le("<="),
+    Eq("="),
     NONE("=");
 
     private static final Pattern SUFFIX_PTN;

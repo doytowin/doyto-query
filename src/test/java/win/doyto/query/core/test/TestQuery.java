@@ -29,6 +29,7 @@ public class TestQuery extends PageQuery {
     private Integer idLe;
 
     private String username;
+    private String usernameEq;
 
     @SubQuery(left = "userId", table = "t_user_and_role")
     private Integer roleId;
