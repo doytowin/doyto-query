@@ -49,7 +49,7 @@ class AbstractDynamicServiceTest {
         TestEntity testEntity = testService.get(1);
         testService.update(testEntity);
         testService.get(1);
-        verify(testService.dataAccess, times(3)).get(IdWrapper.build(1));;
+        verify(testService.dataAccess, times(3)).get(IdWrapper.build(1));
     }
 
     @Test
