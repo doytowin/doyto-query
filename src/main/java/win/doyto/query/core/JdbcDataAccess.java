@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiFunction;
+import java.util.function.BiConsumer;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Transient;
@@ -31,43 +31,41 @@ import static win.doyto.query.core.Constant.SEPARATOR;
  */
 public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> implements DataAccess<E, I, Q> {
 
-    private static final Map<Class, RowMapper> classRowMapperMap = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, RowMapper<?>> classRowMapperMap;
+
+    static {
+        classRowMapperMap = new ConcurrentHashMap<>();
+        classRowMapperMap.put(Map.class, new ColumnMapRowMapper());
+    }
+
     private final JdbcOperations jdbcOperations;
     private final RowMapper<E> rowMapper;
     private final CrudBuilder<E> crudBuilder;
     private final String[] columnsForSelect;
     private final boolean isGeneratedId;
-    private final BiFunction<E, Number, Void> setIdFunc;
+    private final BiConsumer<E, Number> setIdFunc;
 
     @SuppressWarnings("unchecked")
     public JdbcDataAccess(JdbcOperations jdbcOperations, Class<E> entityClass, Class<I> idClass, RowMapper<E> rowMapper) {
+        classRowMapperMap.put(entityClass, rowMapper);
         this.jdbcOperations = jdbcOperations;
         this.rowMapper = rowMapper;
-        crudBuilder = new CrudBuilder<>(entityClass);
-        columnsForSelect = Arrays
+        this.crudBuilder = new CrudBuilder<>(entityClass);
+        this.columnsForSelect = Arrays
             .stream(FieldUtils.getAllFields(entityClass))
             .filter(JdbcDataAccess::shouldRetain)
             .map(CommonUtil::selectAs)
             .toArray(String[]::new);
 
         Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
-        isGeneratedId = idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class);
+        this.isGeneratedId = idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class);
 
         if (idClass.isAssignableFrom(Integer.class)) {
-            setIdFunc = (e, key) -> {
-                e.setId((I) (Integer) key.intValue());
-                return null;
-            };
+            setIdFunc = (e, key) -> e.setId((I) (Integer) key.intValue());
         } else if (idClass.isAssignableFrom(Long.class)) {
-            setIdFunc = (e, key) -> {
-                e.setId((I) (Long) key.longValue());
-                return null;
-            };
+            setIdFunc = (e, key) -> e.setId((I) (Long) key.longValue());
         } else {
-            setIdFunc = (e, key) -> {
-                e.setId((I) key);
-                return null;
-            };
+            setIdFunc = (e, key) -> e.setId((I) key);
         }
     }
 
@@ -84,19 +82,13 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public final <V> List<V> queryColumns(Q q, Class<V> clazz, String... columns) {
         columns = StringUtils.join(columns, SEPARATOR).split("\\s*,\\s*");
-        if (!classRowMapperMap.containsKey(clazz)) {
-            if (Map.class.isAssignableFrom(clazz)) {
-                classRowMapperMap.put(clazz, new ColumnMapRowMapper());
-            } else if (columns.length == 1) {
-                classRowMapperMap.put(clazz, new SingleColumnRowMapper<>(clazz));
-            } else {
-                classRowMapperMap.put(clazz, new BeanPropertyRowMapper<>(clazz));
-            }
-        }
-        return queryColumns(q, classRowMapperMap.get(clazz), columns);
+        boolean isSingleColumn = columns.length == 1;
+        @SuppressWarnings("unchecked")
+        RowMapper<V> localRowMapper = (RowMapper<V>) classRowMapperMap.computeIfAbsent(
+                clazz, c -> isSingleColumn ? new SingleColumnRowMapper<>(clazz) : new BeanPropertyRowMapper<>(clazz));
+        return queryColumns(q, localRowMapper, columns);
     }
 
     private <V> List<V> queryColumns(Q q, RowMapper<V> rowMapper, String... columns) {
@@ -148,7 +140,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
                 }
                 return ps;
             }, keyHolder);
-            setIdFunc.apply(e, keyHolder.getKey());
+            setIdFunc.accept(e, keyHolder.getKey());
         } else {
             jdbcOperations.update(sql, args.toArray());
         }
