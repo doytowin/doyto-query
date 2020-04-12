@@ -32,7 +32,7 @@ class CommonExceptionHandler {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ErrorCode httpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         log.error("HttpRequestMethodNotSupportedException: " + e.getMessage(), e.getCause());
-        return ErrorCode.build(PresetErrorCode.HTTP_METHOD_NOT_SUPPORTED.args(e.getMethod()));
+        return PresetErrorCode.HTTP_METHOD_NOT_SUPPORTED.build(e.getMethod());
     }
 
     /**
@@ -44,22 +44,22 @@ class CommonExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ErrorCode methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         log.error("MethodArgumentTypeMismatchException: " + e.getMessage(), e);
-        return ErrorCode.build(PresetErrorCode.ARGUMENT_TYPE_MISMATCH);
+        return PresetErrorCode.ARGUMENT_TYPE_MISMATCH;
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ErrorCode httpMessageNotReadableException(HttpMessageNotReadableException e) {
         log.error("HttpMessageNotReadableException: " + e.getMessage(), e);
         if (e.getCause() instanceof InvalidFormatException) {
-            return ErrorCode.build(PresetErrorCode.ARGUMENT_FORMAT_ERROR.args(((InvalidFormatException) e.getCause()).getValue()));
+            return PresetErrorCode.ARGUMENT_FORMAT_ERROR.build(((InvalidFormatException) e.getCause()).getValue());
         }
-        return ErrorCode.build(PresetErrorCode.REQUEST_BODY_ERROR);
+        return PresetErrorCode.REQUEST_BODY_ERROR;
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ErrorCode uploadFileOverMaxSizeException(MaxUploadSizeExceededException e) {
         log.error("MaxUploadSizeExceededException: {}", e.getMessage());
-        return ErrorCode.build(PresetErrorCode.FILE_UPLOAD_OVER_MAX_SIZE);
+        return PresetErrorCode.FILE_UPLOAD_OVER_MAX_SIZE;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -82,19 +82,19 @@ class CommonExceptionHandler {
     @ExceptionHandler(DuplicateKeyException.class)
     public ErrorCode duplicateKeyException(DuplicateKeyException e) {
         log.error("DuplicateKeyException: " + e.getMessage(), e);
-        return ErrorCode.build(PresetErrorCode.DUPLICATE_KEY_EXCEPTION);
+        return PresetErrorCode.DUPLICATE_KEY_EXCEPTION;
     }
 
     @ExceptionHandler(Exception.class)
     public ErrorCode exception(Exception e) {
         log.error("Unknown Exception", e);
-        return ErrorCode.build(PresetErrorCode.ERROR);
+        return PresetErrorCode.ERROR;
     }
 
     @ExceptionHandler(ErrorCodeException.class)
     public ErrorCode handleErrorCodeException(ErrorCodeException e) {
         log.warn("ErrorCodeException: {}", e.getMessage());
-        return ErrorCode.build(e.getErrorCode());
+        return e.getErrorCode();
     }
 
 }
