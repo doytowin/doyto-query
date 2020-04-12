@@ -1,5 +1,6 @@
 package win.doyto.query.demo.module.user;
 
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import win.doyto.query.service.AbstractCrudService;
 
@@ -8,6 +9,7 @@ import win.doyto.query.service.AbstractCrudService;
  *
  * @author f0rb on 2020-04-02
  */
+@Primary
 @Service
 public class UserService extends AbstractCrudService<UserEntity, Long, UserQuery> {
 }

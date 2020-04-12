@@ -1,5 +1,6 @@
 package win.doyto.query.web.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import win.doyto.query.core.PageQuery;
@@ -39,7 +40,8 @@ public abstract class AbstractRestController<E extends Persistable<I>, I extends
         responseClass = (Class<S>) types[4];
     }
 
-    protected abstract CrudService<E, I, Q> getService();
+    @Autowired
+    protected CrudService<E, I, Q> service;
 
     protected S buildResponse(E e) {
         return BeanUtil.convertTo(e, responseClass);
@@ -67,50 +69,50 @@ public abstract class AbstractRestController<E extends Persistable<I>, I extends
         if (!q.needPaging()) {
             q.setPageNumber(0);
         }
-        return new PageList<>(list(q), getService().count(q));
+        return new PageList<>(list(q), service.count(q));
     }
 
     public List<S> list(Q q) {
-        return getService().query(q, this::buildResponse);
+        return service.query(q, this::buildResponse);
     }
 
     @GetMapping("{id}")
     public S getById(@PathVariable I id) {
-        E e = getService().get(id);
+        E e = service.get(id);
         checkResult(e);
         return buildResponse(e);
     }
 
     @DeleteMapping("{id}")
     public S deleteById(@PathVariable I id) {
-        E e = getService().delete(id);
+        E e = service.delete(id);
         checkResult(e);
         return buildResponse(e);
     }
 
     @PutMapping("{id}")
     public void update(@PathVariable I id, @RequestBody @Validated(UpdateGroup.class) R request) {
-        E e = getService().get(id);
+        E e = service.get(id);
         checkResult(e);
         buildEntity(e, request).setId(id);
-        getService().update(e);
+        service.update(e);
     }
 
     @PatchMapping("{id}")
     public void patch(@PathVariable I id, @RequestBody @Validated(PatchGroup.class) R request) {
         E e = buildEntity(request);
         e.setId(id);
-        getService().patch(e);
+        service.patch(e);
     }
 
     @PostMapping
     public void add(@RequestBody @Validated(CreateGroup.class) R request) {
-        getService().create(buildEntity(request));
+        service.create(buildEntity(request));
     }
 
     @PostMapping("batch")
     public void add(@RequestBody @Validated(CreateGroup.class) List<R> requests) {
-        getService().batchInsert(requests.stream().map(this::buildEntity).collect(Collectors.toList()));
+        service.batchInsert(requests.stream().map(this::buildEntity).collect(Collectors.toList()));
     }
 
 }
