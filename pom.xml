@@ -13,7 +13,7 @@
 
     <groupId>win.doyto</groupId>
     <artifactId>doyto-query-web</artifactId>
-    <version>0.2.0-RELEASE</version>
+    <version>0.2.1-SNAPSHOT</version>
 
     <properties>
         <argLine/>
@@ -101,7 +101,7 @@
         <dependency>
             <groupId>win.doyto</groupId>
             <artifactId>doyto-query</artifactId>
-            <version>0.2.0-RELEASE</version>
+            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>javax.annotation</groupId>
