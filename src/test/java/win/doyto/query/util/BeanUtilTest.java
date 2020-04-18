@@ -4,8 +4,7 @@ import org.junit.jupiter.api.Test;
 import win.doyto.query.demo.module.menu.MenuEntity;
 import win.doyto.query.demo.module.menu.MenuRequest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * BeanUtilTest
@@ -24,12 +23,15 @@ class BeanUtilTest {
         menuEntity.setId(1);
         menuEntity.setMenuName("menu");
         menuEntity.setMemo("a menu");
+        menuEntity.setParentId(0);
 
         MenuEntity newMenuEntity = BeanUtil.copyTo(menuRequest, menuEntity);
 
-        assertEquals(Integer.valueOf(1), newMenuEntity.getId());
-        assertEquals("submenu", newMenuEntity.getMenuName());
-        assertNull(newMenuEntity.getMemo());
+        assertThat(newMenuEntity)
+                .hasFieldOrPropertyWithValue("id", 1)
+                .hasFieldOrPropertyWithValue("parentId", 0)
+                .hasFieldOrPropertyWithValue("menuName", "submenu")
+                .hasFieldOrPropertyWithValue("memo", null);
 
     }
 }

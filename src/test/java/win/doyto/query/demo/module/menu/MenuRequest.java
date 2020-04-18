@@ -1,5 +1,6 @@
 package win.doyto.query.demo.module.menu;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,6 +17,7 @@ public class MenuRequest {
 
     private String platform;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer parentId;
 
     private String menuName;

@@ -5,11 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.springframework.beans.BeanUtils;
 import win.doyto.query.annotation.NestedQueries;
 import win.doyto.query.annotation.SubQuery;
 import win.doyto.query.entity.CommonEntity;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -31,7 +31,7 @@ import static win.doyto.query.core.QuerySuffix.*;
  * @author f0rb
  */
 @Slf4j
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "java:S3740"})
 public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
     protected static final Map<Class<?>, Map> tableMap = new ConcurrentHashMap<>();
 
@@ -218,9 +218,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
             return entities.stream().map(entity -> (V) readField(entity, columns[0])).collect(Collectors.toList());
         } else {
             for (E e : entities) {
-                V v = classV.getDeclaredConstructor().newInstance();
-                BeanUtils.copyProperties(e, v);
-                objects.add(v);
+                objects.add(BeanUtil.convertTo(e, classV));
             }
         }
         return objects;
