@@ -23,7 +23,6 @@ import javax.validation.Valid;
 @Slf4j
 @RestController
 @AllArgsConstructor
-@SuppressWarnings("squid:S4529")
 class LoginController {
 
     @Resource

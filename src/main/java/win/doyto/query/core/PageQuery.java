@@ -25,6 +25,7 @@ import static java.lang.Math.max;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@SuppressWarnings("java:S3740")
 public class PageQuery implements Serializable {
 
     protected static final String SORT_RX = "(\\w+,(asc|desc);|field\\(\\w+(,[\\w']+)+\\);)*(\\w+,(asc|desc)|field\\(\\w+(,[\\w']+)+\\))";

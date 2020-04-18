@@ -29,7 +29,7 @@ public class DynamicQuery extends PageQuery {
     private Integer scoreLt;
 
     @Override
-    protected IdWrapper toIdWrapper() {
+    protected DynamicIdWrapper toIdWrapper() {
         return new DynamicIdWrapper(null, user, project);
     }
 }

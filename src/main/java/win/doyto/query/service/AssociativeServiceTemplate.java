@@ -28,7 +28,7 @@ public class AssociativeServiceTemplate<L, R> implements AssociativeService<L, R
     private JdbcOperations jdbcOperations;
 
     @Autowired(required = false)
-    private UserIdProvider userIdProvider;
+    private UserIdProvider<?> userIdProvider;
 
     public AssociativeServiceTemplate(String table, String left, String right) {
         this(table, left, right, null);

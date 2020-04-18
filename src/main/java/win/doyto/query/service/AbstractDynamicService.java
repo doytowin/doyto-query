@@ -42,7 +42,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     protected final CacheWrapper<List<E>> queryCacheWrapper = CacheWrapper.createInstance();
 
     @Autowired(required = false)
-    private UserIdProvider userIdProvider;
+    private UserIdProvider<?> userIdProvider;
 
     @Setter
     @Autowired(required = false)
