@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import win.doyto.query.util.BeanUtil;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -16,11 +17,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class MenuControllerTest {
     String platform = "01";
-    MenuController menuController = new MenuController();
+    MenuController menuController = new MenuController(new MenuService());
+
 
     @BeforeEach
     void setUp() throws IOException {
-        menuController.batchInsert(BeanUtil.loadJsonData("menu.json", new TypeReference<Iterable<MenuEntity>>() {}));
+        menuController.create(BeanUtil.loadJsonData("menu.json", new TypeReference<List<MenuRequest>>() {}), "01");
     }
 
     @Test

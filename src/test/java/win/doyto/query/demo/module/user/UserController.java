@@ -1,12 +1,11 @@
 package win.doyto.query.demo.module.user;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import win.doyto.query.demo.controller.AbstractRestController;
 import win.doyto.query.demo.exception.ServiceAsserts;
 import win.doyto.query.validation.CreateGroup;
+import win.doyto.query.web.controller.AbstractRestController;
 
 import java.util.List;
 import java.util.Map;
@@ -32,28 +31,6 @@ class UserController extends AbstractRestController<UserEntity, Long, UserQuery,
     @Override
     protected UserService getService() {
         return userService;
-    }
-
-    @Override
-    protected UserResponse buildResponse(UserEntity userEntity) {
-        UserResponse userResponse = new UserResponse();
-        BeanUtils.copyProperties(userEntity, userResponse);
-        return userResponse;
-    }
-
-    @Override
-    public UserEntity buildEntity(UserRequest userRequest) {
-        UserEntity userEntity = new UserEntity();
-        BeanUtils.copyProperties(userRequest, userEntity);
-        return userEntity;
-    }
-
-    @Override
-    public UserEntity buildEntity(UserEntity userEntity, UserRequest userRequest) {
-        String password = userEntity.getPassword();
-        BeanUtils.copyProperties(userRequest, userEntity);
-        userEntity.setPassword(password);
-        return userEntity;
     }
 
     @Override

@@ -1,8 +1,7 @@
 package win.doyto.query.demo.test;
 
 import org.junit.jupiter.api.Test;
-
-import javax.persistence.EntityNotFoundException;
+import win.doyto.query.web.response.ErrorCodeException;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -36,7 +35,7 @@ class RoleMvcTest extends DemoApplicationTest {
             mockMvc.perform(delete("/role/0"));
             fail();
         } catch (Exception e) {
-            assertTrue(e.getCause() instanceof EntityNotFoundException);
+            assertTrue(e.getCause() instanceof ErrorCodeException);
         }
     }
 

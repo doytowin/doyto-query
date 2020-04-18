@@ -1,5 +1,6 @@
 package win.doyto.query.demo.module.user;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +14,7 @@ import lombok.Setter;
 public class UserRequest {
 
     private String username;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String password;
     private String mobile;
     private String email;

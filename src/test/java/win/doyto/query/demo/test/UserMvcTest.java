@@ -3,9 +3,9 @@ package win.doyto.query.demo.test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.demo.module.user.TestUserEntityAspect;
+import win.doyto.query.web.response.ErrorCodeException;
 
 import javax.annotation.Resource;
-import javax.persistence.EntityNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -183,7 +183,7 @@ public class UserMvcTest extends DemoApplicationTest {
             mockMvc.perform(get(URL_USER_2)).andDo(print()).andExpect(jsonPath("$").doesNotExist());
             fail();
         } catch (Exception e) {
-            assertTrue(e.getCause() instanceof EntityNotFoundException);
+            assertTrue(e.getCause() instanceof ErrorCodeException);
         }
 
     }

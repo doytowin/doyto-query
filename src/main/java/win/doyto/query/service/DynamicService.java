@@ -7,11 +7,11 @@ import win.doyto.query.entity.Persistable;
 import java.io.Serializable;
 
 /**
- * CommonCrudService
+ * DynamicService
  *
  * @author f0rb on 2019-06-01
  */
-interface DynamicService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> extends QueryService<E, I, Q> {
+public interface DynamicService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> extends QueryService<E, I, Q> {
 
     void create(E e);
 

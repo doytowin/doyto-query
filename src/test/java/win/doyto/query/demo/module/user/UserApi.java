@@ -1,6 +1,6 @@
 package win.doyto.query.demo.module.user;
 
-import win.doyto.query.demo.controller.RestApi;
+import win.doyto.query.web.controller.RestApi;
 
 /**
  * UserApi

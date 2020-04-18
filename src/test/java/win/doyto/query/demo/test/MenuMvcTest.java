@@ -84,7 +84,7 @@ class MenuMvcTest extends DemoApplicationTest {
     @Test
     void createMenus() throws Exception {
 
-        requestJson(post("/02/menu/import"), "[{\"menuName\":\"Test Menu1\"},{\"menuName\":\"Test Menu2\"}]", session)
+        requestJson(post("/02/menu/batch"), "[{\"menuName\":\"Test Menu1\"},{\"menuName\":\"Test Menu2\"}]", session)
                 .andExpect(statusIs200());
 
         mockMvc.perform(get("/02/menu/"))
