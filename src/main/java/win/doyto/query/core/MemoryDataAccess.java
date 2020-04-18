@@ -231,7 +231,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
             queryList.sort((o1, o2) -> {
                 String[] pd = order.split(",");
                 String property = toCamelCase(pd[0]);
-                Comparable c1 = (Comparable) readField(o1, property);
+                Comparable<Object> c1 = (Comparable<Object>) readField(o1, property);
                 Object c2 = readField(o2, property);
                 int ret = c1.compareTo(c2);
                 return "asc".equalsIgnoreCase(pd[1]) ? ret : -ret;
@@ -251,7 +251,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         static class LikeMatcher implements Matcher {
             @Override
             public boolean doMatch(Object qv, Object ev) {
-                return StringUtils.contains(((String) ev), (String) qv);
+                return StringUtils.contains(ev.toString(), qv.toString());
             }
 
             @Override
@@ -270,7 +270,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         static class StartMatcher extends LikeMatcher {
             @Override
             public boolean doMatch(Object qv, Object ev) {
-                return StringUtils.startsWith(((String) ev), (String) qv);
+                return StringUtils.startsWith(ev.toString(), qv.toString());
             }
         }
 
@@ -299,14 +299,13 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
             map.put(Start, new StartMatcher());
             map.put(Null, new NullMatcher());
             map.put(NotNull, new NotNullMatcher());
-            map.put(In, (qv, ev) -> ((Collection) qv).contains(ev));
-            map.put(NotIn, (qv, ev) -> !((Collection) qv).contains(ev));
-            map.put(Gt, (qv, ev) -> ((Comparable) ev).compareTo(qv) > 0);
-            map.put(Lt, (qv, ev) -> ((Comparable) ev).compareTo(qv) < 0);
-            map.put(Ge, (qv, ev) -> ((Comparable) ev).compareTo(qv) >= 0);
-            map.put(Le, (qv, ev) -> ((Comparable) ev).compareTo(qv) <= 0);
+            map.put(In, (qv, ev) -> ((Collection<?>) qv).contains(ev));
+            map.put(NotIn, (qv, ev) -> !((Collection<?>) qv).contains(ev));
+            map.put(Gt, (qv, ev) -> ((Comparable<Object>) ev).compareTo(qv) > 0);
+            map.put(Lt, (qv, ev) -> ((Comparable<Object>) ev).compareTo(qv) < 0);
+            map.put(Ge, (qv, ev) -> ((Comparable<Object>) ev).compareTo(qv) >= 0);
+            map.put(Le, (qv, ev) -> ((Comparable<Object>) ev).compareTo(qv) <= 0);
             map.put(Not, (qv, ev) -> !qv.equals(ev));
-            map.put(NONE, Object::equals);
         }
 
         static Matcher get(QuerySuffix querySuffix) {
