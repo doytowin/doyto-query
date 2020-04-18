@@ -25,7 +25,7 @@ public class QueryBuilder {
     static final Pattern PTN_REPLACE = Pattern.compile("\\w*");
     private static final Pattern PTN_SORT = Pattern.compile(",(asc|desc)", Pattern.CASE_INSENSITIVE);
 
-    private static final Map<Class, Field[]> classFieldsMap = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, Field[]> classFieldsMap = new ConcurrentHashMap<>();
     protected static final String EQUALS_REPLACE_HOLDER = " = " + Constant.REPLACE_HOLDER;
 
     protected final String tableName;
@@ -89,7 +89,7 @@ public class QueryBuilder {
     public static String buildWhere(String sql, Object query, List<Object> argList) {
         initFields(query);
         Field[] fields = classFieldsMap.get(query.getClass());
-        List<Object> whereList = new ArrayList<>(fields.length);
+        StringJoiner whereList = new StringJoiner(" AND ", fields.length);
         for (Field field : fields) {
             String fieldName = field.getName();
             Object value = readFieldGetter(field, query);
@@ -99,13 +99,13 @@ public class QueryBuilder {
                 } else {
                     String and = FieldProcessor.execute(argList, field, value);
                     if (and != null) {
-                        whereList.add(and);
+                        whereList.append(and);
                     }
                 }
             }
         }
         if (!whereList.isEmpty()) {
-            sql += WHERE + StringUtils.join(whereList, " AND ");
+            sql += WHERE + whereList.toString();
         }
         return sql;
     }

@@ -19,7 +19,6 @@ import static win.doyto.query.core.Constant.*;
  *
  * @author f0rb
  */
-@SuppressWarnings("squid:CommentedOutCodeLine")
 @Slf4j
 final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
 
@@ -41,42 +40,42 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
         fields = Collections.unmodifiableList(tempFields);
         fieldsSize = fields.size();
 
-        wildInsertValue = wrapWithParenthesis(StringUtils.join(IntStream.range(0, fieldsSize).mapToObj(i -> Constant.REPLACE_HOLDER).collect(Collectors.toList()), Constant.SEPARATOR));
+        wildInsertValue = wrapWithParenthesis(StringUtils.join(IntStream.range(0, fieldsSize).mapToObj(i -> REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR));
 
         List<String> columnList = fields.stream().map(CommonUtil::resolveColumn).collect(Collectors.toList());
-        insertColumns = wrapWithParenthesis(StringUtils.join(columnList, Constant.SEPARATOR));
-        wildSetClause = StringUtils.join(columnList.stream().map(c -> c + EQUALS_REPLACE_HOLDER).collect(Collectors.toList()), Constant.SEPARATOR);
+        insertColumns = wrapWithParenthesis(StringUtils.join(columnList, SEPARATOR));
+        wildSetClause = StringUtils.join(columnList.stream().map(c -> c + EQUALS_REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR);
 
     }
 
     private static String buildInsertSql(String table, String columns, String fields) {
-        ArrayList<String> insertList = new ArrayList<>();
-        insertList.add("INSERT INTO");
-        insertList.add(table);
-        insertList.add(columns);
-        insertList.add("VALUES");
-        insertList.add(fields);
-        return StringUtils.join(insertList, SPACE);
+        StringJoiner insertSql = new StringJoiner(SPACE, 5);
+        insertSql.append("INSERT INTO");
+        insertSql.append(table);
+        insertSql.append(columns);
+        insertSql.append("VALUES");
+        insertSql.append(fields);
+        return insertSql.toString();
     }
 
     private static String buildUpdateSql(String tableName, String setClauses) {
-        ArrayList<String> updateList = new ArrayList<>();
-        updateList.add("UPDATE");
-        updateList.add(tableName);
-        updateList.add("SET");
-        updateList.add(setClauses);
-        return StringUtils.join(updateList, SPACE);
+        StringJoiner updateSql = new StringJoiner(SPACE, 4);
+        updateSql.append("UPDATE");
+        updateSql.append(tableName);
+        updateSql.append("SET");
+        updateSql.append(setClauses);
+        return updateSql.toString();
     }
 
     private static void readValueToArgList(List<Field> fields, Object entity, List<Object> argList) {
         fields.stream().map(field -> readFieldGetter(field, entity)).forEach(argList::add);
     }
 
-    private static void readValueToArgList(List<Field> fields, Object entity, List<Object> argList, List<String> setClauses) {
+    private static void readValueToArgList(List<Field> fields, Object entity, List<Object> argList, StringJoiner setClauses) {
         for (Field field : fields) {
             Object o = readFieldGetter(field, entity);
             if (o != null) {
-                setClauses.add(resolveColumn(field) + EQUALS_REPLACE_HOLDER);
+                setClauses.append(resolveColumn(field) + EQUALS_REPLACE_HOLDER);
                 argList.add(o);
             }
         }
@@ -127,9 +126,9 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
 
     public String buildPatchAndArgs(E entity, List<Object> argList) {
         String table = resolveTableName(entity);
-        List<String> setClauses = new ArrayList<>(fieldsSize);
+        StringJoiner setClauses = new StringJoiner(SEPARATOR, fieldsSize);
         readValueToArgList(fields, entity, argList, setClauses);
-        return buildUpdateSql(table, StringUtils.join(setClauses, Constant.SEPARATOR));
+        return buildUpdateSql(table, setClauses.toString());
     }
 
     public String buildPatchAndArgsWithId(E entity, List<Object> argList) {

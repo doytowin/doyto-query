@@ -23,11 +23,19 @@ class StringJoiner {
         return this;
     }
 
+    public boolean isEmpty() {
+        return cursor <= 0;
+    }
+
     @Override
     public String toString() {
+        if (isEmpty()) {
+            return "";
+        }
+
         String[] strings = list;
         int joinerLength = joiner.length;
-        int capacity = count + joinerLength * (strings.length - 1);
+        int capacity = count + joinerLength * (cursor - 1);
         char[] chars = new char[capacity];
 
         String str = strings[0];
