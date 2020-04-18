@@ -14,7 +14,7 @@ public class MySQLDialect implements Dialect {
     private static final String LIMIT = " LIMIT ";
     private Pattern from = Pattern.compile("FROM \\w+");
     private Pattern join = Pattern.compile("join", Pattern.CASE_INSENSITIVE);
-    private Pattern alias = Pattern.compile("(,|SELECT)\\s*(\\w+)");
+    private Pattern alias = Pattern.compile("(,|SELECT)\\s*([\\w*]+)");
 
     @Override
     public String buildPageSql(String sql, int limit, long offset) {

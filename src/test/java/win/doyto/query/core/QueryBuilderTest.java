@@ -28,6 +28,7 @@ public class QueryBuilderTest {
     @BeforeEach
     void setUp() {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
+        GlobalConfiguration.instance().setDialect(new SimpleDialect());
         argList = new ArrayList<>();
     }
 

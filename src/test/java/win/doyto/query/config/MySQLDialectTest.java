@@ -37,4 +37,11 @@ class MySQLDialectTest {
         String pageSql = mysqlDialect.buildPageSql("SELECT u.username, ur.role_id FROM t_user u LEFT JOIN t_user_and_role ur ON u.id = ur.user_id", 10, 20);
         assertEquals("SELECT u.username, ur.role_id FROM t_user u LEFT JOIN t_user_and_role ur ON u.id = ur.user_id LIMIT 10 OFFSET 20", pageSql);
     }
+
+    @Test
+    void star() {
+        MySQLDialect mysqlDialect = new MySQLDialect();
+        String pageSql = mysqlDialect.buildPageSql("SELECT * FROM user WHERE valid = true", 10, 50000);
+        assertEquals("SELECT a.* FROM user a JOIN (SELECT id FROM user WHERE valid = true LIMIT 10 OFFSET 50000) b ON a.id = b.id", pageSql);
+    }
 }
