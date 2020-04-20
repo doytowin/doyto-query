@@ -28,6 +28,12 @@ public class DynamicEntity extends IntegerId {
     @Transient
     private String project;
 
+    @Transient
+    private String locale;
+
+    @Column(name = "locale_${locale}")
+    private String value;
+
     @Column(name = "user_score")
     private Integer score;
 
@@ -38,6 +44,6 @@ public class DynamicEntity extends IntegerId {
 
     @Override
     public IdWrapper<Integer> toIdWrapper() {
-        return new DynamicIdWrapper(id, user, project);
+        return new DynamicIdWrapper(id, user, project, locale);
     }
 }

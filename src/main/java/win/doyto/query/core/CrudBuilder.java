@@ -84,7 +84,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
     public String buildCreateAndArgs(E entity, List<Object> argList) {
         String table = resolveTableName(entity);
         readValueToArgList(fields, entity, argList);
-        return buildInsertSql(table, insertColumns, wildInsertValue);
+        return buildInsertSql(table, replaceHolderInString(entity, insertColumns), wildInsertValue);
     }
 
     public SqlAndArgs buildCreateAndArgs(Iterable<E> entities, String... columns) {
@@ -109,14 +109,15 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
             insertSql.append(stringJoiner.toString());
         }
 
-        return new SqlAndArgs(insertSql.toString(), argList);
+        String sql = replaceHolderInString(next, insertSql.toString());
+        return new SqlAndArgs(sql, argList);
     }
 
     public String buildUpdateAndArgs(E entity, List<Object> argList) {
         String table = resolveTableName(entity);
         readValueToArgList(fields, entity, argList);
         argList.add(readField(idField, entity));
-        return buildUpdateSql(table, wildSetClause) + whereId;
+        return buildUpdateSql(table, replaceHolderInString(entity, wildSetClause)) + whereId;
     }
 
     public SqlAndArgs buildUpdateAndArgs(E entity) {
@@ -128,7 +129,8 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
         String table = resolveTableName(entity);
         StringJoiner setClauses = new StringJoiner(SEPARATOR, fieldsSize);
         readValueToArgList(fields, entity, argList, setClauses);
-        return buildUpdateSql(table, setClauses.toString());
+        String setClausesText = replaceHolderInString(entity, setClauses.toString());
+        return buildUpdateSql(table, setClausesText);
     }
 
     public String buildPatchAndArgsWithId(E entity, List<Object> argList) {

@@ -56,6 +56,7 @@ public class QueryBuilder {
     static String build(PageQuery pageQuery, List<Object> argList, String operation, String[] columns, String from) {
         String sql;
         sql = buildStart(operation, columns, from);
+        sql = replaceHolderInString(pageQuery, sql);
         sql = buildWhere(sql, pageQuery, argList);
         // intentionally use ==
         if (!(columns.length == 1 && COUNT == columns[0])) {
@@ -81,7 +82,7 @@ public class QueryBuilder {
 
     static String buildPaging(String sql, PageQuery pageQuery) {
         if (pageQuery.needPaging()) {
-            sql = GlobalConfiguration.instance().getDialect().buildPageSql(sql, pageQuery.getPageSize(), pageQuery.calcOffset());
+            sql = GlobalConfiguration.dialect().buildPageSql(sql, pageQuery.getPageSize(), pageQuery.calcOffset());
         }
         return sql;
     }
@@ -146,7 +147,8 @@ public class QueryBuilder {
         if (columns.length == 0) {
             columns = new String[]{"*"};
         }
-        String selectFrom = SELECT + StringUtils.join(columns, SEPARATOR) + FROM;
+        String columnStr = replaceHolderInString(idWrapper, StringUtils.join(columns, SEPARATOR));
+        String selectFrom = SELECT + columnStr + FROM;
         String sql = selectFrom + resolveTableName(idWrapper) + whereId;
         return new SqlAndArgs(sql, Collections.singletonList(idWrapper.getId()));
     }

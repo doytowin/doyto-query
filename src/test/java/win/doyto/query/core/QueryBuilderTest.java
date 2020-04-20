@@ -23,6 +23,7 @@ public class QueryBuilderTest {
     private QueryBuilder testQueryBuilder = new QueryBuilder(TestEntity.class);
     private QueryBuilder menuQueryBuilder = new QueryBuilder("menu", "id");
     private QueryBuilder permQueryBuilder = new QueryBuilder("permission", "id");
+    private QueryBuilder dynamicQueryBuilder = new QueryBuilder(DynamicEntity.class);
     private List<Object> argList;
 
     @BeforeEach
@@ -395,7 +396,24 @@ public class QueryBuilderTest {
         PageQuery pageQuery = TestQuery.builder().build().setSort("FIELD(status,1,3,2,0);id,DESC");
         assertEquals(" ORDER BY FIELD(status,1,3,2,0), id DESC", QueryBuilder.buildOrderBy("", pageQuery, Constant.SELECT));
 
-        pageQuery.setSort(OrderByBuilder.create().field("gender","'male'","'female'").desc("id").toString());
+        pageQuery.setSort(OrderByBuilder.create().field("gender", "'male'", "'female'").desc("id").toString());
         assertEquals(" ORDER BY field(gender,'male','female'), id desc", QueryBuilder.buildOrderBy("", pageQuery, Constant.SELECT));
+    }
+
+    @Test
+    void buildSelectColumnsAndArgsForDynamicColumn() {
+        DynamicQuery dynamicQuery = DynamicQuery.builder().user("f0rb").project("i18n").locale("zh").scoreLt(100).build();
+
+        assertEquals("SELECT locale_zh FROM t_dynamic_f0rb_i18n WHERE score < ?",
+                     dynamicQueryBuilder.buildSelectColumnsAndArgs(dynamicQuery, argList, "locale_${locale}"));
+        assertThat(argList).containsExactly(100);
+    }
+
+    @Test
+    void buildSelectByIdForDynamicColumn() {
+
+        DynamicIdWrapper idWrapper = new DynamicIdWrapper(null, "f0rb", "i18n", "zh");
+        assertEquals("SELECT locale_zh FROM t_dynamic_f0rb_i18n WHERE id = ?",
+                     dynamicQueryBuilder.buildSelectById(idWrapper, "locale_${locale}").sql);
     }
 }

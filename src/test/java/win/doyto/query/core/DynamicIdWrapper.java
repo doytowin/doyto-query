@@ -24,4 +24,6 @@ public class DynamicIdWrapper implements IdWrapper<Integer> {
     @Transient
     private String project;
 
+    private String locale;
+
 }

@@ -32,6 +32,8 @@ class CrudBuilderTest {
         dynamicEntity = new DynamicEntity();
         dynamicEntity.setUser("f0rb");
         dynamicEntity.setProject("i18n");
+        dynamicEntity.setLocale("zh");
+        dynamicEntity.setValue("中文");
         dynamicEntity.setScore(100);
 
         argList = new ArrayList<>();
@@ -52,24 +54,25 @@ class CrudBuilderTest {
     @Test
     void createDynamicEntity() {
 
-        assertEquals("INSERT INTO t_dynamic_f0rb_i18n (user_score, memo) VALUES (?, ?)",
+        assertEquals("INSERT INTO t_dynamic_f0rb_i18n (locale_zh, user_score, memo) VALUES (?, ?, ?)",
                      dynamicEntityCrudBuilder.buildCreateAndArgs(dynamicEntity, argList));
-        assertThat(argList).containsExactly(100, null);
+        assertThat(argList).containsExactly("中文", 100, null);
     }
 
     @Test
     void updateDynamicEntity() {
         dynamicEntity.setId(1);
 
-        assertEquals("UPDATE t_dynamic_f0rb_i18n SET user_score = ?, memo = ? WHERE id = ?",
+        assertEquals("UPDATE t_dynamic_f0rb_i18n SET locale_zh = ?, user_score = ?, memo = ? WHERE id = ?",
                      dynamicEntityCrudBuilder.buildUpdateAndArgs(dynamicEntity, argList));
-        assertThat(argList).containsExactly(100, null, 1);
+        assertThat(argList).containsExactly("中文", 100, null, 1);
     }
 
 
     @Test
     void buildPatchAndArgs() {
         dynamicEntity.setId(1);
+        dynamicEntity.setValue(null);
         dynamicEntity.setScore(null);
         dynamicEntity.setMemo("memo");
 
@@ -191,4 +194,10 @@ class CrudBuilderTest {
             sqlAndArgs.sql);
     }
 
+    @Test
+    void buildPatchAndArgsForDynamicColumn() {
+        assertEquals("UPDATE t_dynamic_f0rb_i18n SET locale_zh = ?, user_score = ?",
+                     dynamicEntityCrudBuilder.buildPatchAndArgs(dynamicEntity, argList));
+        assertThat(argList).containsExactly("中文", 100);
+    }
 }

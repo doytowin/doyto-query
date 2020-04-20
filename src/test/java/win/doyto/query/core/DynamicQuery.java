@@ -26,10 +26,13 @@ public class DynamicQuery extends PageQuery {
     @Transient
     private String project;
 
+    @Transient
+    private String locale;
+
     private Integer scoreLt;
 
     @Override
     protected DynamicIdWrapper toIdWrapper() {
-        return new DynamicIdWrapper(null, user, project);
+        return new DynamicIdWrapper(null, user, project, locale);
     }
 }
