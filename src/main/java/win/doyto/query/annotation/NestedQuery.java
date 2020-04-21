@@ -7,9 +7,9 @@ package win.doyto.query.annotation;
  */
 public @interface NestedQuery {
 
-    String left();
+    String select();
 
-    String table();
+    String from();
 
     String extra() default "";
 

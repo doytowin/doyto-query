@@ -5,8 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.annotation.NestedQueries;
+import win.doyto.query.annotation.NestedQuery;
 import win.doyto.query.annotation.QueryField;
-import win.doyto.query.annotation.SubQuery;
 import win.doyto.query.core.PageQuery;
 
 import java.util.Date;
@@ -31,7 +32,7 @@ public class TestQuery extends PageQuery {
     private String username;
     private String usernameEq;
 
-    @SubQuery(left = "userId", table = "t_user_and_role")
+    @NestedQueries(@NestedQuery(select = "userId", from = "t_user_and_role"))
     private Integer roleId;
 
     @QueryField(and = "(username = ? OR email = ? OR mobile = ?)")

@@ -20,7 +20,7 @@ import win.doyto.query.core.PageQuery;
 @AllArgsConstructor
 public class RoleQuery extends PageQuery {
 
-    @NestedQuery(left = "roleId", table = "t_user_and_role")
+    @NestedQuery(select = "roleId", from = "t_user_and_role")
     private Long userId;
 
 }

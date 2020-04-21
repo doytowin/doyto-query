@@ -6,7 +6,6 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.NestedQueries;
-import win.doyto.query.annotation.SubQuery;
 import win.doyto.query.entity.CommonEntity;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.BeanUtil;
@@ -166,7 +165,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     }
 
     private boolean supportFilter(Field field) {
-        return fieldFilter(field) && !field.isAnnotationPresent(SubQuery.class) && !field.isAnnotationPresent(NestedQueries.class);
+        return fieldFilter(field) && !field.isAnnotationPresent(NestedQueries.class);
     }
 
     protected Boolean unsatisfied(E entity, String queryFieldName, Object queryFieldValue) {
