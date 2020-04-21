@@ -1,8 +1,11 @@
 package win.doyto.query.util;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.demo.module.menu.MenuEntity;
 import win.doyto.query.demo.module.menu.MenuRequest;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,5 +36,14 @@ class BeanUtilTest {
                 .hasFieldOrPropertyWithValue("menuName", "submenu")
                 .hasFieldOrPropertyWithValue("memo", null);
 
+    }
+
+    @Test
+    void load() {
+        List<MenuEntity> menuEntities = BeanUtil.parse("{\"id\":\"1\"}", new TypeReference<List<MenuEntity>>() {});
+        assertThat(menuEntities)
+                .hasSize(1)
+                .element(0)
+                .hasFieldOrPropertyWithValue("id", 1);
     }
 }

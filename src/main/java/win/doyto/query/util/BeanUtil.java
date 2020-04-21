@@ -23,7 +23,9 @@ public class BeanUtil {
     private static final ObjectMapper objectMapper;
 
     static {
-        objectMapper = new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        objectMapper = new ObjectMapper()
+                .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
     public static <T> T loadJsonData(String path, TypeReference<T> typeReference) throws IOException {
@@ -32,6 +34,11 @@ public class BeanUtil {
 
     public static <T> T loadJsonData(InputStream resourceAsStream, TypeReference<T> typeReference) throws IOException {
         return objectMapper.readValue(resourceAsStream, typeReference);
+    }
+
+    @SneakyThrows
+    public static <T> T parse(String json, TypeReference<T> typeReference) {
+        return objectMapper.readValue(json, typeReference);
     }
 
     @SneakyThrows
