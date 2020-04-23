@@ -109,10 +109,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
 
     @Override
     public final E get(IdWrapper<I> w) {
-        return getEntity(crudBuilder.buildSelectById(w, columnsForSelect));
-    }
-
-    private E getEntity(SqlAndArgs sqlAndArgs) {
+        SqlAndArgs sqlAndArgs = crudBuilder.buildSelectById(w, columnsForSelect);
         List<E> list = jdbcOperations.query(sqlAndArgs.sql, sqlAndArgs.args, rowMapper);
         return list.isEmpty() ? null : list.get(0);
     }
