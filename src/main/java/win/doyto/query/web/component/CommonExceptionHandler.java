@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -71,6 +72,12 @@ class CommonExceptionHandler {
     public ErrorCode constraintViolationException(ConstraintViolationException e) {
         log.error("ConstraintViolationException: {}", e.getMessage());
         return new ErrorResponse(PresetErrorCode.ARGUMENT_VALIDATION_FAILED, e.getConstraintViolations());
+    }
+
+    @ExceptionHandler(BindException.class)
+    public ErrorCode bindException(BindException e) {
+        log.error("BindException: {}", e.getMessage());
+        return new ErrorResponse(PresetErrorCode.ARGUMENT_VALIDATION_FAILED, e.getFieldErrors());
     }
 
     @ExceptionHandler(DuplicateKeyException.class)

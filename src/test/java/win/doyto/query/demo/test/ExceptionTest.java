@@ -59,4 +59,10 @@ class ExceptionTest extends DemoApplicationTest {
         performAndExpectSuccess(get("/user/username?username=f0rb"))
                 .andExpect(jsonPath("$.data.password").doesNotExist());
     }
+
+    @Test
+    void testBindException() throws Exception {
+        performAndExpectFail(get("/user/email"), "参数校验失败")
+                .andExpect(jsonPath("$.hints.email").value("must not be null"));
+    }
 }

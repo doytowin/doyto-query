@@ -19,4 +19,5 @@ import win.doyto.query.core.PageQuery;
 @SuperBuilder
 public class UserQuery extends PageQuery {
     private String username;
+    private String email;
 }
