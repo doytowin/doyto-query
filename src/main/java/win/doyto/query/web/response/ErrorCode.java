@@ -52,8 +52,7 @@ public interface ErrorCode {
     static void fail(ErrorCode errorCode, Object... messages) {
         Logger logger = LoggerFactory.getLogger(ErrorCode.class);
         if (logger.isWarnEnabled()) {
-            logger.warn("[{}]{}{}", errorCode.getCode(), errorCode.getMessage(),
-                        messages.length == 0 ? "" : ": " + StringUtils.join(messages, ", "));
+            logger.warn("[{}]{} {}", errorCode.getCode(), errorCode.getMessage(), StringUtils.join(messages, ", "));
         }
         throw new ErrorCodeException(errorCode);
     }

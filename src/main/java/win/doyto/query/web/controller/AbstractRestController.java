@@ -70,10 +70,7 @@ public abstract class AbstractRestController<E extends Persistable<I>, I extends
 
     @Override
     public PageList<S> page(Q q) {
-        if (!q.needPaging()) {
-            q.setPageNumber(0);
-        }
-        return new PageList<>(list(q), service.count(q));
+        return service.page(q, this::buildResponse);
     }
 
     public List<S> list(Q q) {

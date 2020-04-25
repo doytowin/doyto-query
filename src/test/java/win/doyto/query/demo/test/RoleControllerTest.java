@@ -35,4 +35,11 @@ class RoleControllerTest {
         assertEquals(1, roleEntities.getList().size());
         assertEquals(3, roleEntities.getTotal());
     }
+
+    @Test
+    void add() {
+        RoleEntity roleEntity = new RoleEntity();
+        roleController.add(roleEntity);
+        assertEquals(4, roleController.count(RoleQuery.builder().build()));
+    }
 }

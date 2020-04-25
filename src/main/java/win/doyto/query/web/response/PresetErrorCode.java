@@ -19,7 +19,7 @@ public enum PresetErrorCode implements ErrorCode {
     ARGUMENT_FORMAT_ERROR("参数格式错误: %s"),
     ARGUMENT_VALIDATION_FAILED("参数校验失败"),
     HTTP_METHOD_NOT_SUPPORTED("该接口不支持%s请求"),
-    DUPLICATE_KEY_EXCEPTION("相同字段或组合已存在"),
+    DUPLICATE_KEY_EXCEPTION("该数据已存在"),
     FILE_UPLOAD_OVER_MAX_SIZE("文件超过指定大小"),
     ENTITY_NOT_FOUND("查询记录不存在"),
 

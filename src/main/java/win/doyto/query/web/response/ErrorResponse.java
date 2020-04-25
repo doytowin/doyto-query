@@ -2,7 +2,9 @@ package win.doyto.query.web.response;
 
 import lombok.Getter;
 import lombok.experimental.Delegate;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,11 +34,8 @@ public class ErrorResponse implements ErrorCode {
     }
 
     private Map<String, String> buildHints(BindingResult bindingResult) {
-        Map<String, String> error = new HashMap<>();
-        bindingResult.getFieldErrors().stream()
-                     .filter(fieldError -> !error.containsKey(fieldError.getField()))
-                     .forEach(fieldError -> error.put(fieldError.getField(), fieldError.getDefaultMessage()));
-        return error;
+        return bindingResult.getFieldErrors().stream()
+                            .collect(Collectors.toMap(FieldError::getField, DefaultMessageSourceResolvable::getDefaultMessage, (a, b) -> a));
     }
 
     public ErrorResponse(ErrorCode errorCode, Set<ConstraintViolation<?>> constraintViolations) {
@@ -49,7 +48,6 @@ public class ErrorResponse implements ErrorCode {
                 Path.Node last = iterator.next();
                 if (!iterator.hasNext()) {
                     error.put(last.getName(), constraintViolation.getMessage());
-                    break;
                 }
             }
         }

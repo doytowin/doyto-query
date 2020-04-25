@@ -5,7 +5,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import win.doyto.query.web.controller.AbstractRestController;
+import win.doyto.query.web.response.ErrorCode;
 import win.doyto.query.web.response.JsonBody;
+import win.doyto.query.web.response.JsonResponse;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
@@ -27,9 +29,9 @@ public class UserController extends AbstractRestController<UserEntity, Long, Use
     }
 
     @GetMapping("/email")
-    public UserResponse getByEmail(@Valid UserEmailRequest userEmailRequest) {
+    public JsonResponse<UserResponse> getByEmail(@Valid UserEmailRequest userEmailRequest) {
         UserEntity userEntity = service.get(UserQuery.builder().email(userEmailRequest.getEmail()).build());
-        return buildResponse(userEntity);
+        return ErrorCode.build(buildResponse(userEntity));
     }
 
 }

@@ -79,5 +79,16 @@ class ExceptionTest extends DemoApplicationTest {
     void testBindException() throws Exception {
         performAndExpectFail(get("/user/email"), "参数校验失败")
                 .andExpect(jsonPath("$.hints.email").value("must not be null"));
+
+
+        performAndExpectSuccess(get("/user/email?email=test@163.com"));
+    }
+
+    @Test
+    void testDuplicateKeyException() throws Exception {
+        RequestBuilder postUser = post("/user/")
+                .content("[{\"username\":\"user2\", \"password\":\"123456\"}]")
+                .contentType(MediaType.APPLICATION_JSON);
+        performAndExpectFail(postUser, "该数据已存在");
     }
 }

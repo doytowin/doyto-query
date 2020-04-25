@@ -11,7 +11,7 @@ import org.springframework.validation.SmartValidator;
 class MockValidator implements SmartValidator {
     @Override
     public void validate(Object target, Errors errors, Object... validationHints) {
-        // mock
+        validate(target, errors);
     }
 
     @Override

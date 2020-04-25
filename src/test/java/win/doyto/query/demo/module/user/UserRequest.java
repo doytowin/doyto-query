@@ -24,5 +24,5 @@ public class UserRequest {
     @NotNull(groups = CreateGroup.class)
     private String password;
     private String nickname;
-    private Boolean valid;
+    private Boolean valid = true;
 }
