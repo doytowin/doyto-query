@@ -4,21 +4,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
-
 /**
  * ErrorCode
  *
  * @author f0rb on 2017-03-05.
  */
-public interface ErrorCode extends Serializable {
+public interface ErrorCode {
 
     Integer getCode();
 
     String getMessage();
-
-    default void addError(String fieldName, String message) {
-    }
 
     default boolean isSuccess() {
         return Integer.valueOf(0).equals(getCode());
@@ -37,7 +32,7 @@ public interface ErrorCode extends Serializable {
     }
 
     static ErrorCode build(Integer code, String message) {
-        return new JsonResponse<>(code, message);
+        return new JsonResponse<>().setCode(code).setMessage(message);
     }
 
     static void assertNotNull(Object target, ErrorCode errorCode, Object... messages) {

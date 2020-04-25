@@ -10,7 +10,7 @@ import lombok.Getter;
 public class ErrorCodeException extends RuntimeException {
 
     @Getter
-    private final ErrorCode errorCode;
+    private final transient ErrorCode errorCode;
 
     public ErrorCodeException(ErrorCode errorCode) {
         super(errorCode.getMessage());

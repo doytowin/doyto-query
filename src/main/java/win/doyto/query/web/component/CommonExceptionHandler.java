@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.BindException;
-import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,9 +13,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import win.doyto.query.web.response.ErrorCode;
 import win.doyto.query.web.response.ErrorCodeException;
+import win.doyto.query.web.response.ErrorResponse;
 import win.doyto.query.web.response.PresetErrorCode;
-
-import java.util.List;
 
 /**
  * CommonExceptionHandler
@@ -57,26 +54,15 @@ class CommonExceptionHandler {
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ErrorCode uploadFileOverMaxSizeException(MaxUploadSizeExceededException e) {
+    public ErrorCode maxUploadSizeExceededException(MaxUploadSizeExceededException e) {
         log.error("MaxUploadSizeExceededException: {}", e.getMessage());
         return PresetErrorCode.FILE_UPLOAD_OVER_MAX_SIZE;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ErrorCode httpMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.error("MethodArgumentNotValidException: " + e.getMessage(), e);
-        return buildByBindingResult(e.getBindingResult().getFieldErrors());
-    }
-
-    @ExceptionHandler(BindException.class)
-    public ErrorCode httpBindException(BindException e) {
-        return buildByBindingResult(e.getBindingResult().getFieldErrors());
-    }
-
-    private ErrorCode buildByBindingResult(List<FieldError> fieldErrors) {
-        ErrorCode errorCode = ErrorCode.build(PresetErrorCode.ARGUMENT_VALIDATION_FAILED);
-        fieldErrors.forEach(fieldError -> errorCode.addError(fieldError.getField(), fieldError.getDefaultMessage()));
-        return errorCode;
+    public ErrorCode methodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.error("MethodArgumentNotValidException: {}", e.getMessage());
+        return new ErrorResponse(PresetErrorCode.ARGUMENT_VALIDATION_FAILED, e.getBindingResult().getFieldErrors());
     }
 
     @ExceptionHandler(DuplicateKeyException.class)
@@ -92,7 +78,7 @@ class CommonExceptionHandler {
     }
 
     @ExceptionHandler(ErrorCodeException.class)
-    public ErrorCode handleErrorCodeException(ErrorCodeException e) {
+    public ErrorCode errorCodeException(ErrorCodeException e) {
         log.warn("ErrorCodeException: {}", e.getMessage());
         return e.getErrorCode();
     }

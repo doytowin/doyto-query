@@ -47,8 +47,8 @@ class ExceptionTest extends DemoApplicationTest {
     void testMethodArgumentNotValidException() throws Exception {
         RequestBuilder requestBuilder = post("/user/").content("{}").contentType(MediaType.APPLICATION_JSON);
         performAndExpectFail(requestBuilder, "参数校验失败")
-                .andExpect(jsonPath("$.errors.username[0]").value("must not be null"))
-                .andExpect(jsonPath("$.errors.password[0]").value("must not be null"))
+                .andExpect(jsonPath("$.hints.username").value("must not be null"))
+                .andExpect(jsonPath("$.hints.password").value("must not be null"))
         ;
     }
 }
