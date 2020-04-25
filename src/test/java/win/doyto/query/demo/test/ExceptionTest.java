@@ -47,8 +47,23 @@ class ExceptionTest extends DemoApplicationTest {
     void testMethodArgumentNotValidException() throws Exception {
         RequestBuilder requestBuilder = post("/user/").content("{}").contentType(MediaType.APPLICATION_JSON);
         performAndExpectFail(requestBuilder, "参数校验失败")
-                .andExpect(jsonPath("$.hints.username").value("must not be null"))
-                .andExpect(jsonPath("$.hints.password").value("must not be null"))
+                .andExpect(jsonPath("$.hints[0].username").value("must not be null"))
+                .andExpect(jsonPath("$.hints[0].password").value("must not be null"))
+        ;
+    }
+
+    @Test
+    void testMethodArgumentNotValidExceptionWithList() throws Exception {
+        RequestBuilder requestBuilder = post("/user/").content("[{\"username\":\"test\"},{\"password\":\"123456\"}]").contentType(MediaType.APPLICATION_JSON);
+        performAndExpectFail(requestBuilder, "参数校验失败")
+                .andExpect(jsonPath("$.hints[0].password").value("must not be null"))
+                .andExpect(jsonPath("$.hints[1].username").value("must not be null"))
+        ;
+
+        RequestBuilder postRole = post("/role/").content("{}").contentType(MediaType.APPLICATION_JSON);
+        performAndExpectFail(postRole, "参数校验失败")
+                .andExpect(jsonPath("$.hints[0].roleName").value("must not be null"))
+                .andExpect(jsonPath("$.hints[0].roleCode").value("must not be null"))
         ;
     }
 

@@ -8,10 +8,10 @@ import win.doyto.query.entity.Persistable;
 import win.doyto.query.service.CrudService;
 import win.doyto.query.service.PageList;
 import win.doyto.query.util.BeanUtil;
-import win.doyto.query.validation.CreateGroup;
 import win.doyto.query.validation.PageGroup;
 import win.doyto.query.validation.PatchGroup;
 import win.doyto.query.validation.UpdateGroup;
+import win.doyto.query.web.component.ListValidator;
 import win.doyto.query.web.response.ErrorCode;
 import win.doyto.query.web.response.JsonBody;
 import win.doyto.query.web.response.PresetErrorCode;
@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.annotation.Resource;
 
 /**
  * AbstractRestController
@@ -29,6 +30,9 @@ import java.util.stream.Collectors;
 @JsonBody
 public abstract class AbstractRestController<E extends Persistable<I>, I extends Serializable, Q extends PageQuery, R, S>
         implements RestApi<I, Q, R, S> {
+
+    @Resource
+    private ListValidator listValidator = new ListValidator();
 
     private final Class<E> entityClass;
     private final Class<S> responseClass;
@@ -105,14 +109,15 @@ public abstract class AbstractRestController<E extends Persistable<I>, I extends
         service.patch(e);
     }
 
+    @Override
     @PostMapping
-    public void add(@RequestBody @Validated(CreateGroup.class) R request) {
-        service.create(buildEntity(request));
-    }
-
-    @PostMapping("batch")
-    public void add(@RequestBody @Validated(CreateGroup.class) List<R> requests) {
-        service.batchInsert(requests.stream().map(this::buildEntity).collect(Collectors.toList()));
+    public void add(@RequestBody List<R> requests) {
+        listValidator.validateList(requests);
+        if (requests.size() == 1) {
+            service.create(buildEntity(requests.get(0)));
+        } else {
+            service.batchInsert(requests.stream().map(this::buildEntity).collect(Collectors.toList()));
+        }
     }
 
 }

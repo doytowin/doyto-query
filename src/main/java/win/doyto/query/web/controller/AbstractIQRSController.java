@@ -11,6 +11,7 @@ import win.doyto.query.validation.CreateGroup;
 import win.doyto.query.validation.PageGroup;
 import win.doyto.query.validation.PatchGroup;
 import win.doyto.query.validation.UpdateGroup;
+import win.doyto.query.web.component.ListValidator;
 import win.doyto.query.web.response.ErrorCode;
 import win.doyto.query.web.response.JsonBody;
 import win.doyto.query.web.response.PresetErrorCode;
@@ -18,6 +19,7 @@ import win.doyto.query.web.response.PresetErrorCode;
 import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.annotation.Resource;
 
 /**
  * AbstractIQRSController
@@ -28,6 +30,9 @@ import java.util.stream.Collectors;
 public abstract class AbstractIQRSController<E extends Persistable<I>, I extends Serializable, Q extends PageQuery, R, S>
         extends AbstractCrudService<E, I, Q>
         implements RestApi<I, Q, R, S> {
+
+    @Resource
+    private ListValidator listValidator = new ListValidator();
 
     private final Class<S> responseClass;
 
@@ -74,9 +79,15 @@ public abstract class AbstractIQRSController<E extends Persistable<I>, I extends
         return buildResponse(checkResult(id, super.delete(id)));
     }
 
+    @Override
     @PostMapping
-    public void add(@RequestBody @Validated(CreateGroup.class) R request) {
-        super.create(buildEntity(request));
+    public void add(@RequestBody @Validated(CreateGroup.class) List<R> requests) {
+        listValidator.validateList(requests);
+        if (requests.size() == 1) {
+            super.create(buildEntity(requests.get(0)));
+        } else {
+            super.batchInsert(requests.stream().map(this::buildEntity).collect(Collectors.toList()));
+        }
     }
 
     @PutMapping("{id}")
@@ -104,8 +115,4 @@ public abstract class AbstractIQRSController<E extends Persistable<I>, I extends
         return super.page(q, this::buildResponse);
     }
 
-    @PostMapping("batch")
-    public void add(@RequestBody @Validated(CreateGroup.class) List<R> requests) {
-        super.batchInsert(requests.stream().map(this::buildEntity).collect(Collectors.toList()));
-    }
 }

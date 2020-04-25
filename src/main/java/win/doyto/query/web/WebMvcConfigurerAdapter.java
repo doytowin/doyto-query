@@ -63,6 +63,7 @@ public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
                 .enable(JsonParser.Feature.ALLOW_SINGLE_QUOTES)
                 .enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES)
                 .enable(JsonParser.Feature.IGNORE_UNDEFINED)
+                .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL)

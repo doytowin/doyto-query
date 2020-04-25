@@ -75,7 +75,7 @@ public class RoleMvcTest extends DemoApplicationTest {
     @Test
     @Rollback
     void batch() throws Exception {
-        performAndExpectSuccess(post("/role/batch").content("[{\"roleName\":\"vip3\",\"roleCode\":\"VIP3\"},{\"roleName\":\"vip4\",\"roleCode\":\"VIP4\"}]").contentType(MediaType.APPLICATION_JSON));
+        performAndExpectSuccess(post("/role").content("[{\"roleName\":\"vip3\",\"roleCode\":\"VIP3\"},{\"roleName\":\"vip4\",\"roleCode\":\"VIP4\"}]").contentType(MediaType.APPLICATION_JSON));
         performAndExpectSuccess(get("/role/?pageSize=1"))
                 .andExpect(jsonPath("$.data.total").value(5))
         ;

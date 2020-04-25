@@ -60,7 +60,7 @@ class UserMvcTest extends DemoApplicationTest {
 
     private void batch(String path) throws Exception {
         String content = "[{\"username\":\"test5\",\"password\":\"123456\",\"valid\":true},{\"username\":\"test6\",\"password\":\"123456\",\"valid\":true}]";
-        RequestBuilder requestBuilder = post(path + "batch").content(content).contentType(MediaType.APPLICATION_JSON);
+        RequestBuilder requestBuilder = post(path).content(content).contentType(MediaType.APPLICATION_JSON);
         performAndExpectSuccess(requestBuilder);
         performAndExpectSuccess(get("/user2/" + "?pageSize=1"))
                 .andExpect(jsonPath("$.data.total").value(6))

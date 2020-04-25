@@ -4,6 +4,7 @@ import win.doyto.query.core.PageQuery;
 import win.doyto.query.service.PageList;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -25,7 +26,9 @@ public interface RestApi<I extends Serializable, Q extends PageQuery, R, S> {
 
     void patch(I id, R request);
 
-    void add(R request);
+    default void add(R request) {
+        add(Collections.singletonList(request));
+    }
 
     void add(List<R> requests);
 

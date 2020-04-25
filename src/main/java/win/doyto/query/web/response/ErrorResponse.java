@@ -2,12 +2,10 @@ package win.doyto.query.web.response;
 
 import lombok.Getter;
 import lombok.experimental.Delegate;
-import org.springframework.validation.FieldError;
+import org.springframework.validation.BindingResult;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 import javax.validation.ConstraintViolation;
 import javax.validation.Path;
 
@@ -23,13 +21,22 @@ public class ErrorResponse implements ErrorCode {
     @Getter
     private Object hints;
 
-    public ErrorResponse(ErrorCode errorCode, List<FieldError> fieldErrors) {
+    public ErrorResponse(ErrorCode errorCode, BindingResult bindingResult) {
         this.errorCode = errorCode;
-        HashMap<String, String> error = new HashMap<>();
-        fieldErrors.stream()
-                   .filter(fieldError -> !error.containsKey(fieldError.getField()))
-                   .forEach(fieldError -> error.put(fieldError.getField(), fieldError.getDefaultMessage()));
-        this.hints = error;
+        this.hints = buildHints(bindingResult);
+    }
+
+    public ErrorResponse(ErrorCode errorCode, List<BindingResult> bindingResults) {
+        this.errorCode = errorCode;
+        this.hints = bindingResults.stream().map(this::buildHints).collect(Collectors.toList());
+    }
+
+    private Map<String, String> buildHints(BindingResult bindingResult) {
+        Map<String, String> error = new HashMap<>();
+        bindingResult.getFieldErrors().stream()
+                     .filter(fieldError -> !error.containsKey(fieldError.getField()))
+                     .forEach(fieldError -> error.put(fieldError.getField(), fieldError.getDefaultMessage()));
+        return error;
     }
 
     public ErrorResponse(ErrorCode errorCode, Set<ConstraintViolation<?>> constraintViolations) {

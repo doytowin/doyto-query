@@ -65,7 +65,7 @@ class CommonExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorCode methodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error("MethodArgumentNotValidException: {}", e.getMessage());
-        return new ErrorResponse(PresetErrorCode.ARGUMENT_VALIDATION_FAILED, e.getBindingResult().getFieldErrors());
+        return new ErrorResponse(PresetErrorCode.ARGUMENT_VALIDATION_FAILED, e.getBindingResult());
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -77,7 +77,7 @@ class CommonExceptionHandler {
     @ExceptionHandler(BindException.class)
     public ErrorCode bindException(BindException e) {
         log.error("BindException: {}", e.getMessage());
-        return new ErrorResponse(PresetErrorCode.ARGUMENT_VALIDATION_FAILED, e.getFieldErrors());
+        return new ErrorResponse(PresetErrorCode.ARGUMENT_VALIDATION_FAILED, e.getBindingResult());
     }
 
     @ExceptionHandler(DuplicateKeyException.class)

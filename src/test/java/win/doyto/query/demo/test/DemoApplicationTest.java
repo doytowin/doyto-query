@@ -33,9 +33,14 @@ abstract class DemoApplicationTest {
     protected MockMvc mockMvc;
 
     protected ResultActions performAndExpectSuccess(RequestBuilder requestBuilder) throws Exception {
+        return performAndExpectOk(requestBuilder)
+                .andExpect(jsonPath("$.success").value(true));
+    }
+
+    protected ResultActions performAndExpectOk(RequestBuilder requestBuilder) throws Exception {
         return mockMvc.perform(requestBuilder)
                       .andDo(print())
-                      .andExpect(status().isOk())
-                      .andExpect(jsonPath("$.success").value(true));
+                      .andExpect(status().isOk());
     }
+
 }
