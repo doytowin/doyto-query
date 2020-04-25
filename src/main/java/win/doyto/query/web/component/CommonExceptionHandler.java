@@ -16,6 +16,8 @@ import win.doyto.query.web.response.ErrorCodeException;
 import win.doyto.query.web.response.ErrorResponse;
 import win.doyto.query.web.response.PresetErrorCode;
 
+import javax.validation.ConstraintViolationException;
+
 /**
  * CommonExceptionHandler
  *
@@ -63,6 +65,12 @@ class CommonExceptionHandler {
     public ErrorCode methodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error("MethodArgumentNotValidException: {}", e.getMessage());
         return new ErrorResponse(PresetErrorCode.ARGUMENT_VALIDATION_FAILED, e.getBindingResult().getFieldErrors());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ErrorCode constraintViolationException(ConstraintViolationException e) {
+        log.error("ConstraintViolationException: {}", e.getMessage());
+        return new ErrorResponse(PresetErrorCode.ARGUMENT_VALIDATION_FAILED, e.getConstraintViolations());
     }
 
     @ExceptionHandler(DuplicateKeyException.class)

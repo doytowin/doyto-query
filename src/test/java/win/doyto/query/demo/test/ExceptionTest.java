@@ -51,4 +51,12 @@ class ExceptionTest extends DemoApplicationTest {
                 .andExpect(jsonPath("$.hints.password").value("must not be null"))
         ;
     }
+
+    @Test
+    void testConstraintViolationException() throws Exception {
+        performAndExpectFail(get("/user/username?username=sa"), "参数校验失败")
+                .andExpect(jsonPath("$.hints.username").value("size must be between 4 and 20"));
+        performAndExpectSuccess(get("/user/username?username=f0rb"))
+                .andExpect(jsonPath("$.data.password").doesNotExist());
+    }
 }

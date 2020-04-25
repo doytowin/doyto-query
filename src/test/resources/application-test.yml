@@ -1,6 +1,7 @@
 logging:
   level:
     root: info
+    org.springframework.test.context.transaction.TransactionContext: warn
 
 spring:
   http:

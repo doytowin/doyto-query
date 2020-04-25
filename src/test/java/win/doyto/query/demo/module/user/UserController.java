@@ -1,8 +1,13 @@
 package win.doyto.query.demo.module.user;
 
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import win.doyto.query.web.controller.AbstractRestController;
+import win.doyto.query.web.response.JsonBody;
+
+import javax.validation.constraints.Size;
 
 /**
  * UserController
@@ -11,6 +16,12 @@ import win.doyto.query.web.controller.AbstractRestController;
  */
 @RestController
 @RequestMapping("user")
+@JsonBody
+@Validated
 public class UserController extends AbstractRestController<UserEntity, Long, UserQuery, UserRequest, UserResponse> {
-
+    @GetMapping("/username")
+    public UserResponse getByUsername(@Size(min = 4, max = 20) String username) {
+        UserEntity userEntity = service.get(UserQuery.builder().username(username).build());
+        return buildResponse(userEntity);
+    }
 }
