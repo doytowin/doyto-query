@@ -41,10 +41,13 @@ public interface QueryService<E, I, Q extends PageQuery> {
         return query(query).stream().map(transfer).collect(Collectors.toList());
     }
 
+    default PageList<E> page(Q query) {
+        query.forcePaging();
+        return new PageList<>(query(query), count(query));
+    }
+
     default <V> PageList<V> page(Q query, Function<E, V> transfer) {
-        if (!query.needPaging()) {
-            query.setPageNumber(0);
-        }
+        query.forcePaging();
         return new PageList<>(query(query, transfer), count(query));
     }
 

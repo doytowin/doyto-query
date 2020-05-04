@@ -118,7 +118,7 @@ class AbstractDynamicServiceTest {
     @Test
     void forcePage() {
         TestQuery testQuery = new TestQuery();
-        PageList<TestEntity> pageList = testService.page(testQuery, testEntity -> testEntity);
+        PageList<TestEntity> pageList = testService.page(testQuery);
         assertEquals(5, pageList.getTotal());
         assertEquals(0, (int) testQuery.getPageNumber());
         assertEquals(10, (int) testQuery.getPageSize());

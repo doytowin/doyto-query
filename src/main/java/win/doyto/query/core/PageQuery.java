@@ -66,6 +66,12 @@ public class PageQuery implements Serializable {
         return getPageNumber() != null;
     }
 
+    public void forcePaging() {
+        if (!needPaging()) {
+            setPageNumber(0);
+        }
+    }
+
     protected IdWrapper toIdWrapper() {
         return IdWrapper.build(null);
     }

@@ -34,9 +34,7 @@ public class JoinQueryService<E, Q extends PageQuery> {
     }
 
     public PageList<E> page(Q q) {
-        if (!q.needPaging()) {
-            q.setPageNumber(0);
-        }
+        q.forcePaging();
         return new PageList<>(query(q), count(q));
     }
 
