@@ -2,7 +2,8 @@ package win.doyto.query.core;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -17,13 +18,10 @@ public interface IdWrapper<I extends Serializable> {
         return new Simple<>(id);
     }
 
-    @EqualsAndHashCode
+    @Data
+    @NoArgsConstructor
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    final class Simple<I extends Serializable> implements IdWrapper<I>{
+    final class Simple<I extends Serializable> implements IdWrapper<I> {
         private I id;
-        @Override
-        public I getId() {
-            return id;
-        }
     }
 }
