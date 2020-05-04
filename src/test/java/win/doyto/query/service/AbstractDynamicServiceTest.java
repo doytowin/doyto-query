@@ -27,7 +27,7 @@ class AbstractDynamicServiceTest {
     void setUp() {
         testService = new TestService();
         testService.dataAccess = spy(testService.dataAccess);
-        testService.batchInsert(initUserEntities());
+        testService.create(initUserEntities());
     }
 
     @Test

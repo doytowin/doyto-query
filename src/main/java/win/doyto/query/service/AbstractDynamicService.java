@@ -181,7 +181,8 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
         return 1;
     }
 
-    public int batchInsert(Iterable<E> entities, String... columns) {
+    @Override
+    public int create(Iterable<E> entities, String... columns) {
         if (userIdProvider != null) {
             for (E e : entities) {
                 userIdProvider.setupUserId(e);

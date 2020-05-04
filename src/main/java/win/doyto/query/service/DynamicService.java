@@ -44,7 +44,16 @@ public interface DynamicService<E extends Persistable<I>, I extends Serializable
      * @param columns update columns on duplicate
      * @return amount of updated entities
      */
-    int batchInsert(Iterable<E> entities, String... columns);
+    int create(Iterable<E> entities, String... columns);
+
+    /**
+     * @deprecated use {@link #create(Iterable, String[])}
+     */
+    @SuppressWarnings("java:S1133")
+    @Deprecated
+    default int batchInsert(Iterable<E> entities, String... columns) {
+        return create(entities, columns);
+    }
 
     /**
      * 执行<i>UPDATE [TABLE] SET ... WHERE ...</i>

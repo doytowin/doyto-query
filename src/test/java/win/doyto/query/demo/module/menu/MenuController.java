@@ -64,7 +64,7 @@ class MenuController {
             request.setPlatform(platform);
             menuEntities.add(buildEntity(request));
         }
-        menuService.batchInsert(menuEntities);
+        menuService.create(menuEntities);
     }
 
     @PutMapping("{id}")
