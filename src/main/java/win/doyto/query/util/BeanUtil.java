@@ -1,5 +1,6 @@
 package win.doyto.query.util;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,11 +22,16 @@ import java.lang.reflect.Type;
 public class BeanUtil {
 
     private static final ObjectMapper objectMapper;
+    private static final ObjectMapper objectMapper2;
 
     static {
         objectMapper = new ObjectMapper()
                 .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+        objectMapper2 = objectMapper
+                .copy()
+                .setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     public static <T> T loadJsonData(String path, TypeReference<T> typeReference) throws IOException {
@@ -49,6 +55,11 @@ public class BeanUtil {
     @SneakyThrows
     public static <T> T copyTo(Object from, T to) {
         return objectMapper.updateValue(to, from);
+    }
+
+    @SneakyThrows
+    public static <T> T copyNonNull(Object from, T to) {
+        return objectMapper2.updateValue(to, from);
     }
 
     public static Type[] getActualTypeArguments(Class<?> clazz) {

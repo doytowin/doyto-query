@@ -1,6 +1,7 @@
 package win.doyto.query.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.demo.module.menu.MenuEntity;
 import win.doyto.query.demo.module.menu.MenuRequest;
@@ -15,18 +16,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author f0rb on 2020-04-02
  */
 class BeanUtilTest {
+    MenuRequest menuRequest;
+    MenuEntity menuEntity;
 
-    @Test
-    void copyTo() {
-        MenuRequest menuRequest = new MenuRequest();
+    @BeforeEach
+    void setUp() {
+        menuRequest = new MenuRequest();
         menuRequest.setId(1);
         menuRequest.setMenuName("submenu");
 
-        MenuEntity menuEntity = new MenuEntity();
+        menuEntity = new MenuEntity();
         menuEntity.setId(1);
         menuEntity.setMenuName("menu");
         menuEntity.setMemo("a menu");
         menuEntity.setParentId(0);
+    }
+
+    @Test
+    void copyTo() {
 
         MenuEntity newMenuEntity = BeanUtil.copyTo(menuRequest, menuEntity);
 
@@ -36,6 +43,18 @@ class BeanUtilTest {
                 .hasFieldOrPropertyWithValue("menuName", "submenu")
                 .hasFieldOrPropertyWithValue("memo", null);
 
+    }
+
+    @Test
+    void copyNonNull() {
+
+        MenuEntity newMenuEntity = BeanUtil.copyNonNull(menuRequest, menuEntity);
+
+        assertThat(newMenuEntity)
+                .hasFieldOrPropertyWithValue("id", 1)
+                .hasFieldOrPropertyWithValue("parentId", 0)
+                .hasFieldOrPropertyWithValue("menuName", "submenu")
+                .hasFieldOrPropertyWithValue("memo", "a menu");
     }
 
     @Test
