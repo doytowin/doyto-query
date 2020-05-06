@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.annotation.NestedQueries;
 import win.doyto.query.annotation.NestedQuery;
 import win.doyto.query.core.PageQuery;
 
@@ -20,7 +21,7 @@ import win.doyto.query.core.PageQuery;
 @AllArgsConstructor
 public class RoleQuery extends PageQuery {
 
-    @NestedQuery(select = "roleId", from = "t_user_and_role")
+    @NestedQueries(@NestedQuery(select = "roleId", from = "t_user_and_role"))
     private Long userId;
 
 }
