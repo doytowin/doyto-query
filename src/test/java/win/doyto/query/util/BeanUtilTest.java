@@ -3,7 +3,10 @@ package win.doyto.query.util;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import win.doyto.query.core.DynamicEntity;
+import win.doyto.query.core.DynamicIdWrapper;
 import win.doyto.query.demo.module.menu.MenuEntity;
+import win.doyto.query.demo.module.menu.MenuIdWrapper;
 import win.doyto.query.demo.module.menu.MenuRequest;
 
 import java.util.List;
@@ -58,11 +61,39 @@ class BeanUtilTest {
     }
 
     @Test
-    void load() {
+    void parse() {
+        MenuEntity menuEntity = BeanUtil.parse("{\"id\":\"1\"}", MenuEntity.class);
+        assertThat(menuEntity)
+                .hasFieldOrPropertyWithValue("id", 1)
+                .hasFieldOrPropertyWithValue("parentId", null);
+    }
+
+    @Test
+    void parseSingleAsList() {
         List<MenuEntity> menuEntities = BeanUtil.parse("{\"id\":\"1\"}", new TypeReference<List<MenuEntity>>() {});
         assertThat(menuEntities)
                 .hasSize(1)
                 .element(0)
                 .hasFieldOrPropertyWithValue("id", 1);
+    }
+
+    @Test
+    void stringify() {
+        MenuIdWrapper menuIdWrapper = new MenuIdWrapper(1, "01");
+        assertThat(BeanUtil.stringify(menuIdWrapper)).isEqualTo("{\"id\":1,\"platform\":\"01\"}");
+    }
+
+    @Test
+    void convertTo() {
+        DynamicIdWrapper dynamicIdWrapper = new DynamicIdWrapper();
+        dynamicIdWrapper.setId(1);
+        dynamicIdWrapper.setUser("test");
+        dynamicIdWrapper.setProject("i18n");
+        DynamicEntity dynamicEntity = BeanUtil.convertTo(dynamicIdWrapper, new TypeReference<DynamicEntity>() {});
+        assertThat(dynamicEntity.toIdWrapper())
+                .isEqualToComparingFieldByField(dynamicIdWrapper)
+                .hasFieldOrPropertyWithValue("id", 1)
+                .hasFieldOrPropertyWithValue("user", "test")
+                .hasFieldOrPropertyWithValue("project", "i18n");
     }
 }

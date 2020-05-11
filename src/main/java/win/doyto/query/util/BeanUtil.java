@@ -34,6 +34,14 @@ public class BeanUtil {
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
+    public static Type[] getActualTypeArguments(Class<?> clazz) {
+        Type genericSuperclass = clazz;
+        do {
+            genericSuperclass = ((Class<?>) genericSuperclass).getGenericSuperclass();
+        } while (!(genericSuperclass instanceof ParameterizedType));
+        return ((ParameterizedType) genericSuperclass).getActualTypeArguments();
+    }
+
     public static <T> T loadJsonData(String path, TypeReference<T> typeReference) throws IOException {
         return loadJsonData(typeReference.getClass().getResourceAsStream(path), typeReference);
     }
@@ -43,8 +51,23 @@ public class BeanUtil {
     }
 
     @SneakyThrows
+    public static String stringify(Object target) {
+        return objectMapper2.writeValueAsString(target);
+    }
+
+    @SneakyThrows
     public static <T> T parse(String json, TypeReference<T> typeReference) {
         return objectMapper.readValue(json, typeReference);
+    }
+
+    @SneakyThrows
+    public static <T> T parse(String json, Class<T> clazz) {
+        return objectMapper.readValue(json, clazz);
+    }
+
+    @SneakyThrows
+    public static <T> T convertTo(Object source, TypeReference<T> typeReference) {
+        return objectMapper.readValue(objectMapper.writeValueAsBytes(source), typeReference);
     }
 
     @SneakyThrows
@@ -60,13 +83,5 @@ public class BeanUtil {
     @SneakyThrows
     public static <T> T copyNonNull(Object from, T to) {
         return objectMapper2.updateValue(to, from);
-    }
-
-    public static Type[] getActualTypeArguments(Class<?> clazz) {
-        Type genericSuperclass = clazz;
-        do {
-            genericSuperclass = ((Class<?>) genericSuperclass).getGenericSuperclass();
-        } while (!(genericSuperclass instanceof ParameterizedType));
-        return ((ParameterizedType) genericSuperclass).getActualTypeArguments();
     }
 }

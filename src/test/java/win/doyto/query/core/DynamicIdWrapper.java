@@ -2,6 +2,7 @@ package win.doyto.query.core;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Transient;
@@ -13,6 +14,7 @@ import javax.persistence.Transient;
  */
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class DynamicIdWrapper implements IdWrapper<Integer> {
 
