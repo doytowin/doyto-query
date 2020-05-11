@@ -3,12 +3,12 @@ package win.doyto.query.web.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.service.CrudService;
 import win.doyto.query.service.PageList;
 import win.doyto.query.util.BeanUtil;
-import win.doyto.query.validation.PageGroup;
 import win.doyto.query.validation.PatchGroup;
 import win.doyto.query.validation.UpdateGroup;
 import win.doyto.query.web.component.ListValidator;
@@ -63,29 +63,25 @@ public abstract class AbstractRestController<E extends Persistable<I>, I extends
         ErrorCode.assertNotNull(e, PresetErrorCode.ENTITY_NOT_FOUND);
     }
 
-    @GetMapping
-    public Object queryOrPage(@Validated(PageGroup.class) Q q) {
-        return q.needPaging() ? page(q) : list(q);
-    }
-
     @Override
     public PageList<S> page(Q q) {
         return service.page(q, this::buildResponse);
     }
 
-    public List<S> list(Q q) {
+    @Override
+    public List<S> query(Q q) {
         return service.query(q, this::buildResponse);
     }
 
     @GetMapping("{id}")
-    public S getById(@PathVariable I id) {
+    public S get(@PathVariable I id) {
         E e = service.get(id);
         checkResult(e);
         return buildResponse(e);
     }
 
     @DeleteMapping("{id}")
-    public S deleteById(@PathVariable I id) {
+    public S delete(@PathVariable I id) {
         E e = service.delete(id);
         checkResult(e);
         return buildResponse(e);
@@ -107,13 +103,29 @@ public abstract class AbstractRestController<E extends Persistable<I>, I extends
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public void update(R request) {
+        IdWrapper<I> idWrapper = BeanUtil.convertTo(request, IdWrapper.Simple.class);
+        E e = service.get(idWrapper);
+        checkResult(e);
+        buildEntity(e, request).setId(idWrapper.getId());
+        service.update(e);
+    }
+
+    @Override
+    public void patch(R request) {
+        E e = buildEntity(request);
+        service.patch(e);
+    }
+
+    @Override
     @PostMapping
-    public void add(@RequestBody List<R> requests) {
+    public void create(@RequestBody List<R> requests) {
         listValidator.validateList(requests);
         if (requests.size() == 1) {
             service.create(buildEntity(requests.get(0)));
         } else {
-            service.batchInsert(requests.stream().map(this::buildEntity).collect(Collectors.toList()));
+            service.create(requests.stream().map(this::buildEntity).collect(Collectors.toList()));
         }
     }
 

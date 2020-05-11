@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.service.AbstractCrudService;
-import win.doyto.query.service.PageList;
 import win.doyto.query.util.BeanUtil;
 import win.doyto.query.validation.CreateGroup;
 import win.doyto.query.validation.PageGroup;
@@ -17,6 +16,7 @@ import win.doyto.query.web.response.JsonBody;
 import win.doyto.query.web.response.PresetErrorCode;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
@@ -27,9 +27,9 @@ import javax.annotation.Resource;
  * @author f0rb on 2020-01-29
  */
 @JsonBody
-public abstract class AbstractIQRSController<E extends Persistable<I>, I extends Serializable, Q extends PageQuery, R, S>
-        extends AbstractCrudService<E, I, Q>
-        implements RestApi<I, Q, R, S> {
+public abstract class AbstractIQRSController
+        <E extends Persistable<I>, I extends Serializable, Q extends PageQuery, R, S>
+        extends AbstractCrudService<E, I, Q> {
 
     @Resource
     private ListValidator listValidator = new ListValidator();
@@ -63,30 +63,31 @@ public abstract class AbstractIQRSController<E extends Persistable<I>, I extends
     }
 
     @GetMapping
-    public Object queryOrPage(@Validated(PageGroup.class) Q q) {
-        return q.needPaging() ? page(q) : list(q);
+    Object queryOrPage(@Validated(PageGroup.class) Q q) {
+        return q.needPaging() ? super.page(q, this::buildResponse) : super.query(q, this::buildResponse);
     }
 
-    @Override
     @GetMapping("{id}")
     public S getById(@PathVariable I id) {
         return buildResponse(checkResult(id, super.get(id)));
     }
 
-    @Override
     @DeleteMapping("{id}")
     public S deleteById(@PathVariable I id) {
         return buildResponse(checkResult(id, super.delete(id)));
     }
 
-    @Override
+    public void add(R request) {
+        add(Collections.singletonList(request));
+    }
+
     @PostMapping
     public void add(@RequestBody @Validated(CreateGroup.class) List<R> requests) {
         listValidator.validateList(requests);
         if (requests.size() == 1) {
             super.create(buildEntity(requests.get(0)));
         } else {
-            super.batchInsert(requests.stream().map(this::buildEntity).collect(Collectors.toList()));
+            super.create(requests.stream().map(this::buildEntity).collect(Collectors.toList()));
         }
     }
 
@@ -103,16 +104,6 @@ public abstract class AbstractIQRSController<E extends Persistable<I>, I extends
         E e = buildEntity(request);
         e.setId(id);
         patch(e);
-    }
-
-    @Override
-    public List<S> list(Q q) {
-        return query(q, this::buildResponse);
-    }
-
-    @Override
-    public PageList<S> page(Q q) {
-        return super.page(q, this::buildResponse);
     }
 
 }

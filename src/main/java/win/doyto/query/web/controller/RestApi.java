@@ -1,9 +1,14 @@
 package win.doyto.query.web.controller;
 
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.service.PageList;
+import win.doyto.query.validation.PageGroup;
+import win.doyto.query.validation.PatchGroup;
+import win.doyto.query.validation.UpdateGroup;
+import win.doyto.query.web.response.JsonBody;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,24 +17,35 @@ import java.util.List;
  *
  * @author f0rb on 2019-05-28
  */
-public interface RestApi<I extends Serializable, Q extends PageQuery, R, S> {
+public interface RestApi<I, Q extends PageQuery, R, S> {
 
-    List<S> list(Q q);
+    @JsonBody
+    @GetMapping
+    default Object queryOrPage(@Validated(PageGroup.class) Q q) {
+        return q.needPaging() ? page(q) : query(q);
+    }
+
+    List<S> query(Q q);
 
     PageList<S> page(Q q);
 
-    S getById(I id);
+    @GetMapping("{id}")
+    S get(I id);
 
-    S deleteById(I id);
+    @DeleteMapping("{id}")
+    S delete(I id);
 
-    void update(I id, R request);
+    @PutMapping
+    void update(@RequestBody @Validated(UpdateGroup.class) R request);
 
-    void patch(I id, R request);
+    @PatchMapping
+    void patch(@RequestBody @Validated(PatchGroup.class) R request);
 
-    default void add(R request) {
-        add(Collections.singletonList(request));
+    default void create(R request) {
+        create(Collections.singletonList(request));
     }
 
-    void add(List<R> requests);
+    @PostMapping
+    void create(@RequestBody List<R> requests);
 
 }

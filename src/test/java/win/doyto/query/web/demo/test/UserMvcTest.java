@@ -75,8 +75,8 @@ class UserMvcTest extends DemoApplicationTest {
                 .andExpect(jsonPath("$.data.nickname").value("测试4"))
                 .andExpect(jsonPath("$.data.valid").value(true));
 
-        String content = "{\"username\":\"test4\",\"mobile\":\"166666666\",\"valid\":false}";
-        RequestBuilder requestBuilder = put("/user/4").content(content).contentType(MediaType.APPLICATION_JSON);
+        String content = "{\"id\":4,\"username\":\"test4\",\"mobile\":\"166666666\",\"valid\":false}";
+        RequestBuilder requestBuilder = put("/user/").content(content).contentType(MediaType.APPLICATION_JSON);
         performAndExpectSuccess(requestBuilder);
         performAndExpectSuccess(get("/user/4"))
                 .andExpect(jsonPath("$.data.mobile").value("166666666"))
@@ -88,7 +88,7 @@ class UserMvcTest extends DemoApplicationTest {
     @Test
     @Rollback
     void patchUser() throws Exception {
-        RequestBuilder requestBuilder = patch("/user/2").content("{\"nickname\":\"new name\"}").contentType(MediaType.APPLICATION_JSON);
+        RequestBuilder requestBuilder = patch("/user/").content("{\"id\":2,\"nickname\":\"new name\"}").contentType(MediaType.APPLICATION_JSON);
         performAndExpectSuccess(requestBuilder);
         performAndExpectSuccess(get("/user/2"))
                 .andExpect(jsonPath("$.data.nickname").value("new name"))

@@ -3,6 +3,8 @@ package win.doyto.query.web.demo.module.user;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.validation.CreateGroup;
+import win.doyto.query.validation.PatchGroup;
+import win.doyto.query.validation.UpdateGroup;
 
 import javax.validation.constraints.NotNull;
 
@@ -14,6 +16,8 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class UserRequest {
+
+    @NotNull(groups = {UpdateGroup.class, PatchGroup.class})
     private Long id;
 
     @NotNull(groups = CreateGroup.class)
