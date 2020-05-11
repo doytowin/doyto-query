@@ -1,4 +1,4 @@
-package win.doyto.query.demo;
+package win.doyto.query.web.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,7 +19,7 @@ import javax.sql.DataSource;
  */
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"win.doyto.query.demo", "win.doyto.query.web.component"})
+@ComponentScan(basePackages = {"win.doyto.query.web.demo", "win.doyto.query.web.component"})
 @EnableCaching(proxyTargetClass = true)
 @EnableTransactionManagement(proxyTargetClass = true)
 public class DemoApplication extends WebMvcConfigurerAdapter {

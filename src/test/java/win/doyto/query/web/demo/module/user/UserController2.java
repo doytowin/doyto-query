@@ -1,4 +1,4 @@
-package win.doyto.query.demo.module.user;
+package win.doyto.query.web.demo.module.user;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

@@ -1,4 +1,4 @@
-package win.doyto.query.demo.test;
+package win.doyto.query.web.demo.test;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -9,7 +9,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
-import win.doyto.query.demo.DemoApplication;
+import win.doyto.query.web.demo.DemoApplication;
 
 import javax.annotation.Resource;
 

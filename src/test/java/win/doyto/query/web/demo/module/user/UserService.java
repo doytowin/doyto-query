@@ -1,4 +1,4 @@
-package win.doyto.query.demo.module.user;
+package win.doyto.query.web.demo.module.user;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;

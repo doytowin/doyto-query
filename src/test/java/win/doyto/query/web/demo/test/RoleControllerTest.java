@@ -1,13 +1,13 @@
-package win.doyto.query.demo.test;
+package win.doyto.query.web.demo.test;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import win.doyto.query.demo.module.role.RoleController;
-import win.doyto.query.demo.module.role.RoleEntity;
-import win.doyto.query.demo.module.role.RoleQuery;
 import win.doyto.query.service.PageList;
 import win.doyto.query.util.BeanUtil;
+import win.doyto.query.web.demo.module.role.RoleController;
+import win.doyto.query.web.demo.module.role.RoleEntity;
+import win.doyto.query.web.demo.module.role.RoleQuery;
 
 import java.io.IOException;
 import java.util.List;

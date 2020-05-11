@@ -1,4 +1,4 @@
-package win.doyto.query.demo.module.role;
+package win.doyto.query.web.demo.module.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +17,7 @@ import win.doyto.query.core.PageQuery;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class RoleQuery extends PageQuery {
-    private String roleNameLike;
+public class UserQuery extends PageQuery {
+    private String username;
+    private String email;
 }

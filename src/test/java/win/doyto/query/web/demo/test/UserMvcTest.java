@@ -1,4 +1,4 @@
-package win.doyto.query.demo.test;
+package win.doyto.query.web.demo.test;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;

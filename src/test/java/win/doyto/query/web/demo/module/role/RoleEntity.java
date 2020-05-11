@@ -1,4 +1,4 @@
-package win.doyto.query.demo.module.role;
+package win.doyto.query.web.demo.module.role;
 
 import lombok.Getter;
 import lombok.Setter;

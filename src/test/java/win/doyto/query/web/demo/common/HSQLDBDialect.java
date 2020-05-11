@@ -1,4 +1,4 @@
-package win.doyto.query.demo.common;
+package win.doyto.query.web.demo.common;
 
 import win.doyto.query.core.Dialect;
 

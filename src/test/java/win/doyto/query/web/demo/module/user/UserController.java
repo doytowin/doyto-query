@@ -1,4 +1,4 @@
-package win.doyto.query.demo.module.user;
+package win.doyto.query.web.demo.module.user;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
