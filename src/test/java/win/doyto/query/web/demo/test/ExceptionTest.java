@@ -40,7 +40,7 @@ class ExceptionTest extends DemoApplicationTest {
 
     @Test
     void testMethodArgumentTypeMismatchException() throws Exception {
-        performAndExpectFail(get("/user/null"), "参数类型异常");
+        performAndExpectFail(get("/role/null"), "参数类型异常");
     }
 
     @Test

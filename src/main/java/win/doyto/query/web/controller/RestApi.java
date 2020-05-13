@@ -38,6 +38,9 @@ public interface RestApi<I, Q extends PageQuery, R, S> {
     @PutMapping
     void update(@RequestBody @Validated(UpdateGroup.class) R request);
 
+    @PutMapping("{id}")
+    void update(I id, @RequestBody @Validated(UpdateGroup.class) R request);
+
     @PatchMapping
     void patch(@RequestBody @Validated(PatchGroup.class) R request);
 

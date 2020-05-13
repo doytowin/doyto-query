@@ -22,6 +22,11 @@ import javax.validation.constraints.Size;
 @JsonBody
 @Validated
 public class UserController extends AbstractRestController<UserEntity, Long, UserQuery, UserRequest, UserResponse> {
+
+    public UserController(UserService service) {
+        super(service);
+    }
+
     @GetMapping("/username")
     public UserResponse getByUsername(@Size(min = 4, max = 20) String username) {
         UserEntity userEntity = service.get(UserQuery.builder().username(username).build());

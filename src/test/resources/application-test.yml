@@ -1,7 +1,9 @@
 logging:
   level:
     root: info
+    win.doyto.query.core: debug
     org.springframework.test.context.transaction.TransactionContext: warn
+    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: trace
 
 spring:
   http:
@@ -19,4 +21,4 @@ doyto:
       dialect: win.doyto.query.web.demo.common.HSQLDBDialect
       map-camel-case-to-underscore: true
     caches:
-      win.doyto.query.demo.module.user.UserEntity
+      - win.doyto.query.demo.module.user.UserEntity
