@@ -2,9 +2,7 @@ package win.doyto.query.demo.test;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import win.doyto.query.demo.exception.ServiceException;
+import win.doyto.query.web.response.ErrorCodeException;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -45,12 +43,11 @@ class MenuMvcTest extends DemoApplicationTest {
             mockMvc.perform(get(menuUri + "9"));
             fail();
         } catch (Exception e) {
-            assertTrue(e.getCause() instanceof ServiceException);
+            assertTrue(e.getCause() instanceof ErrorCodeException);
         }
     }
 
     @Test
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     void saveMenu() throws Exception {
         MvcResult mvcResult = mockMvc
                 .perform(get(menuUri1))
@@ -58,8 +55,10 @@ class MenuMvcTest extends DemoApplicationTest {
                 .andExpect(jsonPath("$.updateUserId").doesNotExist())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        requestJson(put(menuUri1), json, session);
+        requestJson(put(menuUri), json, session)
+                .andExpect(statusIs200());
         mockMvc.perform(get(menuUri1))
+               .andDo(print())
                .andExpect(statusIs200())
                .andExpect(jsonPath("$.updateUserId").value("1"));
     }
@@ -84,22 +83,22 @@ class MenuMvcTest extends DemoApplicationTest {
     @Test
     void createMenus() throws Exception {
 
-        requestJson(post("/02/menu/batch"), "[{\"menuName\":\"Test Menu1\"},{\"menuName\":\"Test Menu2\"}]", session)
+        requestJson(post("/02/menu/"), "[{\"platform\":\"02\",\"menuName\":\"Test Menu1\"},{\"platform\":\"02\",\"menuName\":\"Test Menu2\"}]", session)
                 .andExpect(statusIs200());
 
         mockMvc.perform(get("/02/menu/"))
                .andDo(print())
                .andExpect(statusIs200())
-               .andExpect(jsonPath("$.length()").value(3));
+               .andExpect(jsonPath("$.list.length()").value(3));
     }
 
     @Test
-    void deleteMenu() throws Exception {
+    void deleteMenu() {
         try {
             mockMvc.perform(delete("/02/menu/0")).andDo(print());
             fail();
         } catch (Exception e) {
-            assertTrue(e.getCause() instanceof ServiceException);
+            assertTrue(e.getCause() instanceof ErrorCodeException);
         }
     }
 }

@@ -14,6 +14,8 @@ public class MenuResponse {
 
     private Integer id;
 
+    private String platform;
+
     private Integer parentId;
 
     private String menuName;

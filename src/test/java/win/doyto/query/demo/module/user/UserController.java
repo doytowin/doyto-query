@@ -1,16 +1,13 @@
 package win.doyto.query.demo.module.user;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import win.doyto.query.demo.exception.ServiceAsserts;
-import win.doyto.query.validation.CreateGroup;
 import win.doyto.query.web.controller.AbstractRestController;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import javax.annotation.Resource;
 
 /**
  * UserController
@@ -22,21 +19,19 @@ import javax.annotation.Resource;
 @RequestMapping("user")
 class UserController extends AbstractRestController<UserEntity, Long, UserQuery, UserRequest, UserResponse> implements UserApi {
 
-    @Resource
     UserService userService;
 
-    @Resource
     UserDetailService userDetailService;
 
-    @Override
-    protected UserService getService() {
-        return userService;
+    public UserController(UserService userService, UserDetailService userDetailService) {
+        super(userService);
+        this.userService = userService;
+        this.userDetailService = userDetailService;
     }
 
     @Override
-    @GetMapping("{id}")
-    public UserResponse getById(@PathVariable Long id) {
-        UserResponse userResponse = super.getById(id);
+    public UserResponse get(@PathVariable Long id) {
+        UserResponse userResponse = super.get(id);
         UserDetailEntity userDetailEntity = userDetailService.get(id);
         if (userDetailEntity != null) {
             userResponse.setAddress(userDetailEntity.getAddress());
@@ -45,14 +40,16 @@ class UserController extends AbstractRestController<UserEntity, Long, UserQuery,
     }
 
     @Override
-    @PostMapping
-    public void add(@RequestBody @Validated(CreateGroup.class) UserRequest request) {
-        UserEntity userEntity = userService.save(buildEntity(request));
-        userDetailService.save(UserDetailEntity.build(userEntity.getId(), request));
+    public void create(List<UserRequest> requests) {
+        listValidator.validateList(requests);
+        for (UserRequest request : requests) {
+            UserEntity userEntity = userService.save(buildEntity(request));
+            userDetailService.save(UserDetailEntity.build(userEntity.getId(), request));
+        }
     }
 
     @Override
-    public List<UserResponse> list(UserQuery q) {
+    public List<UserResponse> query(UserQuery q) {
         return userService.queryColumns(q, UserResponse.class, "id", "username", "mobile", "email", "nickname", "valid", "userLevel", "memo");
     }
 

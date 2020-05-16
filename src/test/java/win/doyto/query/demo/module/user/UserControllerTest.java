@@ -25,10 +25,8 @@ public class UserControllerTest {
     }
 
     private static void initData() {
-        UserController userController = new UserController();
-        userController.userService = new UserService();
-        userController.userDetailService = new UserDetailService();
-        userController.add(getUserRequests());
+        UserController userController = new UserController(new UserService(), new UserDetailService());
+        userController.create(getUserRequests());
         UserControllerTest.userApi = userController;
     }
 
@@ -61,7 +59,7 @@ public class UserControllerTest {
     @Test
     void query() {
         UserQuery userQuery = UserQuery.builder().username("username1").build();
-        assertThat(userApi.list(userQuery))
+        assertThat(userApi.query(userQuery))
             .hasSize(1)
             .first()
             .hasFieldOrPropertyWithValue("id", 1L)
@@ -89,7 +87,7 @@ public class UserControllerTest {
 
     @Test
     void get() {
-        assertThat(userApi.getById(1L))
+        assertThat(userApi.get(1L))
             .hasFieldOrPropertyWithValue("id", 1L)
             .hasFieldOrPropertyWithValue("username", "username1")
         ;
@@ -97,13 +95,13 @@ public class UserControllerTest {
 
     @Test
     void delete() {
-        userApi.deleteById(1L);
+        userApi.delete(1L);
         assertThat(userApi.page(UserQuery.builder().build()).getTotal()).isEqualTo(4);
     }
 
     @Test
     void supportInheritanceOnConcreteSubClassOfAbstractService() {
-        assertNotNull(new UserController() {});
+        assertNotNull(new UserController(new UserService(), new UserDetailService()) {});
     }
 
     @Test

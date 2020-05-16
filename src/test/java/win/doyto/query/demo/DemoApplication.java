@@ -9,6 +9,8 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import win.doyto.query.service.AssociativeService;
 import win.doyto.query.service.AssociativeServiceTemplate;
+import win.doyto.query.web.WebMvcConfigurerAdapter;
+import win.doyto.query.web.component.ListValidator;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
@@ -21,7 +23,7 @@ import javax.sql.DataSource;
 @SpringBootApplication
 @EnableCaching(proxyTargetClass = true)
 @EnableTransactionManagement(proxyTargetClass = true)
-public class DemoApplication {
+public class DemoApplication extends WebMvcConfigurerAdapter {
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class);
     }
@@ -39,5 +41,10 @@ public class DemoApplication {
     @Bean
     public AssociativeService<Integer, Integer> roleAndPermissionAssociativeService() {
         return new AssociativeServiceTemplate<>("t_role_and_permission", "roleId", "permissionId");
+    }
+
+    @Bean
+    public ListValidator listValidator() {
+        return new ListValidator();
     }
 }

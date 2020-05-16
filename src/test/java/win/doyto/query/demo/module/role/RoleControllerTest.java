@@ -17,7 +17,7 @@ class RoleControllerTest {
 
         RoleEntity roleEntity = new RoleEntity();
         roleEntity.setRoleName("root");
-        roleController.add(roleEntity);
+        roleController.create(roleEntity);
 
         roleController.query(new RoleQuery());
         assertEquals(Long.valueOf(1), roleEntity.getId());

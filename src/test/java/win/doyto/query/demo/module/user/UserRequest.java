@@ -13,6 +13,7 @@ import lombok.Setter;
 @Setter
 public class UserRequest {
 
+    private Long id;
     private String username;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String password;

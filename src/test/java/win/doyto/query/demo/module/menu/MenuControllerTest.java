@@ -19,18 +19,15 @@ class MenuControllerTest {
     String platform = "01";
     MenuController menuController = new MenuController(new MenuService());
 
-
     @BeforeEach
     void setUp() throws IOException {
-        menuController.create(BeanUtil.loadJsonData("menu.json", new TypeReference<List<MenuRequest>>() {}), "01");
+        menuController.create(BeanUtil.loadJsonData("menu.json", new TypeReference<List<MenuRequest>>() {}));
     }
 
     @Test
     void get() {
-        MenuRequest menuRequest = new MenuRequest();
-        menuRequest.setId(1);
-        menuRequest.setPlatform(platform);
-        MenuResponse menuResponse = menuController.get(menuRequest);
+        MenuIdWrapper menuIdWrapper = new MenuIdWrapper(1, platform);
+        MenuResponse menuResponse = menuController.get(menuIdWrapper);
         assertEquals("root", menuResponse.getMenuName());
         assertEquals(0, (int) menuResponse.getParentId());
     }

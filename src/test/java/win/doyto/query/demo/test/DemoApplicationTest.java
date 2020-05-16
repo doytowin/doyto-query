@@ -8,10 +8,7 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.*;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +18,7 @@ import win.doyto.query.demo.DemoApplication;
 import javax.annotation.Resource;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -52,11 +50,22 @@ abstract class DemoApplicationTest {
         return status().is(200);
     }
 
+    protected ResultActions performAndExpectOk(RequestBuilder requestBuilder) throws Exception {
+        return mockMvc.perform(requestBuilder)
+                      .andDo(print())
+                      .andExpect(statusIs200());
+    }
+
+    protected MockHttpServletRequestBuilder buildJson(MockHttpServletRequestBuilder builder, String content) {
+        return builder.content(content).contentType("application/json;charset=UTF-8").session(session);
+    }
+
     @BeforeEach
     public void setUp() throws Exception {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 
-        MvcResult mvcResult = requestJson(post("/login"), "{\"account\":\"f0rb\",\"password\":\"123456\"}").andExpect(statusIs200()).andReturn();
+        MvcResult mvcResult = requestJson(post("/login"), "{\"account\":\"f0rb\",\"password\":\"123456\"}")
+                .andExpect(statusIs200()).andReturn();
         session = (MockHttpSession) mvcResult.getRequest().getSession();
     }
 

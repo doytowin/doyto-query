@@ -26,7 +26,4 @@ public class MenuRequest {
 
     private Boolean valid = true;
 
-    public MenuIdWrapper toIdWrapper() {
-        return new MenuIdWrapper(this.id, this.platform);
-    }
 }

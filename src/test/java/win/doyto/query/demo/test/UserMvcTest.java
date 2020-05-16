@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author f0rb on 2020-04-11
  */
+@SuppressWarnings("java:S112")
 public class UserMvcTest extends DemoApplicationTest {
 
     private static final String URL_USER = "/user/";
@@ -27,19 +28,19 @@ public class UserMvcTest extends DemoApplicationTest {
     @Test
     public void queryByUsername() throws Exception {
         mockMvc.perform(get(URL_USER + "?username=f0rb"))
-               .andExpect(jsonPath("$").isArray())
-               .andExpect(jsonPath("$[0].nickname").value("测试1"))
-               .andExpect(jsonPath("$[0].userLevel").value("高级"))
+               .andExpect(jsonPath("$.list").isArray())
+               .andExpect(jsonPath("$.list[0].nickname").value("测试1"))
+               .andExpect(jsonPath("$.list[0].userLevel").value("高级"))
         ;
     }
 
     @Test
     public void queryByAccount() throws Exception {
         mockMvc.perform(get(URL_USER + "?account=17778888882"))
-               .andExpect(jsonPath("$").isArray())
-               .andExpect(jsonPath("$[0].nickname").value("测试2"))
-               .andExpect(jsonPath("$[0].password").doesNotExist())
-               .andExpect(jsonPath("$[1]").doesNotExist())
+               .andExpect(jsonPath("$.list").isArray())
+               .andExpect(jsonPath("$.list[0].nickname").value("测试2"))
+               .andExpect(jsonPath("$.list[0].password").doesNotExist())
+               .andExpect(jsonPath("$.list[1]").doesNotExist())
         ;
     }
 
@@ -131,7 +132,7 @@ public class UserMvcTest extends DemoApplicationTest {
         String result = mockMvc.perform(get(URL_USER_1)).andReturn().getResponse().getContentAsString();
 
         int timesBefore = testUserEntityAspect.getTimes();
-        requestJson(put(URL_USER_1), result.replace("f0rb", "test"));
+        requestJson(put(URL_USER_1), result.replace("f0rb", "test")).andDo(print());
         Assertions.assertEquals(1, testUserEntityAspect.getTimes() - timesBefore);
 
         mockMvc.perform(get(URL_USER + "?pageNumber=0"))
@@ -144,7 +145,7 @@ public class UserMvcTest extends DemoApplicationTest {
 
     @Test
     public void patchUser() throws Exception {
-        requestJson(patch(URL_USER_1), "{\"id\":1,\"username\":\"test\"}");
+        performAndExpectOk(buildJson(patch(URL_USER), "{\"id\":1,\"username\":\"test\"}"));
 
         mockMvc.perform(get(URL_USER_1))
                .andDo(print())
@@ -155,16 +156,16 @@ public class UserMvcTest extends DemoApplicationTest {
 
     @Test
     public void patchMemo() throws Exception {
-        requestJson(post("/user/memo"), "{\"email\":\"qq\",\"memo\":\"qq邮箱\"}");
+        performAndExpectOk(buildJson(post("/user/memo"), "{\"email\":\"qq\",\"memo\":\"qq邮箱\"}"));
 
         mockMvc.perform(get(URL_USER))
                .andDo(print())
-               .andExpect(jsonPath("$[0].email").value("f0rb@163.com"))
-               .andExpect(jsonPath("$[0].memo").doesNotExist())
-               .andExpect(jsonPath("$[1].email").value("test2@qq.com"))
-               .andExpect(jsonPath("$[1].memo").value("qq邮箱"))
-               .andExpect(jsonPath("$[2].email").value("test3@qq.com"))
-               .andExpect(jsonPath("$[2].memo").value("memo"))
+               .andExpect(jsonPath("$.list[0].email").value("f0rb@163.com"))
+               .andExpect(jsonPath("$.list[0].memo").doesNotExist())
+               .andExpect(jsonPath("$.list[1].email").value("test2@qq.com"))
+               .andExpect(jsonPath("$.list[1].memo").value("qq邮箱"))
+               .andExpect(jsonPath("$.list[2].email").value("test3@qq.com"))
+               .andExpect(jsonPath("$.list[2].memo").value("memo"))
         ;
     }
 

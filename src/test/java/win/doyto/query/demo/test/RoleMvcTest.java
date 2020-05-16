@@ -19,7 +19,7 @@ class RoleMvcTest extends DemoApplicationTest {
     void queryRole() throws Exception {
         mockMvc.perform(get("/role"))
                .andExpect(statusIs200())
-               .andExpect(jsonPath("$[0].roleName").value("测试"));
+               .andExpect(jsonPath("$.list[0].roleName").value("测试"));
         mockMvc.perform(get("/role?pageNumber=0&pageSize=5"))
                .andExpect(statusIs200())
                .andExpect(jsonPath("$.list[0].roleName").value("测试"))
