@@ -26,8 +26,8 @@ class UserMvcTest extends DemoApplicationTest {
     @Test
     void queryByUsername() throws Exception {
         performAndExpectSuccess(get("/user/?username=f0rb"))
-                .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data[0].nickname").value("测试1"))
+                .andExpect(jsonPath("$.data.list").isArray())
+                .andExpect(jsonPath("$.data.list[0].nickname").value("测试1"))
         ;
 
         performAndExpectSuccess(get("/user/?username=f0rb&pageNumber=2"))

@@ -69,7 +69,7 @@ class MenuMvcTest extends DemoApplicationTest {
         String content = "[{\"platform\":\"02\",\"menuName\":\"Test Menu1\"},{\"platform\":\"02\",\"menuName\":\"Test Menu2\"}]";
         performAndExpectSuccess(post("/02/menu/"), content);
         performAndExpectOk(get("/02/menu/"))
-                .andExpect(jsonPath("$.data.length()").value(3));
+                .andExpect(jsonPath("$.data.total").value(3));
     }
 
     @Test

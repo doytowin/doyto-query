@@ -7,7 +7,6 @@ import win.doyto.query.service.PageList;
 import win.doyto.query.validation.PageGroup;
 import win.doyto.query.validation.PatchGroup;
 import win.doyto.query.validation.UpdateGroup;
-import win.doyto.query.web.response.JsonBody;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,15 +18,10 @@ import java.util.List;
  */
 public interface RestApi<I, Q extends PageQuery, R, S> {
 
-    @JsonBody
-    @GetMapping
-    default Object queryOrPage(@Validated(PageGroup.class) Q q) {
-        return q.needPaging() ? page(q) : query(q);
-    }
-
     List<S> query(Q q);
 
-    PageList<S> page(Q q);
+    @GetMapping
+    PageList<S> page(@Validated(PageGroup.class) Q q);
 
     @GetMapping("{id}")
     S get(I id);

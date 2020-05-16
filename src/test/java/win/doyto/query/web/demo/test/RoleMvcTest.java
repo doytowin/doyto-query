@@ -25,8 +25,8 @@ public class RoleMvcTest extends DemoApplicationTest {
     @Test
     void queryByRoleName() throws Exception {
         performAndExpectSuccess(get("/role/?roleNameLike=admin"))
-                .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data[0].roleCode").value("ADMIN"))
+                .andExpect(jsonPath("$.data.list").isArray())
+                .andExpect(jsonPath("$.data.list[0].roleCode").value("ADMIN"))
         ;
     }
 

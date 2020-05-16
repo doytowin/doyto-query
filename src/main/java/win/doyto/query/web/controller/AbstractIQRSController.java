@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.service.AbstractCrudService;
+import win.doyto.query.service.PageList;
 import win.doyto.query.util.BeanUtil;
 import win.doyto.query.validation.CreateGroup;
 import win.doyto.query.validation.PageGroup;
@@ -63,8 +64,8 @@ public abstract class AbstractIQRSController
     }
 
     @GetMapping
-    Object queryOrPage(@Validated(PageGroup.class) Q q) {
-        return q.needPaging() ? super.page(q, this::buildResponse) : super.query(q, this::buildResponse);
+    protected PageList<S> paging(@Validated(PageGroup.class) Q q) {
+        return super.page(q, this::buildResponse);
     }
 
     @GetMapping("{id}")
