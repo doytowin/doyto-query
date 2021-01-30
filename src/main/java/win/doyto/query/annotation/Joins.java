@@ -20,6 +20,7 @@ public @interface Joins {
 
     String having() default "";
 
+    @Target({})
     @interface Join {
         String value();
     }
