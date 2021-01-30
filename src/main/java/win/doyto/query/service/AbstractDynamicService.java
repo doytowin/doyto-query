@@ -42,7 +42,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     protected final CacheWrapper<List<E>> queryCacheWrapper = CacheWrapper.createInstance();
 
     @Autowired(required = false)
-    private UserIdProvider<?> userIdProvider;
+    private UserIdProvider<?> userIdProvider = () -> null;
 
     @Setter
     @Autowired(required = false)
@@ -136,9 +136,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     }
 
     public void create(E e) {
-        if (userIdProvider != null) {
-            userIdProvider.setupUserId(e);
-        }
+        userIdProvider.setupUserId(e);
         if (!entityAspects.isEmpty()) {
             transactionOperations.execute(s -> {
                 dataAccess.create(e);
@@ -160,9 +158,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     }
 
     private int doUpdate(E e, Invocable<Integer> invocable) {
-        if (userIdProvider != null) {
-            userIdProvider.setupUserId(e);
-        }
+        userIdProvider.setupUserId(e);
         E origin;
         if (e == null || (origin = dataAccess.get(e.toIdWrapper())) == null) {
             return 0;
@@ -183,7 +179,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
 
     @Override
     public int create(Iterable<E> entities, String... columns) {
-        if (userIdProvider != null) {
+        if (userIdProvider.getUserId() != null) {
             for (E e : entities) {
                 userIdProvider.setupUserId(e);
             }
@@ -194,9 +190,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     }
 
     public int patch(E e, Q q) {
-        if (userIdProvider != null) {
-            userIdProvider.setupUserId(e);
-        }
+        userIdProvider.setupUserId(e);
         int patch = dataAccess.patch(e, q);
         clearCache();
         return patch;
