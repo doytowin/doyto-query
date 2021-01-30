@@ -12,7 +12,6 @@ import java.util.stream.IntStream;
 
 import static win.doyto.query.core.CommonUtil.containsOr;
 import static win.doyto.query.core.Constant.SEPARATOR;
-import static win.doyto.query.core.Constant.WHERE;
 
 /**
  * QuerySuffix
@@ -64,21 +63,24 @@ enum QuerySuffix {
         return matcher.find() ? valueOf(matcher.group()) : NONE;
     }
 
+    private static String processOrStatement(List<Object> argList, Object value, String fieldName) {
+        final String alias;
+        int indexOfDot = fieldName.indexOf('.') + 1;
+        if (indexOfDot > 0) {
+            alias = fieldName.substring(0, indexOfDot);
+            fieldName = fieldName.substring(indexOfDot);
+        } else {
+            alias = "";
+        }
+        String andSql = Arrays.stream(CommonUtil.splitByOr(fieldName))
+                              .map(s -> buildAndSql(argList, value, alias + s))
+                              .collect(Collectors.joining(Constant.SPACE_OR));
+        return CommonUtil.wrapWithParenthesis(andSql);
+    }
+
     static String buildAndSql(List<Object> argList, Object value, String fieldName) {
         if (containsOr(fieldName)) {
-            final String alias;
-            int indexOfDot = fieldName.indexOf('.') + 1;
-            if (indexOfDot > 0) {
-                alias = fieldName.substring(0, indexOfDot);
-                fieldName = fieldName.substring(indexOfDot);
-            } else {
-                alias = "";
-            }
-            Object finalValue = value;
-            String andSql = Arrays.stream(CommonUtil.splitByOr(fieldName))
-                                  .map(s -> buildAndSql(argList, finalValue, alias + s))
-                                  .collect(Collectors.joining(Constant.SPACE_OR));
-            return CommonUtil.wrapWithParenthesis(andSql);
+            return processOrStatement(argList, value, fieldName);
         }
         QuerySuffix querySuffix = resolve(fieldName);
         if (querySuffix == Like) {
@@ -87,10 +89,6 @@ enum QuerySuffix {
             value = CommonUtil.escapeStart(String.valueOf(value));
         }
         return sqlFuncMap.get(querySuffix).apply(new ColumnMeta(fieldName, value, argList));
-    }
-
-    static String buildWhereSql(List<Object> argList, Object value, String fieldName) {
-        return WHERE + buildAndSql(argList, value, fieldName);
     }
 
     private String buildAndSql(ColumnMeta columnMeta) {
