@@ -1,6 +1,7 @@
 package win.doyto.query.cache;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 
@@ -18,6 +19,7 @@ import java.lang.reflect.Proxy;
 @AllArgsConstructor
 public class CacheProxy implements InvocationHandler {
 
+    @NonNull
     private Cache delegate;
 
     public static Cache wrap(Cache cache) {

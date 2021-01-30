@@ -15,18 +15,12 @@ public interface CacheWrapper<T> {
     }
 
     default T execute(String key, Invocable<T> invocable) {
-        return DefaultCacheWrapper.invoke(getCache(), key, invocable);
+        return CacheUtil.invoke(getCache(), key, invocable);
     }
 
     void setCache(Cache cache);
 
     Cache getCache();
-
-    @SuppressWarnings("unchecked")
-    default T get(String key) {
-        Cache.ValueWrapper valueWrapper = getCache().get(key);
-        return valueWrapper != null ? (T) valueWrapper.get() : null;
-    }
 
     default void evict(String key) {
         getCache().evict(key);
