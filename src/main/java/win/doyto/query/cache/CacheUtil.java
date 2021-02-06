@@ -45,7 +45,7 @@ class CacheUtil {
     }
 
     private static class RenameThreadFactory implements ThreadFactory {
-        ThreadFactory delegate = Executors.defaultThreadFactory();
+        private final ThreadFactory delegate = Executors.defaultThreadFactory();
 
         public Thread newThread(Runnable r) {
             Thread thread = delegate.newThread(r);

@@ -25,7 +25,7 @@ public class GlobalConfiguration {
     }
 
     private static class Singleton {
-        private static GlobalConfiguration instance = new GlobalConfiguration();
+        private static final GlobalConfiguration instance = new GlobalConfiguration();
     }
 
     public static Dialect dialect() {

@@ -7,5 +7,5 @@ package win.doyto.query.demo.module.user;
  */
 @SuppressWarnings("java:S115")
 public enum UserLevel {
-    普通, 高级;
+    普通, 高级
 }

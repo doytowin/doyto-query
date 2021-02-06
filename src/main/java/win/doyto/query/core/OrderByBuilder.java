@@ -15,7 +15,7 @@ public class OrderByBuilder {
         return new OrderByBuilder();
     }
 
-    private StringBuilder buffer = new StringBuilder();
+    private final StringBuilder buffer = new StringBuilder();
 
     public OrderByBuilder asc(String column) {
         buffer.append(column).append(",asc;");

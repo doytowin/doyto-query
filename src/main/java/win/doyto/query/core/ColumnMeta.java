@@ -43,11 +43,11 @@ final class ColumnMeta {
                 return;
             }
             Object next = collection.iterator().next();
-            if (next instanceof Enum) {
+            if (next instanceof Enum<?>) {
                 Enumerated enumerated = next.getClass().getAnnotation(Enumerated.class);
                 boolean isString = enumerated != null && enumerated.value() == EnumType.STRING;
                 collection.stream()
-                          .map(element -> isString ? element.toString() : ((Enum) element).ordinal())
+                          .map(element -> isString ? element.toString() : ((Enum<?>) element).ordinal())
                           .forEach(argList::add);
             } else {
                 argList.addAll(collection);

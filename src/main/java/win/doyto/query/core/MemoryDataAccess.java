@@ -32,7 +32,7 @@ import static win.doyto.query.core.QuerySuffix.*;
 @Slf4j
 @SuppressWarnings({"unchecked", "java:S3740"})
 public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
-    protected static final Map<Class<?>, Map> tableMap = new ConcurrentHashMap<>();
+    protected static final Map<Class<?>, Map<?, ?>> tableMap = new ConcurrentHashMap<>();
 
     protected final Map<I, E> entitiesMap = new ConcurrentHashMap<>();
     private final AtomicLong idGenerator = new AtomicLong(0);

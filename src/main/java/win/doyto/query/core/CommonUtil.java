@@ -74,12 +74,12 @@ class CommonUtil {
             log.warn("is/get调用异常 : {}-{}", e.getClass().getName(), e.getMessage());
             value = readField(field, target);
         }
-        if (value instanceof Enum) {
+        if (value instanceof Enum<?>) {
             Enumerated enumerated = field.getAnnotation(Enumerated.class);
             if (enumerated != null && enumerated.value() == EnumType.STRING) {
                 value = value.toString();
             } else {
-                value = ((Enum) value).ordinal();
+                value = ((Enum<?>) value).ordinal();
             }
         }
         return value;
@@ -143,7 +143,7 @@ class CommonUtil {
     static boolean isValidValue(Object value, Field field) {
         return !(value == null
                 || (value instanceof Boolean && field.getType().isPrimitive() && Boolean.FALSE.equals(value))
-                || (value instanceof Collection && field.getName().endsWith(QuerySuffix.NotIn.name()) && ((Collection) value).isEmpty())
+                || (value instanceof Collection && field.getName().endsWith(QuerySuffix.NotIn.name()) && ((Collection<?>) value).isEmpty())
         );
     }
 
