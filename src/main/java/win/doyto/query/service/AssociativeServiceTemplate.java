@@ -28,7 +28,7 @@ public class AssociativeServiceTemplate<L, R> implements AssociativeService<L, R
     private JdbcOperations jdbcOperations;
 
     @Autowired(required = false)
-    private UserIdProvider<?> userIdProvider;
+    private UserIdProvider<?> userIdProvider = () -> null;
 
     public AssociativeServiceTemplate(String table, String left, String right) {
         this(table, left, right, null);
@@ -104,8 +104,7 @@ public class AssociativeServiceTemplate<L, R> implements AssociativeService<L, R
 
     @Override
     public int allocate(Collection<L> leftIds, Collection<R> rightIds) {
-        SqlAndArgs sqlAndArgs = sqlBuilder.buildAllocate(
-            leftIds, rightIds, (Long) (userIdProvider == null ? null : userIdProvider.getUserId()));
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildAllocate(leftIds, rightIds, userIdProvider.getUserId());
         return jdbcOperations.update(sqlAndArgs.getSql(), sqlAndArgs.getArgs());
     }
 

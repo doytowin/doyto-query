@@ -71,7 +71,7 @@ class AssociativeSqlBuilder {
         return new SqlAndArgs(sql, unionArgs(leftIds, rightIds));
     }
 
-    public SqlAndArgs buildAllocate(Collection<?> leftIds, Collection<?> rightIds, Long userId) {
+    public SqlAndArgs buildAllocate(Collection<?> leftIds, Collection<?> rightIds, Object userId) {
         StringBuilder sql = new StringBuilder(insert);
         int totalSize = leftIds.size() * rightIds.size();
         for (int i = 0; i < totalSize - 1; i++) {
