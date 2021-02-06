@@ -8,6 +8,7 @@ import win.doyto.query.config.GlobalConfiguration;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -31,21 +32,29 @@ public class QueryBuilder {
     protected final String tableName;
     protected final String idColumn;
     protected final String whereId;
-    protected final boolean isDynamicTable;
+    private final BiFunction<IdWrapper<?>, String, String> resolveTableNameFunc;
 
     public QueryBuilder(String tableName, String idColumn) {
         this.tableName = tableName;
-        this.isDynamicTable = isDynamicTable(tableName);
         this.idColumn = idColumn;
         this.whereId = WHERE + idColumn + EQUALS_REPLACE_HOLDER;
+        this.resolveTableNameFunc = isDynamicTable(tableName) ? CommonUtil::replaceHolderInString : (idWrapper, tableName1) -> tableName1;
     }
 
     public QueryBuilder(Class<?> entityClass) {
-        this.tableName = entityClass.getAnnotation(Table.class).name();
-        this.isDynamicTable = isDynamicTable(tableName);
-        Field idField = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0];
-        this.idColumn = resolveColumn(idField);
-        this.whereId = WHERE + idColumn + EQUALS_REPLACE_HOLDER;
+        this(resolveTableName(entityClass), resolveIdColumn(entityClass));
+    }
+
+    private static String resolveTableName(Class<?> entityClass) {
+        return entityClass.getAnnotation(Table.class).name();
+    }
+
+    private static String resolveIdColumn(Class<?> entityClass) {
+        return resolveColumn(FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0]);
+    }
+
+    protected String resolveTableName(IdWrapper<?> idWrapper) {
+        return resolveTableNameFunc.apply(idWrapper, tableName);
     }
 
     private String build(PageQuery pageQuery, List<Object> argList, String... columns) {
@@ -155,11 +164,6 @@ public class QueryBuilder {
 
     protected SqlAndArgs buildSelectIdAndArgs(PageQuery query) {
         return buildSelectColumnsAndArgs(query, idColumn);
-    }
-
-
-    protected String resolveTableName(IdWrapper<?> idWrapper) {
-        return isDynamicTable ? replaceHolderInString(idWrapper, tableName) : tableName;
     }
 
 }
