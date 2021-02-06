@@ -19,7 +19,7 @@ class JoinQueryServiceTest {
 
     @Test
     void buildJoinSelectAndArgs() {
-        JoinQueryService<TestJoinView, TestJoinQuery> JoinQueryService = new JoinQueryService<>(null, TestJoinView.class);
+        JoinQueryService<TestJoinView, TestJoinQuery> JoinQueryService = new JoinQueryService<>(TestJoinView.class);
 
         TestJoinQuery testJoinQuery = new TestJoinQuery();
         testJoinQuery.setRoleName("VIP");
@@ -39,7 +39,7 @@ class JoinQueryServiceTest {
     @Test
     void buildJoinSelectAndArgsWithAlias() {
 
-        JoinQueryService<TestJoinView, TestJoinQuery> JoinQueryService = new JoinQueryService<>(null, TestJoinView.class);
+        JoinQueryService<TestJoinView, TestJoinQuery> JoinQueryService = new JoinQueryService<>(TestJoinView.class);
 
         TestJoinQuery testJoinQuery = new TestJoinQuery();
         testJoinQuery.setRoleName("VIP");

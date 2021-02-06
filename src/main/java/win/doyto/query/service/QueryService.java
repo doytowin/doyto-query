@@ -11,15 +11,11 @@ import java.util.stream.Collectors;
  *
  * @author f0rb
  */
-public interface QueryService<E, I, Q extends PageQuery> {
+public interface QueryService<E, Q extends PageQuery> {
 
     List<E> query(Q query);
 
-    List<I> queryIds(Q query);
-
     long count(Q query);
-
-    <V> List<V> queryColumns(Q query, Class<V> clazz, String... columns);
 
     default boolean exists(Q query) {
         return count(query) > 0;

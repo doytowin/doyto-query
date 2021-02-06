@@ -11,17 +11,17 @@ import win.doyto.query.core.SqlAndArgs;
 import java.util.List;
 
 /**
- * JoinQueryExecutor
+ * JoinQueryService
  *
  * @author f0rb on 2019-06-09
  */
 @AllArgsConstructor
-public class JoinQueryService<E, Q extends PageQuery> {
+public class JoinQueryService<E, Q extends PageQuery> implements QueryService<E, Q> {
 
     @Autowired
     private JdbcOperations jdbcOperations;
     private final JoinQueryBuilder joinQueryBuilder;
-    private BeanPropertyRowMapper<E> beanPropertyRowMapper;
+    private final BeanPropertyRowMapper<E> beanPropertyRowMapper;
 
     public JoinQueryService(Class<E> entityClass) {
         this.joinQueryBuilder = new JoinQueryBuilder(entityClass);
@@ -31,11 +31,6 @@ public class JoinQueryService<E, Q extends PageQuery> {
     public JoinQueryService(JdbcOperations jdbcOperations, Class<E> entityClass) {
         this(entityClass);
         this.jdbcOperations = jdbcOperations;
-    }
-
-    public PageList<E> page(Q q) {
-        q.forcePaging();
-        return new PageList<>(query(q), count(q));
     }
 
     public List<E> query(Q q) {

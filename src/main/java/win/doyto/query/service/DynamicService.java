@@ -5,13 +5,18 @@ import win.doyto.query.core.PageQuery;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * DynamicService
  *
  * @author f0rb on 2019-06-01
  */
-public interface DynamicService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> extends QueryService<E, I, Q> {
+public interface DynamicService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> extends QueryService<E, Q> {
+
+    List<I> queryIds(Q query);
+
+    <V> List<V> queryColumns(Q query, Class<V> clazz, String... columns);
 
     void create(E e);
 
