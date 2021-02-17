@@ -146,7 +146,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
 
     public String buildPatchAndArgsWithQuery(E entity, Object query, List<Object> argList) {
         String sql = buildPatchAndArgs(entity, argList);
-        return buildWhere(sql, query, argList);
+        return BuildHelper.buildWhere(sql, query, argList);
     }
 
     public SqlAndArgs buildPatchAndArgsWithQuery(E entity, Object query) {
@@ -156,7 +156,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
     }
 
     public String buildDeleteAndArgs(PageQuery query, List<Object> argList) {
-        return build(query, argList, "DELETE", new String[0], tableName);
+        return BuildHelper.build(query, argList, "DELETE", new String[0], tableName);
     }
 
     public SqlAndArgs buildDeleteAndArgs(PageQuery query) {

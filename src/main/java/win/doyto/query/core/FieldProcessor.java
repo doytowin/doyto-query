@@ -90,7 +90,7 @@ final class FieldProcessor {
         if (boolean.class.isAssignableFrom(fieldType)) {
             processor = EMPTY_PROCESSOR;
         } else if (PageQuery.class.isAssignableFrom(fieldType)){
-            processor = (argList, value) -> QueryBuilder.buildWhere("", value, argList);
+            processor = (argList, value) -> BuildHelper.buildWhere("", value, argList);
         } else {
             processor = new DefaultProcessor(field.getName());
         }

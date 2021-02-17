@@ -11,9 +11,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.persistence.Table;
 
+import static win.doyto.query.core.BuildHelper.*;
 import static win.doyto.query.core.CommonUtil.*;
 import static win.doyto.query.core.Constant.*;
-import static win.doyto.query.core.QueryBuilder.*;
 
 /**
  * JoinQueryBuilder

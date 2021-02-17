@@ -392,15 +392,6 @@ public class QueryBuilderTest {
     }
 
     @Test
-    void buildOrderByForFieldSorting() {
-        PageQuery pageQuery = TestQuery.builder().build().setSort("FIELD(status,1,3,2,0);id,DESC");
-        assertEquals(" ORDER BY FIELD(status,1,3,2,0), id DESC", QueryBuilder.buildOrderBy("", pageQuery, Constant.SELECT));
-
-        pageQuery.setSort(OrderByBuilder.create().field("gender", "'male'", "'female'").desc("id").toString());
-        assertEquals(" ORDER BY field(gender,'male','female'), id desc", QueryBuilder.buildOrderBy("", pageQuery, Constant.SELECT));
-    }
-
-    @Test
     void buildSelectColumnsAndArgsForDynamicColumn() {
         DynamicQuery dynamicQuery = DynamicQuery.builder().user("f0rb").project("i18n").locale("zh").scoreLt(100).build();
 
