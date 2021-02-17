@@ -44,7 +44,7 @@ public class BuildHelper {
         return operation + StringUtils.join(columns, SEPARATOR) + FROM + from;
     }
 
-    public static String buildWhere(String sql, Object query, List<Object> argList) {
+    public static String buildWhere(String sql, PageQuery query, List<Object> argList) {
         initFields(query);
         Field[] fields = classFieldsMap.get(query.getClass());
         StringJoiner whereList = new StringJoiner(" AND ", fields.length);

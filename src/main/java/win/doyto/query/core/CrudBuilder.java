@@ -144,12 +144,12 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
         return new SqlAndArgs(buildPatchAndArgsWithId(entity, argList), argList);
     }
 
-    public String buildPatchAndArgsWithQuery(E entity, Object query, List<Object> argList) {
+    public String buildPatchAndArgsWithQuery(E entity, PageQuery query, List<Object> argList) {
         String sql = buildPatchAndArgs(entity, argList);
         return BuildHelper.buildWhere(sql, query, argList);
     }
 
-    public SqlAndArgs buildPatchAndArgsWithQuery(E entity, Object query) {
+    public SqlAndArgs buildPatchAndArgsWithQuery(E entity, PageQuery query) {
         ArrayList<Object> argList = new ArrayList<>();
         String sql = buildPatchAndArgsWithQuery(entity, query, argList);
         return new SqlAndArgs(sql, argList);
