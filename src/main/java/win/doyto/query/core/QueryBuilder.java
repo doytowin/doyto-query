@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 import javax.persistence.Id;
@@ -56,36 +54,35 @@ public class QueryBuilder {
         return BuildHelper.build(pageQuery, argList, Constant.SELECT, columns, resolveTableName(pageQuery.toIdWrapper()));
     }
 
-    public String buildSelectAndArgs(PageQuery query, List<Object> argList) {
-        return buildSelectColumnsAndArgs(query, argList, "*");
-    }
-
-    public String buildCountAndArgs(PageQuery query, List<Object> argList) {
-        return build(query, argList, COUNT);
+    String buildSelectAndArgs(PageQuery query, List<Object> argList) {
+        return build(query, argList, "*");
     }
 
     public SqlAndArgs buildCountAndArgs(PageQuery query) {
-        ArrayList<Object> argList = new ArrayList<>();
-        return new SqlAndArgs(buildCountAndArgs(query, argList), argList);
-    }
-
-    public String buildSelectColumnsAndArgs(PageQuery query, List<Object> argList, String... columns) {
-        return build(query, argList, columns);
+        return SqlAndArgs.buildSqlWithArgs(argList -> build(query, argList, COUNT));
     }
 
     public SqlAndArgs buildSelectColumnsAndArgs(PageQuery query, String... columns) {
-        ArrayList<Object> argList = new ArrayList<>();
-        return new SqlAndArgs(buildSelectColumnsAndArgs(query, argList, columns), argList);
+        return SqlAndArgs.buildSqlWithArgs(argList -> build(query, argList, columns));
     }
 
-    protected SqlAndArgs buildSelectById(IdWrapper<?> idWrapper, String... columns) {
+    public SqlAndArgs buildSelectById(IdWrapper<?> idWrapper, String... columns) {
+        return SqlAndArgs.buildSqlWithArgs(argList -> {
+            argList.add(idWrapper.getId());
+            String columnStr = buildColumnStr(idWrapper, columns);
+            String table = resolveTableName(idWrapper);
+            return SELECT + columnStr + FROM + table + whereId;
+        });
+    }
+
+    private String buildColumnStr(IdWrapper<?> idWrapper, String[] columns) {
+        String columnStr;
         if (columns.length == 0) {
-            columns = new String[]{"*"};
+            columnStr = "*";
+        } else {
+            columnStr = replaceHolderInString(idWrapper, StringUtils.join(columns, SEPARATOR));
         }
-        String columnStr = replaceHolderInString(idWrapper, StringUtils.join(columns, SEPARATOR));
-        String selectFrom = SELECT + columnStr + FROM;
-        String sql = selectFrom + resolveTableName(idWrapper) + whereId;
-        return new SqlAndArgs(sql, Collections.singletonList(idWrapper.getId()));
+        return columnStr;
     }
 
     protected SqlAndArgs buildSelectIdAndArgs(PageQuery query) {

@@ -3,7 +3,9 @@ package win.doyto.query.core;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static win.doyto.query.core.CommonUtil.wrapWithParenthesis;
@@ -35,5 +37,11 @@ public class SqlAndArgs {
                     .collect(Collectors.joining(SEPARATOR));
             log.debug("Param: {}", params);
         }
+    }
+
+    static SqlAndArgs buildSqlWithArgs(Function<List<Object>, String> sqlBuilder) {
+        List<Object> argList = new ArrayList<>();
+        String sql = sqlBuilder.apply(argList);
+        return new SqlAndArgs(sql, argList);
     }
 }

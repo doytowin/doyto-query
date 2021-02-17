@@ -23,7 +23,7 @@ class CrudBuilderTest {
 
     private DynamicEntity dynamicEntity;
     private List<Object> argList;
-    private CrudBuilder<TestEntity> userEntityCrudBuilder = new CrudBuilder<>(TestEntity.class);
+    private CrudBuilder<TestEntity> testEntityCrudBuilder = new CrudBuilder<>(TestEntity.class);
     private CrudBuilder<DynamicEntity> dynamicEntityCrudBuilder = new CrudBuilder<>(DynamicEntity.class);
 
     @BeforeEach
@@ -41,31 +41,33 @@ class CrudBuilderTest {
 
     @Test
     void create() {
-        assertEquals("INSERT INTO user (username, password, mobile, email, nickname, userLevel, memo, valid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                     userEntityCrudBuilder.buildCreateAndArgs(new TestEntity(), argList));
+        SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildCreateAndArgs(new TestEntity());
+        String expected = "INSERT INTO user (username, password, mobile, email, nickname, userLevel, memo, valid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        assertEquals(expected, sqlAndArgs.getSql());
     }
 
     @Test
     void update() {
-        assertEquals("UPDATE user SET username = ?, password = ?, mobile = ?, email = ?, nickname = ?, userLevel = ?, memo = ?, valid = ? WHERE id = ?",
-                     userEntityCrudBuilder.buildUpdateAndArgs(new TestEntity(), argList));
+        SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildUpdateAndArgs(new TestEntity());
+        String expected = "UPDATE user SET username = ?, password = ?, mobile = ?, email = ?, nickname = ?, userLevel = ?, memo = ?, valid = ? WHERE id = ?";
+        assertEquals(expected, sqlAndArgs.getSql());
     }
 
     @Test
     void createDynamicEntity() {
 
-        assertEquals("INSERT INTO t_dynamic_f0rb_i18n (locale_zh, user_score, memo) VALUES (?, ?, ?)",
-                     dynamicEntityCrudBuilder.buildCreateAndArgs(dynamicEntity, argList));
-        assertThat(argList).containsExactly("中文", 100, null);
+        SqlAndArgs sqlAndArgs = dynamicEntityCrudBuilder.buildCreateAndArgs(dynamicEntity);
+        assertEquals("INSERT INTO t_dynamic_f0rb_i18n (locale_zh, user_score, memo) VALUES (?, ?, ?)", sqlAndArgs.getSql());
+        assertThat(sqlAndArgs.getArgs()).containsExactly("中文", 100, null);
     }
 
     @Test
     void updateDynamicEntity() {
         dynamicEntity.setId(1);
 
-        assertEquals("UPDATE t_dynamic_f0rb_i18n SET locale_zh = ?, user_score = ?, memo = ? WHERE id = ?",
-                     dynamicEntityCrudBuilder.buildUpdateAndArgs(dynamicEntity, argList));
-        assertThat(argList).containsExactly("中文", 100, null, 1);
+        SqlAndArgs sqlAndArgs = dynamicEntityCrudBuilder.buildUpdateAndArgs(dynamicEntity);
+        assertEquals("UPDATE t_dynamic_f0rb_i18n SET locale_zh = ?, user_score = ?, memo = ? WHERE id = ?", sqlAndArgs.getSql());
+        assertThat(sqlAndArgs.getArgs()).containsExactly("中文", 100, null, 1);
     }
 
 
@@ -76,9 +78,10 @@ class CrudBuilderTest {
         dynamicEntity.setScore(null);
         dynamicEntity.setMemo("memo");
 
-        assertEquals("UPDATE t_dynamic_f0rb_i18n SET memo = ? WHERE id = ?",
-                     dynamicEntityCrudBuilder.buildPatchAndArgsWithId(dynamicEntity, argList));
-        assertThat(argList).containsExactly("memo", 1);
+        SqlAndArgs sqlAndArgs = dynamicEntityCrudBuilder.buildPatchAndArgsWithId(dynamicEntity);
+
+        assertEquals("UPDATE t_dynamic_f0rb_i18n SET memo = ? WHERE id = ?", sqlAndArgs.getSql());
+        assertThat(sqlAndArgs.getArgs()).containsExactly("memo", 1);
     }
 
     @Test
@@ -114,9 +117,11 @@ class CrudBuilderTest {
             testEntity.setId(1);
             testEntity.setUserLevel(TestEnum.VIP);
             testEntity.setValid(true);
-            assertEquals("UPDATE user SET user_level = ?, valid = ? WHERE id = ?",
-                         userEntityCrudBuilder.buildPatchAndArgsWithId(testEntity, argList));
-            assertThat(argList).containsExactly(0, true, 1);
+
+            SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildPatchAndArgsWithId(testEntity);
+
+            assertEquals("UPDATE user SET user_level = ?, valid = ? WHERE id = ?", sqlAndArgs.getSql());
+            assertThat(sqlAndArgs.getArgs()).containsExactly(0, true, 1);
         } finally {
             GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
         }
@@ -129,14 +134,15 @@ class CrudBuilderTest {
 
         TestQuery testQuery = TestQuery.builder().username("test").build();
 
-        assertEquals("UPDATE user SET nickname = ? WHERE username = ?",
-                     userEntityCrudBuilder.buildPatchAndArgsWithQuery(testEntity, testQuery, argList));
-        assertThat(argList).containsExactly("测试", "test");
+        SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildPatchAndArgsWithQuery(testEntity, testQuery);
+
+        assertEquals("UPDATE user SET nickname = ? WHERE username = ?", sqlAndArgs.getSql());
+        assertThat(sqlAndArgs.getArgs()).containsExactly("测试", "test");
     }
 
     @Test
     void createMulti() {
-        SqlAndArgs sqlAndArgs = userEntityCrudBuilder.buildCreateAndArgs(Arrays.asList(new TestEntity(), new TestEntity(), new TestEntity()));
+        SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildCreateAndArgs(Arrays.asList(new TestEntity(), new TestEntity(), new TestEntity()));
         assertEquals(
             "INSERT INTO user (username, password, mobile, email, nickname, userLevel, memo, valid) VALUES " +
                 "(?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?)", sqlAndArgs.sql);
@@ -164,10 +170,11 @@ class CrudBuilderTest {
     public void buildDeleteAndArgs() {
         TestQuery testQuery = TestQuery.builder().username("test").build();
         testQuery.setPageNumber(3).setPageSize(10);
-        assertEquals("DELETE FROM user WHERE username = ? LIMIT 10",
-                     userEntityCrudBuilder.buildDeleteAndArgs(testQuery, argList));
-        assertEquals(1, argList.size());
-        assertEquals("test", argList.get(0));
+
+        SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildDeleteAndArgs(testQuery);
+
+        assertEquals("DELETE FROM user WHERE username = ? LIMIT 10", sqlAndArgs.getSql());
+        assertThat(sqlAndArgs.getArgs()).containsExactly("test");
     }
 
     @Test
@@ -181,23 +188,32 @@ class CrudBuilderTest {
 
     @Test
     void createMultiOnDuplicate() {
-        SqlAndArgs sqlAndArgs = userEntityCrudBuilder.buildCreateAndArgs(
-            Arrays.asList(new TestEntity(), new TestEntity(), new TestEntity()),
-            "mobile", "email"
+        SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildCreateAndArgs(
+                Arrays.asList(new TestEntity(), new TestEntity(), new TestEntity()),
+                "mobile", "email"
         );
         assertEquals(
-            "INSERT INTO user (username, password, mobile, email, nickname, userLevel, memo, valid) VALUES " +
-                "(?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?)" +
-                " ON DUPLICATE KEY UPDATE " +
-                "mobile = VALUES (mobile), " +
-                "email = VALUES (email)",
-            sqlAndArgs.sql);
+                "INSERT INTO user (username, password, mobile, email, nickname, userLevel, memo, valid) VALUES " +
+                        "(?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?)" +
+                        " ON DUPLICATE KEY UPDATE " +
+                        "mobile = VALUES (mobile), " +
+                        "email = VALUES (email)",
+                sqlAndArgs.sql);
     }
 
     @Test
     void buildPatchAndArgsForDynamicColumn() {
-        assertEquals("UPDATE t_dynamic_f0rb_i18n SET locale_zh = ?, user_score = ?",
-                     dynamicEntityCrudBuilder.buildPatchAndArgs(dynamicEntity, argList));
-        assertThat(argList).containsExactly("中文", 100);
+        dynamicEntity.setId(1);
+        SqlAndArgs sqlAndArgs = dynamicEntityCrudBuilder.buildPatchAndArgsWithId(dynamicEntity);
+        assertEquals("UPDATE t_dynamic_f0rb_i18n SET locale_zh = ?, user_score = ? WHERE id = ?", sqlAndArgs.getSql());
+        assertThat(sqlAndArgs.getArgs()).containsExactly("中文", 100, 1);
+    }
+
+    @Test
+    void buildDeleteAndArgsForDynamicTable() {
+        DynamicQuery dynamicQuery = DynamicQuery.builder().user("f0rb").project("i18n").scoreLt(100).pageSize(10).build();
+        SqlAndArgs sqlAndArgs = dynamicEntityCrudBuilder.buildDeleteAndArgs(dynamicQuery);
+        assertEquals("DELETE FROM t_dynamic_f0rb_i18n WHERE score < ? LIMIT 10", sqlAndArgs.getSql());
+        assertThat(sqlAndArgs.getArgs()).containsExactly(100);
     }
 }

@@ -12,7 +12,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -116,21 +115,18 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
 
     @Override
     public int delete(IdWrapper<I> w) {
-        String sql = crudBuilder.buildDeleteById(w);
-        SqlAndArgs.logSqlInfo(sql, Arrays.asList(w.getId()));
-        return jdbcOperations.update(sql, w.getId());
+        return doUpdate(crudBuilder.buildDeleteById(w));
     }
 
     @Override
     public final void create(E e) {
-        List<Object> args = new ArrayList<>();
-        String sql = crudBuilder.buildCreateAndArgs(e, args);
-        SqlAndArgs.logSqlInfo(sql, args);
+        SqlAndArgs sqlAndArgs = crudBuilder.buildCreateAndArgs(e);
 
         if (isGeneratedId) {
+            Object[] args = sqlAndArgs.getArgs();
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcOperations.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement ps = connection.prepareStatement(sqlAndArgs.getSql(), Statement.RETURN_GENERATED_KEYS);
                 int i = 1;
                 for (Object arg : args) {
                     ps.setObject(i++, arg);
@@ -139,7 +135,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
             }, keyHolder);
             setIdFunc.accept(e, keyHolder.getKey());
         } else {
-            jdbcOperations.update(sql, args.toArray());
+            doUpdate(sqlAndArgs);
         }
     }
 

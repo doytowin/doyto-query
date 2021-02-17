@@ -81,51 +81,50 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
         }
     }
 
-    public String buildCreateAndArgs(E entity, List<Object> argList) {
-        String table = resolveTableName(entity);
-        readValueToArgList(fields, entity, argList);
-        return buildInsertSql(table, replaceHolderInString(entity, insertColumns), wildInsertValue);
+    public SqlAndArgs buildCreateAndArgs(E testEntity) {
+        return SqlAndArgs.buildSqlWithArgs(argList -> {
+            String table = resolveTableName(testEntity);
+            readValueToArgList(fields, testEntity, argList);
+            return buildInsertSql(table, replaceHolderInString(testEntity, insertColumns), wildInsertValue);
+        });
     }
 
     public SqlAndArgs buildCreateAndArgs(Iterable<E> entities, String... columns) {
+        return SqlAndArgs.buildSqlWithArgs(argList -> {
+            Iterator<E> iterator = entities.iterator();
+            E next = iterator.next();
 
-        ArrayList<Object> argList = new ArrayList<>();
-        Iterator<E> iterator = entities.iterator();
-        E next = iterator.next();
-
-        StringBuilder insertSql = new StringBuilder(buildInsertSql(resolveTableName(next.toIdWrapper()), insertColumns, wildInsertValue));
-        readValueToArgList(fields, next, argList);
-        while (iterator.hasNext()) {
-            E entity = iterator.next();
-            readValueToArgList(fields, entity, argList);
-            insertSql.append(SEPARATOR).append(wildInsertValue);
-        }
-        if (columns.length > 0) {
-            insertSql.append(" ON DUPLICATE KEY UPDATE ");
-            StringJoiner stringJoiner = new StringJoiner(SEPARATOR, columns.length);
-            for (String column : columns) {
-                stringJoiner.append(column + EQUAL + "VALUES (" + column + ")");
+            String insertSql = buildInsertSql(resolveTableName(next), insertColumns, wildInsertValue);
+            StringBuilder insertSqlBuilder = new StringBuilder(insertSql);
+            readValueToArgList(fields, next, argList);
+            while (iterator.hasNext()) {
+                E entity = iterator.next();
+                readValueToArgList(fields, entity, argList);
+                insertSqlBuilder.append(SEPARATOR).append(wildInsertValue);
             }
-            insertSql.append(stringJoiner.toString());
-        }
+            if (columns.length > 0) {
+                insertSqlBuilder.append(" ON DUPLICATE KEY UPDATE ");
+                StringJoiner stringJoiner = new StringJoiner(SEPARATOR, columns.length);
+                for (String column : columns) {
+                    stringJoiner.append(column + EQUAL + "VALUES (" + column + ")");
+                }
+                insertSqlBuilder.append(stringJoiner.toString());
+            }
 
-        String sql = replaceHolderInString(next, insertSql.toString());
-        return new SqlAndArgs(sql, argList);
-    }
-
-    public String buildUpdateAndArgs(E entity, List<Object> argList) {
-        String table = resolveTableName(entity);
-        readValueToArgList(fields, entity, argList);
-        argList.add(readField(idField, entity));
-        return buildUpdateSql(table, replaceHolderInString(entity, wildSetClause)) + whereId;
+            return replaceHolderInString(next, insertSqlBuilder.toString());
+        });
     }
 
     public SqlAndArgs buildUpdateAndArgs(E entity) {
-        ArrayList<Object> argList = new ArrayList<>();
-        return new SqlAndArgs(buildUpdateAndArgs(entity, argList), argList);
+        return SqlAndArgs.buildSqlWithArgs(argList -> {
+            String table = resolveTableName(entity);
+            readValueToArgList(fields, entity, argList);
+            argList.add(readField(idField, entity));
+            return buildUpdateSql(table, replaceHolderInString(entity, wildSetClause)) + whereId;
+        });
     }
 
-    public String buildPatchAndArgs(E entity, List<Object> argList) {
+    private String buildPatchAndArgs(E entity, List<Object> argList) {
         String table = resolveTableName(entity);
         StringJoiner setClauses = new StringJoiner(SEPARATOR, fieldsSize);
         readValueToArgList(fields, entity, argList, setClauses);
@@ -133,39 +132,31 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
         return buildUpdateSql(table, setClausesText);
     }
 
-    public String buildPatchAndArgsWithId(E entity, List<Object> argList) {
-        String sql = buildPatchAndArgs(entity, argList) + whereId;
-        argList.add(readField(idField, entity));
-        return sql;
-    }
-
     public SqlAndArgs buildPatchAndArgsWithId(E entity) {
-        ArrayList<Object> argList = new ArrayList<>();
-        return new SqlAndArgs(buildPatchAndArgsWithId(entity, argList), argList);
-    }
-
-    public String buildPatchAndArgsWithQuery(E entity, PageQuery query, List<Object> argList) {
-        String sql = buildPatchAndArgs(entity, argList);
-        return BuildHelper.buildWhere(sql, query, argList);
+        return SqlAndArgs.buildSqlWithArgs(argList -> {
+            String sql = buildPatchAndArgs(entity, argList) + whereId;
+            argList.add(readField(idField, entity));
+            return sql;
+        });
     }
 
     public SqlAndArgs buildPatchAndArgsWithQuery(E entity, PageQuery query) {
-        ArrayList<Object> argList = new ArrayList<>();
-        String sql = buildPatchAndArgsWithQuery(entity, query, argList);
-        return new SqlAndArgs(sql, argList);
-    }
-
-    public String buildDeleteAndArgs(PageQuery query, List<Object> argList) {
-        return BuildHelper.build(query, argList, "DELETE", new String[0], tableName);
+        return SqlAndArgs.buildSqlWithArgs(argList -> {
+            String sql = buildPatchAndArgs(entity, argList);
+            return BuildHelper.buildWhere(sql, query, argList);
+        });
     }
 
     public SqlAndArgs buildDeleteAndArgs(PageQuery query) {
-        ArrayList<Object> argList = new ArrayList<>();
-        return new SqlAndArgs(buildDeleteAndArgs(query, argList), argList);
+        return SqlAndArgs.buildSqlWithArgs(argList -> BuildHelper.build(query, argList, "DELETE", new String[0], tableName));
     }
 
-    protected String buildDeleteById(IdWrapper<?> w) {
-        return "DELETE FROM " + resolveTableName(w) + whereId;
+    public SqlAndArgs buildDeleteById(IdWrapper<?> w) {
+        return SqlAndArgs.buildSqlWithArgs(argList -> {
+            argList.add(w.getId());
+            String table = resolveTableName(w);
+            return "DELETE FROM " + table + whereId;
+        });
     }
 
     protected String resolveTableName(E e) {

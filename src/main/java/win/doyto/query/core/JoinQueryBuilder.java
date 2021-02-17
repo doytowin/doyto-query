@@ -4,7 +4,6 @@ import org.apache.commons.lang3.SerializationUtils;
 import win.doyto.query.annotation.Joins;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -27,15 +26,24 @@ public class JoinQueryBuilder {
     protected final String tableName;
     protected String[] columnsForSelect;
     private Class<?> entityClass;
+    private String joinSql;
 
     public JoinQueryBuilder(Class<?> entityClass) {
         this.entityClass = entityClass;
         tableName = entityClass.getAnnotation(Table.class).name();
         columnsForSelect = Arrays
-            .stream(entityClass.getDeclaredFields())
-            .filter(CommonUtil::fieldFilter)
-            .map(CommonUtil::selectAs)
-            .toArray(String[]::new);
+                .stream(entityClass.getDeclaredFields())
+                .filter(CommonUtil::fieldFilter)
+                .map(CommonUtil::selectAs)
+                .toArray(String[]::new);
+        joinSql = buildJoinSql();
+    }
+
+    private String buildJoinSql() {
+        Joins.Join[] joins = entityClass.getAnnotation(Joins.class).value();
+        StringJoiner joiner = new StringJoiner(SPACE, joins.length);
+        Arrays.stream(joins).map(Joins.Join::value).forEachOrdered(joiner::append);
+        return joiner.toString();
     }
 
     private static String resolveJoin(Object query, List<Object> argList, String join) {
@@ -81,19 +89,14 @@ public class JoinQueryBuilder {
     }
 
     private String buildJoin(PageQuery pageQuery, List<Object> argList) {
-        Joins.Join[] joins = entityClass.getAnnotation(Joins.class).value();
-        StringJoiner joiner = new StringJoiner(SPACE, joins.length);
-        Arrays.stream(joins).map(Joins.Join::value).forEachOrdered(joiner::append);
-        return resolveJoin(pageQuery, argList, joiner.toString());
+        return resolveJoin(pageQuery, argList, joinSql);
     }
 
     public SqlAndArgs buildJoinSelectAndArgs(PageQuery query) {
-        ArrayList<Object> argList = new ArrayList<>();
-        return new SqlAndArgs(build(query, argList, columnsForSelect), argList);
+        return SqlAndArgs.buildSqlWithArgs(argList -> build(query, argList, columnsForSelect));
     }
 
     public SqlAndArgs buildJoinCountAndArgs(PageQuery query) {
-        ArrayList<Object> argList = new ArrayList<>();
-        return new SqlAndArgs(build(query, argList, COUNT), argList);
+        return SqlAndArgs.buildSqlWithArgs((argList -> build(query, argList, COUNT)));
     }
 }

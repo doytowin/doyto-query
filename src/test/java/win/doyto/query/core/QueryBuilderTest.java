@@ -86,18 +86,17 @@ public class QueryBuilderTest {
         assertEquals("SELECT * FROM user WHERE username = ? ORDER BY createTime asc LIMIT 10 OFFSET 20",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
 
-        List<Object> countArgList = new ArrayList<>();
         assertEquals("SELECT count(*) FROM user WHERE username = ?",
-                     testQueryBuilder.buildCountAndArgs(testQuery, countArgList));
+                     testQueryBuilder.buildCountAndArgs(testQuery).getSql());
     }
 
     @Test
     public void buildCountWithWhere() {
         TestQuery testQuery = TestQuery.builder().username("test").build();
         testQuery.setPageNumber(0);
-        assertEquals("SELECT count(*) FROM user WHERE username = ?",
-                     testQueryBuilder.buildCountAndArgs(testQuery, argList));
-        assertThat(argList).containsExactly("test");
+        SqlAndArgs sqlAndArgs = testQueryBuilder.buildCountAndArgs(testQuery);
+        assertEquals("SELECT count(*) FROM user WHERE username = ?", sqlAndArgs.getSql());
+        assertThat(sqlAndArgs.getArgs()).containsExactly("test");
     }
 
     @Test
@@ -268,17 +267,20 @@ public class QueryBuilderTest {
     @Test
     public void buildSelectIdWithArgs() {
         TestQuery testQuery = TestQuery.builder().username("test").build();
-        assertEquals("SELECT id FROM user WHERE username = ?",
-                     testQueryBuilder.buildSelectColumnsAndArgs(testQuery, argList, "id"));
-        assertEquals(1, argList.size());
-        assertThat(argList).containsExactly("test");
+
+        SqlAndArgs sqlAndArgs = testQueryBuilder.buildSelectColumnsAndArgs(testQuery, "id");
+
+        assertEquals("SELECT id FROM user WHERE username = ?", sqlAndArgs.getSql());
+        assertThat(sqlAndArgs.getArgs()).containsExactly("test");
     }
 
     @Test
     public void buildSelectColumnsAndArgs() {
         TestQuery testQuery = TestQuery.builder().build();
-        assertEquals("SELECT username, password FROM user",
-                     testQueryBuilder.buildSelectColumnsAndArgs(testQuery, argList, "username", "password"));
+
+        SqlAndArgs sqlAndArgs = testQueryBuilder.buildSelectColumnsAndArgs(testQuery, "username", "password");
+
+        assertEquals("SELECT username, password FROM user", sqlAndArgs.getSql());
     }
 
     @Test
@@ -395,16 +397,19 @@ public class QueryBuilderTest {
     void buildSelectColumnsAndArgsForDynamicColumn() {
         DynamicQuery dynamicQuery = DynamicQuery.builder().user("f0rb").project("i18n").locale("zh").scoreLt(100).build();
 
-        assertEquals("SELECT locale_zh FROM t_dynamic_f0rb_i18n WHERE score < ?",
-                     dynamicQueryBuilder.buildSelectColumnsAndArgs(dynamicQuery, argList, "locale_${locale}"));
-        assertThat(argList).containsExactly(100);
+        SqlAndArgs sqlAndArgs = dynamicQueryBuilder.buildSelectColumnsAndArgs(dynamicQuery, "locale_${locale}");
+
+        assertEquals("SELECT locale_zh FROM t_dynamic_f0rb_i18n WHERE score < ?", sqlAndArgs.getSql());
+        assertThat(sqlAndArgs.getArgs()).containsExactly(100);
     }
 
     @Test
     void buildSelectByIdForDynamicColumn() {
+        DynamicIdWrapper idWrapper = new DynamicIdWrapper(2, "f0rb", "i18n", "zh");
 
-        DynamicIdWrapper idWrapper = new DynamicIdWrapper(null, "f0rb", "i18n", "zh");
-        assertEquals("SELECT locale_zh FROM t_dynamic_f0rb_i18n WHERE id = ?",
-                     dynamicQueryBuilder.buildSelectById(idWrapper, "locale_${locale}").sql);
+        SqlAndArgs sqlAndArgs = dynamicQueryBuilder.buildSelectById(idWrapper, "locale_${locale}");
+
+        assertEquals("SELECT locale_zh FROM t_dynamic_f0rb_i18n WHERE id = ?", sqlAndArgs.getSql());
+        assertThat(sqlAndArgs.getArgs()).containsExactly(2);
     }
 }
