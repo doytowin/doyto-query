@@ -23,7 +23,6 @@ import static win.doyto.query.core.Constant.*;
  */
 @Slf4j
 public class QueryBuilder {
-    static final Pattern PTN_REPLACE = Pattern.compile("\\w*");
     private static final Pattern PTN_SORT = Pattern.compile(",(asc|desc)", Pattern.CASE_INSENSITIVE);
 
     private static final Map<Class<?>, Field[]> classFieldsMap = new ConcurrentHashMap<>();
@@ -101,16 +100,11 @@ public class QueryBuilder {
         Field[] fields = classFieldsMap.get(query.getClass());
         StringJoiner whereList = new StringJoiner(" AND ", fields.length);
         for (Field field : fields) {
-            String fieldName = field.getName();
             Object value = readFieldGetter(field, query);
             if (isValidValue(value, field)) {
-                if (sql.contains("${" + fieldName + "}") && value instanceof String && PTN_REPLACE.matcher((String) value).matches()) {
-                    sql = sql.replaceAll("\\$\\{" + fieldName + "}", String.valueOf(value));
-                } else {
-                    String and = FieldProcessor.execute(argList, field, value);
-                    if (and != null) {
-                        whereList.append(and);
-                    }
+                String and = FieldProcessor.execute(argList, field, value);
+                if (and != null) {
+                    whereList.append(and);
                 }
             }
         }

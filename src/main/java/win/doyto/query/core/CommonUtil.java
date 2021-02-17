@@ -27,6 +27,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 class CommonUtil {
 
+    private static final Pattern PTN_REPLACE = Pattern.compile("\\w*");
     private static final Pattern PTN_$EX = Pattern.compile("\\$\\{(\\w+)}");
     private static final Pattern PTN_CAPITAL_CHAR = Pattern.compile("([A-Z])");
     private static final Pattern PTN_SPLIT_OR = Pattern.compile("Or(?=[A-Z])");
@@ -46,7 +47,7 @@ class CommonUtil {
             String fieldName = matcher.group(1);
             Object value = readFieldGetter(target, fieldName);
             String replacement = String.valueOf(value);
-            if (QueryBuilder.PTN_REPLACE.matcher(replacement).matches()) {
+            if (PTN_REPLACE.matcher(replacement).matches()) {
                 matcher.appendReplacement(sb, replacement);
             }
         } while (matcher.find());
