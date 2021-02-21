@@ -2,7 +2,6 @@ package win.doyto.query.core;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import win.doyto.query.annotation.NestedQueries;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.test.PermissionQuery;
 
@@ -32,12 +31,12 @@ class FieldProcessorTest {
     void testResolveNestedQueries() throws NoSuchFieldException {
         PermissionQuery permissionQuery = PermissionQuery.builder().userId(2).build();
         Field field = permissionQuery.getClass().getDeclaredField("userId");
-        String fieldName = field.getName();
-        String sql = FieldProcessor.resolvedNestedQueries(
-            argList, 2, field.getAnnotation(NestedQueries.class),
-            new FieldProcessor.DefaultProcessor(fieldName));
 
-        assertEquals("id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN (SELECT roleId FROM t_user_and_role WHERE userId = ?))", sql);
+        FieldProcessor.init(field);
+        String sql = FieldProcessor.execute(field, argList, 2);
+
+        String expected = "id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN (SELECT roleId FROM t_user_and_role WHERE userId = ?))";
+        assertEquals(expected, sql);
         assertThat(argList).containsExactly(2);
     }
 

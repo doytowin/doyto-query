@@ -51,7 +51,7 @@ public class BuildHelper {
         for (Field field : fields) {
             Object value = readFieldGetter(field, query);
             if (isValidValue(value, field)) {
-                String and = FieldProcessor.execute(argList, field, value);
+                String and = FieldProcessor.execute(field, argList, value);
                 if (and != null) {
                     whereList.append(and);
                 }
