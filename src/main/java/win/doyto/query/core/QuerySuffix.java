@@ -2,16 +2,20 @@ package win.doyto.query.core;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import win.doyto.query.annotation.Enumerated;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javax.persistence.EnumType;
 
 import static win.doyto.query.core.CommonUtil.containsOr;
-import static win.doyto.query.core.Constant.SEPARATOR;
+import static win.doyto.query.core.CommonUtil.convertColumn;
+import static win.doyto.query.core.Constant.*;
 
 /**
  * QuerySuffix
@@ -37,13 +41,11 @@ enum QuerySuffix {
     NONE("=");
 
     private static final Pattern SUFFIX_PTN;
-    private static final Map<QuerySuffix, Function<ColumnMeta, String>> sqlFuncMap = new EnumMap<>(QuerySuffix.class);
 
     static {
         List<String> suffixList = Arrays.stream(values()).filter(querySuffix -> querySuffix != NONE).map(Enum::name).collect(Collectors.toList());
         String suffixPtn = StringUtils.join(suffixList, "|");
         SUFFIX_PTN = Pattern.compile("(" + suffixPtn + ")$");
-        Arrays.stream(values()).forEach(querySuffix -> sqlFuncMap.put(querySuffix, querySuffix::buildAndSql));
     }
 
     private final String op;
@@ -88,11 +90,41 @@ enum QuerySuffix {
         } else if (querySuffix == Start) {
             value = CommonUtil.escapeStart(String.valueOf(value));
         }
-        return sqlFuncMap.get(querySuffix).apply(new ColumnMeta(fieldName, value, argList));
+        return querySuffix.buildAndClauseWithArgs(argList, value, fieldName, querySuffix.getEx(value));
     }
 
-    private String buildAndSql(ColumnMeta columnMeta) {
-        return columnMeta.defaultSql(this, this.getEx(columnMeta.value));
+    private String buildAndClauseWithArgs(List<Object> argList, Object value, String fieldName, String ex) {
+        if (getOp().contains("LIKE") && value instanceof String && StringUtils.isBlank((String) value)) {
+            return null;
+        }
+        if (!ex.isEmpty()) {
+            ex = SPACE + ex;
+        }
+        String columnName = resolveColumnName(fieldName);
+        appendArgs(ex, value, argList);
+        return convertColumn(columnName) + SPACE + getOp() + ex;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void appendArgs(String ex, Object value, List<Object> argList) {
+        if (value instanceof Collection) {
+            Collection<Object> collection = (Collection<Object>) value;
+            if (collection.isEmpty()) {
+                return;
+            }
+            Object next = collection.iterator().next();
+            if (next instanceof Enum<?>) {
+                Enumerated enumerated = next.getClass().getAnnotation(Enumerated.class);
+                boolean isString = enumerated != null && enumerated.value() == EnumType.STRING;
+                collection.stream()
+                          .map(element -> isString ? element.toString() : ((Enum<?>) element).ordinal())
+                          .forEach(argList::add);
+            } else {
+                argList.addAll(collection);
+            }
+        } else if (ex.contains(REPLACE_HOLDER)) {
+            argList.add(value);
+        }
     }
 
     String resolveColumnName(String fieldName) {
