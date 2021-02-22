@@ -16,10 +16,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class QuerySuffixTest {
 
     @Test
-    void getEx() {
-        assertEquals("(null)", QuerySuffix.Ex.COLLECTION.getEx(Arrays.asList()));
-        assertEquals("(?)", QuerySuffix.Ex.COLLECTION.getEx(Arrays.asList(1)));
-        assertEquals("(?, ?)", QuerySuffix.Ex.COLLECTION.getEx(Arrays.asList(1, 2)));
+    void getPlaceHolderEx() {
+        assertEquals("(null)", QuerySuffix.ValueProcessor.COLLECTION.getPlaceHolderEx(Arrays.asList()));
+        assertEquals("(?)", QuerySuffix.ValueProcessor.COLLECTION.getPlaceHolderEx(Arrays.asList(1)));
+        assertEquals("(?, ?)", QuerySuffix.ValueProcessor.COLLECTION.getPlaceHolderEx(Arrays.asList(1, 2)));
     }
 
     @Test

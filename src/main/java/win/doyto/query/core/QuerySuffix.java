@@ -26,12 +26,42 @@ import static win.doyto.query.core.Constant.*;
 enum QuerySuffix {
     Not("!="),
     NotLike("NOT LIKE"),
-    Start("LIKE"),
-    Like("LIKE"),
-    NotIn("NOT IN", Ex.COLLECTION),
-    In("IN", Ex.COLLECTION),
-    NotNull("IS NOT NULL", Ex.EMPTY),
-    Null("IS NULL", Ex.EMPTY),
+    Start("LIKE", new ValueProcessor() {
+        @Override
+        public String getPlaceHolderEx(Object value) {
+            return Constant.REPLACE_HOLDER;
+        }
+
+        @Override
+        public Object escapeValue(Object value) {
+            return CommonUtil.escapeStart(String.valueOf(value));
+        }
+
+        @Override
+        public boolean shouldIgnore(Object value) {
+            return value instanceof String && StringUtils.isBlank((String) value);
+        }
+    }),
+    Like("LIKE", new ValueProcessor() {
+        @Override
+        public String getPlaceHolderEx(Object value) {
+            return Constant.REPLACE_HOLDER;
+        }
+
+        @Override
+        public Object escapeValue(Object value) {
+            return CommonUtil.escapeLike(String.valueOf(value));
+        }
+
+        @Override
+        public boolean shouldIgnore(Object value) {
+            return value instanceof String && StringUtils.isBlank((String) value);
+        }
+    }),
+    NotIn("NOT IN", ValueProcessor.COLLECTION),
+    In("IN", ValueProcessor.COLLECTION),
+    NotNull("IS NOT NULL", ValueProcessor.EMPTY),
+    Null("IS NULL", ValueProcessor.EMPTY),
     Gt(">"),
     Ge(">="),
     Lt("<"),
@@ -48,15 +78,15 @@ enum QuerySuffix {
     }
 
     private final String op;
-    private final Ex ex;
+    private final ValueProcessor valueProcessor;
 
     QuerySuffix(String op) {
-        this(op, Ex.REPLACE_HOLDER);
+        this(op, ValueProcessor.REPLACE_HOLDER);
     }
 
-    QuerySuffix(String op, Ex ex) {
+    QuerySuffix(String op, ValueProcessor valueProcessor) {
         this.op = op;
-        this.ex = ex;
+        this.valueProcessor = valueProcessor;
     }
 
     static QuerySuffix resolve(String fieldName) {
@@ -84,11 +114,7 @@ enum QuerySuffix {
             return processOrStatement(argList, value, fieldName);
         }
         QuerySuffix querySuffix = resolve(fieldName);
-        if (querySuffix == Like) {
-            value = CommonUtil.escapeLike(String.valueOf(value));
-        } else if (querySuffix == Start) {
-            value = CommonUtil.escapeStart(String.valueOf(value));
-        }
+        value = querySuffix.valueProcessor.escapeValue(value);
         String columnName = querySuffix.resolveColumnName(fieldName);
         columnName = CommonUtil.convertColumn(columnName);
         return querySuffix.buildAndClauseWithArgs(columnName, argList, value);
@@ -100,16 +126,12 @@ enum QuerySuffix {
     }
 
     private String buildAndClauseWithArgs(String columnName, List<Object> argList, Object value) {
-        if (shouldIgnoreBlankStringForLikeOp(value)) {
+        if (valueProcessor.shouldIgnore(value)) {
             return null;
         }
-        String placeHolderEx = ex.getEx(value);
+        String placeHolderEx = valueProcessor.getPlaceHolderEx(value);
         appendArg(argList, value, placeHolderEx);
         return buildAndClause(columnName, placeHolderEx);
-    }
-
-    private boolean shouldIgnoreBlankStringForLikeOp(Object value) {
-        return getOp().contains("LIKE") && value instanceof String && StringUtils.isBlank((String) value);
     }
 
     private String buildAndClause(String columnName, String placeHolderEx) {
@@ -156,16 +178,27 @@ enum QuerySuffix {
     }
 
     @SuppressWarnings("java:S1214")
-    interface Ex {
-        Ex REPLACE_HOLDER = value -> Constant.REPLACE_HOLDER;
-        Ex EMPTY = value -> Constant.EMPTY;
-        Ex COLLECTION = value -> {
+    interface ValueProcessor {
+        ValueProcessor REPLACE_HOLDER = value -> Constant.REPLACE_HOLDER;
+        ValueProcessor EMPTY = value -> Constant.EMPTY;
+        ValueProcessor COLLECTION = value -> {
             int size = ((Collection<?>) value).size();
             String replaceHolders = IntStream.range(0, size).mapToObj(i -> Constant.REPLACE_HOLDER).collect(Collectors.joining(SEPARATOR));
             return CommonUtil.wrapWithParenthesis(StringUtils.trimToNull(replaceHolders));
         };
 
-        String getEx(Object value);
+        String getPlaceHolderEx(Object value);
+
+        default Object escapeValue(Object value) {
+            return value;
+        }
+
+        /**
+         * For Like operator
+         */
+        default boolean shouldIgnore(Object value) {
+            return false;
+        }
     }
 
 }
