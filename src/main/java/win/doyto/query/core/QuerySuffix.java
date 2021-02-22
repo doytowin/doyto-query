@@ -7,14 +7,13 @@ import win.doyto.query.annotation.Enumerated;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.persistence.EnumType;
 
-import static win.doyto.query.core.CommonUtil.containsOr;
-import static win.doyto.query.core.CommonUtil.convertColumn;
 import static win.doyto.query.core.Constant.*;
 
 /**
@@ -81,7 +80,7 @@ enum QuerySuffix {
     }
 
     static String buildAndSql(List<Object> argList, Object value, String fieldName) {
-        if (containsOr(fieldName)) {
+        if (CommonUtil.containsOr(fieldName)) {
             return processOrStatement(argList, value, fieldName);
         }
         QuerySuffix querySuffix = resolve(fieldName);
@@ -90,41 +89,9 @@ enum QuerySuffix {
         } else if (querySuffix == Start) {
             value = CommonUtil.escapeStart(String.valueOf(value));
         }
-        return querySuffix.buildAndClauseWithArgs(argList, value, fieldName, querySuffix.getEx(value));
-    }
-
-    private String buildAndClauseWithArgs(List<Object> argList, Object value, String fieldName, String ex) {
-        if (getOp().contains("LIKE") && value instanceof String && StringUtils.isBlank((String) value)) {
-            return null;
-        }
-        if (!ex.isEmpty()) {
-            ex = SPACE + ex;
-        }
-        String columnName = resolveColumnName(fieldName);
-        appendArgs(ex, value, argList);
-        return convertColumn(columnName) + SPACE + getOp() + ex;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static void appendArgs(String ex, Object value, List<Object> argList) {
-        if (value instanceof Collection) {
-            Collection<Object> collection = (Collection<Object>) value;
-            if (collection.isEmpty()) {
-                return;
-            }
-            Object next = collection.iterator().next();
-            if (next instanceof Enum<?>) {
-                Enumerated enumerated = next.getClass().getAnnotation(Enumerated.class);
-                boolean isString = enumerated != null && enumerated.value() == EnumType.STRING;
-                collection.stream()
-                          .map(element -> isString ? element.toString() : ((Enum<?>) element).ordinal())
-                          .forEach(argList::add);
-            } else {
-                argList.addAll(collection);
-            }
-        } else if (ex.contains(REPLACE_HOLDER)) {
-            argList.add(value);
-        }
+        String columnName = querySuffix.resolveColumnName(fieldName);
+        columnName = CommonUtil.convertColumn(columnName);
+        return querySuffix.buildAndClauseWithArgs(columnName, argList, value);
     }
 
     String resolveColumnName(String fieldName) {
@@ -132,8 +99,60 @@ enum QuerySuffix {
         return fieldName.endsWith(suffix) ? fieldName.substring(0, fieldName.length() - suffix.length()) : fieldName;
     }
 
-    String getEx(Object value) {
-        return ex.getEx(value);
+    private String buildAndClauseWithArgs(String columnName, List<Object> argList, Object value) {
+        if (shouldIgnoreBlankStringForLikeOp(value)) {
+            return null;
+        }
+        String placeHolderEx = ex.getEx(value);
+        appendArg(argList, value, placeHolderEx);
+        return buildAndClause(columnName, placeHolderEx);
+    }
+
+    private boolean shouldIgnoreBlankStringForLikeOp(Object value) {
+        return getOp().contains("LIKE") && value instanceof String && StringUtils.isBlank((String) value);
+    }
+
+    private String buildAndClause(String columnName, String placeHolderEx) {
+        if (!placeHolderEx.isEmpty()) {
+            placeHolderEx = SPACE + placeHolderEx;
+        }
+        return columnName + SPACE + getOp() + placeHolderEx;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void appendArg(List<Object> argList, Object value, String placeHolderEx) {
+        if (value instanceof Collection) {
+            appendCollectionArg(argList, (Collection<Object>) value);
+        } else if (placeHolderEx.contains(REPLACE_HOLDER)) {
+            appendSingleArg(argList, value);
+        }
+    }
+
+    private static void appendSingleArg(List<Object> argList, Object value) {
+        argList.add(value);
+    }
+
+    private static void appendCollectionArg(List<Object> argList, Collection<Object> collection) {
+        if (collection.isEmpty()) {
+            return;
+        }
+        Object next = collection.iterator().next();
+        if (next instanceof Enum<?>) {
+            appendEnumCollectionArg(argList, collection, next);
+        } else {
+            appendCommonCollectionArg(argList, collection);
+        }
+    }
+
+    private static void appendEnumCollectionArg(List<Object> argList, Collection<Object> collection, Object instance) {
+        Enumerated enumerated = instance.getClass().getAnnotation(Enumerated.class);
+        boolean enumToString = enumerated != null && enumerated.value() == EnumType.STRING;
+        Function<Enum<?>, ?> enumMapper = enumToString ? Enum::toString : Enum::ordinal;
+        collection.stream().map(element -> enumMapper.apply((Enum<?>) element)).forEach(argList::add);
+    }
+
+    private static void appendCommonCollectionArg(List<Object> argList, Collection<Object> collection) {
+        argList.addAll(collection);
     }
 
     @SuppressWarnings("java:S1214")
