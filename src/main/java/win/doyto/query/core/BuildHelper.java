@@ -30,23 +30,23 @@ public class BuildHelper {
         return Constant.SELECT + StringUtils.join(columns, SEPARATOR) + FROM + from;
     }
 
-    public static String buildWhere(String sql, PageQuery query, List<Object> argList) {
+    public static String buildWhere(PageQuery query, List<Object> argList) {
         initFields(query);
         Field[] fields = classFieldsMap.get(query.getClass());
-        StringJoiner whereList = new StringJoiner(" AND ", fields.length);
+        StringJoiner whereJoiner = new StringJoiner(" AND ", fields.length);
         for (Field field : fields) {
             Object value = readFieldGetter(field, query);
             if (isValidValue(value, field)) {
                 String and = FieldProcessor.execute(field, argList, value);
                 if (and != null) {
-                    whereList.append(and);
+                    whereJoiner.append(and);
                 }
             }
         }
-        if (!whereList.isEmpty()) {
-            sql += WHERE + whereList.toString();
+        if (whereJoiner.isEmpty()) {
+            return "";
         }
-        return sql;
+        return WHERE + whereJoiner.toString();
     }
 
     private static void initFields(Object query) {
@@ -59,11 +59,11 @@ public class BuildHelper {
         }
     }
 
-    static String buildOrderBy(String sql, PageQuery pageQuery) {
-        if (pageQuery.getSort() != null) {
-            sql += " ORDER BY " + PTN_SORT.matcher(pageQuery.getSort()).replaceAll(" $1").replace(";", SEPARATOR);
+    static String buildOrderBy(PageQuery pageQuery) {
+        if (pageQuery.getSort() == null) {
+            return "";
         }
-        return sql;
+        return " ORDER BY " + PTN_SORT.matcher(pageQuery.getSort()).replaceAll(" $1").replace(";", SEPARATOR);
     }
 
     static String buildPaging(String sql, PageQuery pageQuery) {

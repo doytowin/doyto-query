@@ -52,14 +52,13 @@ public class QueryBuilder {
 
     @SuppressWarnings("java:S4973")
     private String build(PageQuery pageQuery, List<Object> argList, String... columns) {
-        String sql;
-        sql = BuildHelper.buildStart(columns, resolveTableName(pageQuery.toIdWrapper()));
+        String sql = BuildHelper.buildStart(columns, resolveTableName(pageQuery.toIdWrapper()));
         sql = replaceHolderInString(pageQuery, sql);
-        sql = BuildHelper.buildWhere(sql, pageQuery, argList);
+        sql += BuildHelper.buildWhere(pageQuery, argList);
         // intentionally use ==
         if (!(columns.length == 1 && COUNT == columns[0])) {
             // not SELECT COUNT(*)
-            sql = BuildHelper.buildOrderBy(sql, pageQuery);
+            sql += BuildHelper.buildOrderBy(pageQuery);
             sql = BuildHelper.buildPaging(sql, pageQuery);
         }
         return sql;

@@ -66,11 +66,10 @@ public class JoinQueryBuilder {
     private String build(PageQuery pageQuery, List<Object> argList, String... columns) {
         pageQuery = SerializationUtils.clone(pageQuery);
 
-        String join = buildJoin(pageQuery, argList);
+        String join = resolveJoin(pageQuery, argList, joinSql);
         String from = tableName + join;
-        String sql;
-        sql = buildStart(columns, from);
-        sql = buildWhere(sql, pageQuery, argList);
+        String sql = buildStart(columns, from);
+        sql += buildWhere(pageQuery, argList);
 
         Joins joins = entityClass.getAnnotation(Joins.class);
         if (!joins.groupBy().isEmpty()) {
@@ -82,14 +81,10 @@ public class JoinQueryBuilder {
         // intentionally use ==
         if (!(columns.length == 1 && COUNT == columns[0])) {
             // not SELECT COUNT(*)
-            sql = buildOrderBy(sql, pageQuery);
+            sql += buildOrderBy(pageQuery);
             sql = buildPaging(sql, pageQuery);
         }
         return sql;
-    }
-
-    private String buildJoin(PageQuery pageQuery, List<Object> argList) {
-        return resolveJoin(pageQuery, argList, joinSql);
     }
 
     public SqlAndArgs buildJoinSelectAndArgs(PageQuery query) {
