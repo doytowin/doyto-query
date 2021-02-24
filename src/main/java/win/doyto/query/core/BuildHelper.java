@@ -51,12 +51,11 @@ public class BuildHelper {
 
     private static void initFields(Object query) {
         Class<?> clazz = query.getClass();
-        if (!classFieldsMap.containsKey(clazz)) {
-            classFieldsMap.put(clazz, Arrays.stream(clazz.getDeclaredFields()).filter(CommonUtil::fieldFilter).toArray(Field[]::new));
-            for (Field field : classFieldsMap.get(clazz)) {
-                FieldProcessor.init(field);
-            }
-        }
+        classFieldsMap.computeIfAbsent(clazz, aClass -> {
+            Field[] fields = Arrays.stream(clazz.getDeclaredFields()).filter(CommonUtil::fieldFilter).toArray(Field[]::new);
+            Arrays.stream(fields).forEach(FieldProcessor::init);
+            return fields;
+        });
     }
 
     static String buildOrderBy(PageQuery pageQuery) {
