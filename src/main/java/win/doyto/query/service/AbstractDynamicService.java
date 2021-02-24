@@ -55,7 +55,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     protected TransactionOperations transactionOperations = NoneTransactionOperations.instance;
 
     @SuppressWarnings("unchecked")
-    public AbstractDynamicService() {
+    protected AbstractDynamicService() {
         entityClass = (Class<E>) BeanUtil.getActualTypeArguments(getClass())[0];
         dataAccess = new MemoryDataAccess<>(entityClass);
     }
