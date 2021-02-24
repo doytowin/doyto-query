@@ -94,7 +94,7 @@ enum QuerySuffix {
         return matcher.find() ? valueOf(matcher.group()) : NONE;
     }
 
-    private static String processOrStatement(List<Object> argList, Object value, String fieldName) {
+    static String buildConditionForFieldContainsOr(List<Object> argList, Object value, String fieldName) {
         final String alias;
         int indexOfDot = fieldName.indexOf('.') + 1;
         if (indexOfDot > 0) {
@@ -104,20 +104,17 @@ enum QuerySuffix {
             alias = "";
         }
         String andSql = Arrays.stream(CommonUtil.splitByOr(fieldName))
-                              .map(s -> buildAndSql(argList, value, alias + s))
+                              .map(fieldName0 -> buildConditionForField(argList, value, alias + fieldName0))
                               .collect(Collectors.joining(Constant.SPACE_OR));
         return CommonUtil.wrapWithParenthesis(andSql);
     }
 
-    static String buildAndSql(List<Object> argList, Object value, String fieldName) {
-        if (CommonUtil.containsOr(fieldName)) {
-            return processOrStatement(argList, value, fieldName);
-        }
+    static String buildConditionForField(List<Object> argList, Object value, String fieldName) {
         QuerySuffix querySuffix = resolve(fieldName);
         value = querySuffix.valueProcessor.escapeValue(value);
         String columnName = querySuffix.resolveColumnName(fieldName);
         columnName = CommonUtil.convertColumn(columnName);
-        return querySuffix.buildAndClauseWithArgs(columnName, argList, value);
+        return querySuffix.buildColumnCondition(columnName, argList, value);
     }
 
     String resolveColumnName(String fieldName) {
@@ -125,16 +122,16 @@ enum QuerySuffix {
         return fieldName.endsWith(suffix) ? fieldName.substring(0, fieldName.length() - suffix.length()) : fieldName;
     }
 
-    private String buildAndClauseWithArgs(String columnName, List<Object> argList, Object value) {
+    private String buildColumnCondition(String columnName, List<Object> argList, Object value) {
         if (valueProcessor.shouldIgnore(value)) {
             return null;
         }
         String placeHolderEx = valueProcessor.getPlaceHolderEx(value);
         appendArg(argList, value, placeHolderEx);
-        return buildAndClause(columnName, placeHolderEx);
+        return buildColumnClause(columnName, placeHolderEx);
     }
 
-    private String buildAndClause(String columnName, String placeHolderEx) {
+    private String buildColumnClause(String columnName, String placeHolderEx) {
         if (!placeHolderEx.isEmpty()) {
             placeHolderEx = SPACE + placeHolderEx;
         }

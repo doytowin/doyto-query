@@ -47,13 +47,21 @@ final class FieldProcessor {
 
     private static Processor initCommonField(Field field) {
         String fieldName = field.getName();
-        return (argList, value) -> QuerySuffix.buildAndSql(argList, value, fieldName);
+        if (CommonUtil.containsOr(fieldName)) {
+            return (argList, value) -> QuerySuffix.buildConditionForFieldContainsOr(argList, value, fieldName);
+        } else {
+            return (argList, value) -> QuerySuffix.buildConditionForField(argList, value, fieldName);
+        }
     }
 
     private static Processor initFieldAnnotatedByQueryTableAlias(Field field) {
         String fieldName = field.getName();
-        String columnName = field.getAnnotation(QueryTableAlias.class).value();
-        return (argList, value) -> QuerySuffix.buildAndSql(argList, value, columnName + "." + fieldName);
+        String tableAlias = field.getAnnotation(QueryTableAlias.class).value();
+        if (CommonUtil.containsOr(fieldName)) {
+            return (argList, value) -> QuerySuffix.buildConditionForFieldContainsOr(argList, value, tableAlias + "." + fieldName);
+        } else {
+            return (argList, value) -> QuerySuffix.buildConditionForField(argList, value, tableAlias + "." + fieldName);
+        }
     }
 
     private static Processor initFieldAnnotatedByQueryField(Field field) {
@@ -82,7 +90,11 @@ final class FieldProcessor {
             processor = (argList, value) -> BuildHelper.buildWhere((PageQuery) value, argList);
         } else {
             String fieldName = field.getName();
-            processor = (argList, value) -> WHERE + QuerySuffix.buildAndSql(argList, value, fieldName);
+            if (CommonUtil.containsOr(fieldName)) {
+                processor = (argList, value) -> WHERE + QuerySuffix.buildConditionForFieldContainsOr(argList, value, fieldName);
+            } else {
+                processor = (argList, value) -> WHERE + QuerySuffix.buildConditionForField(argList, value, fieldName);
+            }
         }
         return processor;
     }
