@@ -50,8 +50,19 @@ public class QueryBuilder {
         return resolveTableNameFunc.apply(idWrapper, tableName);
     }
 
+    @SuppressWarnings("java:S4973")
     private String build(PageQuery pageQuery, List<Object> argList, String... columns) {
-        return BuildHelper.build(pageQuery, argList, Constant.SELECT, columns, resolveTableName(pageQuery.toIdWrapper()));
+        String sql;
+        sql = BuildHelper.buildStart(columns, resolveTableName(pageQuery.toIdWrapper()));
+        sql = replaceHolderInString(pageQuery, sql);
+        sql = BuildHelper.buildWhere(sql, pageQuery, argList);
+        // intentionally use ==
+        if (!(columns.length == 1 && COUNT == columns[0])) {
+            // not SELECT COUNT(*)
+            sql = BuildHelper.buildOrderBy(sql, pageQuery);
+            sql = BuildHelper.buildPaging(sql, pageQuery);
+        }
+        return sql;
     }
 
     String buildSelectAndArgs(PageQuery query, List<Object> argList) {

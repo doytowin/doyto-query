@@ -69,7 +69,7 @@ public class JoinQueryBuilder {
         String join = buildJoin(pageQuery, argList);
         String from = tableName + join;
         String sql;
-        sql = buildStart(Constant.SELECT, columns, from);
+        sql = buildStart(columns, from);
         sql = buildWhere(sql, pageQuery, argList);
 
         Joins joins = entityClass.getAnnotation(Joins.class);
@@ -82,7 +82,7 @@ public class JoinQueryBuilder {
         // intentionally use ==
         if (!(columns.length == 1 && COUNT == columns[0])) {
             // not SELECT COUNT(*)
-            sql = buildOrderBy(sql, pageQuery, Constant.SELECT);
+            sql = buildOrderBy(sql, pageQuery);
             sql = buildPaging(sql, pageQuery);
         }
         return sql;

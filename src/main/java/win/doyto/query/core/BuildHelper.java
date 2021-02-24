@@ -12,7 +12,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
-import static win.doyto.query.core.CommonUtil.*;
+import static win.doyto.query.core.CommonUtil.isValidValue;
+import static win.doyto.query.core.CommonUtil.readFieldGetter;
 import static win.doyto.query.core.Constant.*;
 
 /**
@@ -25,23 +26,8 @@ public class BuildHelper {
     private static final Pattern PTN_SORT = Pattern.compile(",(asc|desc)", Pattern.CASE_INSENSITIVE);
     private static final Map<Class<?>, Field[]> classFieldsMap = new ConcurrentHashMap<>();
 
-    @SuppressWarnings("java:S4973")
-    static String build(PageQuery pageQuery, List<Object> argList, String operation, String[] columns, String from) {
-        String sql;
-        sql = buildStart(operation, columns, from);
-        sql = replaceHolderInString(pageQuery, sql);
-        sql = buildWhere(sql, pageQuery, argList);
-        // intentionally use ==
-        if (!(columns.length == 1 && COUNT == columns[0])) {
-            // not SELECT COUNT(*)
-            sql = buildOrderBy(sql, pageQuery, operation);
-            sql = buildPaging(sql, pageQuery);
-        }
-        return sql;
-    }
-
-    static String buildStart(String operation, String[] columns, String from) {
-        return operation + StringUtils.join(columns, SEPARATOR) + FROM + from;
+    static String buildStart(String[] columns, String from) {
+        return Constant.SELECT + StringUtils.join(columns, SEPARATOR) + FROM + from;
     }
 
     public static String buildWhere(String sql, PageQuery query, List<Object> argList) {
@@ -73,10 +59,8 @@ public class BuildHelper {
         }
     }
 
-    @SuppressWarnings("java:S4973")
-    static String buildOrderBy(String sql, PageQuery pageQuery, String operation) {
-        // intentionally use ==
-        if (SELECT == operation && pageQuery.getSort() != null) {
+    static String buildOrderBy(String sql, PageQuery pageQuery) {
+        if (pageQuery.getSort() != null) {
             sql += " ORDER BY " + PTN_SORT.matcher(pageQuery.getSort()).replaceAll(" $1").replace(";", SEPARATOR);
         }
         return sql;
