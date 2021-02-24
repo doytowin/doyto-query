@@ -66,7 +66,7 @@ final class FieldProcessor {
 
     private static Processor initFieldAnnotatedByQueryField(Field field) {
         String andSQL = field.getAnnotation(QueryField.class).and();
-        int holderCount = StringUtils.countMatches(andSQL, REPLACE_HOLDER);
+        int holderCount = StringUtils.countMatches(andSQL, PLACE_HOLDER);
         return (argList, value) -> {
             for (int i = 0; i < holderCount; i++) {
                 argList.add(value);
@@ -101,7 +101,7 @@ final class FieldProcessor {
 
     protected static String resolvedNestedQueries(List<Object> argList, Object value, NestedQueries nestedQueries, Processor processor) {
         StringBuilder subquery = resolvedNestedQueries(nestedQueries);
-        IntStream.range(0, StringUtils.countMatches(subquery, REPLACE_HOLDER)).mapToObj(i -> value).forEach(argList::add);
+        IntStream.range(0, StringUtils.countMatches(subquery, PLACE_HOLDER)).mapToObj(i -> value).forEach(argList::add);
         if (nestedQueries.appendWhere()) {
             subquery.append(processor.process(argList, value));
         }

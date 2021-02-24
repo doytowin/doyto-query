@@ -56,7 +56,7 @@ public class JoinQueryBuilder {
             Object value = readField(field, query);
             argList.add(value);
             writeField(field, query, null);
-            matcher.appendReplacement(sb, REPLACE_HOLDER);
+            matcher.appendReplacement(sb, PLACE_HOLDER);
         }
 
         return matcher.appendTail(sb).toString();

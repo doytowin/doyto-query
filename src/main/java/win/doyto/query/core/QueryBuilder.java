@@ -20,7 +20,7 @@ import static win.doyto.query.core.Constant.*;
 @Slf4j
 public class QueryBuilder {
 
-    protected static final String EQUALS_REPLACE_HOLDER = " = " + Constant.REPLACE_HOLDER;
+    protected static final String EQUALS_PLACE_HOLDER = " = " + Constant.PLACE_HOLDER;
 
     protected final String tableName;
     protected final String idColumn;
@@ -30,7 +30,7 @@ public class QueryBuilder {
     public QueryBuilder(String tableName, String idColumn) {
         this.tableName = tableName;
         this.idColumn = idColumn;
-        this.whereId = WHERE + idColumn + EQUALS_REPLACE_HOLDER;
+        this.whereId = WHERE + idColumn + EQUALS_PLACE_HOLDER;
         this.resolveTableNameFunc = isDynamicTable(tableName) ? CommonUtil::replaceHolderInString : (idWrapper, tableName1) -> tableName1;
     }
 

@@ -14,7 +14,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.persistence.EnumType;
 
-import static win.doyto.query.core.Constant.*;
+import static win.doyto.query.core.Constant.SEPARATOR;
+import static win.doyto.query.core.Constant.SPACE;
 
 /**
  * QuerySuffix
@@ -29,7 +30,7 @@ enum QuerySuffix {
     Start("LIKE", new ValueProcessor() {
         @Override
         public String getPlaceHolderEx(Object value) {
-            return Constant.REPLACE_HOLDER;
+            return Constant.PLACE_HOLDER;
         }
 
         @Override
@@ -45,7 +46,7 @@ enum QuerySuffix {
     Like("LIKE", new ValueProcessor() {
         @Override
         public String getPlaceHolderEx(Object value) {
-            return Constant.REPLACE_HOLDER;
+            return Constant.PLACE_HOLDER;
         }
 
         @Override
@@ -81,7 +82,7 @@ enum QuerySuffix {
     private final ValueProcessor valueProcessor;
 
     QuerySuffix(String op) {
-        this(op, ValueProcessor.REPLACE_HOLDER);
+        this(op, ValueProcessor.PLACE_HOLDER);
     }
 
     QuerySuffix(String op, ValueProcessor valueProcessor) {
@@ -142,7 +143,7 @@ enum QuerySuffix {
     private static void appendArg(List<Object> argList, Object value, String placeHolderEx) {
         if (value instanceof Collection) {
             appendCollectionArg(argList, (Collection<Object>) value);
-        } else if (placeHolderEx.contains(REPLACE_HOLDER)) {
+        } else if (placeHolderEx.contains(Constant.PLACE_HOLDER)) {
             appendSingleArg(argList, value);
         }
     }
@@ -176,12 +177,12 @@ enum QuerySuffix {
 
     @SuppressWarnings("java:S1214")
     interface ValueProcessor {
-        ValueProcessor REPLACE_HOLDER = value -> Constant.REPLACE_HOLDER;
+        ValueProcessor PLACE_HOLDER = value -> Constant.PLACE_HOLDER;
         ValueProcessor EMPTY = value -> Constant.EMPTY;
         ValueProcessor COLLECTION = value -> {
             int size = ((Collection<?>) value).size();
-            String replaceHolders = IntStream.range(0, size).mapToObj(i -> Constant.REPLACE_HOLDER).collect(Collectors.joining(SEPARATOR));
-            return CommonUtil.wrapWithParenthesis(StringUtils.trimToNull(replaceHolders));
+            String placeHolders = IntStream.range(0, size).mapToObj(i -> Constant.PLACE_HOLDER).collect(Collectors.joining(SEPARATOR));
+            return CommonUtil.wrapWithParenthesis(StringUtils.trimToNull(placeHolders));
         };
 
         String getPlaceHolderEx(Object value);

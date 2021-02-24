@@ -50,7 +50,7 @@ class AssociativeSqlBuilder {
         deleteByRightId = DELETE_FROM + table + WHERE + right + " = ?";
     }
 
-    private String generateReplaceHolders(int size) {
+    private String generatePlaceHolders(int size) {
         return "?" + IntStream.range(1, size).mapToObj(i -> ", ?").collect(Collectors.joining());
     }
 
@@ -62,12 +62,12 @@ class AssociativeSqlBuilder {
     }
 
     public SqlAndArgs buildDeallocate(Object[] leftIds, Object[] rightIds) {
-        String sql = String.format(deallocateFormat, generateReplaceHolders(leftIds.length), generateReplaceHolders(rightIds.length));
+        String sql = String.format(deallocateFormat, generatePlaceHolders(leftIds.length), generatePlaceHolders(rightIds.length));
         return new SqlAndArgs(sql, unionArgs(leftIds, rightIds));
     }
 
     public SqlAndArgs buildCount(Object[] leftIds, Object[] rightIds) {
-        String sql = String.format(count, generateReplaceHolders(leftIds.length), generateReplaceHolders(rightIds.length));
+        String sql = String.format(count, generatePlaceHolders(leftIds.length), generatePlaceHolders(rightIds.length));
         return new SqlAndArgs(sql, unionArgs(leftIds, rightIds));
     }
 

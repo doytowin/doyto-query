@@ -36,18 +36,18 @@ class CommonUtilTest {
 
     @Test
     void testReplaceHolderInString() {
-        assertEquals("_test1_", replaceHolderInString(new ReplaceHolderObject("test1"), "_${part1}_"));
+        assertEquals("_test1_", replaceHolderInString(new PlaceHolderObject("test1"), "_${part1}_"));
     }
 
     @Test
     void replaceHolderInStringShouldReadGetterFirst() {
-        assertEquals("_test1_test2_", replaceHolderInString(new ReplaceHolderObject("test1"), "_${part1}_${part2}_"));
+        assertEquals("_test1_test2_", replaceHolderInString(new PlaceHolderObject("test1"), "_${part1}_${part2}_"));
     }
 
     @Getter
     @Setter
     @AllArgsConstructor
-    static class ReplaceHolderObject {
+    static class PlaceHolderObject {
         private String part1;
 
         public String getPart2() {

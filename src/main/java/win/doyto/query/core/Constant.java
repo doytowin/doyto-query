@@ -8,7 +8,7 @@ package win.doyto.query.core;
 @SuppressWarnings("java:S1214")
 interface Constant {
     String SEPARATOR = ", ";
-    String REPLACE_HOLDER = "?";
+    String PLACE_HOLDER = "?";
     String SPACE = " ";
     String EQUAL = " = ";
     String SELECT = "SELECT ";

@@ -40,11 +40,11 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
         fields = Collections.unmodifiableList(tempFields);
         fieldsSize = fields.size();
 
-        wildInsertValue = wrapWithParenthesis(StringUtils.join(IntStream.range(0, fieldsSize).mapToObj(i -> REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR));
+        wildInsertValue = wrapWithParenthesis(StringUtils.join(IntStream.range(0, fieldsSize).mapToObj(i -> PLACE_HOLDER).collect(Collectors.toList()), SEPARATOR));
 
         List<String> columnList = fields.stream().map(CommonUtil::resolveColumn).collect(Collectors.toList());
         insertColumns = wrapWithParenthesis(StringUtils.join(columnList, SEPARATOR));
-        wildSetClause = StringUtils.join(columnList.stream().map(c -> c + EQUALS_REPLACE_HOLDER).collect(Collectors.toList()), SEPARATOR);
+        wildSetClause = StringUtils.join(columnList.stream().map(c -> c + EQUALS_PLACE_HOLDER).collect(Collectors.toList()), SEPARATOR);
 
     }
 
@@ -75,7 +75,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
         for (Field field : fields) {
             Object o = readFieldGetter(field, entity);
             if (o != null) {
-                setClauses.append(resolveColumn(field) + EQUALS_REPLACE_HOLDER);
+                setClauses.append(resolveColumn(field) + EQUALS_PLACE_HOLDER);
                 argList.add(o);
             }
         }
