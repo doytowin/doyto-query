@@ -95,7 +95,7 @@ class MenuMvcTest extends DemoApplicationTest {
     @Test
     void deleteMenu() {
         try {
-            mockMvc.perform(delete("/02/menu/0")).andDo(print());
+            mockMvc.perform(delete("/02/menu/0"));
             fail();
         } catch (Exception e) {
             assertTrue(e.getCause() instanceof ErrorCodeException);

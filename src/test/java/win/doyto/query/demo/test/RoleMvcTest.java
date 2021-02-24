@@ -29,9 +29,9 @@ class RoleMvcTest extends DemoApplicationTest {
     }
 
     @Test
-    void deleteRole() {
+    void deleteRole() throws Exception {
+        mockMvc.perform(delete("/role/1")).andExpect(statusIs200());
         try {
-            mockMvc.perform(delete("/role/1")).andExpect(statusIs200());
             mockMvc.perform(delete("/role/0"));
             fail();
         } catch (Exception e) {

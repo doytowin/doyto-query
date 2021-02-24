@@ -181,7 +181,7 @@ public class UserMvcTest extends DemoApplicationTest {
 
         mockMvc.perform(delete(URL_USER_2));
         try {
-            mockMvc.perform(get(URL_USER_2)).andDo(print()).andExpect(jsonPath("$").doesNotExist());
+            mockMvc.perform(get(URL_USER_2));
             fail();
         } catch (Exception e) {
             assertTrue(e.getCause() instanceof ErrorCodeException);
