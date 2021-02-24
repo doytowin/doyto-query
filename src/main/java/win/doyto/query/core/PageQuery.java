@@ -28,7 +28,7 @@ import static java.lang.Math.max;
 @SuppressWarnings("java:S3740")
 public class PageQuery implements Serializable {
 
-    protected static final String SORT_RX = "(\\w+,(asc|desc);|field\\(\\w+(,[\\w']+)+\\);)*(\\w+,(asc|desc)|field\\(\\w+(,[\\w']+)+\\))";
+    protected static final String SORT_RX = "(\\w+,(asc|desc);|field\\(\\w+(,[\\w']+)++\\);)*(\\w+,(asc|desc)|field\\(\\w+(,[\\w']+)++\\))";
     protected static final java.util.regex.Pattern SORT_PTN = java.util.regex.Pattern.compile(PageQuery.SORT_RX);
 
     private Integer pageNumber;
