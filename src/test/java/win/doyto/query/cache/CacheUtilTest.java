@@ -14,7 +14,8 @@ import win.doyto.query.core.Invocable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 /**
@@ -31,15 +32,15 @@ class CacheUtilTest {
     }
 
     @Test
-    void invoke() throws InterruptedException {
+    void invoke() {
         ConcurrentMapCache cache = new ConcurrentMapCache("test");
         String key = "hello";
         assertNull(cache.get(key));
         assertEquals("world", CacheUtil.invoke(cache, key, new TestInvocable()));
 
-        Thread.sleep(5L);
-
-        assertNotNull(cache.get(key));
+        while(cache.get(key) == null) {
+            System.out.println("waiting...");
+        }
         assertEquals("world", CacheUtil.invoke(cache, key, new TestInvocable()));
     }
 
@@ -55,7 +56,7 @@ class CacheUtilTest {
     }
 
     @Test
-    void checkLogForPutException() throws InterruptedException {
+    void checkLogForPutException() {
         GlobalConfiguration.instance().setIgnoreCacheException(false);
 
         //given
@@ -67,12 +68,12 @@ class CacheUtilTest {
         cacheWrapper.setCache(new ConcurrentMapCache("checkLog") {
             @Override
             public ValueWrapper get(Object key) {
-                throw new RuntimeException("Timeout");
+                throw new RuntimeException("get timeout");
             }
 
             @Override
             public void put(Object key, Object value) {
-                throw new RuntimeException("Timeout");
+                throw new RuntimeException("put timeout");
             }
         });
 
@@ -80,7 +81,6 @@ class CacheUtilTest {
         AtomicInteger times = new AtomicInteger();
         Invocable<Object> invocable = times::incrementAndGet;
         assertEquals(1, cacheWrapper.execute("hello", invocable));
-        Thread.sleep(5L);
 
         //then
         //通过ArgumentCaptor捕获所有log
