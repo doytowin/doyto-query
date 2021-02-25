@@ -4,9 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.service.PageList;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -16,44 +13,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  *
  * @author f0rb
  */
-public class UserControllerTest {
-    public static final int INIT_SIZE = 5;
-    public static UserApi userApi;
-
-    static {
-        initData();
-    }
-
-    private static void initData() {
-        UserController userController = new UserController(new UserService(), new UserDetailService());
-        userController.create(getUserRequests());
-        UserControllerTest.userApi = userController;
-    }
-
-    private static List<UserRequest> getUserRequests() {
-        List<UserRequest> userRequests = new ArrayList<>(INIT_SIZE);
-        for (int i = 1; i < INIT_SIZE; i++) {
-            UserRequest userRequest = new UserRequest();
-            userRequest.setUsername("username" + i);
-            userRequest.setPassword("password" + i);
-            userRequest.setEmail("test" + i + "@163.com");
-            userRequest.setMobile("1777888888" + i);
-            userRequest.setValid(i % 2 == 0);
-            userRequests.add(userRequest);
-        }
-        UserRequest userRequest = new UserRequest();
-        userRequest.setUsername("f0rb");
-        userRequest.setNickname("自在");
-        userRequest.setPassword("123456");
-        userRequest.setEmail("f0rb@163.com");
-        userRequest.setMobile("17778888880");
-        userRequests.add(userRequest);
-        return userRequests;
-    }
+class UserControllerTest {
+    public UserApi userApi;
 
     @BeforeEach
     void setUp() {
-        initData();
+        this.userApi = UserData.getUserController();
     }
 
     @Test
@@ -72,7 +37,7 @@ public class UserControllerTest {
         UserQuery userQuery = UserQuery.builder().build();
         userQuery.setPageNumber(0).setPageSize(2);
         PageList<UserResponse> page = userApi.page(userQuery);
-        assertEquals(INIT_SIZE, page.getTotal());
+        assertEquals(UserData.INIT_SIZE, page.getTotal());
         assertEquals(2, page.getList().size());
     }
 

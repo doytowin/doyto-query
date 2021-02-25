@@ -19,14 +19,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author f0rb on 2020-04-11
  */
 @SuppressWarnings("java:S112")
-public class UserMvcTest extends DemoApplicationTest {
+class UserMvcTest extends DemoApplicationTest {
 
     private static final String URL_USER = "/user/";
     private static final String URL_USER_1 = URL_USER + "1";
     private static final String URL_USER_2 = URL_USER + "2";
 
     @Test
-    public void queryByUsername() throws Exception {
+    void queryByUsername() throws Exception {
         mockMvc.perform(get(URL_USER + "?username=f0rb"))
                .andExpect(jsonPath("$.list").isArray())
                .andExpect(jsonPath("$.list[0].nickname").value("测试1"))
@@ -35,7 +35,7 @@ public class UserMvcTest extends DemoApplicationTest {
     }
 
     @Test
-    public void queryByAccount() throws Exception {
+    void queryByAccount() throws Exception {
         mockMvc.perform(get(URL_USER + "?account=17778888882"))
                .andExpect(jsonPath("$.list").isArray())
                .andExpect(jsonPath("$.list[0].nickname").value("测试2"))
@@ -45,7 +45,7 @@ public class UserMvcTest extends DemoApplicationTest {
     }
 
     @Test
-    public void pageByAccount() throws Exception {
+    void pageByAccount() throws Exception {
         mockMvc.perform(get(URL_USER + "?account=17778888882&pageNumber=0&pageSize=5"))
                .andExpect(jsonPath("$.list").isArray())
                .andExpect(jsonPath("$.list[0].nickname").value("测试2"))
@@ -55,7 +55,7 @@ public class UserMvcTest extends DemoApplicationTest {
     }
 
     @Test
-    public void pageByUsernameLike() throws Exception {
+    void pageByUsernameLike() throws Exception {
         mockMvc.perform(get(URL_USER + "?usernameLike=user&pageNumber=0&pageSize=2"))
                .andExpect(jsonPath("$.list").isArray())
                .andExpect(jsonPath("$.list[0].nickname").value("测试2"))
@@ -65,13 +65,13 @@ public class UserMvcTest extends DemoApplicationTest {
     }
 
     @Test
-    public void validateSortField() throws Exception {
+    void validateSortField() throws Exception {
         mockMvc.perform(get(URL_USER + "?sort=username")).andExpect(status().is(400));
         mockMvc.perform(get(URL_USER + "?sort=username,asc")).andExpect(status().is(200));
     }
 
     @Test
-    public void getUserById() throws Exception {
+    void getUserById() throws Exception {
         mockMvc.perform(get(URL_USER_1))
                .andExpect(jsonPath("$.username").value("f0rb"))
                .andExpect(jsonPath("$.nickname").value("测试1"))
@@ -80,7 +80,7 @@ public class UserMvcTest extends DemoApplicationTest {
     }
 
     @Test
-    public void createUser() throws Exception {
+    void createUser() throws Exception {
         requestJson(post(URL_USER), "{\"username\": \"test\",\"userLevel\": \"普通\"}");
 
         mockMvc.perform(get(URL_USER + "?pageNumber=0"))
@@ -92,7 +92,7 @@ public class UserMvcTest extends DemoApplicationTest {
     }
 
     @Test
-    public void createUserAndDetail() throws Exception {
+    void createUserAndDetail() throws Exception {
         requestJson(post(URL_USER), "{\"username\": \"test\",\"userLevel\": \"普通\",\"address\": \"上海市\"}");
 
         mockMvc.perform(get(URL_USER + "5"))
@@ -104,7 +104,7 @@ public class UserMvcTest extends DemoApplicationTest {
     }
 
     @Test
-    public void querySingleColumn() throws Exception {
+    void querySingleColumn() throws Exception {
         mockMvc.perform(get(URL_USER + "column/username"))
                .andDo(print())
                .andExpect(content().string("[\"f0rb\",\"user2\",\"user3\",\"user4\"]"));
@@ -114,7 +114,7 @@ public class UserMvcTest extends DemoApplicationTest {
     }
 
     @Test
-    public void queryColumns() throws Exception {
+    void queryColumns() throws Exception {
         mockMvc.perform(get(URL_USER + "columns/username,userLevel"))
                .andDo(print())
                .andExpect(jsonPath("$.size()").value(4))
@@ -128,7 +128,7 @@ public class UserMvcTest extends DemoApplicationTest {
     TestUserEntityAspect testUserEntityAspect;
 
     @Test
-    public void updateUser() throws Exception {
+    void updateUser() throws Exception {
         String result = mockMvc.perform(get(URL_USER_1)).andReturn().getResponse().getContentAsString();
 
         int timesBefore = testUserEntityAspect.getTimes();
@@ -144,7 +144,7 @@ public class UserMvcTest extends DemoApplicationTest {
     }
 
     @Test
-    public void patchUser() throws Exception {
+    void patchUser() throws Exception {
         performAndExpectOk(buildJson(patch(URL_USER), "{\"id\":1,\"username\":\"test\"}"));
 
         mockMvc.perform(get(URL_USER_1))
@@ -155,7 +155,7 @@ public class UserMvcTest extends DemoApplicationTest {
     }
 
     @Test
-    public void patchMemo() throws Exception {
+    void patchMemo() throws Exception {
         performAndExpectOk(buildJson(post("/user/memo"), "{\"email\":\"qq\",\"memo\":\"qq邮箱\"}"));
 
         mockMvc.perform(get(URL_USER))

@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author f0rb on 2020-04-11
  */
-public class AssociativeServiceTest extends DemoApplicationTest {
+class AssociativeServiceTest extends DemoApplicationTest {
 
     @Resource
     AssociativeService<Long, Integer> userAndRoleAssociativeService;

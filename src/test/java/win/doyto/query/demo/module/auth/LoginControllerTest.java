@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
-import win.doyto.query.demo.module.user.UserControllerTest;
+import win.doyto.query.demo.module.user.UserData;
 import win.doyto.query.demo.module.user.UserResponse;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,9 +25,8 @@ class LoginControllerTest {
 
     @BeforeEach
     void setUp() {
-        loginController = new LoginController(UserControllerTest.userApi);
+        loginController = new LoginController(UserData.getUserController());
         httpRequest = new MockHttpServletRequest();
-        loginController.userApi = UserControllerTest.userApi;
     }
 
     @Test

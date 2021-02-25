@@ -109,7 +109,7 @@ class CrudBuilderTest {
     }
 
     @Test
-    public void supportMapFieldToUnderscore() {
+    void supportMapFieldToUnderscore() {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
 
         try {
@@ -128,7 +128,7 @@ class CrudBuilderTest {
     }
 
     @Test
-    public void buildPatchAndArgsWithQuery() {
+    void buildPatchAndArgsWithQuery() {
         TestEntity testEntity = new TestEntity();
         testEntity.setNickname("测试");
 
@@ -149,7 +149,7 @@ class CrudBuilderTest {
     }
 
     @Test
-    public void supportDynamicTableName() {
+    void supportDynamicTableName() {
         DynamicQuery dynamicQuery = DynamicQuery.builder().user("f0rb").project("i18n").scoreLt(100).build();
 
         assertEquals("SELECT * FROM t_dynamic_f0rb_i18n WHERE score < ?",
@@ -158,7 +158,7 @@ class CrudBuilderTest {
     }
 
     @Test
-    public void fixSQLInject() {
+    void fixSQLInject() {
         DynamicQuery dynamicQuery = DynamicQuery.builder().user("f0rb").project("; DROP TABLE menu;").scoreLt(100).build();
 
         assertEquals("SELECT * FROM t_dynamic_f0rb_${project} WHERE score < ?",
@@ -167,7 +167,7 @@ class CrudBuilderTest {
     }
 
     @Test
-    public void buildDeleteAndArgs() {
+    void buildDeleteAndArgs() {
         TestQuery testQuery = TestQuery.builder().username("test").build();
         testQuery.setPageNumber(3).setPageSize(10);
 
@@ -178,7 +178,7 @@ class CrudBuilderTest {
     }
 
     @Test
-    public void supportUnderlineScore() {
+    void supportUnderlineScore() {
         DynamicQuery dynamicQuery = DynamicQuery.builder().user("f0rb").project("i18n_0001").scoreLt(100).build();
 
         assertEquals("SELECT * FROM t_dynamic_f0rb_i18n_0001 WHERE score < ?",

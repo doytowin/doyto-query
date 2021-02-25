@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author f0rb 2019-05-12
  */
-public class QueryBuilderTest {
+class QueryBuilderTest {
 
     private QueryBuilder testQueryBuilder = new QueryBuilder(TestEntity.class);
     private QueryBuilder menuQueryBuilder = new QueryBuilder("menu", "id");
@@ -34,19 +34,19 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void buildSelect() {
+    void buildSelect() {
         TestQuery testQuery = TestQuery.builder().build();
         assertEquals("SELECT * FROM user", testQueryBuilder.buildSelectAndArgs(testQuery, argList));
     }
 
     @Test
-    public void buildSelectWithWhere() {
+    void buildSelectWithWhere() {
         TestQuery testQuery = TestQuery.builder().username("test").build();
         assertEquals("SELECT * FROM user WHERE username = ?", testQueryBuilder.buildSelectAndArgs(testQuery, argList));
     }
 
     @Test
-    public void buildSelectWithWhereAndPage() {
+    void buildSelectWithWhereAndPage() {
         TestQuery testQuery = TestQuery.builder().username("test").build();
         testQuery.setPageNumber(3).setPageSize(10);
         assertEquals("SELECT * FROM user WHERE username = ? LIMIT 10 OFFSET 30",
@@ -54,14 +54,14 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void buildSelectWithCustomWhere() {
+    void buildSelectWithCustomWhere() {
         TestQuery testQuery = TestQuery.builder().account("test").build();
         assertEquals("SELECT * FROM user WHERE (username = ? OR email = ? OR mobile = ?)",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
     }
 
     @Test
-    public void buildSelectWithArgs() {
+    void buildSelectWithArgs() {
         TestQuery testQuery = TestQuery.builder().username("test").build();
         assertEquals("SELECT * FROM user WHERE username = ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
@@ -70,7 +70,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void buildSelectAndArgsWithCustomWhere() {
+    void buildSelectAndArgsWithCustomWhere() {
 
         TestQuery testQuery = TestQuery.builder().account("test").build();
         assertEquals("SELECT * FROM user WHERE (username = ? OR email = ? OR mobile = ?)",
@@ -79,7 +79,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void buildCountAndArgsWithWhere() {
+    void buildCountAndArgsWithWhere() {
         TestQuery testQuery = TestQuery.builder().username("test").build();
         testQuery.setPageNumber(2).setPageSize(10);
         testQuery.setSort("createTime,asc");
@@ -91,7 +91,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void buildCountWithWhere() {
+    void buildCountWithWhere() {
         TestQuery testQuery = TestQuery.builder().username("test").build();
         testQuery.setPageNumber(0);
         SqlAndArgs sqlAndArgs = testQueryBuilder.buildCountAndArgs(testQuery);
@@ -100,7 +100,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void supportLikeSuffix() {
+    void supportLikeSuffix() {
         TestQuery testQuery = TestQuery.builder().usernameLike("_test%f0rb").build();
 
         assertEquals("SELECT * FROM user WHERE username LIKE ?",
@@ -109,7 +109,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void supportInSuffix() {
+    void supportInSuffix() {
         List<Integer> ids = Arrays.asList(1, 2, 3);
         TestQuery testQuery = TestQuery.builder().idIn(ids).build();
 
@@ -120,7 +120,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void supportNotInSuffix() {
+    void supportNotInSuffix() {
         TestQuery testQuery = TestQuery.builder().idNotIn(Arrays.asList(1, 2)).build();
 
         assertEquals("SELECT * FROM user WHERE id NOT IN (?, ?)",
@@ -129,7 +129,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void supportGtSuffix() {
+    void supportGtSuffix() {
         Date createTimeGt = new Date();
         TestQuery testQuery = TestQuery.builder().username("test").createTimeGt(createTimeGt).build();
 
@@ -139,7 +139,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void supportGeSuffix() {
+    void supportGeSuffix() {
         Date date = new Date();
         TestQuery testQuery = TestQuery.builder().username("test").createTimeGe(date).build();
 
@@ -149,7 +149,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void supportLtSuffix() {
+    void supportLtSuffix() {
         Date date = new Date();
         TestQuery testQuery = TestQuery.builder().username("test").createTimeLt(date).build();
 
@@ -159,7 +159,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void supportLeSuffix() {
+    void supportLeSuffix() {
         Date date = new Date();
         TestQuery testQuery = TestQuery.builder().username("test").createTimeLe(date).build();
 
@@ -189,7 +189,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void supportSort() {
+    void supportSort() {
         TestQuery testQuery = TestQuery.builder().usernameLike("test").build();
         testQuery.setPageNumber(5).setPageSize(10).setSort("id,desc;createTime,asc");
         assertEquals("SELECT * FROM user WHERE username LIKE ? ORDER BY id desc, createTime asc LIMIT 10 OFFSET 50",
@@ -197,7 +197,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void supportMapFieldToUnderscore() {
+    void supportMapFieldToUnderscore() {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
 
         Date date = new Date();
@@ -209,7 +209,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void buildSubquery() {
+    void buildSubquery() {
         TestQuery testQuery = TestQuery.builder().roleId(1).build();
 
         assertEquals("SELECT * FROM user WHERE id IN (SELECT userId FROM t_user_and_role WHERE roleId = ?)",
@@ -219,7 +219,7 @@ public class QueryBuilderTest {
 
 
     @Test
-    public void buildNestedQuery() {
+    void buildNestedQuery() {
         PermissionQuery permissionQuery = PermissionQuery.builder().userId(1).build();
 
         assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN " +
@@ -229,7 +229,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void buildNestedQuery2() {
+    void buildNestedQuery2() {
         MenuQuery menuQuery = MenuQuery.builder().userId(1).build();
 
         String expected = "SELECT * FROM menu WHERE id IN (" +
@@ -241,7 +241,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void build_boolean_field() {
+    void build_boolean_field() {
         MenuQuery menuQuery = MenuQuery.builder().onlyParent(true).build();
 
         String expected = "SELECT * FROM menu WHERE id IN (SELECT parent_id FROM menu)";
@@ -255,7 +255,7 @@ public class QueryBuilderTest {
      * 必须要熟悉源码才能准确找到修改哪里
      */
     @Test
-    public void buildSubQueryWithQueryObject() {
+    void buildSubQueryWithQueryObject() {
         MenuQuery parentQuery = MenuQuery.builder().nameLike("test").valid(true).build();
         MenuQuery menuQuery = MenuQuery.builder().parent(parentQuery).build();
 
@@ -265,7 +265,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void buildSelectIdWithArgs() {
+    void buildSelectIdWithArgs() {
         TestQuery testQuery = TestQuery.builder().username("test").build();
 
         SqlAndArgs sqlAndArgs = testQueryBuilder.buildSelectColumnsAndArgs(testQuery, "id");
@@ -275,7 +275,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void buildSelectColumnsAndArgs() {
+    void buildSelectColumnsAndArgs() {
         TestQuery testQuery = TestQuery.builder().build();
 
         SqlAndArgs sqlAndArgs = testQueryBuilder.buildSelectColumnsAndArgs(testQuery, "username", "password");
@@ -284,7 +284,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void defaultEnumOrdinal() {
+    void defaultEnumOrdinal() {
         TestQuery testQuery = TestQuery.builder().userLevel(TestEnum.VIP).build();
         assertEquals("SELECT * FROM user WHERE userLevel = ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
@@ -318,7 +318,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void buildNestedQueryIgnoreWhere() {
+    void buildNestedQueryIgnoreWhere() {
         PermissionQuery permissionQuery = PermissionQuery.builder().validUser(true).build();
 
         assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN " +
@@ -328,7 +328,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void buildSubQueryWithCollection() {
+    void buildSubQueryWithCollection() {
         PermissionQuery permissionQuery = PermissionQuery.builder().roleIdIn(Arrays.asList(1, 2, 3)).build();
         assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN (?, ?, ?))",
                      permQueryBuilder.buildSelectAndArgs(permissionQuery, argList));
@@ -336,7 +336,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void buildSubQueryWithNullCollection() {
+    void buildSubQueryWithNullCollection() {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
 
         PermissionQuery nullQuery = PermissionQuery.builder().roleIdIn(Arrays.asList()).build();
@@ -346,7 +346,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void ignoreNotInWhenEmpty() {
+    void ignoreNotInWhenEmpty() {
         List<Integer> ids = Arrays.asList();
         TestQuery testQuery = TestQuery.builder().idIn(ids).idNotIn(ids).build();
 
@@ -356,7 +356,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void supportNot() {
+    void supportNot() {
         TestQuery testQuery = TestQuery.builder().userLevelNot(TestEnum.VIP).build();
         assertEquals("SELECT * FROM user WHERE userLevel != ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
@@ -364,7 +364,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void supportStart() {
+    void supportStart() {
         TestQuery testQuery = TestQuery.builder().usernameStart("test").build();
         assertEquals("SELECT * FROM user WHERE username LIKE ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
@@ -372,7 +372,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void ignoreFieldWhenLikeValueIsEmpty() {
+    void ignoreFieldWhenLikeValueIsEmpty() {
         TestQuery testQuery = TestQuery.builder().email("").usernameLike("").build();
         SqlAndArgs sqlAndArgs = testQueryBuilder.buildSelectIdAndArgs(testQuery);
         assertEquals("SELECT id FROM user WHERE email = ?", sqlAndArgs.getSql());
@@ -380,14 +380,14 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void supportResolveEnumListToOrdinalList() {
+    void supportResolveEnumListToOrdinalList() {
         TestQuery testQuery = TestQuery.builder().userLevelIn(Arrays.asList(TestEnum.NORMAL)).build();
         assertEquals("SELECT * FROM user WHERE userLevel IN (?)", testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly(1);
     }
 
     @Test
-    public void supportResolveEnumListToStringList() {
+    void supportResolveEnumListToStringList() {
         TestQuery testQuery = TestQuery.builder().statusIn(Arrays.asList(TestStringEnum.E1)).build();
         assertEquals("SELECT * FROM user WHERE status IN (?)", testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("E1");

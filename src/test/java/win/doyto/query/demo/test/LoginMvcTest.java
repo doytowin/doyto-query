@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author f0rb on 2020-04-11
  */
-public class LoginMvcTest extends DemoApplicationTest {
+class LoginMvcTest extends DemoApplicationTest {
     /*=============== login ==================*/
     @Test
     void login() throws Exception {

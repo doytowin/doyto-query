@@ -80,7 +80,7 @@ class MemoryDataAccessTest {
     }
 
     @Test
-    public void getShouldReturnDifferentEntityObject() {
+    void getShouldReturnDifferentEntityObject() {
         TestEntity u1 = testMemoryDataAccess.get(1);
         TestEntity u2 = testMemoryDataAccess.get(1);
         assertNotSame(u1, u2);

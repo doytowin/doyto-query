@@ -31,7 +31,7 @@ class CacheUtilTest {
     }
 
     @Test
-    public void invoke() throws InterruptedException {
+    void invoke() throws InterruptedException {
         ConcurrentMapCache cache = new ConcurrentMapCache("test");
         String key = "hello";
         assertNull(cache.get(key));
@@ -44,18 +44,18 @@ class CacheUtilTest {
     }
 
     @Test
-    public void whenCacheIsNoOpCache() {
+    void whenCacheIsNoOpCache() {
         assertEquals(Integer.valueOf(1), CacheUtil.invoke(new NoOpCache("noop"), "key", () -> 1));
     }
 
     @Test
-    public void whenKeyIsNull() {
+    void whenKeyIsNull() {
         ConcurrentMapCache cache = new ConcurrentMapCache("test");
         assertEquals(Integer.valueOf(1), CacheUtil.invoke(cache, null, () -> 1));
     }
 
     @Test
-    public void checkLogForPutException() throws InterruptedException {
+    void checkLogForPutException() throws InterruptedException {
         GlobalConfiguration.instance().setIgnoreCacheException(false);
 
         //given

@@ -16,10 +16,10 @@ import static org.mockito.Mockito.*;
  * @author f0rb
  */
 @SuppressWarnings("java:S2925")
-public class CacheWrapperTest {
+class CacheWrapperTest {
 
     @Test
-    public void whenValueIsNull() throws InterruptedException {
+    void whenValueIsNull() throws InterruptedException {
         CacheWrapper<Object> cacheWrapper = CacheWrapper.createInstance();
         cacheWrapper.setCache(new ConcurrentMapCache("test"));
 
@@ -37,7 +37,7 @@ public class CacheWrapperTest {
     }
 
     @Test
-    public void whenThrowCacheException() throws InterruptedException {
+    void whenThrowCacheException() throws InterruptedException {
         CacheWrapper<Object> cacheWrapper = CacheWrapper.createInstance();
         cacheWrapper.setCache(new ConcurrentMapCache("test") {
 

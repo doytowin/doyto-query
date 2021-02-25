@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author f0rb on 2020-04-11
  */
-public class JoinTest extends DemoApplicationTest {
+class JoinTest extends DemoApplicationTest {
 
     @Resource
     private JdbcOperations jdbcOperations;
