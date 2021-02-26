@@ -23,26 +23,26 @@ class QuerySuffixTest {
     }
 
     @Test
-    void buildAndSql() {
+    void buildConditionForFieldContainsOr() {
         ArrayList<Object> argList = new ArrayList<>();
-        String andSql = QuerySuffix.buildConditionForFieldContainsOr(argList, "test", "usernameOrUserCodeLike");
-        assertEquals("(username = ? OR userCode LIKE ?)", andSql);
+        String condition = QuerySuffix.buildConditionForFieldContainsOr("usernameOrUserCodeLike", argList, "test");
+        assertEquals("(username = ? OR userCode LIKE ?)", condition);
         assertThat(argList).containsExactly("test", "%test%");
     }
 
     @Test
-    void buildAndSqlWithAlias() {
+    void buildConditionForFieldContainsOrAndAlias() {
         ArrayList<Object> argList = new ArrayList<>();
-        String andSql = QuerySuffix.buildConditionForFieldContainsOr(argList, "test", "u.usernameOrUserCodeLike");
-        assertEquals("(u.username = ? OR u.userCode LIKE ?)", andSql);
+        String condition = QuerySuffix.buildConditionForFieldContainsOr("u.usernameOrUserCodeLike", argList, "test");
+        assertEquals("(u.username = ? OR u.userCode LIKE ?)", condition);
         assertThat(argList).containsExactly("test", "%test%");
     }
 
     @Test
     void buildEq() {
         ArrayList<Object> argList = new ArrayList<>();
-        String andSql = QuerySuffix.buildConditionForField(argList, "test", "testLikeEq");
-        assertEquals("testLike = ?", andSql);
+        String condition = QuerySuffix.buildConditionForField("testLikeEq", argList, "test");
+        assertThat(condition).isEqualTo("testLike = ?");
         assertThat(argList).containsExactly("test");
     }
 }

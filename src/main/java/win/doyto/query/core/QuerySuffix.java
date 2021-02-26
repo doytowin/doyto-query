@@ -95,22 +95,22 @@ enum QuerySuffix {
         return matcher.find() ? valueOf(matcher.group()) : NONE;
     }
 
-    static String buildConditionForFieldContainsOr(List<Object> argList, Object value, String fieldName) {
+    static String buildConditionForFieldContainsOr(String fieldNameWithOr, List<Object> argList, Object value) {
         final String alias;
-        int indexOfDot = fieldName.indexOf('.') + 1;
+        int indexOfDot = fieldNameWithOr.indexOf('.') + 1;
         if (indexOfDot > 0) {
-            alias = fieldName.substring(0, indexOfDot);
-            fieldName = fieldName.substring(indexOfDot);
+            alias = fieldNameWithOr.substring(0, indexOfDot);
+            fieldNameWithOr = fieldNameWithOr.substring(indexOfDot);
         } else {
             alias = "";
         }
-        String andSql = Arrays.stream(CommonUtil.splitByOr(fieldName))
-                              .map(fieldName0 -> buildConditionForField(argList, value, alias + fieldName0))
+        String andSql = Arrays.stream(CommonUtil.splitByOr(fieldNameWithOr))
+                              .map(fieldName -> buildConditionForField(alias + fieldName, argList, value))
                               .collect(Collectors.joining(Constant.SPACE_OR));
         return CommonUtil.wrapWithParenthesis(andSql);
     }
 
-    static String buildConditionForField(List<Object> argList, Object value, String fieldName) {
+    static String buildConditionForField(String fieldName, List<Object> argList, Object value) {
         QuerySuffix querySuffix = resolve(fieldName);
         value = querySuffix.valueProcessor.escapeValue(value);
         String columnName = querySuffix.resolveColumnName(fieldName);

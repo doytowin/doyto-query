@@ -48,9 +48,9 @@ final class FieldProcessor {
     private static Processor initCommonField(Field field) {
         String fieldName = field.getName();
         if (CommonUtil.containsOr(fieldName)) {
-            return (argList, value) -> QuerySuffix.buildConditionForFieldContainsOr(argList, value, fieldName);
+            return (argList, value) -> QuerySuffix.buildConditionForFieldContainsOr(fieldName, argList, value);
         } else {
-            return (argList, value) -> QuerySuffix.buildConditionForField(argList, value, fieldName);
+            return (argList, value) -> QuerySuffix.buildConditionForField(fieldName, argList, value);
         }
     }
 
@@ -58,9 +58,9 @@ final class FieldProcessor {
         String fieldName = field.getName();
         String tableAlias = field.getAnnotation(QueryTableAlias.class).value();
         if (CommonUtil.containsOr(fieldName)) {
-            return (argList, value) -> QuerySuffix.buildConditionForFieldContainsOr(argList, value, tableAlias + "." + fieldName);
+            return (argList, value) -> QuerySuffix.buildConditionForFieldContainsOr(tableAlias + "." + fieldName, argList, value);
         } else {
-            return (argList, value) -> QuerySuffix.buildConditionForField(argList, value, tableAlias + "." + fieldName);
+            return (argList, value) -> QuerySuffix.buildConditionForField(tableAlias + "." + fieldName, argList, value);
         }
     }
 
@@ -91,9 +91,9 @@ final class FieldProcessor {
         } else {
             String fieldName = field.getName();
             if (CommonUtil.containsOr(fieldName)) {
-                processor = (argList, value) -> WHERE + QuerySuffix.buildConditionForFieldContainsOr(argList, value, fieldName);
+                processor = (argList, value) -> WHERE + QuerySuffix.buildConditionForFieldContainsOr(fieldName, argList, value);
             } else {
-                processor = (argList, value) -> WHERE + QuerySuffix.buildConditionForField(argList, value, fieldName);
+                processor = (argList, value) -> WHERE + QuerySuffix.buildConditionForField(fieldName, argList, value);
             }
         }
         return processor;
