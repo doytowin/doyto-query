@@ -31,8 +31,9 @@ public class BuildHelper {
     }
 
     public static String buildWhere(PageQuery query, List<Object> argList) {
-        initFields(query);
-        Field[] fields = classFieldsMap.get(query.getClass());
+        Class<? extends PageQuery> clazz = query.getClass();
+        initFields(clazz);
+        Field[] fields = classFieldsMap.get(clazz);
         StringJoiner whereJoiner = new StringJoiner(" AND ", fields.length);
         for (Field field : fields) {
             Object value = readFieldGetter(field, query);
@@ -49,10 +50,9 @@ public class BuildHelper {
         return WHERE + whereJoiner.toString();
     }
 
-    private static void initFields(Object query) {
-        Class<?> clazz = query.getClass();
-        classFieldsMap.computeIfAbsent(clazz, aClass -> {
-            Field[] fields = Arrays.stream(clazz.getDeclaredFields()).filter(CommonUtil::fieldFilter).toArray(Field[]::new);
+    private static void initFields(Class<?> queryClass) {
+        classFieldsMap.computeIfAbsent(queryClass, c -> {
+            Field[] fields = Arrays.stream(c.getDeclaredFields()).filter(CommonUtil::fieldFilter).toArray(Field[]::new);
             Arrays.stream(fields).forEach(FieldProcessor::init);
             return fields;
         });
