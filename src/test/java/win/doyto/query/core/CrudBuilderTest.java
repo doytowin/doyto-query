@@ -159,11 +159,11 @@ class CrudBuilderTest {
 
     @Test
     void fixSQLInject() {
-        DynamicQuery dynamicQuery = DynamicQuery.builder().user("f0rb").project("; DROP TABLE menu;").scoreLt(100).build();
+        DynamicQuery dynamicQuery = DynamicQuery.builder().user("f0rb").project("; DROP TABLE menu;").scoreLt(80).build();
 
         assertEquals("SELECT * FROM t_dynamic_f0rb_${project} WHERE score < ?",
                      dynamicEntityCrudBuilder.buildSelectAndArgs(dynamicQuery, argList));
-        assertThat(argList).containsExactly(100);
+        assertThat(argList).containsExactly(80);
     }
 
     @Test
