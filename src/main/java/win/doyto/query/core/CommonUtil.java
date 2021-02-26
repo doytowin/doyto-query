@@ -13,7 +13,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.persistence.*;
@@ -144,7 +143,7 @@ class CommonUtil {
     static boolean isValidValue(Object value, Field field) {
         return !(value == null
                 || (value instanceof Boolean && field.getType().isPrimitive() && Boolean.FALSE.equals(value))
-                || (value instanceof Collection && field.getName().endsWith(QuerySuffix.NotIn.name()) && ((Collection<?>) value).isEmpty())
+                || (QuerySuffix.resolve(field.getName()).shouldIgnore(value))
         );
     }
 

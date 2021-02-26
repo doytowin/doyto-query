@@ -1,6 +1,7 @@
 package win.doyto.query.core;
 
 import org.junit.jupiter.api.Test;
+import win.doyto.query.core.test.TestEnum;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,5 +45,61 @@ class QuerySuffixTest {
         String condition = QuerySuffix.buildConditionForField("testLikeEq", argList, "test");
         assertThat(condition).isEqualTo("testLike = ?");
         assertThat(argList).containsExactly("test");
+    }
+
+    @Test
+    void buildLike() {
+        ArrayList<Object> argList = new ArrayList<>();
+        String andSql = QuerySuffix.buildConditionForField("nameLike", argList, "test");
+        assertThat(andSql).isEqualTo("name LIKE ?");
+        assertThat(argList).containsExactly("%test%");
+    }
+
+    @Test
+    void buildStart() {
+        ArrayList<Object> argList = new ArrayList<>();
+        String andSql = QuerySuffix.buildConditionForField("nameStart", argList, "test");
+        assertThat(andSql).isEqualTo("name LIKE ?");
+        assertThat(argList).containsExactly("test%");
+    }
+
+    @Test
+    void buildLikeWithBlankValue() {
+        ArrayList<Object> argList = new ArrayList<>();
+        String andSql = QuerySuffix.buildConditionForField("nameLike", argList, " ");
+        assertThat(andSql).isNull();
+        assertThat(argList).isEmpty();
+    }
+
+    @Test
+    void buildIn() {
+        ArrayList<Object> argList = new ArrayList<>();
+        String andSql = QuerySuffix.buildConditionForField("idIn", argList, Arrays.asList(1, 3, 5));
+        assertThat(andSql).isEqualTo("id IN (?, ?, ?)");
+        assertThat(argList).containsExactly(1, 3, 5);
+    }
+
+    @Test
+    void buildInEnums() {
+        ArrayList<Object> argList = new ArrayList<>();
+        String andSql = QuerySuffix.buildConditionForField("stateIn", argList, Arrays.asList(TestEnum.VIP, TestEnum.NORMAL));
+        assertThat(andSql).isEqualTo("state IN (?, ?)");
+        assertThat(argList).containsExactly(0, 1);
+    }
+
+    @Test
+    void buildIInNull() {
+        ArrayList<Object> argList = new ArrayList<>();
+        String andSql = QuerySuffix.buildConditionForField("stateIn", argList, Arrays.asList());
+        assertThat(andSql).isEqualTo("state IN (null)");
+        assertThat(argList).isEmpty();
+    }
+
+    @Test
+    void buildINotInNull() {
+        ArrayList<Object> argList = new ArrayList<>();
+        String andSql = QuerySuffix.buildConditionForField("stateNotIn", argList, Arrays.asList());
+        assertThat(andSql).isNull();
+        assertThat(argList).containsExactly();
     }
 }

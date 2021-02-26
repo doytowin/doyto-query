@@ -39,7 +39,17 @@ enum QuerySuffix {
             return CommonUtil.escapeLike(String.valueOf(value));
         }
     }),
-    NotIn("NOT IN", ValueProcessor.COLLECTION),
+    NotIn("NOT IN", new ValueProcessor() {
+        @Override
+        public String getPlaceHolderEx(Object value) {
+            return ValueProcessor.COLLECTION.getPlaceHolderEx(value);
+        }
+
+        @Override
+        public boolean shouldIgnore(Object value) {
+            return value instanceof Collection && ((Collection<?>) value).isEmpty();
+        }
+    }),
     In("IN", ValueProcessor.COLLECTION),
     NotNull("IS NOT NULL", ValueProcessor.EMPTY),
     Null("IS NULL", ValueProcessor.EMPTY),
@@ -104,12 +114,16 @@ enum QuerySuffix {
     }
 
     private String buildColumnCondition(String columnName, List<Object> argList, Object value) {
-        if (valueProcessor.shouldIgnore(value)) {
+        if (shouldIgnore(value)) {
             return null;
         }
         String placeHolderEx = valueProcessor.getPlaceHolderEx(value);
         appendArg(argList, value, placeHolderEx);
         return buildColumnClause(columnName, placeHolderEx);
+    }
+
+    public boolean shouldIgnore(Object value) {
+        return valueProcessor.shouldIgnore(value);
     }
 
     private String buildColumnClause(String columnName, String placeHolderEx) {
