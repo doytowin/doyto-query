@@ -27,36 +27,16 @@ import static win.doyto.query.core.Constant.SPACE;
 enum QuerySuffix {
     Not("!="),
     NotLike("NOT LIKE"),
-    Start("LIKE", new ValueProcessor() {
-        @Override
-        public String getPlaceHolderEx(Object value) {
-            return Constant.PLACE_HOLDER;
-        }
-
+    Start("LIKE", new LikeValueProcessor() {
         @Override
         public Object escapeValue(Object value) {
             return CommonUtil.escapeStart(String.valueOf(value));
         }
-
-        @Override
-        public boolean shouldIgnore(Object value) {
-            return value instanceof String && StringUtils.isBlank((String) value);
-        }
     }),
-    Like("LIKE", new ValueProcessor() {
-        @Override
-        public String getPlaceHolderEx(Object value) {
-            return Constant.PLACE_HOLDER;
-        }
-
+    Like("LIKE", new LikeValueProcessor() {
         @Override
         public Object escapeValue(Object value) {
             return CommonUtil.escapeLike(String.valueOf(value));
-        }
-
-        @Override
-        public boolean shouldIgnore(Object value) {
-            return value instanceof String && StringUtils.isBlank((String) value);
         }
     }),
     NotIn("NOT IN", ValueProcessor.COLLECTION),
@@ -196,6 +176,18 @@ enum QuerySuffix {
          */
         default boolean shouldIgnore(Object value) {
             return false;
+        }
+    }
+
+    private abstract static class LikeValueProcessor implements ValueProcessor {
+        @Override
+        public String getPlaceHolderEx(Object value) {
+            return Constant.PLACE_HOLDER;
+        }
+
+        @Override
+        public boolean shouldIgnore(Object value) {
+            return value instanceof String && StringUtils.isBlank((String) value);
         }
     }
 
