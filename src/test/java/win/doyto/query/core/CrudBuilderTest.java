@@ -132,11 +132,11 @@ class CrudBuilderTest {
         TestEntity testEntity = new TestEntity();
         testEntity.setNickname("测试");
 
-        TestQuery testQuery = TestQuery.builder().username("test").build();
+        TestQuery testQuery = TestQuery.builder().username("test").pageNumber(2).pageSize(5).build();
 
         SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildPatchAndArgsWithQuery(testEntity, testQuery);
 
-        assertEquals("UPDATE user SET nickname = ? WHERE username = ?", sqlAndArgs.getSql());
+        assertEquals("UPDATE user SET nickname = ? WHERE username = ? LIMIT 5", sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly("测试", "test");
     }
 

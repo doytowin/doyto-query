@@ -141,12 +141,16 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
     }
 
     public SqlAndArgs buildPatchAndArgsWithQuery(E entity, PageQuery query) {
-        return SqlAndArgs.buildSqlWithArgs(argList -> buildPatchAndArgs(entity, argList) + BuildHelper.buildWhere(query, argList));
+        return SqlAndArgs.buildSqlWithArgs(argList -> {
+            String sql = buildPatchAndArgs(entity, argList)
+                    + BuildHelper.buildWhere(query, argList);
+            return BuildHelper.buildPaging(sql, query);
+        });
     }
 
     public SqlAndArgs buildDeleteAndArgs(PageQuery query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
-            String sql = getDeleteFromTable(query.toIdWrapper())
+            String sql = buildDeleteFromTable(query.toIdWrapper())
                     +  BuildHelper.buildWhere(query, argList);
             return BuildHelper.buildPaging(sql, query);
         });
@@ -155,11 +159,11 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
     public SqlAndArgs buildDeleteById(IdWrapper<?> w) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             argList.add(w.getId());
-            return getDeleteFromTable(w) + whereId;
+            return buildDeleteFromTable(w) + whereId;
         });
     }
 
-    private String getDeleteFromTable(IdWrapper<?> idWrapper) {
+    private String buildDeleteFromTable(IdWrapper<?> idWrapper) {
         return "DELETE FROM " + resolveTableName(idWrapper);
     }
 
