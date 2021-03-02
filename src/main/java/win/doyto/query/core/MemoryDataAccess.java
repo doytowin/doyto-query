@@ -31,7 +31,7 @@ import static win.doyto.query.core.QuerySuffix.*;
  */
 @Slf4j
 @SuppressWarnings({"unchecked", "java:S3740"})
-public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
+public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> implements DataAccess<E, I, Q> {
     protected static final Map<Class<?>, Map<?, ?>> tableMap = new ConcurrentHashMap<>();
 
     protected final Map<I, E> entitiesMap = new ConcurrentHashMap<>();
@@ -191,17 +191,14 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
             .filter(item -> filterByQuery(query, item))
             .collect(Collectors.toList());
 
-        if (query instanceof PageQuery) {
-            PageQuery pageQuery = (PageQuery) query;
-            if (pageQuery.getSort() != null) {
-                doSort(queryList, pageQuery.getSort());
-            }
-            if (pageQuery.needPaging()) {
-                int from = pageQuery.getPageNumber() * pageQuery.getPageSize();
-                int end = Math.min(queryList.size(), from + pageQuery.getPageSize());
-                if (from <= end) {
-                    queryList = new ArrayList<>(queryList.subList(from, end));
-                }
+        if (query.getSort() != null) {
+            doSort(queryList, query.getSort());
+        }
+        if (query.needPaging()) {
+            int from = query.getPageNumber() * query.getPageSize();
+            int end = Math.min(queryList.size(), from + query.getPageSize());
+            if (from <= end) {
+                queryList = new ArrayList<>(queryList.subList(from, end));
             }
         }
 
