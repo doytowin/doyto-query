@@ -31,8 +31,8 @@ public class CacheProxy implements InvocationHandler {
         try {
             return method.invoke(delegate, args);
         } catch (InvocationTargetException e) {
-            log.error("{}#{}[cache={}, key={}] failed: {}",
-                      delegate.getClass().getName(), method.getName(), delegate.getName(), args.length > 0 ? args[0] : "",
+            log.error("{}#{}[cache={}, args={}] failed: {}",
+                      delegate.getClass().getName(), method.getName(), delegate.getName(), args,
                       e.getTargetException().getMessage()
             );
             return null;
