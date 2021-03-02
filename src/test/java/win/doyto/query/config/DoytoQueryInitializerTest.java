@@ -5,8 +5,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import win.doyto.query.core.Dialect;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * DoytoQueryInitializerTest
@@ -25,5 +24,12 @@ class DoytoQueryInitializerTest {
         assertFalse(globalConfiguration.isMapCamelCaseToUnderscore());
         assertTrue(globalConfiguration.isIgnoreCacheException());
         assertTrue(globalConfiguration.getDialect() instanceof Dialect);
+    }
+
+    @Test
+    void newDialect() {
+        DoytoQueryInitializer doytoQueryInitializer = new DoytoQueryInitializer();
+        assertThrows(ClassNotFoundException.class,
+                     () -> doytoQueryInitializer.newDialect("fake.DialectClass"));
     }
 }

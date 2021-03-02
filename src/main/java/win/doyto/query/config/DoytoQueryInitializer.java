@@ -15,7 +15,6 @@ public class DoytoQueryInitializer implements ApplicationContextInitializer<Conf
     private static final String DOYTO_QUERY_CONFIG = "doyto.query.config.";
 
     @Override
-    @SneakyThrows
     public void initialize(ConfigurableApplicationContext context) {
         GlobalConfiguration globalConfiguration = GlobalConfiguration.instance();
         ConfigurableEnvironment environment = context.getEnvironment();
@@ -25,7 +24,12 @@ public class DoytoQueryInitializer implements ApplicationContextInitializer<Conf
         globalConfiguration.setIgnoreCacheException(environment.getProperty(DOYTO_QUERY_CONFIG + "ignore-cache-exception", boolean.class, globalConfiguration.isIgnoreCacheException()));
 
         String dialectClass = environment.getProperty(DOYTO_QUERY_CONFIG + "dialect", globalConfiguration.getDialect().getClass().getName());
-        Dialect dialect = (Dialect) Class.forName(dialectClass).getDeclaredConstructor().newInstance();
+        Dialect dialect = newDialect(dialectClass);
         globalConfiguration.setDialect(dialect);
+    }
+
+    @SneakyThrows
+    Dialect newDialect(String dialectClass) {
+        return (Dialect) Class.forName(dialectClass).getDeclaredConstructor().newInstance();
     }
 }
