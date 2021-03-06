@@ -13,7 +13,7 @@
 
     <groupId>win.doyto</groupId>
     <artifactId>doyto-query-web</artifactId>
-    <version>0.2.1-RELEASE</version>
+    <version>0.2.2-SNAPSHOT</version>
 
     <properties>
         <argLine/>
