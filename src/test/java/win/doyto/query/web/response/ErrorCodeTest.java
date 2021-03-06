@@ -11,12 +11,14 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class ErrorCodeTest {
 
+    private ErrorCode failCode = ErrorCode.build("fail");
+
     @Test
     void testAssertTrue() {
-        ErrorCode.assertTrue(true, ErrorCode.build("fail"));
+        ErrorCode.assertTrue(true, failCode);
 
         try {
-            ErrorCode.assertTrue(false, ErrorCode.build("fail"));
+            ErrorCode.assertTrue(false, failCode);
             fail();
         } catch (ErrorCodeException e) {
             assertFalse(e.getErrorCode().isSuccess());
@@ -26,10 +28,10 @@ class ErrorCodeTest {
 
     @Test
     void assertNotNull() {
-        ErrorCode.assertNotNull("ok", ErrorCode.build("fail"));
+        ErrorCode.assertNotNull("ok", failCode);
 
         try {
-            ErrorCode.assertNotNull(null, ErrorCode.build("fail"));
+            ErrorCode.assertNotNull(null, failCode);
             fail();
         } catch (ErrorCodeException e) {
             assertFalse(e.getErrorCode().isSuccess());
