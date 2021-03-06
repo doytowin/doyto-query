@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author f0rb on 2020-04-02
  */
-public class RoleMvcTest extends DemoApplicationTest {
+class RoleMvcTest extends DemoApplicationTest {
 
     @Test
     void getById() throws Exception {
