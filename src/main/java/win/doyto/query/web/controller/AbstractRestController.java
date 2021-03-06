@@ -29,7 +29,7 @@ public abstract class AbstractRestController<E extends Persistable<I>, I extends
     protected final CrudService<E, I, Q> service;
 
     @SuppressWarnings("unchecked")
-    public AbstractRestController(CrudService<E, I, Q> service) {
+    protected AbstractRestController(CrudService<E, I, Q> service) {
         super(service, new TypeReference<IdWrapper.Simple<I>>() {});
         this.service = service;
     }

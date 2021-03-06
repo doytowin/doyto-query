@@ -38,7 +38,7 @@ abstract class AbstractController<E extends Persistable<I>, I extends Serializab
     private final TypeReference<? extends IdWrapper<I>> typeReference;
 
     @SuppressWarnings("unchecked")
-    public AbstractController(DynamicService<E, I, Q> service, TypeReference<? extends IdWrapper<I>> typeReference) {
+    protected AbstractController(DynamicService<E, I, Q> service, TypeReference<? extends IdWrapper<I>> typeReference) {
         this.service = service;
         this.typeReference = typeReference;
         Type[] types = BeanUtil.getActualTypeArguments(getClass());

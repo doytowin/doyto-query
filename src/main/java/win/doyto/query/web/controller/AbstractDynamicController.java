@@ -21,7 +21,7 @@ public abstract class AbstractDynamicController
         extends AbstractController<E, I, Q, R, S, W>
         implements RestApi<W, Q, R, S> {
 
-    public AbstractDynamicController(DynamicService<E, I, Q> service, TypeReference<W> typeReference) {
+    protected AbstractDynamicController(DynamicService<E, I, Q> service, TypeReference<W> typeReference) {
         super(service, typeReference);
     }
 

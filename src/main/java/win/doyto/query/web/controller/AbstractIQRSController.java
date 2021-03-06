@@ -37,12 +37,12 @@ public abstract class AbstractIQRSController
 
     private final Class<S> responseClass;
 
-    public AbstractIQRSController() {
+    protected AbstractIQRSController() {
         this(4);
     }
 
     @SuppressWarnings("unchecked")
-    public AbstractIQRSController(int sTypeIndex) {
+    protected AbstractIQRSController(int sTypeIndex) {
         this.responseClass = (Class<S>) BeanUtil.getActualTypeArguments(getClass())[sTypeIndex];
     }
 

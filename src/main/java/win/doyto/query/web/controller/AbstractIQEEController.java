@@ -13,7 +13,7 @@ import java.io.Serializable;
 public abstract class AbstractIQEEController<E extends Persistable<I>, I extends Serializable, Q extends PageQuery>
         extends AbstractIQRSController<E, I, Q, E, E> {
 
-    public AbstractIQEEController() {
+    protected AbstractIQEEController() {
         super(0);
     }
 
