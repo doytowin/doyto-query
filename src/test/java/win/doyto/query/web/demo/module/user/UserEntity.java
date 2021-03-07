@@ -3,7 +3,7 @@ package win.doyto.query.web.demo.module.user;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.entity.CommonEntity;
-import win.doyto.query.validation.CreateGroup;
+import win.doyto.query.web.validation.CreateGroup;
 
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;

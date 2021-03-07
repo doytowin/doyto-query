@@ -2,8 +2,8 @@ package win.doyto.query.web.demo.module.menu;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.validation.PatchGroup;
-import win.doyto.query.validation.UpdateGroup;
+import win.doyto.query.web.validation.PatchGroup;
+import win.doyto.query.web.validation.UpdateGroup;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
