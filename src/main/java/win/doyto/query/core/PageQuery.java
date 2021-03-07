@@ -59,11 +59,12 @@ public class PageQuery implements Serializable {
     }
 
     public int calcOffset() {
-        return needPaging() ? getPageSize() * getPageNumber() : 0;
+        Integer page = getPageNumber();
+        return page != null ? page * getPageSize(): 0;
     }
 
     public boolean needPaging() {
-        return getPageNumber() != null;
+        return pageNumber != null || pageSize != null;
     }
 
     public void forcePaging() {
