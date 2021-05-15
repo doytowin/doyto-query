@@ -110,17 +110,22 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
         queryCacheWrapper.clear();
     }
 
-    protected boolean caching() {
+    protected boolean cacheable() {
         return !(entityCacheWrapper.getCache() instanceof NoOpCache);
     }
 
     @Override
     public List<E> query(Q query) {
+        String key = generateCacheKey(query);
+        return queryCacheWrapper.execute(key, () -> dataAccess.query(query));
+    }
+
+    protected String generateCacheKey(Q query) {
         String key = null;
-        if (caching() && !TransactionSynchronizationManager.isActualTransactionActive()) {
+        if (cacheable() && !TransactionSynchronizationManager.isActualTransactionActive()) {
             key = ToStringBuilder.reflectionToString(query, NonNullToStringStyle.NO_CLASS_NAME_NON_NULL_STYLE);
         }
-        return queryCacheWrapper.execute(key, () -> dataAccess.query(query));
+        return key;
     }
 
     public long count(Q query) {
