@@ -152,12 +152,9 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     protected boolean filterByQuery(Q query, E entity) {
         for (Field field : query.getClass().getDeclaredFields()) {
             if (supportFilter(field)) {
-                Object v1 = readField(field, query);
-                if (isValidValue(v1, field)) {
-                    boolean shouldNotRemain = unsatisfied(entity, field.getName(), v1);
-                    if (shouldNotRemain) {
-                        return false;
-                    }
+                Object value = readField(field, query);
+                if (isValidValue(value, field) && shouldDiscard(entity, field.getName(), value)) {
+                    return false;
                 }
             }
         }
@@ -168,11 +165,11 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         return fieldFilter(field) && !field.isAnnotationPresent(NestedQueries.class);
     }
 
-    protected Boolean unsatisfied(E entity, String queryFieldName, Object queryFieldValue) {
+    protected boolean shouldDiscard(E entity, String queryFieldName, Object queryFieldValue) {
         if (containsOr(queryFieldName)) {
             boolean result = true;
-            for (String s : splitByOr(queryFieldName)) {
-                result &= unsatisfied(entity, s, queryFieldValue);
+            for (String fieldName : splitByOr(queryFieldName)) {
+                result &= shouldDiscard(entity, fieldName, queryFieldValue);
             }
             return result;
         }
@@ -187,21 +184,26 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     @Override
     public List<E> query(Q query) {
         List<E> queryList = entitiesMap
-            .values().stream()
-            .filter(item -> filterByQuery(query, item))
-            .collect(Collectors.toList());
+                .values().stream()
+                .filter(item -> filterByQuery(query, item))
+                .collect(Collectors.toList());
 
         if (query.getSort() != null) {
             doSort(queryList, query.getSort());
         }
         if (query.needPaging()) {
-            int from = query.getPageNumber() * query.getPageSize();
-            int end = Math.min(queryList.size(), from + query.getPageSize());
-            if (from <= end) {
-                queryList = new ArrayList<>(queryList.subList(from, end));
-            }
+            queryList = truncateByPaging(queryList, query);
         }
 
+        return queryList;
+    }
+
+    private List<E> truncateByPaging(List<E> queryList, PageQuery pageQuery) {
+        int from = pageQuery.calcOffset();
+        int end = Math.min(queryList.size(), from + pageQuery.getPageSize());
+        if (from <= end) {
+            queryList = queryList.subList(from, end);
+        }
         return queryList;
     }
 
