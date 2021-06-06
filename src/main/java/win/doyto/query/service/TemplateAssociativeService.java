@@ -18,7 +18,7 @@ import static java.util.Collections.singleton;
  *
  * @author f0rb on 2019-05-30
  */
-public class AssociativeServiceTemplate<L, R> implements AssociativeService<L, R> {
+public class TemplateAssociativeService<L, R> implements AssociativeService<L, R> {
 
     private final AssociativeSqlBuilder sqlBuilder;
     private final SingleColumnRowMapper<L> leftRowMapper = new SingleColumnRowMapper<>();
@@ -30,11 +30,11 @@ public class AssociativeServiceTemplate<L, R> implements AssociativeService<L, R
     @Autowired(required = false)
     private UserIdProvider<?> userIdProvider = () -> null;
 
-    public AssociativeServiceTemplate(String table, String left, String right) {
+    public TemplateAssociativeService(String table, String left, String right) {
         this(table, left, right, null);
     }
 
-    public AssociativeServiceTemplate(String table, String left, String right, String createUserColumn) {
+    public TemplateAssociativeService(String table, String left, String right, String createUserColumn) {
         this.sqlBuilder = new AssociativeSqlBuilder(table, left, right, createUserColumn);
     }
 

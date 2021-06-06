@@ -8,7 +8,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import win.doyto.query.service.AssociativeService;
-import win.doyto.query.service.AssociativeServiceTemplate;
+import win.doyto.query.service.TemplateAssociativeService;
 import win.doyto.query.web.WebMvcConfigurerAdapter;
 import win.doyto.query.web.component.ListValidator;
 
@@ -35,12 +35,12 @@ public class DemoApplication extends WebMvcConfigurerAdapter {
 
     @Bean
     public AssociativeService<Long, Integer> userAndRoleAssociativeService() {
-        return new AssociativeServiceTemplate<>("t_user_and_role", "userId", "roleId", "createUserId");
+        return new TemplateAssociativeService<>("t_user_and_role", "userId", "roleId", "createUserId");
     }
 
     @Bean
     public AssociativeService<Integer, Integer> roleAndPermissionAssociativeService() {
-        return new AssociativeServiceTemplate<>("t_role_and_permission", "roleId", "permissionId");
+        return new TemplateAssociativeService<>("t_role_and_permission", "roleId", "permissionId");
     }
 
     @Bean
