@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import win.doyto.query.core.Dialect;
 
+import java.util.function.Function;
+
 /**
  * GlobalConfiguration
  *
@@ -18,13 +20,11 @@ public class GlobalConfiguration {
 
     private boolean mapCamelCaseToUnderscore;
     private boolean ignoreCacheException = true;
-
-    private boolean startPageNumberFromOne;
-
     private Dialect dialect = new MySQLDialect();
+    private Function<Integer, Integer> startPageNumberAdjuster;
 
-    public static int calcStartPageNumber(Integer page) {
-        return instance().isStartPageNumberFromOne() ? Math.max(page - 1, 0) : page;
+    public static int adjustStartPageNumber(Integer page) {
+        return instance().getStartPageNumberAdjuster().apply(page);
     }
 
     public static GlobalConfiguration instance() {
@@ -33,6 +33,10 @@ public class GlobalConfiguration {
 
     private static class Singleton {
         private static final GlobalConfiguration instance = new GlobalConfiguration();
+
+        static {
+            instance.setStartPageNumberFromOne(false);
+        }
     }
 
     public static Dialect dialect() {
@@ -40,7 +44,7 @@ public class GlobalConfiguration {
     }
 
     public void setStartPageNumberFromOne(boolean startPageNumberFromOne) {
-        this.startPageNumberFromOne = startPageNumberFromOne;
+        instance().setStartPageNumberAdjuster(page -> startPageNumberFromOne ? Math.max(page - 1, 0) : page);
     }
 
 }

@@ -61,7 +61,7 @@ public class PageQuery implements Serializable {
 
     public int calcOffset() {
         Integer page = getPageNumber();
-        return page == null ? 0 : GlobalConfiguration.calcStartPageNumber(page) * getPageSize();
+        return page == null ? 0 : GlobalConfiguration.adjustStartPageNumber(page) * getPageSize();
     }
 
     public boolean needPaging() {
