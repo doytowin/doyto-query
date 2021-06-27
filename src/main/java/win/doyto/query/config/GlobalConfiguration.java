@@ -18,7 +18,14 @@ public class GlobalConfiguration {
 
     private boolean mapCamelCaseToUnderscore;
     private boolean ignoreCacheException = true;
+
+    private boolean startPageNumberFromOne;
+
     private Dialect dialect = new MySQLDialect();
+
+    public static int calcStartPageNumber(Integer page) {
+        return instance().isStartPageNumberFromOne() ? Math.max(page - 1, 0) : page;
+    }
 
     public static GlobalConfiguration instance() {
         return Singleton.instance;
@@ -31,4 +38,9 @@ public class GlobalConfiguration {
     public static Dialect dialect() {
         return instance().dialect;
     }
+
+    public void setStartPageNumberFromOne(boolean startPageNumberFromOne) {
+        this.startPageNumberFromOne = startPageNumberFromOne;
+    }
+
 }
