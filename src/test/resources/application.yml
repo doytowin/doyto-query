@@ -17,6 +17,7 @@ spring:
 doyto:
   query:
     config:
+      start-page-number-from-one: false
       dialect: win.doyto.query.demo.common.HSQLDBDialect
 #    caches:
 #      module:user,
