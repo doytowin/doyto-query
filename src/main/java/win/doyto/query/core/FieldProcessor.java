@@ -110,19 +110,22 @@ final class FieldProcessor {
     }
 
     private static StringBuilder resolvedNestedQueries(NestedQueries nestedQueries) {
-        StringBuilder subquery = new StringBuilder();
+        StringBuilder nestedQueryBuilder = new StringBuilder();
         String lastOp = nestedQueries.op();
+        String lastWhere = nestedQueries.column();
         NestedQuery[] nestedQueryArr = nestedQueries.value();
-        NestedQuery nestedQuery = nestedQueryArr[0];
-        subquery.append(SPACE).append(lastOp).append(" (").append(getNestedQuery(nestedQuery));
-        lastOp = nestedQuery.op();
-        for (int i = 1, valueLength = nestedQueryArr.length; i < valueLength; i++) {
-            nestedQuery = nestedQueryArr[i];
-            subquery.append(WHERE).append(nestedQuery.select());
-            subquery.append(SPACE).append(lastOp).append(" (").append(getNestedQuery(nestedQuery));
+
+        for (int i = 0; i < nestedQueryArr.length; i++) {
+            NestedQuery nestedQuery = nestedQueryArr[i];
+            if (i > 0) {
+                nestedQueryBuilder.append(WHERE).append(StringUtils.defaultIfBlank(lastWhere, nestedQuery.select()));
+            }
+            nestedQueryBuilder.append(SPACE).append(lastOp).append(" (").append(getNestedQuery(nestedQuery));
+
             lastOp = nestedQuery.op();
+            lastWhere = nestedQuery.where();
         }
-        return subquery;
+        return nestedQueryBuilder;
     }
 
     private static String getNestedQuery(NestedQuery nestedQuery) {
@@ -130,7 +133,7 @@ final class FieldProcessor {
                 nestedQuery.select() +
                 FROM +
                 nestedQuery.from() +
-                (nestedQuery.extra().isEmpty() ? EMPTY : SPACE + nestedQuery.extra());
+                StringUtils.defaultIfBlank(SPACE + nestedQuery.extra(), EMPTY);
     }
 
     interface Processor {

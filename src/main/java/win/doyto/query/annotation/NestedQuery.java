@@ -14,7 +14,17 @@ public @interface NestedQuery {
 
     String from();
 
+    /**
+     * @return some join clause.
+     */
     String extra() default "";
+
+    /**
+     * Will use next @NestedQuery.select() as column if empty.
+     *
+     * @return custom column for next nested query.
+     */
+    String where() default "";
 
     String op() default "IN";
 
