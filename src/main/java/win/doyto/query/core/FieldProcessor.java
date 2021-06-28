@@ -47,20 +47,21 @@ final class FieldProcessor {
 
     private static Processor initCommonField(Field field) {
         String fieldName = field.getName();
-        if (CommonUtil.containsOr(fieldName)) {
-            return (argList, value) -> QuerySuffix.buildConditionForFieldContainsOr(fieldName, argList, value);
-        } else {
-            return (argList, value) -> QuerySuffix.buildConditionForField(fieldName, argList, value);
-        }
+        return chooseProcessorForFieldWithOr(fieldName);
     }
 
     private static Processor initFieldAnnotatedByQueryTableAlias(Field field) {
         String fieldName = field.getName();
         String tableAlias = field.getAnnotation(QueryTableAlias.class).value();
+        String fieldNameWithAlias = tableAlias + "." + fieldName;
+        return chooseProcessorForFieldWithOr(fieldNameWithAlias);
+    }
+
+    private static Processor chooseProcessorForFieldWithOr(String fieldName) {
         if (CommonUtil.containsOr(fieldName)) {
-            return (argList, value) -> QuerySuffix.buildConditionForFieldContainsOr(tableAlias + "." + fieldName, argList, value);
+            return (argList, value) -> QuerySuffix.buildConditionForFieldContainsOr(fieldName, argList, value);
         } else {
-            return (argList, value) -> QuerySuffix.buildConditionForField(tableAlias + "." + fieldName, argList, value);
+            return (argList, value) -> QuerySuffix.buildConditionForField(fieldName, argList, value);
         }
     }
 
