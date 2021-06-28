@@ -6,14 +6,11 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.NestedQueries;
-import win.doyto.query.entity.CommonEntity;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -38,7 +35,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     private final AtomicLong idGenerator = new AtomicLong(0);
     private final List<Field> fields;
     private final Field idField;
-    private Class<I> idFieldType;
+    private final Class<I> idFieldType;
 
     public MemoryDataAccess(Class<E> entityClass) {
         tableMap.put(entityClass, entitiesMap);
@@ -51,15 +48,16 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
         if (idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class)) {
             idField = idFields[0];
-            if (CommonEntity.class.isAssignableFrom(entityClass)) {
-                ParameterizedType parameterizedType = (ParameterizedType) entityClass.getGenericSuperclass();
-                Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-                idFieldType = (Class<I>) actualTypeArguments[0];
-            } else {
-                idFieldType = (Class<I>) idField.getType();
+            Class<I> type;
+            try {
+                type = (Class<I>) BeanUtil.getActualTypeArguments(entityClass)[0];
+            } catch (ClassCastException e) {
+                type = (Class<I>) idField.getType();
             }
+            idFieldType = type;
         } else {
             idField = null;
+            idFieldType = null;
         }
 
     }

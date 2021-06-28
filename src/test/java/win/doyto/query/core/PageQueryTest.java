@@ -1,7 +1,6 @@
 package win.doyto.query.core;
 
 import org.junit.jupiter.api.Test;
-import win.doyto.query.config.GlobalConfiguration;
 
 import java.util.regex.Pattern;
 
@@ -48,16 +47,5 @@ class PageQueryTest {
         assertTrue(sortPtn.matcher("field(gender,'male','female');id,desc").matches());
 
         assertTrue(sortPtn.matcher("field(gender,'male','female')").matches());
-    }
-
-    @Test
-    void configPageStartFromOne() {
-        PageQuery pageQuery = PageQuery.builder().pageNumber(1).build();
-
-        GlobalConfiguration.instance().setStartPageNumberFromOne(true);
-        assertEquals(0, pageQuery.calcOffset());
-
-        GlobalConfiguration.instance().setStartPageNumberFromOne(false);
-        assertEquals(10, pageQuery.calcOffset());
     }
 }

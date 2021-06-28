@@ -2,7 +2,7 @@ package win.doyto.query.core.test;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.entity.IntegerId;
+import win.doyto.query.entity.AbstractPersistable;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,7 +21,7 @@ import javax.persistence.Transient;
 @Setter
 @Entity
 @Table(name = TestEntity.TABLE)
-public class TestEntity extends IntegerId {
+public class TestEntity extends AbstractPersistable<Integer> {
     public static final String TABLE = "user";
     @Column
     private String username;

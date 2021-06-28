@@ -19,26 +19,11 @@ public class DoytoQueryInitializer implements ApplicationContextInitializer<Conf
         GlobalConfiguration globalConfiguration = GlobalConfiguration.instance();
         ConfigurableEnvironment environment = context.getEnvironment();
 
-        configCamelCase(globalConfiguration, environment);
-        configIgnoreCacheException(globalConfiguration, environment);
-        configDialect(globalConfiguration, environment);
-        configStartPageNumber(globalConfiguration, environment);
-    }
+        globalConfiguration.setMapCamelCaseToUnderscore(environment.getProperty(DOYTO_QUERY_CONFIG + "map-camel-case-to-underscore", boolean.class, globalConfiguration.isMapCamelCaseToUnderscore()));
 
-    private void configStartPageNumber(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {
-        globalConfiguration.setStartPageNumberFromOne(environment.getProperty(getKey("start-page-number-from-one"), boolean.class, false));
-    }
+        globalConfiguration.setIgnoreCacheException(environment.getProperty(DOYTO_QUERY_CONFIG + "ignore-cache-exception", boolean.class, globalConfiguration.isIgnoreCacheException()));
 
-    private void configCamelCase(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {
-        globalConfiguration.setStartPageNumberFromOne(environment.getProperty(getKey("map-camel-case-to-underscore"), boolean.class, globalConfiguration.isMapCamelCaseToUnderscore()));
-    }
-
-    private void configIgnoreCacheException(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {
-        globalConfiguration.setIgnoreCacheException(environment.getProperty(getKey("ignore-cache-exception"), boolean.class, globalConfiguration.isIgnoreCacheException()));
-    }
-
-    private void configDialect(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {
-        String dialectClass = environment.getProperty(getKey("dialect"), globalConfiguration.getDialect().getClass().getName());
+        String dialectClass = environment.getProperty(DOYTO_QUERY_CONFIG + "dialect", globalConfiguration.getDialect().getClass().getName());
         Dialect dialect = newDialect(dialectClass);
         globalConfiguration.setDialect(dialect);
     }
@@ -46,9 +31,5 @@ public class DoytoQueryInitializer implements ApplicationContextInitializer<Conf
     @SneakyThrows
     Dialect newDialect(String dialectClass) {
         return (Dialect) Class.forName(dialectClass).getDeclaredConstructor().newInstance();
-    }
-
-    private String getKey(String key) {
-        return DOYTO_QUERY_CONFIG + key;
     }
 }

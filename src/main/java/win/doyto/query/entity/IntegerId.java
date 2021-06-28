@@ -1,25 +1,15 @@
 package win.doyto.query.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.Serializable;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
 
 /**
  * IntegerId
  *
  * @author f0rb
+ * @deprecated use {@link AbstractPersistable} instead.
  */
-@Getter
-@Setter
-@MappedSuperclass
-public abstract class IntegerId implements Persistable<Integer>, Serializable {
-
-    @Id
-    @GeneratedValue
-    protected Integer id;
+@SuppressWarnings({"java:S1133", "java:S2176"})
+@Deprecated
+public abstract class IntegerId extends AbstractPersistable<Integer> implements Serializable {
 
 }

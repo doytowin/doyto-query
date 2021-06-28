@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.validation.PageGroup;
 
 import java.io.Serializable;
@@ -61,7 +60,7 @@ public class PageQuery implements Serializable {
 
     public int calcOffset() {
         Integer page = getPageNumber();
-        return page == null ? 0 : GlobalConfiguration.adjustStartPageNumber(page) * getPageSize();
+        return page != null ? page * getPageSize() : 0;
     }
 
     public boolean needPaging() {

@@ -2,7 +2,7 @@ package win.doyto.query.core;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.entity.IntegerId;
+import win.doyto.query.entity.AbstractPersistable;
 
 import java.util.Date;
 import javax.persistence.Column;
@@ -19,7 +19,7 @@ import javax.persistence.Transient;
 @Setter
 @Entity
 @Table(name = DynamicEntity.TABLE)
-public class DynamicEntity extends IntegerId {
+public class DynamicEntity extends AbstractPersistable<Integer> {
     public static final String TABLE = "t_dynamic_${user}_${project}";
 
     @Transient

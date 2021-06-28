@@ -5,9 +5,6 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
 
 /**
  * CommonEntity
@@ -16,14 +13,10 @@ import javax.persistence.MappedSuperclass;
  */
 @Getter
 @Setter
-@MappedSuperclass
 public abstract class CommonEntity<I extends Serializable, U extends Serializable>
-    implements Persistable<I>, Serializable, CreateUserAware<U>, UpdateUserAware<U> {
+        extends AbstractPersistable<I> implements Serializable, CreateUserAware<U>, UpdateUserAware<U> {
 
-    @Id
-    @GeneratedValue
-    protected I id;
-
+    private static final long serialVersionUID = 3904043862384245488L;
     /**
      * 创建者
      */
