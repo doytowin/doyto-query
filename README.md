@@ -1,7 +1,8 @@
 DoytoQuery -- A Java implementation for the 2nd generation ORM Framework
 ---
 [![License](https://img.shields.io/:license-apache-brightgreen.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/win.doyto/doyto-query/badge.svg)](https://maven-badges.herokuapp.com/maven-central/win.doyto/doyto-query/)
+[![Maven Central](https://img.shields.io/maven-central/v/win.doyto/doyto-query?color=brightgreen)](https://search.maven.org/artifact/win.doyto/doyto-query/)
+[![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/win.doyto/doyto-query?color=blue&server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query/)
 [![Sonar Stats](https://sonarcloud.io/api/project_badges/measure?project=win.doyto%3Adoyto-query&metric=alert_status)](https://sonarcloud.io/dashboard?id=win.doyto%3Adoyto-query)
 [![Code Lines](https://sonarcloud.io/api/project_badges/measure?project=win.doyto%3Adoyto-query&metric=ncloc)](https://sonarcloud.io/component_measures?id=win.doyto%3Adoyto-query&metric=ncloc)
 [![Coverage Status](https://sonarcloud.io/api/project_badges/measure?project=win.doyto%3Adoyto-query&metric=coverage)](https://sonarcloud.io/component_measures?id=win.doyto%3Adoyto-query&metric=coverage)
