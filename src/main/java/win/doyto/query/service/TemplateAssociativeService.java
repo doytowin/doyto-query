@@ -8,6 +8,7 @@ import win.doyto.query.core.SqlAndArgs;
 import win.doyto.query.entity.UserIdProvider;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Collections.singleton;
@@ -58,21 +59,25 @@ public class TemplateAssociativeService<L, R> implements AssociativeService<L, R
 
     @Override
     public List<R> getByLeftId(L leftId) {
+        SqlAndArgs.logSqlInfo(sqlBuilder.getByLeftId, Collections.singletonList(leftId));
         return jdbcOperations.query(sqlBuilder.getByLeftId, rightRowMapper, leftId);
     }
 
     @Override
     public int deleteByLeftId(L leftId) {
+        SqlAndArgs.logSqlInfo(sqlBuilder.deleteByLeftId, Collections.singletonList(leftId));
         return jdbcOperations.update(sqlBuilder.deleteByLeftId, leftId);
     }
 
     @Override
     public List<L> getByRightId(R rightId) {
+        SqlAndArgs.logSqlInfo(sqlBuilder.getByRightId, Collections.singletonList(rightId));
         return jdbcOperations.query(sqlBuilder.getByRightId, leftRowMapper, rightId);
     }
 
     @Override
     public int deleteByRightId(R rightId) {
+        SqlAndArgs.logSqlInfo(sqlBuilder.deleteByRightId, Collections.singletonList(rightId));
         return jdbcOperations.update(sqlBuilder.deleteByRightId, rightId);
     }
 

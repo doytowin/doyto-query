@@ -28,7 +28,7 @@ public class SqlAndArgs {
         logSqlInfo(sql, argList);
     }
 
-    static void logSqlInfo(String sql, List<?> argList) {
+    public static void logSqlInfo(String sql, List<?> argList) {
         if (log.isDebugEnabled()) {
             log.debug("SQL  : {}", sql);
             String params = argList
