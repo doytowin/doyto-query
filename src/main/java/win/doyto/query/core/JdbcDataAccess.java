@@ -1,6 +1,5 @@
 package win.doyto.query.core;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -20,8 +19,6 @@ import java.util.function.BiConsumer;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Transient;
-
-import static win.doyto.query.core.Constant.SEPARATOR;
 
 /**
  * JdbcDataAccess
@@ -82,11 +79,9 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
 
     @Override
     public final <V> List<V> queryColumns(Q q, Class<V> clazz, String... columns) {
-        columns = StringUtils.join(columns, SEPARATOR).split("\\s*,\\s*");
-        boolean isSingleColumn = columns.length == 1;
         @SuppressWarnings("unchecked")
         RowMapper<V> localRowMapper = (RowMapper<V>) classRowMapperMap.computeIfAbsent(
-                clazz, c -> isSingleColumn ? new SingleColumnRowMapper<>(clazz) : new BeanPropertyRowMapper<>(clazz));
+                clazz, c -> CommonUtil.isSingleColumn(columns) ? new SingleColumnRowMapper<>(clazz) : new BeanPropertyRowMapper<>(clazz));
         return queryColumns(q, localRowMapper, columns);
     }
 

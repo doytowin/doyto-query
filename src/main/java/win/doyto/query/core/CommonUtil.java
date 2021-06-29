@@ -180,4 +180,8 @@ class CommonUtil {
         String fieldName = dialect.wrapLabel(field.getName());
         return columnName.equalsIgnoreCase(fieldName) ? columnName : columnName + " AS " + fieldName;
     }
+
+    static boolean isSingleColumn(String... columns) {
+        return columns.length == 1 && !columns[0].contains(",");
+    }
 }
