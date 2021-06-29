@@ -1,20 +1,34 @@
 name: Release
 
 on:
-  workflow_dispatch:
   release:
     types: [created]
 
 jobs:
-  deploy:
+  release:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git User
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
 
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: '8'
+          java-version: 8
           distribution: 'adopt'
           server-id: sonatype-nexus-staging # Value of the distributionManagement/repository/id field of the pom.xml
           server-username: OSSRH_USERNAME # env variable for username in deploy
@@ -23,17 +37,19 @@ jobs:
           gpg-passphrase: MAVEN_GPG_PASSPHRASE # env variable for GPG private key passphrase
 
       - name: Deploy to Nexus
-        run: |
-          mvn clean \
-          org.projectlombok:lombok-maven-plugin:1.18.6.0:delombok \
-          -Dlombok.sourceDirectory=src/main/java \
-          -Dlombok.outputDirectory=target/delombok \
-          -Dlombok.addOutputDirectory=false \
-          -DsourceDirectory=target/delombok \
-          -DskipTests=true \
-          package deploy -P sonatype-oss-release
         env:
           GPG_TTY: $(tty)
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mvn -B clean \
+          org.projectlombok:lombok-maven-plugin:1.18.20.0:delombok \
+          -Dlombok.sourceDirectory=src/main/java \
+          -Dlombok.outputDirectory=target/delombok \
+          -Dlombok.addOutputDirectory=false \
+          -DsourceDirectory=target/delombok \
+          -DskipTests=true \
+          release:prepare release:perform
