@@ -8,6 +8,7 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * QuerySuffixTest
@@ -101,5 +102,11 @@ class QuerySuffixTest {
         String andSql = QuerySuffix.buildConditionForField("stateNotIn", argList, Arrays.asList());
         assertThat(andSql).isNull();
         assertThat(argList).containsExactly();
+    }
+
+    @Test
+    void shouldIgnoreNonCollectionValueForNotIn() {
+        assertTrue(QuerySuffix.NotIn.shouldIgnore(""));
+        assertTrue(QuerySuffix.NotIn.shouldIgnore(1));
     }
 }

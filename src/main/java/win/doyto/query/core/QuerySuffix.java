@@ -1,6 +1,7 @@
 package win.doyto.query.core;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.Enumerated;
 
@@ -24,6 +25,7 @@ import static win.doyto.query.core.Constant.SPACE;
  */
 @SuppressWarnings("java:S115")
 @Getter
+@Slf4j
 enum QuerySuffix {
     Not("!="),
     NotLike("NOT LIKE"),
@@ -47,7 +49,11 @@ enum QuerySuffix {
 
         @Override
         public boolean shouldIgnore(Object value) {
-            return value instanceof Collection && ((Collection<?>) value).isEmpty();
+            if (!(value instanceof Collection)) {
+                log.warn("Type of field which ends with NotIn should be Collection.");
+                return true;
+            }
+            return ((Collection<?>) value).isEmpty();
         }
     }),
     In("IN", ValueProcessor.COLLECTION),
