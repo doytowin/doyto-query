@@ -3,7 +3,6 @@ package win.doyto.query.web.demo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -17,9 +16,7 @@ import javax.sql.DataSource;
  *
  * @author f0rb
  */
-
 @SpringBootApplication
-@ComponentScan(basePackages = {"win.doyto.query.web.demo", "win.doyto.query.web.component"})
 @EnableCaching(proxyTargetClass = true)
 @EnableTransactionManagement(proxyTargetClass = true)
 public class DemoApplication extends WebMvcConfigurerAdapter {

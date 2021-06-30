@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -19,6 +20,7 @@ import java.util.*;
  *
  * @author f0rb
  */
+@ComponentScan("win.doyto.query.web.component")
 public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
 
     @Override
@@ -49,13 +51,16 @@ public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
     }
 
     protected void configMappingJackson2HttpMessageConverter(MappingJackson2HttpMessageConverter converter) {
+        configMediaTypes(converter);
+        configObjectMapper(converter.getObjectMapper());
+    }
+
+    private void configMediaTypes(MappingJackson2HttpMessageConverter converter) {
         List<MediaType> supportedMediaTypes = new ArrayList<>();
         supportedMediaTypes.add(MediaType.APPLICATION_JSON);
         supportedMediaTypes.add(MediaType.valueOf("application/*+json"));
         supportedMediaTypes.add(MediaType.TEXT_HTML);
         converter.setSupportedMediaTypes(supportedMediaTypes);
-
-        configObjectMapper(converter.getObjectMapper());
     }
 
     public static ObjectMapper configObjectMapper(ObjectMapper objectMapper) {
