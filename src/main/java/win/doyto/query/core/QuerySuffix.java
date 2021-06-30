@@ -207,7 +207,11 @@ enum QuerySuffix {
 
         @Override
         public boolean shouldIgnore(Object value) {
-            return value instanceof String && StringUtils.isBlank((String) value);
+            if (!(value instanceof String)) {
+                log.warn("Type of field which ends with Like should be String.");
+                return true;
+            }
+            return StringUtils.isBlank((String) value);
         }
     }
 

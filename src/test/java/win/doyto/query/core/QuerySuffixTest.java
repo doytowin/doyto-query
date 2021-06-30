@@ -109,4 +109,14 @@ class QuerySuffixTest {
         assertTrue(QuerySuffix.NotIn.shouldIgnore(""));
         assertTrue(QuerySuffix.NotIn.shouldIgnore(1));
     }
+
+    @Test
+    void shouldIgnoreBlankValueForLike() {
+        assertTrue(QuerySuffix.Like.shouldIgnore("  "));
+    }
+
+    @Test
+    void shouldIgnoreNonStringValueForLike() {
+        assertTrue(QuerySuffix.Like.shouldIgnore(1));
+    }
 }
