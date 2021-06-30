@@ -1,5 +1,6 @@
 package win.doyto.query.core;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.config.GlobalConfiguration;
@@ -29,10 +30,16 @@ class FieldProcessorTest {
         argList = new ArrayList<>();
     }
 
-    @Test
-    void testResolveNestedQueries() throws NoSuchFieldException {
-        Field field = PermissionQuery.class.getDeclaredField("userId");
+    @SneakyThrows
+    private Field initField(String fieldName) {
+        Field field = PermissionQuery.class.getDeclaredField(fieldName);
         FieldProcessor.init(field);
+        return field;
+    }
+
+    @Test
+    void testResolveNestedQueries() {
+        Field field = initField("userId");
 
         String sql = FieldProcessor.execute(field, argList, 2);
 
@@ -43,9 +50,8 @@ class FieldProcessorTest {
     }
 
     @Test
-    void testCustomWhereColumnForNextNestedQuery() throws NoSuchFieldException {
-        Field field = PermissionQuery.class.getDeclaredField("user");
-        FieldProcessor.init(field);
+    void testCustomWhereColumnForNextNestedQuery() {
+        Field field = initField("user");
 
         UserQuery userQuery = UserQuery.builder().usernameLike("test").userLevel(UserLevel.普通).build();
         String sql = FieldProcessor.execute(field, argList, userQuery);
@@ -57,4 +63,15 @@ class FieldProcessorTest {
         assertThat(argList).containsExactly("%test%", UserLevel.普通.ordinal());
     }
 
+    @Test
+    void testNestedQueryOnFieldWithOr() {
+        Field field = initField("roleCodeLikeOrRoleNameLike");
+
+        String sql = FieldProcessor.execute(field, argList, "test");
+
+        String expected = "id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN " +
+                "(SELECT id FROM t_role WHERE (roleCode LIKE ? OR roleName LIKE ?)))";
+        assertEquals(expected, sql);
+        assertThat(argList).containsExactly("%test%", "%test%");
+    }
 }
