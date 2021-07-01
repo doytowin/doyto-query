@@ -41,22 +41,13 @@ enum QuerySuffix {
             return CommonUtil.escapeLike(String.valueOf(value));
         }
     }),
-    NotIn("NOT IN", new ValueProcessor() {
-        @Override
-        public String getPlaceHolderEx(Object value) {
-            return ValueProcessor.COLLECTION.getPlaceHolderEx(value);
-        }
-
+    NotIn("NOT IN", new InValueProcessor() {
         @Override
         public boolean shouldIgnore(Object value) {
-            if (!(value instanceof Collection)) {
-                log.warn("Type of field which ends with NotIn should be Collection.");
-                return true;
-            }
-            return ((Collection<?>) value).isEmpty();
+            return super.shouldIgnore(value) || ((Collection<?>) value).isEmpty();
         }
     }),
-    In("IN", ValueProcessor.COLLECTION),
+    In("IN", new InValueProcessor()),
     NotNull("IS NOT NULL", ValueProcessor.EMPTY),
     Null("IS NULL", ValueProcessor.EMPTY),
     Gt(">"),
@@ -179,11 +170,6 @@ enum QuerySuffix {
     interface ValueProcessor {
         ValueProcessor PLACE_HOLDER = value -> Constant.PLACE_HOLDER;
         ValueProcessor EMPTY = value -> Constant.EMPTY;
-        ValueProcessor COLLECTION = value -> {
-            int size = ((Collection<?>) value).size();
-            String placeHolders = IntStream.range(0, size).mapToObj(i -> Constant.PLACE_HOLDER).collect(Collectors.joining(SEPARATOR));
-            return CommonUtil.wrapWithParenthesis(StringUtils.trimToNull(placeHolders));
-        };
 
         String getPlaceHolderEx(Object value);
 
@@ -196,6 +182,24 @@ enum QuerySuffix {
          */
         default boolean shouldIgnore(Object value) {
             return false;
+        }
+    }
+
+    static class InValueProcessor implements ValueProcessor {
+        @Override
+        public boolean shouldIgnore(Object value) {
+            if (!(value instanceof Collection)) {
+                log.warn("Type of field which ends with In/NotIn should be Collection.");
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public String getPlaceHolderEx(Object value) {
+            int size = ((Collection<?>) value).size();
+            String placeHolders = IntStream.range(0, size).mapToObj(i -> Constant.PLACE_HOLDER).collect(Collectors.joining(SEPARATOR));
+            return CommonUtil.wrapWithParenthesis(StringUtils.trimToNull(placeHolders));
         }
     }
 

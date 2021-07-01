@@ -19,9 +19,10 @@ class QuerySuffixTest {
 
     @Test
     void getPlaceHolderEx() {
-        assertEquals("(null)", QuerySuffix.ValueProcessor.COLLECTION.getPlaceHolderEx(Arrays.asList()));
-        assertEquals("(?)", QuerySuffix.ValueProcessor.COLLECTION.getPlaceHolderEx(Arrays.asList(1)));
-        assertEquals("(?, ?)", QuerySuffix.ValueProcessor.COLLECTION.getPlaceHolderEx(Arrays.asList(1, 2)));
+        QuerySuffix.ValueProcessor inValueProcessor = new QuerySuffix.InValueProcessor();
+        assertEquals("(null)", inValueProcessor.getPlaceHolderEx(Arrays.asList()));
+        assertEquals("(?)", inValueProcessor.getPlaceHolderEx(Arrays.asList(1)));
+        assertEquals("(?, ?)", inValueProcessor.getPlaceHolderEx(Arrays.asList(1, 2)));
     }
 
     @Test
@@ -89,7 +90,7 @@ class QuerySuffixTest {
     }
 
     @Test
-    void buildIInNull() {
+    void buildInNull() {
         ArrayList<Object> argList = new ArrayList<>();
         String andSql = QuerySuffix.buildConditionForField("stateIn", argList, Arrays.asList());
         assertThat(andSql).isEqualTo("state IN (null)");
@@ -97,7 +98,7 @@ class QuerySuffixTest {
     }
 
     @Test
-    void buildINotInNull() {
+    void buildNotInNull() {
         ArrayList<Object> argList = new ArrayList<>();
         String andSql = QuerySuffix.buildConditionForField("stateNotIn", argList, Arrays.asList());
         assertThat(andSql).isNull();
