@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.service.PageList;
 import win.doyto.query.validation.PageGroup;
-import win.doyto.query.web.validation.PatchGroup;
-import win.doyto.query.web.validation.UpdateGroup;
+import win.doyto.query.validation.PatchGroup;
+import win.doyto.query.validation.UpdateGroup;
 
 import java.util.Collections;
 import java.util.List;

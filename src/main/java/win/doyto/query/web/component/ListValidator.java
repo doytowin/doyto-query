@@ -4,9 +4,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.SmartValidator;
+import win.doyto.query.validation.CreateGroup;
 import win.doyto.query.web.response.ErrorCode;
 import win.doyto.query.web.response.ErrorResponse;
-import win.doyto.query.web.validation.CreateGroup;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -10,8 +10,8 @@ import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.service.CrudService;
+import win.doyto.query.validation.UpdateGroup;
 import win.doyto.query.web.response.JsonBody;
-import win.doyto.query.web.validation.UpdateGroup;
 
 import java.io.Serializable;
 
