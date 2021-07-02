@@ -24,6 +24,7 @@ class QuerySuffixTest {
             "id, 1, id = ?, 1",
             "idNot, 2, id != ?, 2",
             "testLikeEq, test, testLike = ?, test",
+            "nameNotLike, test, name NOT LIKE ?, %test%",
             "nameLike, test, name LIKE ?, %test%",
             "nameStart, test, name LIKE ?, test%",
     })
@@ -113,4 +114,11 @@ class QuerySuffixTest {
     void shouldIgnoreNonStringValueForLike() {
         assertTrue(QuerySuffix.Like.shouldIgnore(1));
     }
+
+    @Test
+    void testForNotLike() {
+        assertTrue(QuerySuffix.NotLike.shouldIgnore("  "));
+        assertTrue(QuerySuffix.NotLike.shouldIgnore(1));
+    }
+
 }

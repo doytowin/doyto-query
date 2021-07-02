@@ -28,17 +28,12 @@ import static win.doyto.query.core.Constant.SPACE;
 @Slf4j
 enum QuerySuffix {
     Not("!="),
-    NotLike("NOT LIKE"),
+    NotLike("NOT LIKE", ValueProcessor.LIKE_VALUE_PROCESSOR),
+    Like("LIKE", ValueProcessor.LIKE_VALUE_PROCESSOR),
     Start("LIKE", new LikeValueProcessor() {
         @Override
         public Object escapeValue(Object value) {
             return CommonUtil.escapeStart(String.valueOf(value));
-        }
-    }),
-    Like("LIKE", new LikeValueProcessor() {
-        @Override
-        public Object escapeValue(Object value) {
-            return CommonUtil.escapeLike(String.valueOf(value));
         }
     }),
     NotIn("NOT IN", new InValueProcessor() {
@@ -170,6 +165,7 @@ enum QuerySuffix {
     interface ValueProcessor {
         ValueProcessor PLACE_HOLDER = value -> Constant.PLACE_HOLDER;
         ValueProcessor EMPTY = value -> Constant.EMPTY;
+        ValueProcessor LIKE_VALUE_PROCESSOR = new LikeValueProcessor();
 
         String getPlaceHolderEx(Object value);
 
@@ -203,7 +199,7 @@ enum QuerySuffix {
         }
     }
 
-    private abstract static class LikeValueProcessor implements ValueProcessor {
+    private static class LikeValueProcessor implements ValueProcessor {
         @Override
         public String getPlaceHolderEx(Object value) {
             return Constant.PLACE_HOLDER;
@@ -216,6 +212,11 @@ enum QuerySuffix {
                 return true;
             }
             return StringUtils.isBlank((String) value);
+        }
+
+        @Override
+        public Object escapeValue(Object value) {
+            return CommonUtil.escapeLike(String.valueOf(value));
         }
     }
 
