@@ -1,5 +1,6 @@
 package win.doyto.query.config;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -14,12 +15,15 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class DoytoQueryInitializerTest {
 
-    @Test
-    void initialize() {
+    @BeforeEach
+    void setUp() {
         DoytoQueryInitializer doytoQueryInitializer = new DoytoQueryInitializer();
         ConfigurableApplicationContext context = new AnnotationConfigWebApplicationContext();
         doytoQueryInitializer.initialize(context);
+    }
 
+    @Test
+    void initialize() {
         GlobalConfiguration globalConfiguration = GlobalConfiguration.instance();
         assertFalse(globalConfiguration.isMapCamelCaseToUnderscore());
         assertTrue(globalConfiguration.isIgnoreCacheException());
@@ -31,5 +35,11 @@ class DoytoQueryInitializerTest {
         DoytoQueryInitializer doytoQueryInitializer = new DoytoQueryInitializer();
         assertThrows(ClassNotFoundException.class,
                      () -> doytoQueryInitializer.newDialect("fake.DialectClass"));
+    }
+
+    @Test
+    void testSetPageNumber() {
+        GlobalConfiguration globalConfiguration = GlobalConfiguration.instance();
+        assertEquals(1, (int) globalConfiguration.getStartPageNumberAdjuster().apply(1));
     }
 }
