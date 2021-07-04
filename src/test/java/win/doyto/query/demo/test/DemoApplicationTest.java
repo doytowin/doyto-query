@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @SpringBootTest(classes = DemoApplication.class)
-abstract class DemoApplicationTest {
+public abstract class DemoApplicationTest {
 
     @Resource
     protected WebApplicationContext wac;
@@ -47,7 +47,7 @@ abstract class DemoApplicationTest {
     }
 
     protected ResultMatcher statusIs200() {
-        return status().is(200);
+        return status().isOk();
     }
 
     protected ResultActions performAndExpectOk(RequestBuilder requestBuilder) throws Exception {

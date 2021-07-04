@@ -51,7 +51,7 @@ class RoleMvcTest extends DemoApplicationTest {
 
     @Test
     void patchAndUpdate() throws Exception {
-        requestJson(patch("/role/2"), "{\"roleName\":\"超级\",\"roleCode\":\"VVIP\"}", session)
+        requestJson(patch("/role/2"), "{\"id\":2,\"roleName\":\"超级\",\"roleCode\":\"VVIP\"}", session)
                 .andExpect(statusIs200());
         mockMvc.perform(get("/role/2"))
                .andExpect(jsonPath("$.roleCode").value("VVIP"))
@@ -59,7 +59,7 @@ class RoleMvcTest extends DemoApplicationTest {
                .andExpect(jsonPath("$.valid").value(true))
         ;
 
-        requestJson(put("/role/2"), "{\"roleName\":\"超级\",\"roleCode\":\"VVVIP\"}", session)
+        requestJson(put("/role/2"), "{\"id\":2,\"roleName\":\"超级\",\"roleCode\":\"VVVIP\"}", session)
                 .andExpect(statusIs200());
         mockMvc.perform(get("/role/2"))
                .andExpect(jsonPath("$.roleCode").value("VVVIP"))

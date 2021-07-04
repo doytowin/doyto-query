@@ -5,9 +5,7 @@ import javax.validation.groups.Default;
 /**
  * PatchGroup
  *
- * @deprecated move into package win.doyto.query.web.validation
+ * @author f0rb on 2019-05-28
  */
-@SuppressWarnings({"java:S1133", "java:S2176"})
-@Deprecated
 public interface PatchGroup extends Default {
 }
