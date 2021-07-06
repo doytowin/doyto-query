@@ -29,8 +29,8 @@ public class DoytoQueryInitializer implements ApplicationContextInitializer<Conf
         globalConfiguration.setStartPageNumberFromOne(environment.getProperty(getKey("start-page-number-from-one"), boolean.class, false));
     }
 
-    private void configCamelCase(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {
-        globalConfiguration.setStartPageNumberFromOne(environment.getProperty(getKey("map-camel-case-to-underscore"), boolean.class, globalConfiguration.isMapCamelCaseToUnderscore()));
+    void configCamelCase(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {
+        globalConfiguration.setMapCamelCaseToUnderscore(environment.getProperty(getKey("map-camel-case-to-underscore"), boolean.class, globalConfiguration.isMapCamelCaseToUnderscore()));
     }
 
     private void configIgnoreCacheException(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {

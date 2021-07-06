@@ -3,6 +3,7 @@ package win.doyto.query.config;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import win.doyto.query.core.Dialect;
 
@@ -41,5 +42,16 @@ class DoytoQueryInitializerTest {
     void testSetPageNumber() {
         GlobalConfiguration globalConfiguration = GlobalConfiguration.instance();
         assertEquals(1, (int) globalConfiguration.getStartPageNumberAdjuster().apply(1));
+    }
+
+    @Test
+    void fixMapCamelCaseToUnderscore() {
+        DoytoQueryInitializer doytoQueryInitializer = new DoytoQueryInitializer();
+        GlobalConfiguration globalConfiguration = GlobalConfiguration.instance();
+        MockEnvironment env = new MockEnvironment().withProperty("doyto.query.config.map-camel-case-to-underscore", "true");
+
+        doytoQueryInitializer.configCamelCase(globalConfiguration, env);
+
+        assertTrue(globalConfiguration.isMapCamelCaseToUnderscore());
     }
 }
