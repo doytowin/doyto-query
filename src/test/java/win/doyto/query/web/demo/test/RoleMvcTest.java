@@ -44,7 +44,8 @@ class RoleMvcTest extends DemoApplicationTest {
     @Test
     @Rollback
     void patchRole() throws Exception {
-        RequestBuilder requestBuilder = patch("/role/2").content("{\"roleName\":\"new role\"}").contentType(MediaType.APPLICATION_JSON);
+        RequestBuilder requestBuilder = patch("/role/2")
+                .content("{\"id\":2,\"roleName\":\"new role\"}").contentType(MediaType.APPLICATION_JSON);
         performAndExpectSuccess(requestBuilder);
         performAndExpectSuccess(get("/role/2"))
                 .andExpect(jsonPath("$.data.roleName").value("new role"))
@@ -54,7 +55,8 @@ class RoleMvcTest extends DemoApplicationTest {
     @Test
     @Rollback
     void updateRole() throws Exception {
-        RequestBuilder requestBuilder = put("/role/2").content("{\"roleName\":\"vip3\",\"roleCode\":\"VIP3\"}").contentType(MediaType.APPLICATION_JSON);
+        RequestBuilder requestBuilder = put("/role/2")
+                .content("{\"id\":2,\"roleName\":\"vip3\",\"roleCode\":\"VIP3\"}").contentType(MediaType.APPLICATION_JSON);
         performAndExpectSuccess(requestBuilder);
         performAndExpectSuccess(get("/role/2"))
                 .andExpect(jsonPath("$.data.roleName").value("vip3"))
