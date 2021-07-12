@@ -1,9 +1,6 @@
 package win.doyto.query.web.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.entity.Persistable;
@@ -78,7 +75,7 @@ abstract class AbstractController<E extends Persistable<I>, I extends Serializab
 
     @SuppressWarnings("unchecked")
     public void update(R request) {
-        W w = (W) convertTo(request, typeReference);
+        W w = (W) BeanUtil.convertTo(request, typeReference);
         update(w, request);
     }
 
@@ -98,12 +95,4 @@ abstract class AbstractController<E extends Persistable<I>, I extends Serializab
         }
     }
 
-    private static final ObjectMapper objectMapper = new ObjectMapper()
-            .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-
-    @SneakyThrows
-    private static <T> T convertTo(Object source, TypeReference<T> typeReference) {
-        return objectMapper.readValue(objectMapper.writeValueAsBytes(source), typeReference);
-    }
 }
