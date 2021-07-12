@@ -13,8 +13,6 @@ import win.doyto.query.web.response.ErrorCode;
 import win.doyto.query.web.response.JsonBody;
 import win.doyto.query.web.response.JsonResponse;
 
-import java.lang.reflect.Method;
-
 /**
  * RestResponseAdvice
  *
@@ -34,17 +32,18 @@ class JsonResponseAdvice implements ResponseBodyAdvice<Object> {
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
 
-        Method method = returnType.getMethod();
-        if (method != null && AbstractJackson2HttpMessageConverter.class.isAssignableFrom(converterType) && isAnnotatedByJsonBody(method)) {
-            log.debug("JsonResponse: {}.{}", method.getDeclaringClass().getName(), method.getName());
+        if (AbstractJackson2HttpMessageConverter.class.isAssignableFrom(converterType)
+                && isAnnotatedByJsonBody(returnType)) {
+            log.debug("JsonResponse: {}.{}", returnType.getDeclaringClass().getName(), returnType.getExecutable().getName());
             return true;
         }
 
         return false;
     }
 
-    private boolean isAnnotatedByJsonBody(Method method) {
-        return method.getDeclaringClass().isAnnotationPresent(JsonBody.class) || method.isAnnotationPresent(JsonBody.class);
+    private boolean isAnnotatedByJsonBody(MethodParameter returnType) {
+        return returnType.getDeclaringClass().isAnnotationPresent(JsonBody.class)
+                || returnType.hasMethodAnnotation(JsonBody.class);
     }
 
     @Override
