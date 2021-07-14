@@ -23,9 +23,12 @@ import static win.doyto.query.web.response.PresetErrorCode.ARGUMENT_VALIDATION_F
 public class ListValidator {
 
     @Resource
-    private SmartValidator smartValidator = new MockValidator();
+    private SmartValidator smartValidator;
 
     public void validateList(List<?> list) {
+        if (smartValidator == null) {
+            return;
+        }
         int errorCount = 0;
         List<BindingResult> bindingResults = new ArrayList<>();
         for (Object r : list) {
