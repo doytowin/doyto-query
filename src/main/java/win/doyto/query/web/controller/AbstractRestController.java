@@ -2,7 +2,6 @@ package win.doyto.query.web.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,20 +21,14 @@ import java.io.Serializable;
  */
 @JsonBody
 public abstract class AbstractRestController<E extends Persistable<I>, I extends Serializable, Q extends PageQuery, R, S>
-        extends AbstractController<E, I, Q, R, S, IdWrapper<I>>
+        extends AbstractController<E, I, Q, R, S, IdWrapper.Simple<I>, CrudService<E, I, Q>>
         implements RestApi<I, Q, R, S> {
 
-    @SuppressWarnings("java:S2387")
-    protected final CrudService<E, I, Q> service;
-
-    @SuppressWarnings("unchecked")
     protected AbstractRestController(CrudService<E, I, Q> service) {
         super(service, new TypeReference<IdWrapper.Simple<I>>() {});
-        this.service = service;
     }
 
     @Override
-    @GetMapping("{id}")
     public S get(@PathVariable I id) {
         E e = service.get(id);
         checkResult(e);

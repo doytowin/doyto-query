@@ -24,18 +24,25 @@ import javax.annotation.Resource;
  * @author f0rb on 2020-05-05
  */
 @JsonBody
-abstract class AbstractController<E extends Persistable<I>, I extends Serializable, Q extends PageQuery, R, S, W extends IdWrapper<I>> {
+abstract class AbstractController<
+        E extends Persistable<I>,
+        I extends Serializable,
+        Q extends PageQuery,
+        R, S,
+        W extends IdWrapper<I>,
+        C extends DynamicService<E, I, Q>
+        > {
 
     @Resource
     protected ListValidator listValidator = new ListValidator();
 
     private final Class<E> entityClass;
     private final Class<S> responseClass;
-    protected final DynamicService<E, I, Q> service;
-    private final TypeReference<? extends IdWrapper<I>> typeReference;
+    private final TypeReference<W> typeReference;
+    protected final C service;
 
     @SuppressWarnings("unchecked")
-    protected AbstractController(DynamicService<E, I, Q> service, TypeReference<? extends IdWrapper<I>> typeReference) {
+    protected AbstractController(C service, TypeReference<W> typeReference) {
         this.service = service;
         this.typeReference = typeReference;
         Type[] types = BeanUtil.getActualTypeArguments(getClass());
@@ -73,9 +80,8 @@ abstract class AbstractController<E extends Persistable<I>, I extends Serializab
         ErrorCode.assertTrue(count == 1, PresetErrorCode.ENTITY_NOT_FOUND);
     }
 
-    @SuppressWarnings("unchecked")
     public void update(R request) {
-        W w = (W) BeanUtil.convertTo(request, typeReference);
+        W w = BeanUtil.convertTo(request, typeReference);
         update(w, request);
     }
 

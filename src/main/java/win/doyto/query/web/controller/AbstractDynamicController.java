@@ -15,10 +15,9 @@ import java.io.Serializable;
  * @author f0rb on 2020-01-29
  */
 @JsonBody
-@SuppressWarnings("unchecked")
 public abstract class AbstractDynamicController
         <E extends Persistable<I>, I extends Serializable, Q extends PageQuery, R, S, W extends IdWrapper<I>>
-        extends AbstractController<E, I, Q, R, S, W>
+        extends AbstractController<E, I, Q, R, S, W, DynamicService<E, I, Q>>
         implements RestApi<W, Q, R, S> {
 
     protected AbstractDynamicController(DynamicService<E, I, Q> service, TypeReference<W> typeReference) {
