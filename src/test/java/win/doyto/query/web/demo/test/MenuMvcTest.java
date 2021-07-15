@@ -15,12 +15,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Rollback
 class MenuMvcTest extends DemoApplicationTest {
 
-    private String menuUri = "/01/menu/";
-    private String menuUri1 = menuUri + "1";
+    private final String menuUri = "/01/menu/";
+    private final String menuUri1 = menuUriWith("1");
+
+    private String menuUriWith(String str) {
+        return menuUri + str;
+    }
 
     @Test
     void pageMenu() throws Exception {
-        performAndExpectSuccess(get(menuUri + "?pageNumber=1&pageSize=1"))
+        performAndExpectSuccess(get(menuUriWith("?pageNumber=1&pageSize=1")))
                 .andExpect(jsonPath("$.data.list.size()").value(1))
                 .andExpect(jsonPath("$.data.total").value(2))
         ;
@@ -33,7 +37,7 @@ class MenuMvcTest extends DemoApplicationTest {
                 .andExpect(jsonPath("$.data.menuName").value("root"))
         ;
 
-        performAndExpectFail(get(menuUri + "9"), PresetErrorCode.ENTITY_NOT_FOUND);
+        performAndExpectFail(get(menuUriWith("9")), PresetErrorCode.ENTITY_NOT_FOUND);
     }
 
     @Test
@@ -42,7 +46,7 @@ class MenuMvcTest extends DemoApplicationTest {
         performAndExpectSuccess(get(menuUri1))
                 .andExpect(jsonPath("$.data.updateUserId").doesNotExist())
                 .andReturn();
-        performAndExpectSuccess(patch(menuUri), "{\"id\":1,\"platform\":\"01\",\"memo\":\"new memo\"}");
+        performAndExpectSuccess(patch(menuUri1), "{\"id\":1,\"platform\":\"01\",\"memo\":\"new memo\"}");
         performAndExpectSuccess(get(menuUri1))
                 .andExpect(jsonPath("$.data.memo").value("new memo"))
                 .andExpect(jsonPath("$.data.updateUserId").value("1"));
@@ -54,13 +58,13 @@ class MenuMvcTest extends DemoApplicationTest {
 
         performAndExpectSuccess(post(menuUri), "{\"platform\":\"01\",\"menuName\":\"Test Menu\"}");
 
-        performAndExpectSuccess(get(menuUri + "3"))
+        performAndExpectSuccess(get(menuUriWith("3")))
                 .andExpect(jsonPath("$.data.createUserId").value("1"))
                 .andExpect(jsonPath("$.data.updateUserId").value("1"));
 
-        performAndExpectSuccess(delete(menuUri + "3"));
+        performAndExpectSuccess(delete(menuUriWith("3")));
 
-        performAndExpectSuccess(get(menuUri + "?pageNumber=0"))
+        performAndExpectSuccess(get(menuUriWith("?pageNumber=0")))
                 .andExpect(jsonPath("$.data.length()").value(2));
     }
 
@@ -86,7 +90,7 @@ class MenuMvcTest extends DemoApplicationTest {
         performAndExpectSuccess(get(menuUri1))
                 .andExpect(jsonPath("$.data.updateUserId").doesNotExist())
                 .andReturn();
-        performAndExpectSuccess(put(menuUri), "{\"id\":1,\"platform\":\"01\",\"memo\":\"new memo\"}");
+        performAndExpectSuccess(put(menuUri1), "{\"id\":1,\"platform\":\"01\",\"memo\":\"new memo\"}");
         performAndExpectSuccess(get(menuUri1))
                 .andExpect(jsonPath("$.data.memo").value("new memo"))
                 .andExpect(jsonPath("$.data.updateUserId").value("1"));

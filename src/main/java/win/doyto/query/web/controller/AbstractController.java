@@ -82,10 +82,6 @@ abstract class AbstractController<
 
     public void update(R request) {
         W w = BeanUtil.convertTo(request, typeReference);
-        update(w, request);
-    }
-
-    public void update(W w, R request) {
         E e = service.get(w);
         checkResult(e);
         buildEntity(e, request).setId(w.getId());

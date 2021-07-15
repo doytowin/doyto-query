@@ -29,13 +29,10 @@ public interface RestApi<I, Q extends PageQuery, R, S> {
     @DeleteMapping("{id}")
     S delete(I id);
 
-    @PutMapping
+    @PutMapping("{id}")
     void update(@RequestBody @Validated(UpdateGroup.class) R request);
 
-    @PutMapping("{id}")
-    void update(I id, @RequestBody @Validated(UpdateGroup.class) R request);
-
-    @PatchMapping
+    @PatchMapping("{id}")
     void patch(@RequestBody @Validated(PatchGroup.class) R request);
 
     default void create(R request) {

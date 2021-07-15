@@ -1,15 +1,11 @@
 package win.doyto.query.web.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.service.CrudService;
-import win.doyto.query.validation.UpdateGroup;
 import win.doyto.query.web.response.JsonBody;
 
 import java.io.Serializable;
@@ -40,12 +36,6 @@ public abstract class AbstractRestController<E extends Persistable<I>, I extends
         E e = service.delete(id);
         checkResult(e);
         return buildResponse(e);
-    }
-
-    @Override
-    @PutMapping("{id}")
-    public void update(@PathVariable I id, @RequestBody @Validated(UpdateGroup.class) R request) {
-        super.update(IdWrapper.build(id), request);
     }
 
 }
