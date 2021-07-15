@@ -39,7 +39,7 @@ class RoleControllerTest {
     @Test
     void add() {
         RoleEntity roleEntity = new RoleEntity();
-        roleController.create(roleEntity);
+        roleController.add(roleEntity);
         assertEquals(4, roleController.count(RoleQuery.builder().build()));
     }
 }
