@@ -21,7 +21,9 @@ import javax.validation.constraints.Size;
 @RequestMapping("user")
 @JsonBody
 @Validated
-public class UserController extends AbstractRestController<UserEntity, Long, UserQuery, UserRequest, UserResponse> {
+public class UserController
+        extends AbstractRestController<UserEntity, Long, UserQuery, UserRequest, UserResponse>
+        implements UserApi {
 
     public UserController(UserService service) {
         super(service);
