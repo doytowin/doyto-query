@@ -1,14 +1,10 @@
 package win.doyto.query.demo.test;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.Test;
-import org.springframework.cache.support.NoOpCache;
 import org.springframework.jdbc.core.JdbcOperations;
-import win.doyto.query.cache.CacheWrapper;
 import win.doyto.query.core.test.TestJoinQuery;
 import win.doyto.query.core.test.TestJoinView;
 import win.doyto.query.core.test.UserCountByRoleView;
-import win.doyto.query.demo.module.role.RoleController;
 import win.doyto.query.service.JoinQueryService;
 import win.doyto.query.service.PageList;
 
@@ -47,11 +43,4 @@ class JoinTest extends DemoApplicationTest {
         assertThat(testJoinQuery.getPageSize()).isEqualTo(10);
     }
 
-    /*=============== Cache ==================*/
-    @Test
-    void defaultNoCache() throws IllegalAccessException {
-        RoleController roleController = wac.getBean(RoleController.class);
-        CacheWrapper<?> entityCacheWrapper = (CacheWrapper<?>) FieldUtils.readField(roleController, "entityCacheWrapper", true);
-        assertThat(entityCacheWrapper.getCache()).isInstanceOf(NoOpCache.class);
-    }
 }

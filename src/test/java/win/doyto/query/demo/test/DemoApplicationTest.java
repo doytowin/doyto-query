@@ -12,7 +12,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.*;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 import win.doyto.query.demo.DemoApplication;
 
 import javax.annotation.Resource;
@@ -35,7 +34,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public abstract class DemoApplicationTest {
 
     @Resource
-    protected WebApplicationContext wac;
     protected MockMvc mockMvc;
     protected MockHttpSession session;
 
