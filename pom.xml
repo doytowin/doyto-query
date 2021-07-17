@@ -17,9 +17,7 @@
     <url>https://query.doyto.win/</url>
 
     <properties>
-        <slf4j-api.version>1.7.25</slf4j-api.version>
-        <spring-boot.version>2.1.3.RELEASE</spring-boot.version>
-        <spring.version>5.1.5.RELEASE</spring.version>
+        <spring-boot.version>2.2.13.RELEASE</spring-boot.version>
         <sourceDirectory>src/main/java</sourceDirectory>
     </properties>
 
@@ -39,22 +37,21 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
 
+        <!-- OPTIONAL -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -93,12 +90,11 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-test</artifactId>
+            <artifactId>spring-boot-test-autoconfigure</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
