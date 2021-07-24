@@ -10,8 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.*;
 import static win.doyto.query.core.test.TestEntity.initUserEntities;
 
 /**
@@ -162,5 +161,14 @@ class MemoryDataAccessTest {
 
         sort.setValid(true);
         assertThat(testMemoryDataAccess.query(sort)).extracting(TestEntity::getId).containsExactly(5, 4, 2);
+    }
+
+    @Test
+    void shouldReturnZeroAndNotSaveWhenUpdateGivenNonExistEntity() {
+        TestEntity e = new TestEntity();
+        e.setId(-1);
+        int cnt = testMemoryDataAccess.update(e);
+        assertEquals(0, cnt);
+        assertNull(testMemoryDataAccess.get(-1));
     }
 }

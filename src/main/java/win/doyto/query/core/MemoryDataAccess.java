@@ -99,7 +99,11 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
 
     @Override
     public int update(E e) {
-        return entitiesMap.put(e.getId(), e) == null ? 0 : 1;
+        if (!entitiesMap.containsKey(e.getId())) {
+            return 0;
+        }
+        entitiesMap.put(e.getId(), e);
+        return 1;
     }
 
     @Override
