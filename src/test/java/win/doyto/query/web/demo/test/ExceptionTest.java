@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ExceptionTest extends DemoApplicationTest {
 
 
-    private ResultActions performAndExpectFail(RequestBuilder requestBuilder, String expectedMessage) throws Exception {
+    private ResultActions performAndExpectFail(String expectedMessage, RequestBuilder requestBuilder) throws Exception {
         return mockMvc.perform(requestBuilder)
                       .andDo(print())
                       .andExpect(status().isOk())
@@ -30,23 +30,23 @@ class ExceptionTest extends DemoApplicationTest {
 
     @Test
     void testHttpRequestMethodNotSupportedException() throws Exception {
-        performAndExpectFail(post("/user/1"), "该接口不支持POST请求");
+        performAndExpectFail("该接口不支持POST请求", post("/user/1"));
     }
 
     @Test
     void entityNotFound() throws Exception {
-        performAndExpectFail(get("/user/-1"), "查询记录不存在");
+        performAndExpectFail("查询记录不存在", get("/user/-1"));
     }
 
     @Test
     void testMethodArgumentTypeMismatchException() throws Exception {
-        performAndExpectFail(get("/role/null"), "参数类型异常");
+        performAndExpectFail("参数类型异常", get("/role/null"));
     }
 
     @Test
     void testMethodArgumentNotValidException() throws Exception {
         RequestBuilder requestBuilder = post("/user/").content("{}").contentType(MediaType.APPLICATION_JSON);
-        performAndExpectFail(requestBuilder, "参数校验失败")
+        performAndExpectFail("参数校验失败", requestBuilder)
                 .andExpect(jsonPath("$.hints[0].username").value("must not be null"))
                 .andExpect(jsonPath("$.hints[0].password").value("must not be null"))
         ;
@@ -55,13 +55,13 @@ class ExceptionTest extends DemoApplicationTest {
     @Test
     void testMethodArgumentNotValidExceptionWithList() throws Exception {
         RequestBuilder requestBuilder = post("/user/").content("[{\"username\":\"test\"},{\"password\":\"123456\"}]").contentType(MediaType.APPLICATION_JSON);
-        performAndExpectFail(requestBuilder, "参数校验失败")
+        performAndExpectFail("参数校验失败", requestBuilder)
                 .andExpect(jsonPath("$.hints[0].password").value("must not be null"))
                 .andExpect(jsonPath("$.hints[1].username").value("must not be null"))
         ;
 
         RequestBuilder postRole = post("/role/").content("{}").contentType(MediaType.APPLICATION_JSON);
-        performAndExpectFail(postRole, "参数校验失败")
+        performAndExpectFail("参数校验失败", postRole)
                 .andExpect(jsonPath("$.hints[0].roleName").value("must not be null"))
                 .andExpect(jsonPath("$.hints[0].roleCode").value("must not be null"))
         ;
@@ -69,7 +69,7 @@ class ExceptionTest extends DemoApplicationTest {
 
     @Test
     void testConstraintViolationException() throws Exception {
-        performAndExpectFail(get("/user/username?username=sa"), "参数校验失败")
+        performAndExpectFail("参数校验失败", get("/user/username?username=sa"))
                 .andExpect(jsonPath("$.hints.username").value("size must be between 4 and 20"));
         performAndExpectSuccess(get("/user/username?username=f0rb"))
                 .andExpect(jsonPath("$.data.password").doesNotExist());
@@ -77,7 +77,7 @@ class ExceptionTest extends DemoApplicationTest {
 
     @Test
     void testBindException() throws Exception {
-        performAndExpectFail(get("/user/email"), "参数校验失败")
+        performAndExpectFail("参数校验失败", get("/user/email"))
                 .andExpect(jsonPath("$.hints.email").value("must not be null"));
 
 
@@ -89,6 +89,6 @@ class ExceptionTest extends DemoApplicationTest {
         RequestBuilder postUser = post("/user/")
                 .content("[{\"username\":\"user2\", \"password\":\"123456\"}]")
                 .contentType(MediaType.APPLICATION_JSON);
-        performAndExpectFail(postUser, "该数据已存在");
+        performAndExpectFail("该数据已存在", postUser);
     }
 }
