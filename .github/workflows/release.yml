@@ -31,10 +31,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mvn -B clean \
-          org.projectlombok:lombok-maven-plugin:1.18.6.0:delombok \
+          org.projectlombok:lombok-maven-plugin:1.18.20.0:delombok \
           -Dlombok.sourceDirectory=src/main/java \
           -Dlombok.outputDirectory=target/delombok \
           -Dlombok.addOutputDirectory=false \
           -DsourceDirectory=target/delombok \
           -DskipTests=true \
-          release:prepare release:perform
+          deploy -P sonatype-oss-release
