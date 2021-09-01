@@ -1,14 +1,12 @@
 package win.doyto.query.demo.test;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.demo.module.user.TestUserEntityAspect;
 import win.doyto.query.web.response.ErrorCodeException;
 
 import javax.annotation.Resource;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -133,7 +131,7 @@ class UserMvcTest extends DemoApplicationTest {
 
         int timesBefore = testUserEntityAspect.getTimes();
         requestJson(put(URL_USER_1), result.replace("f0rb", "test")).andDo(print());
-        Assertions.assertEquals(1, testUserEntityAspect.getTimes() - timesBefore);
+        assertEquals(1, testUserEntityAspect.getTimes() - timesBefore);
 
         mockMvc.perform(get(URL_USER + "?pageNumber=0"))
                .andDo(print())
