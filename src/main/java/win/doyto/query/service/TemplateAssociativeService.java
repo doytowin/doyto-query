@@ -1,14 +1,13 @@
 package win.doyto.query.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 import win.doyto.query.core.SqlAndArgs;
+import win.doyto.query.data.DatabaseOperations;
 import win.doyto.query.entity.UserIdProvider;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import static java.util.Collections.singleton;
@@ -26,7 +25,7 @@ public class TemplateAssociativeService<L, R> implements AssociativeService<L, R
     private final SingleColumnRowMapper<R> rightRowMapper = new SingleColumnRowMapper<>();
 
     @Autowired
-    private JdbcOperations jdbcOperations;
+    private DatabaseOperations databaseOperations;
 
     @Autowired(required = false)
     private UserIdProvider<?> userIdProvider = () -> null;
@@ -54,37 +53,35 @@ public class TemplateAssociativeService<L, R> implements AssociativeService<L, R
             return 0L;
         }
         SqlAndArgs sqlAndArgs = sqlBuilder.buildCount(leftIds, rightIds);
-        return jdbcOperations.queryForObject(sqlAndArgs.getSql(), sqlAndArgs.getArgs(), Long.class);
+        return databaseOperations.count(sqlAndArgs);
     }
 
     @Override
     public List<R> getByLeftId(L leftId) {
-        SqlAndArgs.logSqlInfo(sqlBuilder.getByLeftId, Collections.singletonList(leftId));
-        return jdbcOperations.query(sqlBuilder.getByLeftId, rightRowMapper, leftId);
+        SqlAndArgs sqlAndArgs = new SqlAndArgs(sqlBuilder.getByLeftId, leftId);
+        return databaseOperations.query(sqlAndArgs, rightRowMapper);
     }
 
     @Override
     public int deleteByLeftId(L leftId) {
-        SqlAndArgs.logSqlInfo(sqlBuilder.deleteByLeftId, Collections.singletonList(leftId));
-        return jdbcOperations.update(sqlBuilder.deleteByLeftId, leftId);
+        return databaseOperations.update(sqlBuilder.deleteByLeftId, leftId);
     }
 
     @Override
     public List<L> getByRightId(R rightId) {
-        SqlAndArgs.logSqlInfo(sqlBuilder.getByRightId, Collections.singletonList(rightId));
-        return jdbcOperations.query(sqlBuilder.getByRightId, leftRowMapper, rightId);
+        SqlAndArgs sqlAndArgs = new SqlAndArgs(sqlBuilder.getByRightId, rightId);
+        return databaseOperations.query(sqlAndArgs, leftRowMapper);
     }
 
     @Override
     public int deleteByRightId(R rightId) {
-        SqlAndArgs.logSqlInfo(sqlBuilder.deleteByRightId, Collections.singletonList(rightId));
-        return jdbcOperations.update(sqlBuilder.deleteByRightId, rightId);
+        return databaseOperations.update(sqlBuilder.deleteByRightId, rightId);
     }
 
     @Override
     public int deallocate(Collection<L> leftIds, Collection<R> rightIds) {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildDeallocate(leftIds.toArray(), rightIds.toArray());
-        return jdbcOperations.update(sqlAndArgs.getSql(), sqlAndArgs.getArgs());
+        return databaseOperations.update(sqlAndArgs);
     }
 
     @Override
@@ -110,7 +107,7 @@ public class TemplateAssociativeService<L, R> implements AssociativeService<L, R
     @Override
     public int allocate(Collection<L> leftIds, Collection<R> rightIds) {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildAllocate(leftIds, rightIds, userIdProvider.getUserId());
-        return jdbcOperations.update(sqlAndArgs.getSql(), sqlAndArgs.getArgs());
+        return databaseOperations.update(sqlAndArgs);
     }
 
 }

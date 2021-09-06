@@ -1,12 +1,11 @@
 package win.doyto.query.service;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcOperations;
 import win.doyto.query.core.JoinQueryBuilder;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.core.SqlAndArgs;
+import win.doyto.query.data.DatabaseOperations;
 
 import java.util.List;
 
@@ -18,8 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 public class JoinQueryService<E, Q extends PageQuery> implements QueryService<E, Q> {
 
-    @Autowired
-    private JdbcOperations jdbcOperations;
+    private DatabaseOperations databaseOperations;
     private final JoinQueryBuilder joinQueryBuilder;
     private final BeanPropertyRowMapper<E> beanPropertyRowMapper;
 
@@ -28,19 +26,19 @@ public class JoinQueryService<E, Q extends PageQuery> implements QueryService<E,
         this.beanPropertyRowMapper = new BeanPropertyRowMapper<>(entityClass);
     }
 
-    public JoinQueryService(JdbcOperations jdbcOperations, Class<E> entityClass) {
+    public JoinQueryService(DatabaseOperations databaseOperations, Class<E> entityClass) {
         this(entityClass);
-        this.jdbcOperations = jdbcOperations;
+        this.databaseOperations = databaseOperations;
     }
 
     public List<E> query(Q q) {
         SqlAndArgs sqlAndArgs = buildJoinSelectAndArgs(q);
-        return jdbcOperations.query(sqlAndArgs.getSql(), beanPropertyRowMapper, sqlAndArgs.getArgs());
+        return databaseOperations.query(sqlAndArgs, beanPropertyRowMapper);
     }
 
     public long count(Q q) {
         SqlAndArgs sqlAndArgs = joinQueryBuilder.buildJoinCountAndArgs(q);
-        return jdbcOperations.queryForObject(sqlAndArgs.getSql(), sqlAndArgs.getArgs(), Long.class);
+        return databaseOperations.count(sqlAndArgs);
     }
 
     public SqlAndArgs buildJoinSelectAndArgs(Q q) {

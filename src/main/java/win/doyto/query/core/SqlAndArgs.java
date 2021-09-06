@@ -23,23 +23,22 @@ public class SqlAndArgs {
     private final String sql;
     private final Object[] args;
 
-    public SqlAndArgs(String sql, Object... args) {
-        this(sql, Arrays.asList(args));
-    }
-
     public SqlAndArgs(String sql, List<?> argList) {
-        this.sql = sql;
-        this.args = argList.toArray();
-        logSqlInfo(sql, argList);
+        this(sql, argList.toArray());
     }
 
-    public static void logSqlInfo(String sql, List<?> argList) {
+    public SqlAndArgs(String sql, Object... args) {
+        this.sql = sql;
+        this.args = args;
+        logSqlInfo();
+    }
+
+    private void logSqlInfo() {
         if (log.isDebugEnabled()) {
             log.debug("SQL  : {}", sql);
-            String params = argList
-                    .stream()
-                    .map(arg -> arg + (arg == null ? "" : wrapWithParenthesis(arg.getClass().getName())))
-                    .collect(Collectors.joining(SEPARATOR));
+            String params = Arrays.stream(args)
+                                  .map(arg -> arg + (arg == null ? "" : wrapWithParenthesis(arg.getClass().getName())))
+                                  .collect(Collectors.joining(SEPARATOR));
             log.debug("Param: {}", params);
         }
     }
