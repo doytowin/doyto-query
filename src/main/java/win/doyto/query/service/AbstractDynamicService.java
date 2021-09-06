@@ -8,13 +8,13 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.support.NoOpCache;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.*;
 import win.doyto.query.cache.CacheWrapper;
 import win.doyto.query.core.*;
+import win.doyto.query.data.DatabaseOperations;
 import win.doyto.query.entity.EntityAspect;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.entity.UserIdProvider;
@@ -62,8 +62,8 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
 
     @Autowired
     @SuppressWarnings("unchecked")
-    public void setJdbcOperations(JdbcOperations jdbcOperations) {
-        dataAccess = new JdbcDataAccess<>(jdbcOperations, entityClass, (Class<I>) BeanUtil.getActualTypeArguments(getClass())[1], getRowMapper());
+    public void setJdbcOperations(DatabaseOperations databaseOperations) {
+        dataAccess = new DefaultDataAccess<>(databaseOperations, entityClass, (Class<I>) BeanUtil.getActualTypeArguments(getClass())[1], getRowMapper());
     }
 
     protected RowMapper<E> getRowMapper() {

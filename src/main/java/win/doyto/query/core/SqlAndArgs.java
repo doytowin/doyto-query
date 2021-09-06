@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -19,8 +20,12 @@ import static win.doyto.query.core.Constant.SEPARATOR;
 @Slf4j
 @Getter
 public class SqlAndArgs {
-    String sql;
-    Object[] args;
+    private final String sql;
+    private final Object[] args;
+
+    public SqlAndArgs(String sql, Object... args) {
+        this(sql, Arrays.asList(args));
+    }
 
     public SqlAndArgs(String sql, List<?> argList) {
         this.sql = sql;

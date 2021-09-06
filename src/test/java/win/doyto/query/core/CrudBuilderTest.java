@@ -144,8 +144,8 @@ class CrudBuilderTest {
     void createMulti() {
         SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildCreateAndArgs(Arrays.asList(new TestEntity(), new TestEntity(), new TestEntity()));
         assertEquals(
-            "INSERT INTO user (username, password, mobile, email, nickname, userLevel, memo, valid) VALUES " +
-                "(?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?)", sqlAndArgs.sql);
+                "INSERT INTO user (username, password, mobile, email, nickname, userLevel, memo, valid) VALUES " +
+                        "(?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?)", sqlAndArgs.getSql());
     }
 
     @Test
@@ -198,7 +198,7 @@ class CrudBuilderTest {
                         " ON DUPLICATE KEY UPDATE " +
                         "mobile = VALUES (mobile), " +
                         "email = VALUES (email)",
-                sqlAndArgs.sql);
+                sqlAndArgs.getSql());
     }
 
     @Test
