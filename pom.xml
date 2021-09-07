@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>doyto-query-web</artifactId>
-    <version>0.2.2-SNAPSHOT</version>
+    <version>0.2.2-RELEASE</version>
 
     <properties>
         <sourceDirectory>src/main/java</sourceDirectory>
