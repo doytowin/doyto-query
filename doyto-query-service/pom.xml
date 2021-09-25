@@ -7,40 +7,25 @@
 
     <parent>
         <groupId>win.doyto</groupId>
-        <artifactId>doyto-oss-parent</artifactId>
-        <version>2</version>
+        <artifactId>doyto-query-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>doyto-query</artifactId>
     <name>doyto-query</name>
-    <version>0.2.3-SNAPSHOT</version>
+    <version>${revision}</version>
     <url>https://query.doyto.win/</url>
-
-    <properties>
-        <spring-boot.version>2.2.13.RELEASE</spring-boot.version>
-        <sourceDirectory>src/main/java</sourceDirectory>
-    </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>javax.persistence-api</artifactId>
+            <groupId>win.doyto</groupId>
+            <artifactId>doyto-query-core</artifactId>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
         </dependency>
 
         <!-- OPTIONAL -->
