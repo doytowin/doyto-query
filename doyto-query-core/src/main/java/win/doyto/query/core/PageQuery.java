@@ -13,8 +13,6 @@ import win.doyto.query.validation.PageGroup;
 import java.io.Serializable;
 import java.util.regex.Pattern;
 
-import static java.lang.Math.max;
-
 /**
  * PageQuery
  *
@@ -41,28 +39,22 @@ public class PageQuery implements Serializable {
     @javax.validation.constraints.Pattern(regexp = SORT_RX, message = "Sorting field format error", groups = PageGroup.class)
     private String sort;
 
-    public Integer getPageNumber() {
-        return getDefault(pageNumber, 0, pageSize == null);
-    }
-
-    public Integer getPageSize() {
-        return getDefault(pageSize, 10, pageNumber == null);
-    }
-
-    private Integer getDefault(Integer number, int defaultValue, boolean canBeNull) {
-        if (number == null) {
-            if (canBeNull) {
-                return null;
-            } else {
-                number = defaultValue;
-            }
+    public int getPageNumber() {
+        if (pageNumber == null || pageNumber < 0) {
+            return 0;
         }
-        return max(0, number);
+        return pageNumber;
+    }
+
+    public int getPageSize() {
+        if (pageSize == null || pageSize < 0) {
+            return 10;
+        }
+        return pageSize;
     }
 
     public int calcOffset() {
-        Integer page = getPageNumber();
-        return page == null ? 0 : GlobalConfiguration.adjustStartPageNumber(page) * getPageSize();
+        return GlobalConfiguration.adjustStartPageNumber(getPageNumber()) * getPageSize();
     }
 
     public boolean needPaging() {

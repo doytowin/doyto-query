@@ -26,8 +26,8 @@ class PageQueryTest {
         PageQuery pageQuery = new PageQuery();
         pageQuery.setPageNumber(1);
         assertTrue(pageQuery.needPaging());
-        assertEquals(1, (int) pageQuery.getPageNumber());
-        assertEquals(10, (int) pageQuery.getPageSize());
+        assertEquals(1, pageQuery.getPageNumber());
+        assertEquals(10, pageQuery.getPageSize());
     }
 
     @Test
@@ -35,8 +35,8 @@ class PageQueryTest {
         PageQuery pageQuery = new PageQuery();
         pageQuery.setPageSize(10);
         assertTrue(pageQuery.needPaging());
-        assertEquals(0, (int) pageQuery.getPageNumber());
-        assertEquals(10, (int) pageQuery.getPageSize());
+        assertEquals(0, pageQuery.getPageNumber());
+        assertEquals(10, pageQuery.getPageSize());
     }
 
     @Test
