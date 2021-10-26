@@ -36,7 +36,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: mvn -B verify sonar:sonar
+        run: mvn -B clean verify sonar:sonar
       - name: Set up JDK 8
         uses: actions/setup-java@v2
         with:
