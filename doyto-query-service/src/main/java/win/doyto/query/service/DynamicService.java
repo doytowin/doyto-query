@@ -52,15 +52,6 @@ public interface DynamicService<E extends Persistable<I>, I extends Serializable
     int create(Iterable<E> entities, String... columns);
 
     /**
-     * @deprecated use {@link #create(Iterable, String[])}
-     */
-    @SuppressWarnings("java:S1133")
-    @Deprecated
-    default int batchInsert(Iterable<E> entities, String... columns) {
-        return create(entities, columns);
-    }
-
-    /**
      * 执行<i>UPDATE [TABLE] SET ... WHERE ...</i>
      * <ol>
      * <li><b>会</b>清空全部缓存</li>
