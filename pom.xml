@@ -29,6 +29,7 @@
     <modules>
         <module>doyto-query-core</module>
         <module>doyto-query-service</module>
+        <module>doyto-query-webflux</module>
     </modules>
 
     <dependencyManagement>
