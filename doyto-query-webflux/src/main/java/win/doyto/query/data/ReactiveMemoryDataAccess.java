@@ -1,4 +1,4 @@
-package win.doyto.query.web.controller;
+package win.doyto.query.data;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -13,7 +13,7 @@ import java.io.Serializable;
  *
  * @author f0rb on 2021-10-27
  */
-public class ReactiveMemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> {
+public class ReactiveMemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> implements ReactiveDataAccess<E, I, Q> {
 
     private final MemoryDataAccess<E, I, Q> delegate;
 
@@ -21,11 +21,13 @@ public class ReactiveMemoryDataAccess<E extends Persistable<I>, I extends Serial
         delegate = new MemoryDataAccess<>(entityClass);
     }
 
+    @Override
     public Mono<E> create(E e) {
         delegate.create(e);
         return Mono.just(e);
     }
 
+    @Override
     public Flux<E> query(Q q) {
         return Flux.fromIterable(delegate.query(q));
     }
