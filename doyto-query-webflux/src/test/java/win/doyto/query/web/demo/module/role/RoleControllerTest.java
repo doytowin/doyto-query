@@ -55,4 +55,34 @@ class RoleControllerTest {
                       .verifyComplete();
     }
 
+    @Test
+    void should_remove_the_entity_when_delete_given_existed_id() {
+        roleController.delete(1)
+                      .as(StepVerifier::create)
+                      .assertNext(e -> assertThat(e)
+                              .hasFieldOrPropertyWithValue("id", 1)
+                              .hasFieldOrPropertyWithValue("roleName", "admin")
+                      )
+                      .verifyComplete();
+
+        roleController.query(RoleQuery.builder().build())
+                      .as(StepVerifier::create)
+                      .expectNextMatches(e -> e.getId() == 2)
+                      .expectNextMatches(e -> e.getId() == 3)
+                      .verifyComplete();
+    }
+
+
+    @Test
+    void should_return_null_when_delete_given_non_existed_id() {
+        roleController.delete(-1)
+                      .as(StepVerifier::create)
+                      .expectNextCount(0)
+                      .verifyComplete();
+
+        roleController.query(RoleQuery.builder().build())
+                      .as(StepVerifier::create)
+                      .expectNextCount(3)
+                      .verifyComplete();
+    }
 }

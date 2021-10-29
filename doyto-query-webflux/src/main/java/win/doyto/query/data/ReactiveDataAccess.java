@@ -20,4 +20,6 @@ public interface ReactiveDataAccess<E extends Persistable<I>, I extends Serializ
 
     Mono<E> get(I id);
 
+    Mono<Integer> delete(I id);
+
 }
