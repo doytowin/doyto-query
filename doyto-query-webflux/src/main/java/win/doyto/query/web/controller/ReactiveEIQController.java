@@ -42,7 +42,13 @@ public abstract class ReactiveEIQController<E extends Persistable<I>, I extends 
 
     public Mono<E> delete(I id) {
         return get(id).flatMap(
-                e -> reactiveDataAccess.delete(e.getId()).map(c -> e)
+                e -> reactiveDataAccess.delete(e.getId()).thenReturn(e)
         );
+    }
+
+    public Mono<Void> update(E e) {
+        return get(e.getId()).flatMap(
+                old -> reactiveDataAccess.update(e)
+        ).then();
     }
 }
