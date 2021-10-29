@@ -104,4 +104,22 @@ class RoleControllerTest {
                               .hasFieldOrPropertyWithValue("valid", false)
                       ).verifyComplete();
     }
+
+    @Test
+    void patch() {
+        RoleEntity roleEntity = new RoleEntity();
+        roleEntity.setId(1);
+        roleEntity.setRoleName("admin3");
+
+        roleController.patch(roleEntity).subscribe();
+
+        roleController.get(1)
+                      .as(StepVerifier::create)
+                      .assertNext(e -> assertThat(e)
+                              .hasFieldOrPropertyWithValue("id", 1)
+                              .hasFieldOrPropertyWithValue("roleName", "admin3")
+                              .hasFieldOrPropertyWithValue("roleCode", "ADMIN")
+                              .hasFieldOrPropertyWithValue("valid", true)
+                      ).verifyComplete();
+    }
 }

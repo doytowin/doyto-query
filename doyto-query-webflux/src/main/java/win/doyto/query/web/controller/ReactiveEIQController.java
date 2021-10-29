@@ -51,4 +51,10 @@ public abstract class ReactiveEIQController<E extends Persistable<I>, I extends 
                 old -> reactiveDataAccess.update(e)
         ).then();
     }
+
+    public Mono<Void> patch(E e) {
+        return get(e.getId()).flatMap(
+                old -> reactiveDataAccess.patch(e)
+        ).then();
+    }
 }

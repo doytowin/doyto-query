@@ -49,4 +49,9 @@ public class ReactiveMemoryDataAccess<E extends Persistable<I>, I extends Serial
         return Mono.fromSupplier(() -> delegate.update(e));
     }
 
+    @Override
+    public Mono<Integer> patch(E e) {
+        return Mono.fromSupplier(() -> delegate.patch(e));
+    }
+
 }
