@@ -10,6 +10,8 @@ import win.doyto.query.util.BeanUtil;
 import java.io.IOException;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * RoleControllerTest
  *
@@ -39,6 +41,17 @@ class RoleControllerTest {
                       .expectNextMatches(e -> e.getId() == 1)
                       .expectNextMatches(e -> e.getId() == 2)
                       .expectNextMatches(e -> e.getId() == 3)
+                      .verifyComplete();
+    }
+
+    @Test
+    void get() {
+        roleController.get(1)
+                      .as(StepVerifier::create)
+                      .assertNext(e -> assertThat(e)
+                              .hasFieldOrPropertyWithValue("id", 1)
+                              .hasFieldOrPropertyWithValue("roleName", "admin")
+                      )
                       .verifyComplete();
     }
 

@@ -31,4 +31,9 @@ public class ReactiveMemoryDataAccess<E extends Persistable<I>, I extends Serial
     public Flux<E> query(Q q) {
         return Flux.fromIterable(delegate.query(q));
     }
+
+    @Override
+    public Mono<E> get(I id) {
+        return Mono.fromSupplier(() -> delegate.get(id));
+    }
 }

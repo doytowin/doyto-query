@@ -35,4 +35,8 @@ public abstract class ReactiveEIQController<E extends Persistable<I>, I extends 
     public Flux<E> query(Q query) {
         return reactiveDataAccess.query(query);
     }
+
+    public Mono<E> get(I id) {
+        return reactiveDataAccess.get(id);
+    }
 }
