@@ -3,6 +3,8 @@ package win.doyto.query.web.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import win.doyto.query.core.PageQuery;
@@ -31,7 +33,8 @@ public abstract class ReactiveEIQController<E extends Persistable<I>, I extends 
         reactiveDataAccess = new ReactiveMemoryDataAccess<>((Class<E>) types[0]);
     }
 
-    public Mono<E> add(E e) {
+    @PostMapping
+    public Mono<E> add(@RequestBody E e) {
         return reactiveDataAccess.create(e);
     }
 
