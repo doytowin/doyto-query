@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.BodyInserters;
 import win.doyto.query.util.BeanUtil;
 import win.doyto.query.web.demo.WebfluxApplication;
 
@@ -37,7 +38,7 @@ class RoleWebfluxTest {
         List<RoleEntity> roleEntities = BeanUtil.loadJsonData("role.json", new TypeReference<List<RoleEntity>>() {});
         webTestClient.post().uri("/role/")
                      .contentType(MediaType.APPLICATION_JSON)
-                     .bodyValue(BeanUtil.stringify(roleEntities.get(0)))
+                     .body(BodyInserters.fromValue(roleEntities))
                      .exchange()
                      .expectStatus().isOk();
     }

@@ -35,10 +35,6 @@ public abstract class ReactiveEIQController<E extends Persistable<I>, I extends 
     }
 
     @PostMapping
-    public Mono<E> add(@RequestBody E e) {
-        return reactiveDataAccess.create(e);
-    }
-
     public Mono<Void> create(@RequestBody List<E> list) {
         return reactiveDataAccess.create(list).then();
     }
