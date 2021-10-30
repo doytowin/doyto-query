@@ -16,6 +16,7 @@ import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
+import java.util.List;
 
 /**
  * ReactiveEIQController
@@ -36,6 +37,10 @@ public abstract class ReactiveEIQController<E extends Persistable<I>, I extends 
     @PostMapping
     public Mono<E> add(@RequestBody E e) {
         return reactiveDataAccess.create(e);
+    }
+
+    public Mono<Void> create(@RequestBody List<E> list) {
+        return reactiveDataAccess.create(list).then();
     }
 
     public Flux<E> query(Q query) {

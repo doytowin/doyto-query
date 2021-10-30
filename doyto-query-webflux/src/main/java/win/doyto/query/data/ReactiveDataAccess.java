@@ -27,4 +27,8 @@ public interface ReactiveDataAccess<E extends Persistable<I>, I extends Serializ
     Mono<Integer> update(E e);
 
     Mono<Integer> patch(E e);
+
+    default Mono<Long> create(Iterable<E> entities) {
+        return Flux.fromIterable(entities).flatMap(this::create).count();
+    }
 }

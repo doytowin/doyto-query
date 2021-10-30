@@ -3,7 +3,6 @@ package win.doyto.query.web.demo.module.role;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 import win.doyto.query.util.BeanUtil;
 
@@ -25,13 +24,7 @@ class RoleControllerTest {
     void setUp() throws IOException {
         roleController = new RoleController();
         List<RoleEntity> roleEntities = BeanUtil.loadJsonData("role.json", new TypeReference<List<RoleEntity>>() {});
-        Flux<Object> flux = Flux.empty();
-        for (RoleEntity roleEntity : roleEntities) {
-            flux = flux.mergeWith(roleController.add(roleEntity));
-        }
-        flux.as(StepVerifier::create)
-            .expectNextCount(3)
-            .verifyComplete();
+        roleController.create(roleEntities).subscribe();
     }
 
     @Test
