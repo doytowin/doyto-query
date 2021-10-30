@@ -16,6 +16,7 @@ import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -37,6 +38,10 @@ public abstract class ReactiveEIQController<E extends Persistable<I>, I extends 
     @PostMapping
     public Mono<Void> create(@RequestBody List<E> list) {
         return reactiveDataAccess.create(list).then();
+    }
+
+    public Mono<E> create(E e) {
+        return create(Arrays.asList(e)).thenReturn(e);
     }
 
     public Flux<E> query(Q query) {

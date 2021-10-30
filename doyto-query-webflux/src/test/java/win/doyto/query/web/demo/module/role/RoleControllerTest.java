@@ -135,4 +135,25 @@ class RoleControllerTest {
                                   .extracting(RoleEntity::getId).containsExactly(3);
                       }).verifyComplete();
     }
+
+    @Test
+    void create() {
+        RoleEntity roleEntity = new RoleEntity();
+        roleEntity.setRoleName("vip3");
+        roleEntity.setValid(false);
+
+        roleController.create(roleEntity)
+                      .as(StepVerifier::create)
+                      .assertNext(e -> assertThat(e.getId()).isEqualTo(4))
+                      .verifyComplete();
+
+        roleController.get(4)
+                      .as(StepVerifier::create)
+                      .assertNext(e -> assertThat(e)
+                              .hasFieldOrPropertyWithValue("id", 4)
+                              .hasFieldOrPropertyWithValue("roleName", "vip3")
+                              .hasFieldOrPropertyWithValue("roleCode", null)
+                              .hasFieldOrPropertyWithValue("valid", false)
+                      ).verifyComplete();
+    }
 }
