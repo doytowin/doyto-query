@@ -1,5 +1,6 @@
 package win.doyto.query.config;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -21,6 +22,11 @@ class DoytoQueryInitializerTest {
         DoytoQueryInitializer doytoQueryInitializer = new DoytoQueryInitializer();
         ConfigurableApplicationContext context = new AnnotationConfigWebApplicationContext();
         doytoQueryInitializer.initialize(context);
+    }
+
+    @AfterEach
+    void tearDown() {
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
     }
 
     @Test
