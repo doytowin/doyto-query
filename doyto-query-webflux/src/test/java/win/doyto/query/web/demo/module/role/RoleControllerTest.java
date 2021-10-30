@@ -131,4 +131,15 @@ class RoleControllerTest {
                       .verifyComplete();
     }
 
+    @Test
+    void page() {
+        roleController.page(RoleQuery.builder().pageNumber(1).pageSize(2).build())
+                      .as(StepVerifier::create)
+                      .assertNext(page -> {
+                          assertThat(page.getTotal()).isEqualTo(3);
+                          assertThat(page.getList())
+                                  .hasSize(1)
+                                  .extracting(RoleEntity::getId).containsExactly(3);
+                      }).verifyComplete();
+    }
 }

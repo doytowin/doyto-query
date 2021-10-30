@@ -7,6 +7,7 @@ import win.doyto.query.core.PageQuery;
 import win.doyto.query.data.ReactiveDataAccess;
 import win.doyto.query.data.ReactiveMemoryDataAccess;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.service.PageList;
 import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;
@@ -60,5 +61,13 @@ public abstract class ReactiveEIQController<E extends Persistable<I>, I extends 
 
     public Mono<Long> count(Q q) {
         return reactiveDataAccess.count(q);
+    }
+
+    public Mono<PageList<E>> page(Q q) {
+        q.forcePaging();
+        return query(q)
+                .collectList()
+                .zipWith(count(q))
+                .map(t -> new PageList<>(t.getT1(), t.getT2()));
     }
 }
