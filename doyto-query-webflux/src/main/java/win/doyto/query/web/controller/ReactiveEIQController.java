@@ -1,6 +1,8 @@
 package win.doyto.query.web.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import win.doyto.query.core.PageQuery;
@@ -37,7 +39,8 @@ public abstract class ReactiveEIQController<E extends Persistable<I>, I extends 
         return reactiveDataAccess.query(query);
     }
 
-    public Mono<E> get(I id) {
+    @GetMapping("/{id}")
+    public Mono<E> get(@PathVariable I id) {
         return reactiveDataAccess.get(id);
     }
 
