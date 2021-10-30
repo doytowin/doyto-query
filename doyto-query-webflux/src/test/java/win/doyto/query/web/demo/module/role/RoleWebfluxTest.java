@@ -40,7 +40,9 @@ class RoleWebfluxTest {
                      .contentType(MediaType.APPLICATION_JSON)
                      .body(BodyInserters.fromValue(roleEntities))
                      .exchange()
-                     .expectStatus().isOk();
+                     .expectStatus().isOk()
+                     .expectBody()
+                     .jsonPath("$.success").isEqualTo(true);
     }
 
     @Test
@@ -50,8 +52,9 @@ class RoleWebfluxTest {
                      .expectStatus().isOk()
                      .expectBody()
                      .consumeWith(log())
-                     .jsonPath("$.id").isEqualTo("1")
-                     .jsonPath("$.roleName").isEqualTo("admin");
+                     .jsonPath("$.success").isEqualTo(true)
+                     .jsonPath("$.data.id").isEqualTo("1")
+                     .jsonPath("$.data.roleName").isEqualTo("admin");
     }
 
 }

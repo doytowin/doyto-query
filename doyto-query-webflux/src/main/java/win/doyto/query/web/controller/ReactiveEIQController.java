@@ -13,6 +13,7 @@ import win.doyto.query.data.ReactiveMemoryDataAccess;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.service.PageList;
 import win.doyto.query.util.BeanUtil;
+import win.doyto.query.web.response.JsonBody;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
@@ -25,6 +26,7 @@ import java.util.List;
  * @author f0rb on 2021-10-26
  */
 @Slf4j
+@JsonBody
 public abstract class ReactiveEIQController<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> {
 
     private ReactiveDataAccess<E, I, Q> reactiveDataAccess;
