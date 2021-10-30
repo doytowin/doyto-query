@@ -122,4 +122,13 @@ class RoleControllerTest {
                               .hasFieldOrPropertyWithValue("valid", true)
                       ).verifyComplete();
     }
+
+    @Test
+    void count() {
+        roleController.count(RoleQuery.builder().build())
+                      .as(StepVerifier::create)
+                      .expectNext(3L)
+                      .verifyComplete();
+    }
+
 }

@@ -57,4 +57,8 @@ public abstract class ReactiveEIQController<E extends Persistable<I>, I extends 
                 old -> reactiveDataAccess.patch(e)
         ).then();
     }
+
+    public Mono<Long> count(Q q) {
+        return reactiveDataAccess.count(q);
+    }
 }

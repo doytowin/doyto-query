@@ -18,6 +18,8 @@ public interface ReactiveDataAccess<E extends Persistable<I>, I extends Serializ
 
     Flux<E> query(Q q);
 
+    Mono<Long> count(Q q);
+
     Mono<E> get(I id);
 
     Mono<Integer> delete(I id);

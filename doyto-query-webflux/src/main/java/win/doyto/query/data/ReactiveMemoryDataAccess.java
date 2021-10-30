@@ -54,4 +54,9 @@ public class ReactiveMemoryDataAccess<E extends Persistable<I>, I extends Serial
         return Mono.fromSupplier(() -> delegate.patch(e));
     }
 
+    @Override
+    public Mono<Long> count(Q q) {
+        return Mono.fromSupplier(() -> delegate.count(q));
+    }
+
 }
