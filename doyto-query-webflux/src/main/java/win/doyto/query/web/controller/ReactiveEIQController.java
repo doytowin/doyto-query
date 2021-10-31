@@ -10,10 +10,11 @@ import win.doyto.query.data.ReactiveMemoryDataAccess;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.service.PageList;
 import win.doyto.query.util.BeanUtil;
+import win.doyto.query.web.response.ErrorCode;
 import win.doyto.query.web.response.JsonBody;
+import win.doyto.query.web.response.PresetErrorCode;
 
 import java.io.Serializable;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,11 +28,12 @@ import java.util.List;
 public abstract class ReactiveEIQController<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> {
 
     private ReactiveDataAccess<E, I, Q> reactiveDataAccess;
+    private Class<E> entityClass;
 
     @SuppressWarnings("unchecked")
     protected ReactiveEIQController() {
-        Type[] types = BeanUtil.getActualTypeArguments(getClass());
-        reactiveDataAccess = new ReactiveMemoryDataAccess<>((Class<E>) types[0]);
+        this.entityClass = (Class<E>) BeanUtil.getActualTypeArguments(getClass())[0];
+        this.reactiveDataAccess = new ReactiveMemoryDataAccess<>(entityClass);
     }
 
     @PostMapping
@@ -56,7 +58,7 @@ public abstract class ReactiveEIQController<E extends Persistable<I>, I extends 
     public Mono<E> delete(@PathVariable I id) {
         return get(id).flatMap(
                 e -> reactiveDataAccess.delete(e.getId()).thenReturn(e)
-        );
+        ).doOnSuccess(e -> ErrorCode.assertNotNull(e, PresetErrorCode.ENTITY_NOT_FOUND, entityClass.getSimpleName() + ":" + id));
     }
 
     public Mono<Void> update(E e) {

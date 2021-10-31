@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 import win.doyto.query.util.BeanUtil;
+import win.doyto.query.web.response.ErrorCodeException;
+import win.doyto.query.web.response.PresetErrorCode;
 
 import java.io.IOException;
 import java.util.List;
@@ -67,11 +69,12 @@ class RoleControllerTest {
 
 
     @Test
-    void should_return_null_when_delete_given_non_existed_id() {
+    void should_throw_exception_when_delete_given_nonexistent_id() {
         roleController.delete(-1)
                       .as(StepVerifier::create)
-                      .expectNextCount(0)
-                      .verifyComplete();
+                      .expectErrorMatches(throwable -> throwable instanceof ErrorCodeException &&
+                              ((ErrorCodeException) throwable).getErrorCode().equals(PresetErrorCode.ENTITY_NOT_FOUND)
+                      ).verify();
 
         roleController.query(RoleQuery.builder().build())
                       .as(StepVerifier::create)
