@@ -31,7 +31,7 @@ public class JsonBodyHandler extends AbstractMessageWriterResultHandler implemen
     public JsonBodyHandler(ServerCodecConfigurer serverCodecConfigurer, RequestedContentTypeResolver resolver) {
         super(serverCodecConfigurer.getWriters(), resolver, ReactiveAdapterRegistry.getSharedInstance());
         setOrder(90);
-        defaultResponse = ErrorCode.build(null);
+        defaultResponse = ErrorCode.build((Object) null);
         errorCodeParameter = new MethodParameter(JsonBodyHandler.class.getDeclaredMethod("errorCodeParameter"), -1);
     }
 
