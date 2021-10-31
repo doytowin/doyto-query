@@ -65,4 +65,15 @@ class RoleWebfluxTest {
                      .jsonPath("$.success").isEqualTo(true);
     }
 
+    @Test
+    void should_return_code_9_when_get_nonexistent_entity() {
+        webTestClient.get().uri("/role/-1")
+                     .exchange()
+                     .expectStatus().isOk()
+                     .expectBody()
+                     .consumeWith(log())
+                     .jsonPath("$.success").isEqualTo(false)
+                     .jsonPath("$.code").isEqualTo(9)
+                     .jsonPath("$.message").isEqualTo("查询记录不存在");
+    }
 }

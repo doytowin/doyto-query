@@ -36,6 +36,10 @@ public abstract class ReactiveEIQController<E extends Persistable<I>, I extends 
         this.reactiveDataAccess = new ReactiveMemoryDataAccess<>(entityClass);
     }
 
+    private void assertNotNull(E e, I id) {
+        ErrorCode.assertNotNull(e, PresetErrorCode.ENTITY_NOT_FOUND, entityClass.getSimpleName() + ":" + id);
+    }
+
     @PostMapping
     public Mono<Void> create(@RequestBody List<E> list) {
         return reactiveDataAccess.create(list).then();
@@ -51,14 +55,14 @@ public abstract class ReactiveEIQController<E extends Persistable<I>, I extends 
 
     @GetMapping("/{id}")
     public Mono<E> get(@PathVariable I id) {
-        return reactiveDataAccess.get(id);
+        return reactiveDataAccess.get(id).doOnSuccess(e -> assertNotNull(e, id));
     }
 
     @DeleteMapping("/{id}")
     public Mono<E> delete(@PathVariable I id) {
         return get(id).flatMap(
                 e -> reactiveDataAccess.delete(e.getId()).thenReturn(e)
-        ).doOnSuccess(e -> ErrorCode.assertNotNull(e, PresetErrorCode.ENTITY_NOT_FOUND, entityClass.getSimpleName() + ":" + id));
+        ).doOnSuccess(e -> assertNotNull(e, id));
     }
 
     public Mono<Void> update(E e) {
