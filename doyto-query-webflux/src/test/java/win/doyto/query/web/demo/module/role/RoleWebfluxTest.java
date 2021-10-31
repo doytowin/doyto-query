@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import javax.annotation.Resource;
 
+import static org.hamcrest.Matchers.containsInRelativeOrder;
+
 /**
  * RoleWebfluxTest
  *
@@ -75,5 +77,16 @@ class RoleWebfluxTest {
                      .jsonPath("$.success").isEqualTo(false)
                      .jsonPath("$.code").isEqualTo(9)
                      .jsonPath("$.message").isEqualTo("查询记录不存在");
+    }
+
+    @Test
+    void should_return_two_records_when_query_by_role_name_like_vip() {
+        webTestClient.get().uri("/role/?roleNameLike=vip")
+                     .exchange()
+                     .expectBody()
+                     .consumeWith(log())
+                     .jsonPath("$.success").isEqualTo(true)
+                     .jsonPath("$.data.total").isEqualTo(2)
+                     .jsonPath("$.data.list[*].id").value(containsInRelativeOrder(2, 3));
     }
 }

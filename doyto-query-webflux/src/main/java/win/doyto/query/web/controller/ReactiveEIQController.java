@@ -81,6 +81,7 @@ public abstract class ReactiveEIQController<E extends Persistable<I>, I extends 
         return reactiveDataAccess.count(q);
     }
 
+    @GetMapping("/")
     public Mono<PageList<E>> page(Q q) {
         q.forcePaging();
         return query(q)
