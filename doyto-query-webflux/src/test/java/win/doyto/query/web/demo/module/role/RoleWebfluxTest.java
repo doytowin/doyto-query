@@ -57,4 +57,12 @@ class RoleWebfluxTest {
                      .jsonPath("$.data.roleName").isEqualTo("admin");
     }
 
+    @Test
+    void deleteById() {
+        webTestClient.delete().uri("/role/1")
+                     .exchange()
+                     .expectBody()
+                     .jsonPath("$.success").isEqualTo(true);
+    }
+
 }
