@@ -10,7 +10,7 @@ import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 import win.doyto.query.util.BeanUtil;
-import win.doyto.query.web.demo.WebfluxApplication;
+import win.doyto.query.web.demo.WebFluxApplication;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,7 +24,7 @@ import static org.hamcrest.Matchers.containsInRelativeOrder;
  *
  * @author f0rb on 2021-10-30
  */
-@SpringBootTest(classes = WebfluxApplication.class)
+@SpringBootTest(classes = WebFluxApplication.class)
 @AutoConfigureWebTestClient
 class RoleWebfluxTest {
 
@@ -106,7 +106,7 @@ class RoleWebfluxTest {
                      .consumeWith(log())
                      .jsonPath("$.data.roleName").isEqualTo("vip0")
                      .jsonPath("$.data.roleCode").isEqualTo("VIP0")
-                     .jsonPath("$.data.valid").isEqualTo(null);
+                     .jsonPath("$.data.valid").doesNotExist();
     }
 
     @Test
