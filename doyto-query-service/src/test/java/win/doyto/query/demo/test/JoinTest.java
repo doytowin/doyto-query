@@ -1,12 +1,8 @@
 package win.doyto.query.demo.test;
 
 import org.junit.jupiter.api.Test;
-import win.doyto.query.core.test.TestJoinQuery;
-import win.doyto.query.core.test.TestJoinView;
-import win.doyto.query.core.test.UserCountByRoleView;
 import win.doyto.query.data.DatabaseOperations;
-import win.doyto.query.service.JoinQueryService;
-import win.doyto.query.service.PageList;
+import win.doyto.query.service.*;
 
 import java.util.List;
 import javax.annotation.Resource;

@@ -1,9 +1,10 @@
-package win.doyto.query.core.test;
+package win.doyto.query.service;
 
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.QueryTableAlias;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.test.TestEnum;
 
 /**
  * TestJoinQuery

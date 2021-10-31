@@ -6,7 +6,6 @@ import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.test.TestEntity;
 import win.doyto.query.core.test.TestQuery;
-import win.doyto.query.core.test.TestService;
 import win.doyto.query.entity.EntityAspect;
 
 import java.util.List;

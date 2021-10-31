@@ -1,6 +1,7 @@
-package win.doyto.query.core.test;
+package win.doyto.query.service;
 
-import win.doyto.query.service.AbstractCrudService;
+import win.doyto.query.core.test.TestEntity;
+import win.doyto.query.core.test.TestQuery;
 
 /**
  * TestService
