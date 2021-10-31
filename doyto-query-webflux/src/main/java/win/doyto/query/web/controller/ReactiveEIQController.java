@@ -77,6 +77,12 @@ public abstract class ReactiveEIQController<E extends Persistable<I>, I extends 
         ).then();
     }
 
+    @PatchMapping("/{id}")
+    public Mono<Void> patch(@PathVariable I id, @RequestBody E e) {
+        e.setId(id);
+        return patch(e);
+    }
+
     public Mono<Void> patch(E e) {
         return get(e.getId()).flatMap(
                 old -> reactiveDataAccess.patch(e)

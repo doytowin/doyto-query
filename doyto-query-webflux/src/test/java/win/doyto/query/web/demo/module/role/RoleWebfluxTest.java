@@ -108,4 +108,23 @@ class RoleWebfluxTest {
                      .jsonPath("$.data.roleCode").isEqualTo("VIP0")
                      .jsonPath("$.data.valid").isEqualTo(null);
     }
+
+    @Test
+    void patchRole() {
+        webTestClient.patch().uri("/role/2")
+                     .contentType(MediaType.APPLICATION_JSON)
+                     .bodyValue("{\"id\":2,\"roleName\":\"vip0\",\"roleCode\":\"VIP0\"}")
+                     .exchange()
+                     .expectBody()
+                     .consumeWith(log())
+                     .jsonPath("$.success").isEqualTo(true);
+
+        webTestClient.get().uri("/role/2")
+                     .exchange()
+                     .expectBody()
+                     .consumeWith(log())
+                     .jsonPath("$.data.roleName").isEqualTo("vip0")
+                     .jsonPath("$.data.roleCode").isEqualTo("VIP0")
+                     .jsonPath("$.data.valid").isEqualTo(true);
+    }
 }
