@@ -65,6 +65,12 @@ public abstract class ReactiveEIQController<E extends Persistable<I>, I extends 
         ).doOnSuccess(e -> assertNotNull(e, id));
     }
 
+    @PutMapping("/{id}")
+    public Mono<Void> update(@PathVariable I id, @RequestBody E e) {
+        e.setId(id);
+        return update(e);
+    }
+
     public Mono<Void> update(E e) {
         return get(e.getId()).flatMap(
                 old -> reactiveDataAccess.update(e)
