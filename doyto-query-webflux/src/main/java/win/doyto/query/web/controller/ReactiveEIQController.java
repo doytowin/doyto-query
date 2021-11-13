@@ -15,7 +15,6 @@ import win.doyto.query.web.response.JsonBody;
 import win.doyto.query.web.response.PresetErrorCode;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -25,7 +24,8 @@ import java.util.List;
  */
 @Slf4j
 @JsonBody
-public abstract class ReactiveEIQController<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> {
+public abstract class ReactiveEIQController<E extends Persistable<I>, I extends Serializable, Q extends PageQuery>
+        implements ReactiveRestApi<E, I, Q> {
 
     private ReactiveDataAccess<E, I, Q> reactiveDataAccess;
     private Class<E> entityClass;
@@ -40,24 +40,23 @@ public abstract class ReactiveEIQController<E extends Persistable<I>, I extends 
         ErrorCode.assertNotNull(e, PresetErrorCode.ENTITY_NOT_FOUND, entityClass.getSimpleName() + ":" + id);
     }
 
+    @Override
     @PostMapping
     public Mono<Void> create(@RequestBody List<E> list) {
         return reactiveDataAccess.create(list).then();
-    }
-
-    public Mono<E> create(E e) {
-        return create(Arrays.asList(e)).thenReturn(e);
     }
 
     public Flux<E> query(Q query) {
         return reactiveDataAccess.query(query);
     }
 
+    @Override
     @GetMapping("/{id}")
     public Mono<E> get(@PathVariable I id) {
         return reactiveDataAccess.get(id).doOnSuccess(e -> assertNotNull(e, id));
     }
 
+    @Override
     @DeleteMapping("/{id}")
     public Mono<E> delete(@PathVariable I id) {
         return get(id).flatMap(
@@ -65,34 +64,37 @@ public abstract class ReactiveEIQController<E extends Persistable<I>, I extends 
         ).doOnSuccess(e -> assertNotNull(e, id));
     }
 
+    @Override
     @PutMapping("/{id}")
     public Mono<Void> update(@PathVariable I id, @RequestBody E e) {
         e.setId(id);
-        return update(e);
+        return update(e).then();
     }
 
-    public Mono<Void> update(E e) {
+    public Mono<Integer> update(E e) {
         return get(e.getId()).flatMap(
                 old -> reactiveDataAccess.update(e)
-        ).then();
+        );
     }
 
+    @Override
     @PatchMapping("/{id}")
     public Mono<Void> patch(@PathVariable I id, @RequestBody E e) {
         e.setId(id);
-        return patch(e);
+        return patch(e).then();
     }
 
-    public Mono<Void> patch(E e) {
+    public Mono<Integer> patch(E e) {
         return get(e.getId()).flatMap(
                 old -> reactiveDataAccess.patch(e)
-        ).then();
+        );
     }
 
     public Mono<Long> count(Q q) {
         return reactiveDataAccess.count(q);
     }
 
+    @Override
     @GetMapping("/")
     public Mono<PageList<E>> page(Q q) {
         q.forcePaging();
