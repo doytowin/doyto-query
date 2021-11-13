@@ -37,6 +37,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     protected DataAccess<E, I, Q> dataAccess;
 
     protected final Class<E> entityClass;
+    private final Class<I> idClass;
 
     protected final CacheWrapper<E> entityCacheWrapper = CacheWrapper.createInstance();
     protected final CacheWrapper<List<E>> queryCacheWrapper = CacheWrapper.createInstance();
@@ -57,13 +58,13 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     @SuppressWarnings("unchecked")
     protected AbstractDynamicService() {
         entityClass = (Class<E>) BeanUtil.getActualTypeArguments(getClass())[0];
+        idClass = (Class<I>) BeanUtil.getActualTypeArguments(getClass())[1];
         dataAccess = new MemoryDataAccess<>(entityClass);
     }
 
     @Autowired
-    @SuppressWarnings("unchecked")
-    public void setJdbcOperations(DatabaseOperations databaseOperations) {
-        dataAccess = new DefaultDataAccess<>(databaseOperations, entityClass, (Class<I>) BeanUtil.getActualTypeArguments(getClass())[1], getRowMapper());
+    public void setDatabaseOperations(DatabaseOperations databaseOperations) {
+        dataAccess = new DefaultDataAccess<>(databaseOperations, entityClass, idClass, getRowMapper());
     }
 
     protected RowMapper<E> getRowMapper() {
