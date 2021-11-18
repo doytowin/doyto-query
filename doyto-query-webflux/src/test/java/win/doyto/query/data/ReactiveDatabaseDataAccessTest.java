@@ -6,6 +6,10 @@ import reactor.test.StepVerifier;
 import win.doyto.query.web.demo.module.role.RoleEntity;
 import win.doyto.query.web.demo.module.role.RoleQuery;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  * ReactiveDefaultDataAccessTest
  *
@@ -14,10 +18,14 @@ import win.doyto.query.web.demo.module.role.RoleQuery;
 class ReactiveDatabaseDataAccessTest {
     @Test
     void count() {
-        ReactiveDataAccess<RoleEntity, Integer, RoleQuery> reactiveDefaultDataAccess = new ReactiveDatabaseDataAccess<>();
-        Mono<Long> roleCount = reactiveDefaultDataAccess.count(RoleQuery.builder().build());
-        roleCount.as(StepVerifier::create)
-                 .expectNext(3L)
-                 .verifyComplete();
+        R2dbcOperations mockR2dbc = mock(R2dbcOperations.class);
+        when(mockR2dbc.count(any())).thenReturn(Mono.just(3L));
+
+        ReactiveDataAccess<RoleEntity, Integer, RoleQuery> reactiveDataAccess =
+                new ReactiveDatabaseDataAccess<>(mockR2dbc);
+        reactiveDataAccess.count(RoleQuery.builder().build())
+                          .as(StepVerifier::create)
+                          .expectNext(3L)
+                          .verifyComplete();
     }
 }
