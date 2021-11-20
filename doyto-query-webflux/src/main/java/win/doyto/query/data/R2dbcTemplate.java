@@ -22,6 +22,20 @@ public class R2dbcTemplate implements R2dbcOperations {
 
     private final ConnectionFactory connectionFactory;
 
+    private Function<Connection, Publisher<? extends Result>> createSqlExecutor(SqlAndArgs sqlAndArgs, String... idColumns) {
+        return connection -> {
+            Statement statement = connection.createStatement(sqlAndArgs.getSql());
+            Object[] args = sqlAndArgs.getArgs();
+            for (int i = 0; i < args.length; i++) {
+                statement.bind(i, args[i]);
+            }
+            if (idColumns.length > 0) {
+                statement = statement.returnGeneratedValues(idColumns);
+            }
+            return statement.execute();
+        };
+    }
+
     @Override
     public <V> Flux<V> query(SqlAndArgs sqlAndArgs, RowMapper<V> rowMapper) {
         return null;
@@ -30,32 +44,15 @@ public class R2dbcTemplate implements R2dbcOperations {
     @Override
     public Mono<Long> count(SqlAndArgs sqlAndArgs) {
         return Mono.from(connectionFactory.create())
-                   .flatMapMany(
-                           connection -> {
-                               Statement statement = connection.createStatement(sqlAndArgs.getSql());
-                               Object[] args = sqlAndArgs.getArgs();
-                               for (int i = 0; i < args.length; i++) {
-                                   statement.bind(i, args[i]);
-                               }
-                               return statement.execute();
-                           })
-                   .flatMap(result -> result.map((row, rowMetadata) -> row.get(0, Long.class)))
-                   .singleOrEmpty();
+                   .flatMapMany(createSqlExecutor(sqlAndArgs))
+                   .flatMap(result -> result.map((row, md) -> row.get(0, Long.class)))
+                   .single();
     }
 
     @Override
     public <I> Mono<I> insert(SqlAndArgs sqlAndArgs, String idColumn, Class<I> idClass) {
-        Function<Connection, Publisher<? extends Result>> mapper =
-                connection -> {
-                    Statement statement = connection.createStatement(sqlAndArgs.getSql());
-                    Object[] args = sqlAndArgs.getArgs();
-                    for (int i = 0; i < args.length; i++) {
-                        statement.bind(i, args[i]);
-                    }
-                    return statement.returnGeneratedValues(idColumn).execute();
-                };
         return Mono.from(connectionFactory.create())
-                   .flatMapMany(mapper)
+                   .flatMapMany(createSqlExecutor(sqlAndArgs, idColumn))
                    .flatMap(result -> result.map((row, md) -> row.get(idColumn, idClass)))
                    .single();
     }
