@@ -76,4 +76,22 @@ class R2dbcTemplateTest {
              .expectNext(3L)
              .verifyComplete();
     }
+
+    @Test
+    void update() {
+        String sql = "UPDATE t_role SET valid = ? WHERE id > ?";
+        Object[] args = new Object[]{false, 1};
+
+        r2dbc.update(sql, args)
+             .as(StepVerifier::create)
+             .expectNext(2)
+             .verifyComplete();
+
+        String countSql = "SELECT count(*) FROM t_role WHERE valid = ?";
+        r2dbc.count(new SqlAndArgs(countSql, true))
+             .as(StepVerifier::create)
+             .expectNext(1L)
+             .verifyComplete();
+    }
+
 }

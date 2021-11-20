@@ -11,6 +11,7 @@ import reactor.core.publisher.Mono;
 import win.doyto.query.core.SqlAndArgs;
 
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * R2dbcTemplate
@@ -59,6 +60,9 @@ public class R2dbcTemplate implements R2dbcOperations {
 
     @Override
     public Mono<Integer> update(SqlAndArgs sqlAndArgs) {
-        return null;
+        return Mono.from(connectionFactory.create())
+                   .flatMapMany(createSqlExecutor(sqlAndArgs))
+                   .flatMap(Result::getRowsUpdated)
+                   .collect(Collectors.summingInt(Integer::intValue));
     }
 }
