@@ -94,4 +94,20 @@ class R2dbcTemplateTest {
              .verifyComplete();
     }
 
+    @Test
+    void updateWithNull() {
+        String sql = "UPDATE t_role SET valid = ? WHERE id = ?";
+        Object[] args = new Object[]{null, 3};
+
+        r2dbc.update(sql, args)
+             .as(StepVerifier::create)
+             .expectNext(1)
+             .verifyComplete();
+
+        r2dbc.count(new SqlAndArgs("SELECT count(*) FROM t_role WHERE valid is null"))
+             .as(StepVerifier::create)
+             .expectNext(1L)
+             .verifyComplete();
+    }
+
 }

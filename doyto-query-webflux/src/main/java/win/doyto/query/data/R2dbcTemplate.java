@@ -28,7 +28,11 @@ public class R2dbcTemplate implements R2dbcOperations {
             Statement statement = connection.createStatement(sqlAndArgs.getSql());
             Object[] args = sqlAndArgs.getArgs();
             for (int i = 0; i < args.length; i++) {
-                statement.bind(i, args[i]);
+                if (args[i] != null) {
+                    statement.bind(i, args[i]);
+                } else {
+                    statement.bindNull(i, String.class);
+                }
             }
             if (idColumns.length > 0) {
                 statement = statement.returnGeneratedValues(idColumns);
