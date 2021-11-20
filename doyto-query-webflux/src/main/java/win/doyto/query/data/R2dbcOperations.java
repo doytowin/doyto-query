@@ -15,7 +15,7 @@ public interface R2dbcOperations {
 
     Mono<Long> count(SqlAndArgs sqlAndArgs);
 
-    Mono<Number> insert(SqlAndArgs sqlAndArgs);
+    <I> Mono<I> insert(SqlAndArgs sqlAndArgs, String idColumn, Class<I> idClass);
 
     Mono<Integer> update(SqlAndArgs sqlAndArgs);
 
