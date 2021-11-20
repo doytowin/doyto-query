@@ -51,4 +51,12 @@ class R2dbcTemplateTest {
              .expectNext(3L)
              .verifyComplete();
     }
+
+    @Test
+    void countWithArgs() {
+        r2dbc.count(new SqlAndArgs("SELECT count(*) FROM t_role WHERE role_name LIKE ?", "%vip%"))
+             .as(StepVerifier::create)
+             .expectNext(2L)
+             .verifyComplete();
+    }
 }

@@ -28,6 +28,10 @@ public class R2dbcTemplate implements R2dbcOperations {
                    .flatMapMany(
                            connection -> {
                                Statement statement = connection.createStatement(sqlAndArgs.getSql());
+                               Object[] args = sqlAndArgs.getArgs();
+                               for (int i = 0; i < args.length; i++) {
+                                   statement.bind(i, args[i]);
+                               }
                                return statement.execute();
                            })
                    .flatMap(result -> result.map((row, rowMetadata) -> row.get(0, Long.class)))
