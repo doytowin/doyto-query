@@ -95,7 +95,7 @@ public class QueryBuilder {
         return columnStr;
     }
 
-    protected SqlAndArgs buildSelectIdAndArgs(PageQuery query) {
+    public SqlAndArgs buildSelectIdAndArgs(PageQuery query) {
         return buildSelectColumnsAndArgs(query, idColumn);
     }
 

@@ -20,7 +20,7 @@ import static win.doyto.query.core.Constant.*;
  * @author f0rb
  */
 @Slf4j
-final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
+final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implements SqlBuilder<E> {
 
     private final Field idField;
     private final List<Field> fields;
@@ -81,6 +81,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
         }
     }
 
+    @Override
     public SqlAndArgs buildCreateAndArgs(E testEntity) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             String table = resolveTableName(testEntity);
@@ -89,6 +90,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
         });
     }
 
+    @Override
     public SqlAndArgs buildCreateAndArgs(Iterable<E> entities, String... columns) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             Iterator<E> iterator = entities.iterator();
@@ -115,6 +117,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
         });
     }
 
+    @Override
     public SqlAndArgs buildUpdateAndArgs(E entity) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             String table = resolveTableName(entity);
@@ -132,6 +135,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
         return buildUpdateSql(table, setClausesText);
     }
 
+    @Override
     public SqlAndArgs buildPatchAndArgsWithId(E entity) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             String sql = buildPatchAndArgs(entity, argList) + whereId;
@@ -140,6 +144,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
         });
     }
 
+    @Override
     public SqlAndArgs buildPatchAndArgsWithQuery(E entity, PageQuery query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             String sql = buildPatchAndArgs(entity, argList)
@@ -148,6 +153,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
         });
     }
 
+    @Override
     public SqlAndArgs buildDeleteAndArgs(PageQuery query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             String sql = buildDeleteFromTable(query.toIdWrapper())
@@ -156,6 +162,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder {
         });
     }
 
+    @Override
     public SqlAndArgs buildDeleteById(IdWrapper<?> w) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             argList.add(w.getId());
