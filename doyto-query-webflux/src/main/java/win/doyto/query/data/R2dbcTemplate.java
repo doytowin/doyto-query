@@ -23,7 +23,15 @@ public class R2dbcTemplate implements R2dbcOperations {
 
     private final ConnectionFactory connectionFactory;
 
-    private Function<Connection, Publisher<? extends Result>> createSqlExecutor(SqlAndArgs sqlAndArgs, String... idColumns) {
+    private Flux<Result> executeSql(SqlAndArgs sqlAndArgs, String... idColumn) {
+        return Flux.usingWhen(
+                connectionFactory.create(),
+                doExecute(sqlAndArgs, idColumn),
+                Connection::close
+        );
+    }
+
+    private Function<Connection, Publisher<? extends Result>> doExecute(SqlAndArgs sqlAndArgs, String... idColumns) {
         return connection -> {
             Statement statement = connection.createStatement(sqlAndArgs.getSql());
             Object[] args = sqlAndArgs.getArgs();
@@ -43,32 +51,28 @@ public class R2dbcTemplate implements R2dbcOperations {
 
     @Override
     public <V> Flux<V> query(SqlAndArgs sqlAndArgs, RowMapper<V> rowMapper) {
-        return Mono.from(connectionFactory.create())
-                   .flatMapMany(createSqlExecutor(sqlAndArgs))
-                   .flatMap(result -> result.map(rowMapper));
+        return executeSql(sqlAndArgs)
+                .flatMap(result -> result.map(rowMapper));
     }
 
     @Override
     public Mono<Long> count(SqlAndArgs sqlAndArgs) {
-        return Mono.from(connectionFactory.create())
-                   .flatMapMany(createSqlExecutor(sqlAndArgs))
-                   .flatMap(result -> result.map((row, md) -> row.get(0, Long.class)))
-                   .single();
+        return executeSql(sqlAndArgs)
+                .flatMap(result -> result.map(row -> row.get(0, Long.class)))
+                .single();
     }
 
     @Override
     public <I> Mono<I> insert(SqlAndArgs sqlAndArgs, String idColumn, Class<I> idClass) {
-        return Mono.from(connectionFactory.create())
-                   .flatMapMany(createSqlExecutor(sqlAndArgs, idColumn))
-                   .flatMap(result -> result.map((row, md) -> row.get(idColumn, idClass)))
-                   .single();
+        return executeSql(sqlAndArgs, idColumn)
+                .flatMap(result -> result.map(row -> row.get(idColumn, idClass)))
+                .single();
     }
 
     @Override
     public Mono<Integer> update(SqlAndArgs sqlAndArgs) {
-        return Mono.from(connectionFactory.create())
-                   .flatMapMany(createSqlExecutor(sqlAndArgs))
-                   .flatMap(Result::getRowsUpdated)
-                   .collect(Collectors.summingInt(Integer::intValue));
+        return executeSql(sqlAndArgs)
+                .flatMap(Result::getRowsUpdated)
+                .collect(Collectors.summingInt(Integer::intValue));
     }
 }

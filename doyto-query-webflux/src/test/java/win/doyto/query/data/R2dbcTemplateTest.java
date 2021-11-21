@@ -1,7 +1,10 @@
 package win.doyto.query.data;
 
+import io.r2dbc.pool.ConnectionPool;
+import io.r2dbc.pool.ConnectionPoolConfiguration;
 import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactory;
+import io.r2dbc.spi.ConnectionFactoryOptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -9,6 +12,10 @@ import reactor.test.StepVerifier;
 import win.doyto.query.core.SqlAndArgs;
 import win.doyto.query.data.rowmapper.BeanPropertyRowMapper;
 import win.doyto.query.web.demo.module.role.RoleEntity;
+
+import java.time.Duration;
+
+import static io.r2dbc.spi.ConnectionFactoryOptions.*;
 
 /**
  * R2dbcTemplateTest
@@ -21,7 +28,32 @@ class R2dbcTemplateTest {
 
     @BeforeEach
     void setUp() {
-        ConnectionFactory connectionFactory = ConnectionFactories.get("r2dbc:h2:mem:///testdb");
+        ConnectionFactory connectionFactory = createConnectionFactory();
+        initDatabase(connectionFactory);
+        r2dbc = new R2dbcTemplate(connectionFactory);
+    }
+
+    private ConnectionFactory createConnectionFactory() {
+        // Creates a ConnectionFactory for the specified DRIVER
+        ConnectionFactoryOptions options = ConnectionFactoryOptions
+                .builder()
+                .option(DRIVER, "h2")
+                .option(PROTOCOL, "mem")
+                .option(DATABASE, "testdb")
+                .build();
+        ConnectionFactory connectionFactory = ConnectionFactories.get(options);
+
+        // Create a ConnectionPool for connectionFactory
+        ConnectionPoolConfiguration configuration = ConnectionPoolConfiguration
+                .builder(connectionFactory)
+                .maxIdleTime(Duration.ofMillis(1000))
+                .maxSize(10)
+                .build();
+
+        return new ConnectionPool(configuration);
+    }
+
+    private void initDatabase(ConnectionFactory connectionFactory) {
         Flux.from(connectionFactory.create())
             .flatMap(
                     c -> Flux.from(
@@ -42,8 +74,6 @@ class R2dbcTemplateTest {
             )
             .log()
             .blockLast();
-
-        r2dbc = new R2dbcTemplate(connectionFactory);
     }
 
     @Test
