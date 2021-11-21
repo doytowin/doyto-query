@@ -1,9 +1,12 @@
 package win.doyto.query.data;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.SqlAndArgs;
 import win.doyto.query.web.demo.module.role.RoleEntity;
 import win.doyto.query.web.demo.module.role.RoleQuery;
@@ -18,6 +21,16 @@ import static org.mockito.Mockito.*;
  * @author f0rb on 2021-11-18
  */
 class ReactiveDatabaseDataAccessTest {
+    @BeforeAll
+    static void beforeAll() {
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
+    }
+
+    @AfterAll
+    static void afterAll() {
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
+    }
+
     @Test
     void count() {
         R2dbcOperations mockR2dbc = mock(R2dbcOperations.class);

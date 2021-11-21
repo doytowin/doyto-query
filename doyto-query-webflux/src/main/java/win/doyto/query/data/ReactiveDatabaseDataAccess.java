@@ -8,6 +8,7 @@ import win.doyto.query.core.SqlBuilder;
 import win.doyto.query.core.SqlBuilderFactory;
 import win.doyto.query.data.rowmapper.BeanPropertyRowMapper;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.util.ColumnUtil;
 
 import java.io.Serializable;
 
@@ -21,11 +22,13 @@ public class ReactiveDatabaseDataAccess<E extends Persistable<I>, I extends Seri
     private R2dbcOperations r2dbcOperations;
     private SqlBuilder<E> sqlBuilder;
     private RowMapper<E> rowMapper;
+    private String[] selectColumns;
 
     public ReactiveDatabaseDataAccess(R2dbcOperations r2dbcOperations, Class<E> entityClass) {
         this.r2dbcOperations = r2dbcOperations;
         this.sqlBuilder = SqlBuilderFactory.create(entityClass);
         this.rowMapper = new BeanPropertyRowMapper<>(entityClass);
+        this.selectColumns = ColumnUtil.resolveSelectColumns(entityClass);
     }
 
     @Override
@@ -35,7 +38,7 @@ public class ReactiveDatabaseDataAccess<E extends Persistable<I>, I extends Seri
 
     @Override
     public Flux<E> query(Q q) {
-        SqlAndArgs sqlAndArgs = sqlBuilder.buildSelectColumnsAndArgs(q, "id, role_name AS roleName, role_code as roleCode, valid");
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildSelectColumnsAndArgs(q, selectColumns);
         return r2dbcOperations.query(sqlAndArgs, rowMapper);
     }
 
