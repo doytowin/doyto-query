@@ -35,4 +35,19 @@ class ReactiveDatabaseDataAccessTest {
         assertThat(argumentCaptor.getValue().getSql()).isEqualTo("SELECT count(*) FROM t_role");
         assertThat(argumentCaptor.getValue().getArgs()).isEmpty();
     }
+
+    @Test
+    void query() {
+        R2dbcTemplate r2dbcTemplate = R2dbcTemplateTest.createR2dbcTemplate();
+
+        ReactiveDataAccess<RoleEntity, Integer, RoleQuery> reactiveDataAccess =
+                new ReactiveDatabaseDataAccess<>(r2dbcTemplate, RoleEntity.class);
+
+        reactiveDataAccess.query(RoleQuery.builder().build())
+                          .as(StepVerifier::create)
+                          .expectNextMatches(e -> e.getId() == 1)
+                          .expectNextMatches(e -> e.getId() == 2)
+                          .expectNextMatches(e -> e.getId() == 3)
+                          .verifyComplete();
+    }
 }

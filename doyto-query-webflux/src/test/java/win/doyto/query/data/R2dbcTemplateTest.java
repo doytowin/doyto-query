@@ -28,12 +28,16 @@ class R2dbcTemplateTest {
 
     @BeforeEach
     void setUp() {
-        ConnectionFactory connectionFactory = createConnectionFactory();
-        initDatabase(connectionFactory);
-        r2dbc = new R2dbcTemplate(connectionFactory);
+        r2dbc = createR2dbcTemplate();
     }
 
-    private ConnectionFactory createConnectionFactory() {
+    static R2dbcTemplate createR2dbcTemplate() {
+        ConnectionFactory connectionFactory = createConnectionFactory();
+        initDatabase(connectionFactory);
+        return new R2dbcTemplate(connectionFactory);
+    }
+
+    private static ConnectionFactory createConnectionFactory() {
         // Creates a ConnectionFactory for the specified DRIVER
         ConnectionFactoryOptions options = ConnectionFactoryOptions
                 .builder()
@@ -53,7 +57,7 @@ class R2dbcTemplateTest {
         return new ConnectionPool(configuration);
     }
 
-    private void initDatabase(ConnectionFactory connectionFactory) {
+    private static void initDatabase(ConnectionFactory connectionFactory) {
         Flux.from(connectionFactory.create())
             .flatMap(
                     c -> Flux.from(

@@ -3,8 +3,10 @@ package win.doyto.query.data;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.SqlAndArgs;
 import win.doyto.query.core.SqlBuilder;
 import win.doyto.query.core.SqlBuilderFactory;
+import win.doyto.query.data.rowmapper.BeanPropertyRowMapper;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
@@ -18,10 +20,12 @@ public class ReactiveDatabaseDataAccess<E extends Persistable<I>, I extends Seri
 
     private R2dbcOperations r2dbcOperations;
     private SqlBuilder<E> sqlBuilder;
+    private RowMapper<E> rowMapper;
 
     public ReactiveDatabaseDataAccess(R2dbcOperations r2dbcOperations, Class<E> entityClass) {
         this.r2dbcOperations = r2dbcOperations;
         this.sqlBuilder = SqlBuilderFactory.create(entityClass);
+        this.rowMapper = new BeanPropertyRowMapper<>(entityClass);
     }
 
     @Override
@@ -31,12 +35,14 @@ public class ReactiveDatabaseDataAccess<E extends Persistable<I>, I extends Seri
 
     @Override
     public Flux<E> query(Q q) {
-        return null;
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildSelectColumnsAndArgs(q, "id, role_name AS roleName, role_code as roleCode, valid");
+        return r2dbcOperations.query(sqlAndArgs, rowMapper);
     }
 
     @Override
     public Mono<Long> count(Q q) {
-        return r2dbcOperations.count(sqlBuilder.buildCountAndArgs(q));
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildCountAndArgs(q);
+        return r2dbcOperations.count(sqlAndArgs);
     }
 
     @Override
