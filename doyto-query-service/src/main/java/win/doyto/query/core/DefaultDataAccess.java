@@ -36,7 +36,7 @@ public final class DefaultDataAccess<E extends Persistable<I>, I extends Seriali
 
     private final DatabaseOperations databaseOperations;
     private final RowMapper<E> rowMapper;
-    private final CrudBuilder<E> crudBuilder;
+    private final SqlBuilder<E> sqlBuilder;
     private final String[] columnsForSelect;
     private final boolean isGeneratedId;
     private final BiConsumer<E, Number> setIdFunc;
@@ -46,7 +46,7 @@ public final class DefaultDataAccess<E extends Persistable<I>, I extends Seriali
         classRowMapperMap.put(entityClass, rowMapper);
         this.databaseOperations = databaseOperations;
         this.rowMapper = rowMapper;
-        this.crudBuilder = new CrudBuilder<>(entityClass);
+        this.sqlBuilder = SqlBuilderFactory.create(entityClass);
         this.columnsForSelect = Arrays
                 .stream(FieldUtils.getAllFields(entityClass))
                 .filter(DefaultDataAccess::shouldRetain)
@@ -86,36 +86,36 @@ public final class DefaultDataAccess<E extends Persistable<I>, I extends Seriali
     }
 
     private <V> List<V> queryColumns(Q q, RowMapper<V> rowMapper, String... columns) {
-        SqlAndArgs sqlAndArgs = crudBuilder.buildSelectColumnsAndArgs(q, columns);
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildSelectColumnsAndArgs(q, columns);
         return databaseOperations.query(sqlAndArgs, rowMapper);
     }
 
     @Override
     public final long count(Q q) {
-        SqlAndArgs sqlAndArgs = crudBuilder.buildCountAndArgs(q);
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildCountAndArgs(q);
         return databaseOperations.count(sqlAndArgs);
     }
 
     @Override
     public final int delete(Q q) {
-        return databaseOperations.update(crudBuilder.buildDeleteAndArgs(q));
+        return databaseOperations.update(sqlBuilder.buildDeleteAndArgs(q));
     }
 
     @Override
     public final E get(IdWrapper<I> w) {
-        SqlAndArgs sqlAndArgs = crudBuilder.buildSelectById(w, columnsForSelect);
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildSelectById(w, columnsForSelect);
         List<E> list = databaseOperations.query(sqlAndArgs, rowMapper);
         return list.isEmpty() ? null : list.get(0);
     }
 
     @Override
     public int delete(IdWrapper<I> w) {
-        return databaseOperations.update(crudBuilder.buildDeleteById(w));
+        return databaseOperations.update(sqlBuilder.buildDeleteById(w));
     }
 
     @Override
     public final void create(E e) {
-        SqlAndArgs sqlAndArgs = crudBuilder.buildCreateAndArgs(e);
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildCreateAndArgs(e);
 
         if (isGeneratedId) {
             Number key = databaseOperations.insert(sqlAndArgs);
@@ -130,27 +130,27 @@ public final class DefaultDataAccess<E extends Persistable<I>, I extends Seriali
         if (!entities.iterator().hasNext()) {
             return 0;
         }
-        return databaseOperations.update(crudBuilder.buildCreateAndArgs(entities, columns));
+        return databaseOperations.update(sqlBuilder.buildCreateAndArgs(entities, columns));
     }
 
     @Override
     public final int update(E e) {
-        return databaseOperations.update(crudBuilder.buildUpdateAndArgs(e));
+        return databaseOperations.update(sqlBuilder.buildUpdateAndArgs(e));
     }
 
     @Override
     public final int patch(E e) {
-        return databaseOperations.update(crudBuilder.buildPatchAndArgsWithId(e));
+        return databaseOperations.update(sqlBuilder.buildPatchAndArgsWithId(e));
     }
 
     @Override
     public final int patch(E e, Q q) {
-        return databaseOperations.update(crudBuilder.buildPatchAndArgsWithQuery(e, q));
+        return databaseOperations.update(sqlBuilder.buildPatchAndArgsWithQuery(e, q));
     }
 
     @Override
     public List<I> queryIds(Q query) {
-        SqlAndArgs sqlAndArgs = crudBuilder.buildSelectIdAndArgs(query);
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildSelectIdAndArgs(query);
         return databaseOperations.query(sqlAndArgs, new SingleColumnRowMapper<>());
     }
 
