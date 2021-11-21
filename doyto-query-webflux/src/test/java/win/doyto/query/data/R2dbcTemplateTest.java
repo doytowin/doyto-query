@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 import win.doyto.query.core.SqlAndArgs;
+import win.doyto.query.web.demo.module.role.RoleEntity;
 
 /**
  * R2dbcTemplateTest
@@ -107,6 +108,26 @@ class R2dbcTemplateTest {
         r2dbc.count(new SqlAndArgs("SELECT count(*) FROM t_role WHERE valid is null"))
              .as(StepVerifier::create)
              .expectNext(1L)
+             .verifyComplete();
+    }
+
+    @Test
+    void query() {
+        SqlAndArgs sqlAndArgs = new SqlAndArgs("SELECT * FROM t_role WHERE role_code LIKE ?", "ADMIN%");
+        RowMapper<RoleEntity> rowMapper = (row, rowMetadata) -> {
+            RoleEntity roleEntity = new RoleEntity();
+            roleEntity.setId(row.get("id", Integer.class));
+            roleEntity.setRoleName(row.get("role_name", String.class));
+            roleEntity.setRoleCode(row.get("role_code", String.class));
+            roleEntity.setValid(row.get("valid", Boolean.class));
+            return roleEntity;
+        };
+
+        r2dbc.query(sqlAndArgs, rowMapper)
+             .as(StepVerifier::create)
+             .expectNextMatches(roleEntity -> roleEntity.getId() == 1
+                     && roleEntity.getRoleName().equals("admin")
+                     && roleEntity.getRoleCode().equals("ADMIN"))
              .verifyComplete();
     }
 

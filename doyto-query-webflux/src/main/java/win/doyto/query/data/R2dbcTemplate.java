@@ -43,7 +43,9 @@ public class R2dbcTemplate implements R2dbcOperations {
 
     @Override
     public <V> Flux<V> query(SqlAndArgs sqlAndArgs, RowMapper<V> rowMapper) {
-        return null;
+        return Mono.from(connectionFactory.create())
+                   .flatMapMany(createSqlExecutor(sqlAndArgs))
+                   .flatMap(result -> result.map(rowMapper));
     }
 
     @Override
