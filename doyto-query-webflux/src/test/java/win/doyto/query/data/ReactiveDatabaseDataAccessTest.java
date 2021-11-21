@@ -1,14 +1,16 @@
 package win.doyto.query.data;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+import win.doyto.query.core.SqlAndArgs;
 import win.doyto.query.web.demo.module.role.RoleEntity;
 import win.doyto.query.web.demo.module.role.RoleQuery;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * ReactiveDefaultDataAccessTest
@@ -22,10 +24,15 @@ class ReactiveDatabaseDataAccessTest {
         when(mockR2dbc.count(any())).thenReturn(Mono.just(3L));
 
         ReactiveDataAccess<RoleEntity, Integer, RoleQuery> reactiveDataAccess =
-                new ReactiveDatabaseDataAccess<>(mockR2dbc);
+                new ReactiveDatabaseDataAccess<>(mockR2dbc, RoleEntity.class);
         reactiveDataAccess.count(RoleQuery.builder().build())
                           .as(StepVerifier::create)
                           .expectNext(3L)
                           .verifyComplete();
+
+        ArgumentCaptor<SqlAndArgs> argumentCaptor = ArgumentCaptor.forClass(SqlAndArgs.class);
+        verify(mockR2dbc, times(1)).count(argumentCaptor.capture());
+        assertThat(argumentCaptor.getValue().getSql()).isEqualTo("SELECT count(*) FROM t_role");
+        assertThat(argumentCaptor.getValue().getArgs()).isEmpty();
     }
 }

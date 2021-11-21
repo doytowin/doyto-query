@@ -3,11 +3,11 @@ package win.doyto.query.data;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import win.doyto.query.core.PageQuery;
-import win.doyto.query.core.SqlAndArgs;
+import win.doyto.query.core.SqlBuilder;
+import win.doyto.query.core.SqlBuilderFactory;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 /**
  * ReactiveDefaultDataAccess
@@ -17,9 +17,11 @@ import java.util.ArrayList;
 public class ReactiveDatabaseDataAccess<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> implements ReactiveDataAccess<E, I, Q> {
 
     private R2dbcOperations r2dbcOperations;
+    private SqlBuilder<E> sqlBuilder;
 
-    public ReactiveDatabaseDataAccess(R2dbcOperations r2dbcOperations) {
+    public ReactiveDatabaseDataAccess(R2dbcOperations r2dbcOperations, Class<E> entityClass) {
         this.r2dbcOperations = r2dbcOperations;
+        this.sqlBuilder = SqlBuilderFactory.create(entityClass);
     }
 
     @Override
@@ -34,7 +36,7 @@ public class ReactiveDatabaseDataAccess<E extends Persistable<I>, I extends Seri
 
     @Override
     public Mono<Long> count(Q q) {
-        return r2dbcOperations.count(new SqlAndArgs("", new ArrayList<>()));
+        return r2dbcOperations.count(sqlBuilder.buildCountAndArgs(q));
     }
 
     @Override
