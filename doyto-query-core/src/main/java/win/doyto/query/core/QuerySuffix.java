@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.Enumerated;
+import win.doyto.query.util.ColumnUtil;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -96,7 +97,7 @@ enum QuerySuffix {
         QuerySuffix querySuffix = resolve(fieldName);
         value = querySuffix.valueProcessor.escapeValue(value);
         String columnName = querySuffix.resolveColumnName(fieldName);
-        columnName = CommonUtil.convertColumn(columnName);
+        columnName = ColumnUtil.convertColumn(columnName);
         return querySuffix.buildColumnCondition(columnName, argList, value);
     }
 

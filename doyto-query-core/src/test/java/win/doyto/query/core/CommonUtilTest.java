@@ -44,13 +44,6 @@ class CommonUtilTest {
         assertEquals("_test1_test2_", replaceHolderInString(new PlaceHolderObject("test1"), "_${part1}_${part2}_"));
     }
 
-    @Test
-    void testIsSingleColumn() {
-        assertTrue(isSingleColumn("col"));
-        assertFalse(isSingleColumn("col1, col2"));
-        assertFalse(isSingleColumn("col1", "col2", "col3"));
-    }
-
     @Getter
     @Setter
     @AllArgsConstructor

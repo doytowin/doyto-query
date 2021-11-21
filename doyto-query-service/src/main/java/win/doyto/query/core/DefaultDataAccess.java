@@ -7,18 +7,16 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import win.doyto.query.data.DatabaseOperations;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.util.ColumnUtil;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Transient;
 
 /**
  * JdbcDataAccess
@@ -47,11 +45,7 @@ public final class DefaultDataAccess<E extends Persistable<I>, I extends Seriali
         this.databaseOperations = databaseOperations;
         this.rowMapper = rowMapper;
         this.sqlBuilder = SqlBuilderFactory.create(entityClass);
-        this.columnsForSelect = Arrays
-                .stream(FieldUtils.getAllFields(entityClass))
-                .filter(DefaultDataAccess::shouldRetain)
-                .map(CommonUtil::selectAs)
-                .toArray(String[]::new);
+        this.columnsForSelect = ColumnUtil.resolveSelectColumns(entityClass);
 
         Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
         this.isGeneratedId = idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class);
@@ -65,13 +59,6 @@ public final class DefaultDataAccess<E extends Persistable<I>, I extends Seriali
         }
     }
 
-    private static boolean shouldRetain(Field field) {
-        return !field.getName().startsWith("$")              // $jacocoData
-            && !Modifier.isStatic(field.getModifiers())      // static field
-            && !field.isAnnotationPresent(Transient.class)   // Transient field
-            ;
-    }
-
     @Override
     public final List<E> query(Q q) {
         return queryColumns(q, rowMapper, columnsForSelect);
@@ -81,7 +68,7 @@ public final class DefaultDataAccess<E extends Persistable<I>, I extends Seriali
     public final <V> List<V> queryColumns(Q q, Class<V> clazz, String... columns) {
         @SuppressWarnings("unchecked")
         RowMapper<V> localRowMapper = (RowMapper<V>) classRowMapperMap.computeIfAbsent(
-                clazz, c -> CommonUtil.isSingleColumn(columns) ? new SingleColumnRowMapper<>(clazz) : new BeanPropertyRowMapper<>(clazz));
+                clazz, c -> ColumnUtil.isSingleColumn(columns) ? new SingleColumnRowMapper<>(clazz) : new BeanPropertyRowMapper<>(clazz));
         return queryColumns(q, localRowMapper, columns);
     }
 

@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import win.doyto.query.config.GlobalConfiguration;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -15,7 +14,10 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.persistence.*;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Transient;
 
 /**
  * CommonUtil
@@ -28,7 +30,6 @@ class CommonUtil {
 
     private static final Pattern PTN_REPLACE = Pattern.compile("\\w*");
     private static final Pattern PTN_$EX = Pattern.compile("\\$\\{(\\w+)}");
-    private static final Pattern PTN_CAPITAL_CHAR = Pattern.compile("([A-Z])");
     private static final Pattern PTN_SPLIT_OR = Pattern.compile("Or(?=[A-Z])");
 
     static boolean isDynamicTable(String input) {
@@ -131,15 +132,6 @@ class CommonUtil {
         return like.replaceAll("[%|_]", "\\\\$0");
     }
 
-    static String convertColumn(String columnName) {
-        return GlobalConfiguration.instance().isMapCamelCaseToUnderscore() ?
-                camelCaseToUnderscore(columnName) : columnName;
-    }
-
-    private static String camelCaseToUnderscore(String camel) {
-        return PTN_CAPITAL_CHAR.matcher(camel).replaceAll("_$1").toLowerCase();
-    }
-
     static boolean isValidValue(Object value, Field field) {
         return !(value == null
                 || (value instanceof Boolean && field.getType().isPrimitive() && Boolean.FALSE.equals(value))
@@ -168,20 +160,4 @@ class CommonUtil {
         return result.toString();
     }
 
-    static String resolveColumn(Field field) {
-        Column column = field.getAnnotation(Column.class);
-        String columnName = column != null && !column.name().isEmpty() ? column.name() : convertColumn(field.getName());
-        return GlobalConfiguration.dialect().wrapLabel(columnName);
-    }
-
-    static String selectAs(Field field) {
-        String columnName = resolveColumn(field);
-        Dialect dialect = GlobalConfiguration.dialect();
-        String fieldName = dialect.wrapLabel(field.getName());
-        return columnName.equalsIgnoreCase(fieldName) ? columnName : columnName + " AS " + fieldName;
-    }
-
-    static boolean isSingleColumn(String... columns) {
-        return columns.length == 1 && !columns[0].contains(",");
-    }
 }

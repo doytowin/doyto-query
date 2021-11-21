@@ -3,13 +3,15 @@ package win.doyto.query.core;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import win.doyto.query.util.ColumnUtil;
 
 import java.util.List;
 import java.util.function.BiFunction;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import static win.doyto.query.core.CommonUtil.*;
+import static win.doyto.query.core.CommonUtil.isDynamicTable;
+import static win.doyto.query.core.CommonUtil.replaceHolderInString;
 import static win.doyto.query.core.Constant.*;
 
 /**
@@ -43,7 +45,7 @@ public class QueryBuilder {
     }
 
     private static String resolveIdColumn(Class<?> entityClass) {
-        return resolveColumn(FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0]);
+        return ColumnUtil.resolveColumn(FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0]);
     }
 
     protected String resolveTableName(IdWrapper<?> idWrapper) {

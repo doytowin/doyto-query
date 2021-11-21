@@ -2,6 +2,7 @@ package win.doyto.query.core;
 
 import org.apache.commons.lang3.SerializationUtils;
 import win.doyto.query.annotation.Joins;
+import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -34,7 +35,7 @@ public class JoinQueryBuilder {
         columnsForSelect = Arrays
                 .stream(entityClass.getDeclaredFields())
                 .filter(CommonUtil::fieldFilter)
-                .map(CommonUtil::selectAs)
+                .map(ColumnUtil::selectAs)
                 .toArray(String[]::new);
         joinSql = buildJoinSql();
     }
