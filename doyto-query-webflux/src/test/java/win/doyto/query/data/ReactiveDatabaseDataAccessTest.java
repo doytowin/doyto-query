@@ -45,9 +45,11 @@ class ReactiveDatabaseDataAccessTest {
 
         reactiveDataAccess.query(RoleQuery.builder().build())
                           .as(StepVerifier::create)
-                          .expectNextMatches(e -> e.getId() == 1)
-                          .expectNextMatches(e -> e.getId() == 2)
-                          .expectNextMatches(e -> e.getId() == 3)
+                          .expectNextMatches(roleEntity -> roleEntity.getId() == 1
+                                  && roleEntity.getRoleName().equals("admin")
+                                  && roleEntity.getRoleCode().equals("ADMIN")
+                                  && roleEntity.getValid())
+                          .expectNextCount(2)
                           .verifyComplete();
     }
 }
