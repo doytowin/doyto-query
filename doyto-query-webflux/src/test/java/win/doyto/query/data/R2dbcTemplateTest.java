@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 import win.doyto.query.core.SqlAndArgs;
+import win.doyto.query.data.rowmapper.BeanPropertyRowMapper;
 import win.doyto.query.web.demo.module.role.RoleEntity;
 
 /**
@@ -128,6 +129,20 @@ class R2dbcTemplateTest {
              .expectNextMatches(roleEntity -> roleEntity.getId() == 1
                      && roleEntity.getRoleName().equals("admin")
                      && roleEntity.getRoleCode().equals("ADMIN"))
+             .verifyComplete();
+    }
+
+    @Test
+    void queryWithBeanMapper() {
+        SqlAndArgs sqlAndArgs = new SqlAndArgs("SELECT id, role_name AS roleName, role_code, valid FROM t_role WHERE role_code LIKE ?", "ADMIN%");
+        RowMapper<RoleEntity> rowMapper = new BeanPropertyRowMapper<>(RoleEntity.class);
+
+        r2dbc.query(sqlAndArgs, rowMapper)
+             .as(StepVerifier::create)
+             .expectNextMatches(roleEntity -> roleEntity.getId() == 1
+                     && roleEntity.getRoleName().equals("admin")
+                     && roleEntity.getRoleCode() == null
+                     && roleEntity.getValid())
              .verifyComplete();
     }
 
