@@ -65,4 +65,15 @@ class MongoDataAccessTest {
         InventoryEntity inventoryEntity = mongoDataAccess.get(list.get(0).getId());
         assertThat(inventoryEntity).isEqualToIgnoringGivenFields(list.get(0), "size");
     }
+
+    @Test
+    void queryByStatus() {
+        InventoryQuery query = InventoryQuery.builder().status("A").build();
+        List<InventoryEntity> list = mongoDataAccess.query(query);
+        assertThat(list)
+                .hasSize(3)
+                .element(1)
+                .extracting("item", "qty", "status", "size.h", "size.w", "size.uom")
+                .containsExactly("notebook", 50, "A", 8.5, 11d, "in");
+    }
 }

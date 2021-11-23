@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.IdWrapper;
+import win.doyto.query.core.MongoFilterUtil;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.BeanUtil;
 
@@ -40,7 +41,7 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
 
     @Override
     public List<E> query(Q query) {
-        FindIterable<Document> findIterable = collection.find();
+        FindIterable<Document> findIterable = collection.find(MongoFilterUtil.buildFilter(query));
         List<E> list = new ArrayList<>();
         findIterable.forEach((Consumer<Document>) document -> {
             E e = BeanUtil.parse(document.toJson(), entityClass);
