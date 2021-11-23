@@ -1,0 +1,95 @@
+package win.doyto.query.data;
+
+import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import lombok.Getter;
+import org.bson.Document;
+import win.doyto.query.core.DataAccess;
+import win.doyto.query.core.IdWrapper;
+import win.doyto.query.entity.Persistable;
+import win.doyto.query.util.BeanUtil;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import javax.persistence.Table;
+
+/**
+ * MongoDataAccess
+ *
+ * @author f0rb on 2021-11-23
+ */
+public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
+    private final Class<E> entityClass;
+    @Getter
+    private final MongoCollection<Document> collection;
+
+    public MongoDataAccess(MongoClient mongoClient, Class<E> testEntityClass) {
+        this.entityClass = testEntityClass;
+        Table table = testEntityClass.getAnnotation(Table.class);
+        MongoDatabase database = mongoClient.getDatabase(table.catalog());
+        this.collection = database.getCollection(table.name());
+    }
+
+    @Override
+    public List<E> query(Q query) {
+        FindIterable<Document> findIterable = collection.find();
+        List<E> list = new ArrayList<>();
+        findIterable.forEach((Consumer<Document>) document -> {
+            list.add(BeanUtil.parse(document.toJson(), entityClass));
+        });
+        return list;
+    }
+
+    @Override
+    public long count(Q query) {
+        return 0;
+    }
+
+    @Override
+    public <V> List<V> queryColumns(Q q, Class<V> clazz, String... columns) {
+        return null;
+    }
+
+    @Override
+    public E get(IdWrapper<I> w) {
+        return null;
+    }
+
+    @Override
+    public int delete(IdWrapper<I> w) {
+        return 0;
+    }
+
+    @Override
+    public int delete(Q query) {
+        return 0;
+    }
+
+    @Override
+    public void create(E e) {
+    }
+
+    @Override
+    public int update(E e) {
+        return 0;
+    }
+
+    @Override
+    public int patch(E e) {
+        return 0;
+    }
+
+    @Override
+    public int patch(E e, Q q) {
+        return 0;
+    }
+
+    @Override
+    public List<I> queryIds(Q query) {
+        return null;
+    }
+}
