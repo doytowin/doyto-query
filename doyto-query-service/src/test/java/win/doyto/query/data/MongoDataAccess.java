@@ -44,8 +44,8 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
         List<E> list = new ArrayList<>();
         findIterable.forEach((Consumer<Document>) document -> {
             E e = BeanUtil.parse(document.toJson(), entityClass);
-            if (log.isInfoEnabled()) {
-                log.info("Entity parsed: {}", BeanUtil.stringify(e));
+            if (log.isDebugEnabled()) {
+                log.debug("Entity parsed: {}", BeanUtil.stringify(e));
             }
             list.add(e);
         });

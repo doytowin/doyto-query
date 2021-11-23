@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.test.context.ActiveProfiles;
 import win.doyto.query.data.inventory.InventoryEntity;
 import win.doyto.query.data.inventory.InventoryQuery;
 import win.doyto.query.util.BeanUtil;
@@ -24,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author f0rb on 2021-11-23
  */
+@ActiveProfiles("test")
 @DataMongoTest
 @SpringBootApplication
 class MongoDataAccessTest {

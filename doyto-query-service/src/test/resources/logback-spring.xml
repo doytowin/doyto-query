@@ -2,4 +2,8 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
     <jmxConfigurator/>
+
+    <springProfile name="test">
+        <logger name="win.doyto.query" level="debug"/>
+    </springProfile>
 </configuration>
