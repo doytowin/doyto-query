@@ -5,6 +5,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.IdWrapper;
@@ -17,11 +18,14 @@ import java.util.List;
 import java.util.function.Consumer;
 import javax.persistence.Table;
 
+import static com.mongodb.client.model.Filters.eq;
+
 /**
  * MongoDataAccess
  *
  * @author f0rb on 2021-11-23
  */
+@Slf4j
 public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
     private final Class<E> entityClass;
     @Getter
@@ -39,7 +43,11 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
         FindIterable<Document> findIterable = collection.find();
         List<E> list = new ArrayList<>();
         findIterable.forEach((Consumer<Document>) document -> {
-            list.add(BeanUtil.parse(document.toJson(), entityClass));
+            E e = BeanUtil.parse(document.toJson(), entityClass);
+            if (log.isInfoEnabled()) {
+                log.info("Entity parsed: {}", BeanUtil.stringify(e));
+            }
+            list.add(e);
         });
         return list;
     }
@@ -56,6 +64,10 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
 
     @Override
     public E get(IdWrapper<I> w) {
+        FindIterable<Document> findIterable = collection.find(eq("_id", w.getId()));
+        for (Document document : findIterable) {
+            return BeanUtil.parse(document.toJson(), entityClass);
+        }
         return null;
     }
 

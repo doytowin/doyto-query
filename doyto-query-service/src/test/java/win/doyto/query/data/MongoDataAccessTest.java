@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.mongodb.MongoClient;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +29,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MongoDataAccessTest {
     MongoDataAccess<InventoryEntity, ObjectId, InventoryQuery> mongoDataAccess;
 
+    public MongoDataAccessTest(@Autowired MongoClient mongoClient) {
+        this.mongoDataAccess = new MongoDataAccess<>(mongoClient, InventoryEntity.class);
+    }
+
     @BeforeEach
-    void setUp(@Autowired MongoClient mongoClient) throws IOException {
-        mongoDataAccess = new MongoDataAccess<>(mongoClient, InventoryEntity.class);
-        mongoDataAccess.getCollection().insertMany(
-                BeanUtil.loadJsonData("inventory/inventory.json", new TypeReference<List<? extends Document>>() {}));
+    void setUp() throws IOException {
+        List<? extends Document> data = BeanUtil.loadJsonData("inventory/inventory.json", new TypeReference<List<? extends Document>>() {});
+        mongoDataAccess.getCollection().insertMany(data);
+    }
+
+    @AfterEach
+    void tearDown() {
+        mongoDataAccess.getCollection().drop();
     }
 
     @Test
@@ -44,5 +53,14 @@ class MongoDataAccessTest {
                 .element(1)
                 .extracting("item", "qty", "status", "size.h", "size.w", "size.uom")
                 .containsExactly("notebook", 50, "A", 8.5, 11d, "in");
+    }
+
+    @Test
+    void get() {
+        InventoryQuery query = InventoryQuery.builder().build();
+        List<InventoryEntity> list = mongoDataAccess.query(query);
+
+        InventoryEntity inventoryEntity = mongoDataAccess.get(list.get(0).getId());
+        assertThat(inventoryEntity).isEqualToIgnoringGivenFields(list.get(0), "size");
     }
 }

@@ -1,10 +1,8 @@
 package win.doyto.query.data.inventory;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Getter;
 import lombok.Setter;
-import org.bson.types.ObjectId;
-import win.doyto.query.entity.Persistable;
+import win.doyto.query.data.MongoPersistable;
 
 import javax.persistence.Table;
 
@@ -16,9 +14,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Table(catalog = "doyto", name = "c_inventory")
-public class InventoryEntity implements Persistable<ObjectId> {
-    @JsonAlias("_id")
-    private ObjectId id;
+public class InventoryEntity extends MongoPersistable {
 
     private String item;
     private Integer qty;
