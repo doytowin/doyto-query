@@ -6,9 +6,10 @@ import org.bson.codecs.StringCodec;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import win.doyto.query.core.test.TestQuery;
-import win.doyto.query.data.inventory.InventoryQuery;
+import win.doyto.query.util.BeanUtil;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -21,21 +22,16 @@ class MongoFilterUtilTest {
 
     private CodecRegistry codecRegistry = CodecRegistries.fromCodecs(new StringCodec(), new IntegerCodec());
 
-    @Test
-    void filterWithEq() {
-        Bson filters = MongoFilterUtil.buildFilter(TestQuery.builder().username("test").build());
-        assertEquals("{\"username\": \"test\"}", filters.toBsonDocument(Document.class, codecRegistry).toJson());
+    @ParameterizedTest
+    @CsvSource({
+            "{\"username\": \"test\"}, {\"username\": \"test\"}",
+            "{\"usernameContain\": \"admin\"}, '{\"username\": {\"$regex\": \"admin\", \"$options\": \"\"}}'",
+            "{\"idLt\": 20}, {\"id\": {\"$lt\": 20}}",
+    })
+    void testFilterSuffix(String data, String expected) {
+        TestQuery query = BeanUtil.parse(data, TestQuery.class);
+        Bson filters = MongoFilterUtil.buildFilter(query);
+        assertEquals(expected, filters.toBsonDocument(Document.class, codecRegistry).toJson());
     }
 
-    @Test
-    void filterWithContain() {
-        Bson filters = MongoFilterUtil.buildFilter(InventoryQuery.builder().itemContain("test").build());
-        assertEquals("{\"item\": {\"$regex\": \"test\", \"$options\": \"\"}}", filters.toBsonDocument(Document.class, codecRegistry).toJson());
-    }
-
-    @Test
-    void filterWithLt() {
-        Bson filters = MongoFilterUtil.buildFilter(TestQuery.builder().idLt(20).build());
-        assertEquals("{\"id\": {\"$lt\": 20}}", filters.toBsonDocument(Document.class, codecRegistry).toJson());
-    }
 }

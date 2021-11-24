@@ -31,6 +31,7 @@ public class TestQuery extends PageQuery {
 
     private String username;
     private String usernameEq;
+    private String usernameContain;
 
     @NestedQueries(@NestedQuery(select = "userId", from = "t_user_and_role"))
     private Integer roleId;
