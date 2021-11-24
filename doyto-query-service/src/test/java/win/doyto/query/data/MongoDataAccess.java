@@ -55,7 +55,7 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
 
     @Override
     public long count(Q query) {
-        return 0;
+        return collection.countDocuments(MongoFilterUtil.buildFilter(query));
     }
 
     @Override

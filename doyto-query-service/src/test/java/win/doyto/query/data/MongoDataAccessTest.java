@@ -100,4 +100,12 @@ class MongoDataAccessTest {
                 .extracting("item", "status", "size.h")
                 .containsExactly("notebook", "A", 8.5);
     }
+
+    @Test
+    void countBySize$hLt10AndStatusEqA() {
+        SizeQuery sizeQuery = SizeQuery.builder().hLt(10).build();
+        InventoryQuery query = InventoryQuery.builder().size(sizeQuery).status("A").build();
+        long count = mongoDataAccess.count(query);
+        assertThat(count).isEqualTo(1);
+    }
 }
