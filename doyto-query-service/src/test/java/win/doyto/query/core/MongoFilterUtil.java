@@ -35,6 +35,9 @@ public class MongoFilterUtil {
         if (QuerySuffix.Contain == querySuffix) {
             return regex(columnName, value.toString());
         }
+        if (QuerySuffix.Lt == querySuffix) {
+            return lt(columnName, value);
+        }
         return eq(fieldName, value);
     }
 }
