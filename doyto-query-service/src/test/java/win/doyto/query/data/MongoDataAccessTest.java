@@ -108,4 +108,15 @@ class MongoDataAccessTest {
         long count = mongoDataAccess.count(query);
         assertThat(count).isEqualTo(1);
     }
+
+    @Test
+    void deleteBySize$hLt10AndStatusEqA() {
+        SizeQuery sizeQuery = SizeQuery.builder().hLt(10).build();
+        InventoryQuery query = InventoryQuery.builder().size(sizeQuery).status("A").build();
+        long deleted = mongoDataAccess.delete(query);
+        assertThat(deleted).isEqualTo(1);
+
+        long left = mongoDataAccess.count(new InventoryQuery());
+        assertThat(left).isEqualTo(4);
+    }
 }

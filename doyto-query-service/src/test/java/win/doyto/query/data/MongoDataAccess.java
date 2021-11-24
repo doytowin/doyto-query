@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.IdWrapper;
-import win.doyto.query.core.MongoFilterUtil;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.BeanUtil;
 
@@ -20,6 +19,7 @@ import java.util.function.Consumer;
 import javax.persistence.Table;
 
 import static com.mongodb.client.model.Filters.eq;
+import static win.doyto.query.core.MongoFilterUtil.buildFilter;
 
 /**
  * MongoDataAccess
@@ -41,7 +41,7 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
 
     @Override
     public List<E> query(Q query) {
-        FindIterable<Document> findIterable = collection.find(MongoFilterUtil.buildFilter(query));
+        FindIterable<Document> findIterable = collection.find(buildFilter(query));
         List<E> list = new ArrayList<>();
         findIterable.forEach((Consumer<Document>) document -> {
             E e = BeanUtil.parse(document.toJson(), entityClass);
@@ -55,7 +55,7 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
 
     @Override
     public long count(Q query) {
-        return collection.countDocuments(MongoFilterUtil.buildFilter(query));
+        return collection.countDocuments(buildFilter(query));
     }
 
     @Override
@@ -79,7 +79,7 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
 
     @Override
     public int delete(Q query) {
-        return 0;
+        return (int) collection.deleteMany(buildFilter(query)).getDeletedCount();
     }
 
     @Override
