@@ -3,6 +3,7 @@ package win.doyto.query.core;
 import org.bson.Document;
 import org.bson.codecs.DateCodec;
 import org.bson.codecs.IntegerCodec;
+import org.bson.codecs.IterableCodecProvider;
 import org.bson.codecs.StringCodec;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -21,8 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class MongoFilterUtilTest {
 
-    private CodecRegistry codecRegistry = CodecRegistries.fromCodecs(
-            new StringCodec(), new IntegerCodec(), new DateCodec());
+    private CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
+            CodecRegistries.fromCodecs(new StringCodec(), new IntegerCodec(), new DateCodec()),
+            CodecRegistries.fromProviders(new IterableCodecProvider())
+    );
 
     @ParameterizedTest
     @CsvSource({
@@ -33,6 +36,7 @@ class MongoFilterUtilTest {
             "{\"createTimeLt\": \"2021-11-24\"}, {\"createTime\": {\"$lt\": {\"$date\": 1637712000000}}}",
             "{\"createTimeGt\": \"2021-11-24\"}, {\"createTime\": {\"$gt\": {\"$date\": 1637712000000}}}",
             "{\"createTimeGe\": \"2021-11-24\"}, {\"createTime\": {\"$gte\": {\"$date\": 1637712000000}}}",
+            "'{\"idIn\": [1,2,3]}', '{\"id\": {\"$in\": [[1, 2, 3]]}}'",
     })
     void testFilterSuffix(String data, String expected) {
         TestQuery query = BeanUtil.parse(data, TestQuery.class);
