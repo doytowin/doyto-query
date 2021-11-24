@@ -2,6 +2,7 @@ package win.doyto.query.core;
 
 import com.mongodb.client.model.Filters;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -40,14 +41,23 @@ public class MongoFilterUtil {
     @SneakyThrows
     public static Bson buildFilter(Object query) {
         List<Bson> filters = new ArrayList<>();
+        buildFilter(query, "", filters);
+        return filters.isEmpty() ? new Document() : and(filters);
+    }
+
+    private static void buildFilter(Object query, String prefix, List<Bson> filters) {
+        prefix = StringUtils.isEmpty(prefix) ? "" : prefix + ".";
         Field[] fields = BuildHelper.initFields(query.getClass());
         for (Field field : fields) {
             Object value = CommonUtil.readFieldGetter(field, query);
             if (CommonUtil.isValidValue(value, field)) {
-                filters.add(resolveFilter(field.getName(), value));
+                if (value instanceof Query) {
+                    buildFilter(value, field.getName(), filters);
+                } else {
+                    filters.add(resolveFilter(prefix + field.getName(), value));
+                }
             }
         }
-        return filters.isEmpty() ? new Document() : and(filters);
     }
 
     private static Bson resolveFilter(String fieldName, Object value) {

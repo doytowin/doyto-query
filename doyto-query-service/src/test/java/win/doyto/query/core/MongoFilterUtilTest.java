@@ -11,6 +11,7 @@ import org.bson.conversions.Bson;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import win.doyto.query.core.test.TestQuery;
+import win.doyto.query.data.inventory.InventoryQuery;
 import win.doyto.query.util.BeanUtil;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,6 +44,16 @@ class MongoFilterUtilTest {
     })
     void testFilterSuffix(String data, String expected) {
         TestQuery query = BeanUtil.parse(data, TestQuery.class);
+        Bson filters = MongoFilterUtil.buildFilter(query);
+        assertEquals(expected, filters.toBsonDocument(Document.class, codecRegistry).toJson());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "{\"size\":{\"hLt\":15}},  {\"size.h\": {\"$lt\": 15}}",
+    })
+    void testNestedFilter(String data, String expected) {
+        InventoryQuery query = BeanUtil.parse(data, InventoryQuery.class);
         Bson filters = MongoFilterUtil.buildFilter(query);
         assertEquals(expected, filters.toBsonDocument(Document.class, codecRegistry).toJson());
     }

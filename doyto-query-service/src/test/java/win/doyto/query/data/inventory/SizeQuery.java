@@ -5,20 +5,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.Query;
 
 /**
- * InventoryQuery
+ * SizeQuery
  *
- * @author f0rb on 2021-11-23
+ * @author f0rb on 2021-11-24
  */
 @Getter
 @Setter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-public class InventoryQuery extends PageQuery {
-    private String itemContain;
-    private String status;
-    private SizeQuery size;
+public class SizeQuery implements Query {
+    private Integer hLt;
 }

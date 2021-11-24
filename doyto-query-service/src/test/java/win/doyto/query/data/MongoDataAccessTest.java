@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.context.ActiveProfiles;
 import win.doyto.query.data.inventory.InventoryEntity;
 import win.doyto.query.data.inventory.InventoryQuery;
+import win.doyto.query.data.inventory.SizeQuery;
 import win.doyto.query.util.BeanUtil;
 
 import java.io.IOException;
@@ -86,5 +87,17 @@ class MongoDataAccessTest {
                 .first()
                 .extracting("item", "status")
                 .containsExactly("notebook", "A");
+    }
+
+    @Test
+    void queryBySizeGt() {
+        SizeQuery sizeQuery = SizeQuery.builder().hLt(10).build();
+        InventoryQuery query = InventoryQuery.builder().size(sizeQuery).status("A").build();
+        List<InventoryEntity> list = mongoDataAccess.query(query);
+        assertThat(list)
+                .hasSize(1)
+                .first()
+                .extracting("item", "status", "size.h")
+                .containsExactly("notebook", "A", 8.5);
     }
 }
