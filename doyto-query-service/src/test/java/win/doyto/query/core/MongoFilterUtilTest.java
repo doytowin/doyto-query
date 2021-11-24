@@ -1,6 +1,7 @@
 package win.doyto.query.core;
 
 import org.bson.Document;
+import org.bson.codecs.DateCodec;
 import org.bson.codecs.IntegerCodec;
 import org.bson.codecs.StringCodec;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -20,7 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class MongoFilterUtilTest {
 
-    private CodecRegistry codecRegistry = CodecRegistries.fromCodecs(new StringCodec(), new IntegerCodec());
+    private CodecRegistry codecRegistry = CodecRegistries.fromCodecs(
+            new StringCodec(), new IntegerCodec(), new DateCodec());
 
     @ParameterizedTest
     @CsvSource({
@@ -28,6 +30,7 @@ class MongoFilterUtilTest {
             "{\"usernameContain\": \"admin\"}, '{\"username\": {\"$regex\": \"admin\", \"$options\": \"\"}}'",
             "{\"idLt\": 20}, {\"id\": {\"$lt\": 20}}",
             "{\"idLe\": 20}, {\"id\": {\"$lte\": 20}}",
+            "{\"createTimeLt\": \"2021-11-24\"}, {\"createTime\": {\"$lt\": {\"$date\": 1637712000000}}}",
     })
     void testFilterSuffix(String data, String expected) {
         TestQuery query = BeanUtil.parse(data, TestQuery.class);
