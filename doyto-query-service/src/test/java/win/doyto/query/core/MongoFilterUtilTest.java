@@ -7,6 +7,7 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.core.test.TestQuery;
+import win.doyto.query.data.inventory.InventoryQuery;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -21,5 +22,12 @@ class MongoFilterUtilTest {
         CodecRegistry codecRegistry = CodecRegistries.fromCodecs(new StringCodec());
         Bson filters = MongoFilterUtil.buildFilter(TestQuery.builder().username("test").build());
         assertEquals("{\"username\": \"test\"}", filters.toBsonDocument(Document.class, codecRegistry).toJson());
+    }
+
+    @Test
+    void filterWithContain() {
+        CodecRegistry codecRegistry = CodecRegistries.fromCodecs(new StringCodec());
+        Bson filters = MongoFilterUtil.buildFilter(InventoryQuery.builder().itemContain("test").build());
+        assertEquals("{\"item\": {\"$regex\": \"test\", \"$options\": \"\"}}", filters.toBsonDocument(Document.class, codecRegistry).toJson());
     }
 }
