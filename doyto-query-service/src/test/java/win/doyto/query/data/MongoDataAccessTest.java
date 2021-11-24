@@ -76,4 +76,15 @@ class MongoDataAccessTest {
                 .extracting("item", "qty", "status", "size.h", "size.w", "size.uom")
                 .containsExactly("notebook", 50, "A", 8.5, 11d, "in");
     }
+
+    @Test
+    void queryByStatusAndItemContain() {
+        InventoryQuery query = InventoryQuery.builder().itemContain("t").status("A").build();
+        List<InventoryEntity> list = mongoDataAccess.query(query);
+        assertThat(list)
+                .hasSize(2)
+                .first()
+                .extracting("item", "status")
+                .containsExactly("notebook", "A");
+    }
 }

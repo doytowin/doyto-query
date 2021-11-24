@@ -18,5 +18,6 @@ import win.doyto.query.core.PageQuery;
 @AllArgsConstructor
 @SuperBuilder
 public class InventoryQuery extends PageQuery {
+    private String itemContain;
     private String status;
 }

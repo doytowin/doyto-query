@@ -8,8 +8,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.*;
 
 /**
  * MongoFilterUtil
@@ -31,6 +30,11 @@ public class MongoFilterUtil {
     }
 
     private static Bson resolveFilter(String fieldName, Object value) {
+        QuerySuffix querySuffix = QuerySuffix.resolve(fieldName);
+        String columnName = querySuffix.resolveColumnName(fieldName);
+        if (QuerySuffix.Contain == querySuffix) {
+            return regex(columnName, value.toString());
+        }
         return eq(fieldName, value);
     }
 }
