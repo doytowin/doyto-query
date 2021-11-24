@@ -38,6 +38,8 @@ class MongoFilterUtilTest {
             "{\"createTimeGe\": \"2021-11-24\"}, {\"createTime\": {\"$gte\": {\"$date\": 1637712000000}}}",
             "'{\"idIn\": [1,2,3]}', '{\"id\": {\"$in\": [[1, 2, 3]]}}'",
             "'{\"idNotIn\": [1,2,3]}', '{\"id\": {\"$nin\": [[1, 2, 3]]}}'",
+            "{\"userLevel\": \"VIP\"}, {\"userLevel\": 0}",
+            "{\"userLevelNot\": \"VIP\"}, {\"userLevel\": {\"$ne\": 0}}",
     })
     void testFilterSuffix(String data, String expected) {
         TestQuery query = BeanUtil.parse(data, TestQuery.class);

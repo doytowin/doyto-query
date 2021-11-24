@@ -34,6 +34,7 @@ public class MongoFilterUtil {
         suffixFuncMap.put(QuerySuffix.Ge, Filters::gte);
         suffixFuncMap.put(QuerySuffix.In, Filters::in);
         suffixFuncMap.put(QuerySuffix.NotIn, Filters::nin);
+        suffixFuncMap.put(QuerySuffix.Not, Filters::ne);
     }
 
     @SneakyThrows
