@@ -1,6 +1,6 @@
 package win.doyto.query.data;
 
-import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Getter;
@@ -16,14 +16,21 @@ import win.doyto.query.entity.Persistable;
  */
 @Getter
 @Setter
-public abstract class MongoPersistable implements Persistable<ObjectId> {
+public abstract class MongoPersistable implements Persistable<String> {
     private static final long serialVersionUID = -2964571398486901301L;
 
     @JsonSerialize(using = ToStringSerializer.class)
-    protected ObjectId id;
+    protected String id;
 
-    @JsonSetter("_id")
-    public void setObjectId(Document objectId) {
-        this.id = new ObjectId(objectId.get("$oid", String.class));
+    @JsonProperty("_id")
+    @JsonSerialize(using = ToStringSerializer.class)
+    protected ObjectId oid;
+
+    public void setOId(Document objectId) {
+        String $oid = objectId.get("$oid", String.class);
+        this.oid = new ObjectId($oid);
+        if (this.id == null) {
+            this.id = $oid;
+        }
     }
 }

@@ -7,6 +7,7 @@ import com.mongodb.client.MongoDatabase;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.entity.Persistable;
@@ -65,7 +66,7 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
 
     @Override
     public E get(IdWrapper<I> w) {
-        FindIterable<Document> findIterable = collection.find(eq("_id", w.getId()));
+        FindIterable<Document> findIterable = collection.find(eq("_id", new ObjectId(w.getId().toString())));
         for (Document document : findIterable) {
             return BeanUtil.parse(document.toJson(), entityClass);
         }

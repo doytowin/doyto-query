@@ -3,7 +3,6 @@ package win.doyto.query.data;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mongodb.MongoClient;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataMongoTest
 @SpringBootApplication
 class MongoDataAccessTest {
-    MongoDataAccess<InventoryEntity, ObjectId, InventoryQuery> mongoDataAccess;
+    MongoDataAccess<InventoryEntity, String, InventoryQuery> mongoDataAccess;
 
     public MongoDataAccessTest(@Autowired MongoClient mongoClient) {
         this.mongoDataAccess = new MongoDataAccess<>(mongoClient, InventoryEntity.class);
@@ -63,7 +62,8 @@ class MongoDataAccessTest {
         InventoryQuery query = InventoryQuery.builder().build();
         List<InventoryEntity> list = mongoDataAccess.query(query);
 
-        InventoryEntity inventoryEntity = mongoDataAccess.get(list.get(0).getId());
+        String id = list.get(0).getId();
+        InventoryEntity inventoryEntity = mongoDataAccess.get(id);
         assertThat(inventoryEntity).isEqualToIgnoringGivenFields(list.get(0), "size");
     }
 
