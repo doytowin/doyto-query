@@ -22,7 +22,7 @@ public class MongoFilterUtil {
         Field[] fields = BuildHelper.initFields(query.getClass());
         for (Field field : fields) {
             Object value = CommonUtil.readFieldGetter(field, query);
-            if (value != null) {
+            if (CommonUtil.isValidValue(value, field)) {
                 filters.add(resolveFilter(field.getName(), value));
             }
         }
