@@ -1,14 +1,19 @@
 package win.doyto.query.core;
 
+import com.mongodb.client.model.Filters;
 import lombok.SneakyThrows;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
 
-import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.regex;
 
 /**
  * MongoFilterUtil
@@ -16,6 +21,16 @@ import static com.mongodb.client.model.Filters.*;
  * @author f0rb on 2021-11-23
  */
 public class MongoFilterUtil {
+
+    private static final Map<QuerySuffix, BiFunction<String, Object, Bson>> suffixFuncMap;
+
+    static {
+        suffixFuncMap = new HashMap<>();
+        suffixFuncMap.put(QuerySuffix.Eq, Filters::eq);
+        suffixFuncMap.put(QuerySuffix.Contain, (s, v) -> regex(s, v.toString()));
+        suffixFuncMap.put(QuerySuffix.Lt, Filters::lt);
+    }
+
     @SneakyThrows
     public static Bson buildFilter(Object query) {
         List<Bson> filters = new ArrayList<>();
@@ -32,12 +47,8 @@ public class MongoFilterUtil {
     private static Bson resolveFilter(String fieldName, Object value) {
         QuerySuffix querySuffix = QuerySuffix.resolve(fieldName);
         String columnName = querySuffix.resolveColumnName(fieldName);
-        if (QuerySuffix.Contain == querySuffix) {
-            return regex(columnName, value.toString());
-        }
-        if (QuerySuffix.Lt == querySuffix) {
-            return lt(columnName, value);
-        }
-        return eq(fieldName, value);
+        return suffixFuncMap
+                .getOrDefault(querySuffix, Filters::eq)
+                .apply(columnName, value);
     }
 }
