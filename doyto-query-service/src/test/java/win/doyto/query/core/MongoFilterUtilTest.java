@@ -27,6 +27,7 @@ class MongoFilterUtilTest {
             "{\"username\": \"test\"}, {\"username\": \"test\"}",
             "{\"usernameContain\": \"admin\"}, '{\"username\": {\"$regex\": \"admin\", \"$options\": \"\"}}'",
             "{\"idLt\": 20}, {\"id\": {\"$lt\": 20}}",
+            "{\"idLe\": 20}, {\"id\": {\"$lte\": 20}}",
     })
     void testFilterSuffix(String data, String expected) {
         TestQuery query = BeanUtil.parse(data, TestQuery.class);
