@@ -30,6 +30,7 @@ public class MongoFilterUtil {
         suffixFuncMap.put(QuerySuffix.Contain, (s, v) -> regex(s, v.toString()));
         suffixFuncMap.put(QuerySuffix.Lt, Filters::lt);
         suffixFuncMap.put(QuerySuffix.Le, Filters::lte);
+        suffixFuncMap.put(QuerySuffix.Gt, Filters::gt);
     }
 
     @SneakyThrows

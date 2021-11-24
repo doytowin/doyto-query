@@ -31,6 +31,7 @@ class MongoFilterUtilTest {
             "{\"idLt\": 20}, {\"id\": {\"$lt\": 20}}",
             "{\"idLe\": 20}, {\"id\": {\"$lte\": 20}}",
             "{\"createTimeLt\": \"2021-11-24\"}, {\"createTime\": {\"$lt\": {\"$date\": 1637712000000}}}",
+            "{\"createTimeGt\": \"2021-11-24\"}, {\"createTime\": {\"$gt\": {\"$date\": 1637712000000}}}",
     })
     void testFilterSuffix(String data, String expected) {
         TestQuery query = BeanUtil.parse(data, TestQuery.class);
