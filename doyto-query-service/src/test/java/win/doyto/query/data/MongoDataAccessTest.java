@@ -195,4 +195,25 @@ class MongoDataAccessTest {
         long left = mongoDataAccess.count(new InventoryQuery());
         assertThat(left).isEqualTo(4);
     }
+
+    @Test
+    void patch() {
+        InventoryQuery query = InventoryQuery.builder().build();
+        InventoryEntity notebook = mongoDataAccess.query(query).get(1);
+        InventoryEntity patch = new InventoryEntity();
+        patch.setId(notebook.getId());
+        patch.setStatus("P");
+        InventorySize size = new InventorySize();
+        size.setH(20.);
+        patch.setSize(size);
+
+        //when
+        int count = mongoDataAccess.patch(patch);
+
+        //then
+        assertThat(count).isEqualTo(1);
+        assertThat(mongoDataAccess.get(notebook.getId()))
+                .extracting("item", "qty", "status", "size.h", "size.w", "size.uom")
+                .containsExactly("notebook", 50, "P", 20., 11., "in");
+    }
 }

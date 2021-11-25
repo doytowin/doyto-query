@@ -1,10 +1,12 @@
 package win.doyto.query.core;
 
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import win.doyto.query.entity.Persistable;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -66,5 +68,25 @@ public class MongoFilterUtil {
         return suffixFuncMap
                 .getOrDefault(querySuffix, Filters::eq)
                 .apply(columnName, value);
+    }
+
+    public static Bson buildUpdates(Object target) {
+        ArrayList<Bson> updates = new ArrayList<>();
+        buildUpdates(target, "", updates);
+        return Updates.combine(updates);
+    }
+
+    private static void buildUpdates(Object target, String prefix, List<Bson> updates) {
+        prefix = StringUtils.isEmpty(prefix) ? "" : prefix + ".";
+        for (Field field : BuildHelper.initFields(target.getClass())) {
+            Object value = CommonUtil.readFieldGetter(field, target);
+            if (CommonUtil.isValidValue(value, field)) {
+                if (value instanceof Persistable) {
+                    buildUpdates(value, prefix + field.getName(), updates);
+                } else {
+                    updates.add(Updates.set(prefix + field.getName(), value));
+                }
+            }
+        }
     }
 }

@@ -9,6 +9,7 @@ import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;
+import javax.persistence.GeneratedValue;
 
 /**
  * AbstractMongoPersistable
@@ -20,7 +21,10 @@ import java.io.Serializable;
 @SuppressWarnings("unchecked")
 public abstract class MongoPersistable<I extends Serializable> implements Persistable<I> {
 
+    @GeneratedValue
     private I id;
+
+    @GeneratedValue
     private Class<I> idType;
 
     public MongoPersistable() {

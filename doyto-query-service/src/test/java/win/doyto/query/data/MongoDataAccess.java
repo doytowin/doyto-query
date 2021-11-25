@@ -12,6 +12,7 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.IdWrapper;
+import win.doyto.query.core.MongoFilterUtil;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.util.BeanUtil;
 
@@ -109,7 +110,8 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
 
     @Override
     public int patch(E e) {
-        return 0;
+        Bson updates = MongoFilterUtil.buildUpdates(e);
+        return (int) collection.updateOne(getIdFilter(e.getId()), updates).getModifiedCount();
     }
 
     @Override
