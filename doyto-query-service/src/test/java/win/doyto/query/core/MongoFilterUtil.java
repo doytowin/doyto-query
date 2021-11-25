@@ -51,7 +51,7 @@ public class MongoFilterUtil {
         for (Field field : fields) {
             Object value = CommonUtil.readFieldGetter(field, query);
             if (CommonUtil.isValidValue(value, field)) {
-                if (value instanceof Query) {
+                if (value instanceof MongoQuery) {
                     buildFilter(value, field.getName(), filters);
                 } else {
                     filters.add(resolveFilter(prefix + field.getName(), value));
