@@ -181,4 +181,18 @@ class MongoDataAccessTest {
                 .containsExactly("paper", "planner")
         ;
     }
+
+    @Test
+    void deleteById() {
+        SizeQuery sizeQuery = SizeQuery.builder().hLt(10).build();
+        InventoryQuery query = InventoryQuery.builder().size(sizeQuery).status("A").build();
+        List<InventoryEntity> list = mongoDataAccess.query(query);
+
+        //when
+        int deleted = mongoDataAccess.delete(list.get(0).getId());
+        assertThat(deleted).isEqualTo(1);
+
+        long left = mongoDataAccess.count(new InventoryQuery());
+        assertThat(left).isEqualTo(4);
+    }
 }

@@ -84,7 +84,7 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
 
     @Override
     public int delete(IdWrapper<I> w) {
-        return 0;
+        return (int) collection.deleteOne(getIdFilter(w.getId())).getDeletedCount();
     }
 
     @Override
