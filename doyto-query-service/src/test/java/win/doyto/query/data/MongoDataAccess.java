@@ -11,7 +11,6 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.IdWrapper;
-import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;
@@ -29,7 +28,7 @@ import static win.doyto.query.core.MongoFilterUtil.buildFilter;
  * @author f0rb on 2021-11-23
  */
 @Slf4j
-public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
+public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
     private final Class<E> entityClass;
     @Getter
     private final MongoCollection<Document> collection;
@@ -90,6 +89,9 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
 
     @Override
     public void create(E e) {
+        Document document = BeanUtil.convertToIgnoreNull(e, Document.class);
+        collection.insertOne(document);
+        e.setObjectId((ObjectId) document.get("_id"));
     }
 
     @Override

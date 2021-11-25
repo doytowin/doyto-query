@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.context.ActiveProfiles;
 import win.doyto.query.data.inventory.InventoryEntity;
 import win.doyto.query.data.inventory.InventoryQuery;
+import win.doyto.query.data.inventory.InventorySize;
 import win.doyto.query.data.inventory.SizeQuery;
 import win.doyto.query.util.BeanUtil;
 
@@ -137,5 +138,23 @@ class MongoDataAccessTest {
                 .extracting("id", "status", "size.h")
                 .containsExactly(first.getId(), "C", 100.)
         ;
+    }
+
+    @Test
+    void create() {
+        InventoryEntity origin = new InventoryEntity();
+        origin.setItem("bookshelf");
+        origin.setQty(20);
+        origin.setStatus("D");
+        InventorySize size = new InventorySize();
+        size.setH(100.);
+        size.setW(40.);
+        size.setUom("in");
+        origin.setSize(size);
+        mongoDataAccess.create(origin);
+
+        InventoryEntity fromDB = mongoDataAccess.get(origin.getId());
+        assertThat(fromDB).isEqualToIgnoringGivenFields(fromDB, "size");
+
     }
 }

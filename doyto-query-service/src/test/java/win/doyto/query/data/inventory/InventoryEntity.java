@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Table(catalog = "doyto", name = "c_inventory")
-public class InventoryEntity extends MongoPersistable {
+public class InventoryEntity extends MongoPersistable<String> {
 
     private String item;
     private Integer qty;

@@ -78,6 +78,11 @@ public class BeanUtil {
     }
 
     @SneakyThrows
+    public static <T> T convertToIgnoreNull(Object source, Class<T> targetType) {
+        return objectMapper.readValue(objectMapper2.writeValueAsBytes(source), targetType);
+    }
+
+    @SneakyThrows
     public static <T> T copyTo(Object from, T to) {
         return objectMapper.updateValue(to, from);
     }
