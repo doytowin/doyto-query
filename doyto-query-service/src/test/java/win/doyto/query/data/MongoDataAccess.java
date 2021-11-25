@@ -116,7 +116,8 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
 
     @Override
     public int patch(E e, Q q) {
-        return 0;
+        Bson updates = MongoFilterUtil.buildUpdates(e);
+        return (int) collection.updateMany(buildFilter(q), updates).getModifiedCount();
     }
 
     @Override

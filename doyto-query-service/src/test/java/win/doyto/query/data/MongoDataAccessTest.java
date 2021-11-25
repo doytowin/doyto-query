@@ -216,4 +216,17 @@ class MongoDataAccessTest {
                 .extracting("item", "qty", "status", "size.h", "size.w", "size.uom")
                 .containsExactly("notebook", 50, "P", 20., 11., "in");
     }
+
+    @Test
+    void patchByQuery() {
+        InventoryQuery query = InventoryQuery.builder().status("A").build();
+        InventoryEntity patch = new InventoryEntity();
+        patch.setStatus("P");
+
+        //when
+        int count = mongoDataAccess.patch(patch, query);
+
+        //then
+        assertThat(count).isEqualTo(3);
+    }
 }
