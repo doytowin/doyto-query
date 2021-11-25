@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.MongoQuery;
+import win.doyto.query.core.PageQuery;
 
 /**
  * SizeQuery
@@ -17,6 +17,6 @@ import win.doyto.query.core.MongoQuery;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SizeQuery implements MongoQuery {
+public class SizeQuery extends PageQuery {
     private Integer hLt;
 }

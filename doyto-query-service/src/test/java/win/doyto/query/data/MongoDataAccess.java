@@ -4,6 +4,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.CountOptions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
@@ -11,6 +12,7 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.IdWrapper;
+import win.doyto.query.core.PageQuery;
 import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;
@@ -28,7 +30,7 @@ import static win.doyto.query.core.MongoFilterUtil.buildFilter;
  * @author f0rb on 2021-11-23
  */
 @Slf4j
-public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
+public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializable, Q extends PageQuery> implements DataAccess<E, I, Q> {
     private final Class<E> entityClass;
     @Getter
     private final MongoCollection<Document> collection;
@@ -46,7 +48,10 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
 
     @Override
     public List<E> query(Q query) {
-        FindIterable<Document> findIterable = collection.find(buildFilter(query));
+        FindIterable<Document> findIterable = collection
+                .find(buildFilter(query))
+                .skip(query.calcOffset())
+                .limit(query.getPageSize());
         List<E> list = new ArrayList<>();
         findIterable.forEach((Consumer<Document>) document -> {
             E e = BeanUtil.parse(document.toJson(), entityClass);
@@ -60,7 +65,7 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
 
     @Override
     public long count(Q query) {
-        return collection.countDocuments(buildFilter(query));
+        return collection.countDocuments(buildFilter(query), new CountOptions().limit(query.getPageSize()).skip(query.calcOffset()));
     }
 
     @Override

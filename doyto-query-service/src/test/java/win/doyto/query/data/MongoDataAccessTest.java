@@ -171,4 +171,14 @@ class MongoDataAccessTest {
         assertThat(size.getOid()).isInstanceOf(ObjectId.class);
     }
 
+    @Test
+    void paging() {
+        // query [2,4)
+        InventoryQuery testQuery = InventoryQuery.builder().pageNumber(1).pageSize(2).build();
+        assertThat(mongoDataAccess.count(testQuery)).isEqualTo(2);
+        assertThat(mongoDataAccess.query(testQuery))
+                .extracting("item")
+                .containsExactly("paper", "planner")
+        ;
+    }
 }
