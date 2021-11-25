@@ -119,4 +119,23 @@ class MongoDataAccessTest {
         long left = mongoDataAccess.count(new InventoryQuery());
         assertThat(left).isEqualTo(4);
     }
+
+    @Test
+    void update() {
+        InventoryQuery query = InventoryQuery.builder().build();
+        List<InventoryEntity> list = mongoDataAccess.query(query);
+
+        InventoryEntity first = list.get(0);
+        first.setStatus("C");
+        first.getSize().setH(100.);
+        int updateCount = mongoDataAccess.update(first);
+        assertThat(updateCount).isEqualTo(1);
+
+        //id remains the same and `status` changes to C and `size.h` changes to 100.
+        InventoryEntity updated = mongoDataAccess.get(first.getId());
+        assertThat(updated)
+                .extracting("id", "status", "size.h")
+                .containsExactly(first.getId(), "C", 100.)
+        ;
+    }
 }

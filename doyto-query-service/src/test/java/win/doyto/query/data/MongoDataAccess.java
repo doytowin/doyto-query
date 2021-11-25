@@ -7,6 +7,7 @@ import com.mongodb.client.MongoDatabase;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.IdWrapper;
@@ -40,6 +41,10 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
         this.collection = database.getCollection(table.name());
     }
 
+    private Bson getIdFilter(Object id) {
+        return eq("_id", new ObjectId(id.toString()));
+    }
+
     @Override
     public List<E> query(Q query) {
         FindIterable<Document> findIterable = collection.find(buildFilter(query));
@@ -66,7 +71,7 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
 
     @Override
     public E get(IdWrapper<I> w) {
-        FindIterable<Document> findIterable = collection.find(eq("_id", new ObjectId(w.getId().toString())));
+        FindIterable<Document> findIterable = collection.find(getIdFilter(w.getId()));
         for (Document document : findIterable) {
             return BeanUtil.parse(document.toJson(), entityClass);
         }
@@ -89,7 +94,10 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
 
     @Override
     public int update(E e) {
-        return 0;
+        Bson filter = getIdFilter(e.getId());
+        Document replacement = BeanUtil.convertTo(e, Document.class);
+        replacement.remove("_id");
+        return (int) collection.replaceOne(filter, replacement).getModifiedCount();
     }
 
     @Override
