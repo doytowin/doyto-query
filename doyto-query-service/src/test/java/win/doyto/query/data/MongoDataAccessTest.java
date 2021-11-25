@@ -3,6 +3,7 @@ package win.doyto.query.data;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mongodb.MongoClient;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -157,4 +158,17 @@ class MongoDataAccessTest {
         assertThat(fromDB).isEqualToIgnoringGivenFields(fromDB, "size");
 
     }
+
+    @Test
+    void createSubDocument(@Autowired MongoClient mongoClient) {
+        MongoDataAccess<InventorySize, ObjectId, SizeQuery> sizeDataAccess
+                = new MongoDataAccess<>(mongoClient, InventorySize.class);
+        InventoryEntity inventoryEntity = mongoDataAccess.query(InventoryQuery.builder().build()).get(0);
+
+        InventorySize size = inventoryEntity.getSize();
+        sizeDataAccess.create(size);
+        assertThat(size.getId()).isInstanceOf(ObjectId.class);
+        assertThat(size.getOid()).isInstanceOf(ObjectId.class);
+    }
+
 }

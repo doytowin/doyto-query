@@ -4,6 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.bson.types.ObjectId;
+import win.doyto.query.data.MongoPersistable;
+
+import javax.persistence.Table;
 
 /**
  * SizeEntity
@@ -14,7 +18,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class InventorySize {
+@Table(catalog = "doyto", name = "c_inventory")
+public class InventorySize extends MongoPersistable<ObjectId> {
     private Double h;
     private Double w;
     private String uom;
