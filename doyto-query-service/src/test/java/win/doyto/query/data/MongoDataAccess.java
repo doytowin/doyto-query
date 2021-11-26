@@ -113,10 +113,25 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
     }
 
     @Override
-    public void create(E e) {
-        Document document = BeanUtil.convertToIgnoreNull(e, Document.class);
+    public void create(E entity) {
+        Document document = BeanUtil.convertToIgnoreNull(entity, Document.class);
         collection.insertOne(document);
-        e.setObjectId((ObjectId) document.get(MONGO_ID));
+        entity.setObjectId((ObjectId) document.get(MONGO_ID));
+    }
+
+    @Override
+    public int batchInsert(Iterable<E> entities, String... columns) {
+        List<Document> documents = new ArrayList<>();
+        for (E entity : entities) {
+            documents.add( BeanUtil.convertToIgnoreNull(entity, Document.class));
+        }
+        collection.insertMany(documents);
+        int i = 0;
+        for (E entity : entities) {
+            entity.setObjectId((ObjectId) documents.get(i).get(MONGO_ID));
+            i++;
+        }
+        return documents.size();
     }
 
     @Override

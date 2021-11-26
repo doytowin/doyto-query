@@ -2,7 +2,6 @@ package win.doyto.query.data;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mongodb.MongoClient;
-import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,8 +38,8 @@ class MongoDataAccessTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        List<? extends Document> data = BeanUtil.loadJsonData("inventory/inventory.json", new TypeReference<List<? extends Document>>() {});
-        mongoDataAccess.getCollection().insertMany(data);
+        List<InventoryEntity> data = BeanUtil.loadJsonData("inventory/inventory.json", new TypeReference<List<InventoryEntity>>() {});
+        mongoDataAccess.batchInsert(data);
     }
 
     @AfterEach
@@ -285,5 +284,12 @@ class MongoDataAccessTest {
 
         int count = mongoDataAccess.delete(query);
         assertThat(count).isEqualTo(2);
+    }
+
+    @Test
+    void queryNestedSingleColumnWithTypeDouble() {
+        InventoryQuery query = InventoryQuery.builder().pageSize(2).build();
+        List<Double> items = mongoDataAccess.queryColumns(query, Double.class, "size.h");
+        assertThat(items).containsExactly(14., 8.5);
     }
 }
