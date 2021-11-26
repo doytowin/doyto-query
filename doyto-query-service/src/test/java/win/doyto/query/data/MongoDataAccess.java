@@ -32,6 +32,7 @@ import static win.doyto.query.core.MongoFilterUtil.buildFilter;
  */
 @Slf4j
 public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializable, Q extends PageQuery> implements DataAccess<E, I, Q> {
+    private static final String MONGO_ID = "_id";
     private final Class<E> entityClass;
     @Getter
     private final MongoCollection<Document> collection;
@@ -44,7 +45,7 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
     }
 
     private Bson getIdFilter(Object id) {
-        return eq("_id", new ObjectId(id.toString()));
+        return eq(MONGO_ID, new ObjectId(id.toString()));
     }
 
     @Override
@@ -66,11 +67,16 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
                 .limit(query.getPageSize());
         List<V> list = new ArrayList<>();
         findIterable.forEach((Consumer<Document>) document -> {
-            V v = BeanUtil.parse(document.toJson(), clazz);
-            if (log.isDebugEnabled()) {
-                log.debug("Entity parsed: {}", BeanUtil.stringify(v));
+            V e;
+            if (columns.length == 1) {
+                e = document.get(columns[0], clazz);
+            } else {
+                e = BeanUtil.parse(document.toJson(), clazz);
             }
-            list.add(v);
+            if (log.isDebugEnabled()) {
+                log.debug("Entity parsed: {}", BeanUtil.stringify(e));
+            }
+            list.add(e);
         });
         return list;
     }
@@ -98,14 +104,14 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
     public void create(E e) {
         Document document = BeanUtil.convertToIgnoreNull(e, Document.class);
         collection.insertOne(document);
-        e.setObjectId((ObjectId) document.get("_id"));
+        e.setObjectId((ObjectId) document.get(MONGO_ID));
     }
 
     @Override
     public int update(E e) {
         Bson filter = getIdFilter(e.getId());
         Document replacement = BeanUtil.convertTo(e, Document.class);
-        replacement.remove("_id");
+        replacement.remove(MONGO_ID);
         return (int) collection.replaceOne(filter, replacement).getModifiedCount();
     }
 
@@ -124,5 +130,10 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
     @Override
     public List<I> queryIds(Q query) {
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<ObjectId> queryOid(Q query) {
+        return queryColumns(query, ObjectId.class, MONGO_ID);
     }
 }

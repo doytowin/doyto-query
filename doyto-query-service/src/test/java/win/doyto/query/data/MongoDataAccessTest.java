@@ -240,4 +240,16 @@ class MongoDataAccessTest {
                 .extracting("item", "qty", "status", "size.h", "size.w", "size.uom")
                 .containsExactly("journal", null, null, 14.0, null, null);
     }
+
+    @Test
+    void queryOid() {
+        InventoryQuery query = InventoryQuery.builder().status("A").build();
+
+        //when
+        List<ObjectId> ids = mongoDataAccess.queryOid(query);
+        List<InventoryEntity> entities = mongoDataAccess.query(query);
+
+        //then
+        assertThat(entities).extracting("oid").hasSameElementsAs(ids);
+    }
 }
