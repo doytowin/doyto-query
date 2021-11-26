@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 import javax.persistence.Table;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.in;
 import static win.doyto.query.core.MongoFilterUtil.buildFilter;
 
 /**
@@ -130,7 +131,8 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
     @Override
     public int patch(E e, Q q) {
         Bson updates = MongoFilterUtil.buildUpdates(e);
-        return (int) collection.updateMany(buildFilter(q), updates).getModifiedCount();
+        Bson inId = in(MONGO_ID, queryOid(q));
+        return (int) collection.updateMany(inId, updates).getModifiedCount();
     }
 
     @Override

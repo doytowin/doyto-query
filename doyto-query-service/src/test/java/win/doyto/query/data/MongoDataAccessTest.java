@@ -266,4 +266,15 @@ class MongoDataAccessTest {
         List<String> items = mongoDataAccess.queryColumns(query, String.class, "size.uom");
         assertThat(items).containsExactly("cm", "in");
     }
+
+    @Test
+    void patchWithPage() {
+        // only change [2, 4) inventories' status to F
+        InventoryQuery query = InventoryQuery.builder().pageNumber(1).pageSize(2).build();
+        InventoryEntity patch = new InventoryEntity();
+        patch.setStatus("F");
+
+        int count = mongoDataAccess.patch(patch, query);
+        assertThat(count).isEqualTo(2);
+    }
 }
