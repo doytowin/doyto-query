@@ -4,7 +4,6 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.CountOptions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
@@ -66,7 +65,7 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
 
     @Override
     public long count(Q query) {
-        return collection.countDocuments(buildFilter(query), new CountOptions().limit(query.getPageSize()).skip(query.calcOffset()));
+        return collection.countDocuments(buildFilter(query));
     }
 
     @Override
