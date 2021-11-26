@@ -277,4 +277,13 @@ class MongoDataAccessTest {
         int count = mongoDataAccess.patch(patch, query);
         assertThat(count).isEqualTo(2);
     }
+
+    @Test
+    void deleteWithPage() {
+        // only change [2, 4) inventories' status to F
+        InventoryQuery query = InventoryQuery.builder().pageNumber(1).pageSize(2).build();
+
+        int count = mongoDataAccess.delete(query);
+        assertThat(count).isEqualTo(2);
+    }
 }

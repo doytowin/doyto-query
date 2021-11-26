@@ -51,6 +51,10 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
         return eq(MONGO_ID, new ObjectId(id.toString()));
     }
 
+    private Bson buildFilterForChange(Q query) {
+        return query.needPaging() ? in(MONGO_ID, queryOid(query)) : buildFilter(query);
+    }
+
     @Override
     public List<E> query(Q query) {
         return queryColumns(query, entityClass);
@@ -104,7 +108,8 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
 
     @Override
     public int delete(Q query) {
-        return (int) collection.deleteMany(buildFilter(query)).getDeletedCount();
+        Bson inId = buildFilterForChange(query);
+        return (int) collection.deleteMany(inId).getDeletedCount();
     }
 
     @Override
@@ -131,7 +136,7 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
     @Override
     public int patch(E e, Q q) {
         Bson updates = MongoFilterUtil.buildUpdates(e);
-        Bson inId = in(MONGO_ID, queryOid(q));
+        Bson inId = buildFilterForChange(q);
         return (int) collection.updateMany(inId, updates).getModifiedCount();
     }
 
