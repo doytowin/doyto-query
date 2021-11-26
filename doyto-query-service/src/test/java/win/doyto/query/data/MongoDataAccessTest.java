@@ -229,4 +229,15 @@ class MongoDataAccessTest {
         //then
         assertThat(count).isEqualTo(3);
     }
+
+    @Test
+    void queryColumns() {
+        InventoryQuery query = InventoryQuery.builder().build();
+        List<InventoryEntity> entities = mongoDataAccess.queryColumns(query, InventoryEntity.class, "item", "size.h");
+        assertThat(entities)
+                .hasSize(5)
+                .first()
+                .extracting("item", "qty", "status", "size.h", "size.w", "size.uom")
+                .containsExactly("journal", null, null, 14.0, null, null);
+    }
 }

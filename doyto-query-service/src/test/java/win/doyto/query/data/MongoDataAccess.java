@@ -4,6 +4,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Projections;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
@@ -48,19 +49,7 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
 
     @Override
     public List<E> query(Q query) {
-        FindIterable<Document> findIterable = collection
-                .find(buildFilter(query))
-                .skip(query.calcOffset())
-                .limit(query.getPageSize());
-        List<E> list = new ArrayList<>();
-        findIterable.forEach((Consumer<Document>) document -> {
-            E e = BeanUtil.parse(document.toJson(), entityClass);
-            if (log.isDebugEnabled()) {
-                log.debug("Entity parsed: {}", BeanUtil.stringify(e));
-            }
-            list.add(e);
-        });
-        return list;
+        return queryColumns(query, entityClass);
     }
 
     @Override
@@ -69,8 +58,21 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
     }
 
     @Override
-    public <V> List<V> queryColumns(Q q, Class<V> clazz, String... columns) {
-        return null;
+    public <V> List<V> queryColumns(Q query, Class<V> clazz, String... columns) {
+        FindIterable<Document> findIterable = collection
+                .find(buildFilter(query))
+                .projection(Projections.include(columns))
+                .skip(query.calcOffset())
+                .limit(query.getPageSize());
+        List<V> list = new ArrayList<>();
+        findIterable.forEach((Consumer<Document>) document -> {
+            V v = BeanUtil.parse(document.toJson(), clazz);
+            if (log.isDebugEnabled()) {
+                log.debug("Entity parsed: {}", BeanUtil.stringify(v));
+            }
+            list.add(v);
+        });
+        return list;
     }
 
     @Override
