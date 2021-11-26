@@ -252,4 +252,18 @@ class MongoDataAccessTest {
         //then
         assertThat(entities).extracting("oid").hasSameElementsAs(ids);
     }
+
+    @Test
+    void queryFirstLevelSingleColumn() {
+        InventoryQuery query = InventoryQuery.builder().pageSize(2).build();
+        List<String> items = mongoDataAccess.queryColumns(query, String.class, "item");
+        assertThat(items).containsExactly("journal", "notebook");
+    }
+
+    @Test
+    void queryNestedSingleColumn() {
+        InventoryQuery query = InventoryQuery.builder().pageSize(2).build();
+        List<String> items = mongoDataAccess.queryColumns(query, String.class, "size.uom");
+        assertThat(items).containsExactly("cm", "in");
+    }
 }

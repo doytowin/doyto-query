@@ -7,6 +7,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Projections;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -18,6 +19,7 @@ import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import javax.persistence.Table;
@@ -69,7 +71,7 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
         findIterable.forEach((Consumer<Document>) document -> {
             V e;
             if (columns.length == 1) {
-                e = document.get(columns[0], clazz);
+                e = document.getEmbedded(splitToKeys(columns[0]), clazz);
             } else {
                 e = BeanUtil.parse(document.toJson(), clazz);
             }
@@ -79,6 +81,10 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
             list.add(e);
         });
         return list;
+    }
+
+    private List<String> splitToKeys(String column) {
+        return Arrays.asList(StringUtils.split(column, "\\."));
     }
 
     @Override
