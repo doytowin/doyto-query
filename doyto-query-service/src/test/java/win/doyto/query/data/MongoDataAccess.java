@@ -62,7 +62,7 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
     }
 
     private Bson buildFilterForChange(Q query) {
-        return query.needPaging() ? in(MONGO_ID, queryOid(query)) : buildFilter(query);
+        return query.needPaging() ? in(MONGO_ID, queryObjectId(query)) : buildFilter(query);
     }
 
     @Override
@@ -175,7 +175,7 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
     }
 
     @SuppressWarnings("unchecked")
-    public List<ObjectId> queryOid(Q query) {
+    public List<ObjectId> queryObjectId(Q query) {
         return queryColumns(query, ObjectId.class, MONGO_ID);
     }
 }

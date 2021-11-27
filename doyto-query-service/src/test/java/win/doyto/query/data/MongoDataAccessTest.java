@@ -168,7 +168,7 @@ class MongoDataAccessTest {
         InventorySize size = inventoryEntity.getSize();
         sizeDataAccess.create(size);
         assertThat(size.getId()).isInstanceOf(ObjectId.class);
-        assertThat(size.getOid()).isInstanceOf(ObjectId.class);
+        assertThat(size.getObjectId()).isInstanceOf(ObjectId.class);
     }
 
     @Test
@@ -246,11 +246,11 @@ class MongoDataAccessTest {
         InventoryQuery query = InventoryQuery.builder().status("A").build();
 
         //when
-        List<ObjectId> ids = mongoDataAccess.queryOid(query);
+        List<ObjectId> ids = mongoDataAccess.queryObjectId(query);
         List<InventoryEntity> entities = mongoDataAccess.query(query);
 
         //then
-        assertThat(entities).extracting("oid").hasSameElementsAs(ids);
+        assertThat(entities).extracting("objectId").hasSameElementsAs(ids);
     }
 
     @Test
