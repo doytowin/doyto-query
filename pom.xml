@@ -36,9 +36,6 @@
         <module>doyto-query-mongo</module>
     </modules>
 
-    <dependencies>
-    </dependencies>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
