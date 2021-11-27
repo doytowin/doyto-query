@@ -19,7 +19,7 @@ import javax.persistence.GeneratedValue;
 @Getter
 @Setter
 @SuppressWarnings("unchecked")
-public abstract class MongoPersistable<I extends Serializable> implements Persistable<I> {
+public abstract class MongoPersistable<I extends Serializable> implements Persistable<I>, ObjectIdAware {
 
     @GeneratedValue
     private I id;
@@ -46,7 +46,7 @@ public abstract class MongoPersistable<I extends Serializable> implements Persis
         if (this.id == null) {
             if (idType.isAssignableFrom(String.class)) {
                 this.id = (I) objectId.toHexString();
-            } else if( idType.isAssignableFrom(ObjectId.class)) {
+            } else if (idType.isAssignableFrom(ObjectId.class)) {
                 this.id = (I) objectId;
             }
         }

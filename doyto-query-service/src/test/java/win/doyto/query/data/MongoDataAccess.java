@@ -15,6 +15,7 @@ import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.MongoFilterUtil;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;
@@ -35,17 +36,25 @@ import static win.doyto.query.core.MongoFilterUtil.buildSort;
  * @author f0rb on 2021-11-23
  */
 @Slf4j
-public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializable, Q extends PageQuery> implements DataAccess<E, I, Q> {
+public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> implements DataAccess<E, I, Q> {
     private static final String MONGO_ID = "_id";
     private final Class<E> entityClass;
     @Getter
     private final MongoCollection<Document> collection;
 
+    @SuppressWarnings("unchecked")
     public MongoDataAccess(MongoClient mongoClient, Class<E> testEntityClass) {
         this.entityClass = testEntityClass;
         Table table = testEntityClass.getAnnotation(Table.class);
         MongoDatabase database = mongoClient.getDatabase(table.catalog());
         this.collection = database.getCollection(table.name());
+    }
+
+    private void setObjectId(E entity, Document document) {
+        ObjectId objectId = (ObjectId) document.get(MONGO_ID);
+        if (entity instanceof ObjectIdAware) {
+            ((ObjectIdAware) entity).setObjectId(objectId);
+        }
     }
 
     private Bson getIdFilter(Object id) {
@@ -121,7 +130,7 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
     public void create(E entity) {
         Document document = BeanUtil.convertToIgnoreNull(entity, Document.class);
         collection.insertOne(document);
-        entity.setObjectId((ObjectId) document.get(MONGO_ID));
+        setObjectId(entity, document);
     }
 
     @Override
@@ -133,7 +142,7 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
         collection.insertMany(documents);
         int i = 0;
         for (E entity : entities) {
-            entity.setObjectId((ObjectId) documents.get(i).get(MONGO_ID));
+            setObjectId(entity, documents.get(i));
             i++;
         }
         return documents.size();
