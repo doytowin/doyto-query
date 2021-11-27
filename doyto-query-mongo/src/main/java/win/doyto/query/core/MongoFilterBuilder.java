@@ -28,7 +28,7 @@ import static com.mongodb.client.model.Sorts.*;
  * @author f0rb on 2021-11-23
  */
 @UtilityClass
-public class MongoFilterUtil {
+public class MongoFilterBuilder {
 
     private static final Map<QuerySuffix, BiFunction<String, Object, Bson>> suffixFuncMap;
 

@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author f0rb on 2021-11-24
  */
-class MongoFilterUtilTest {
+class MongoFilterBuilderTest {
 
     private CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
             CodecRegistries.fromCodecs(new StringCodec(), new IntegerCodec(), new DateCodec()),
@@ -44,7 +44,7 @@ class MongoFilterUtilTest {
     })
     void testFilterSuffix(String data, String expected) {
         TestQuery query = BeanUtil.parse(data, TestQuery.class);
-        Bson filters = MongoFilterUtil.buildFilter(query);
+        Bson filters = MongoFilterBuilder.buildFilter(query);
         assertEquals(expected, filters.toBsonDocument(Document.class, codecRegistry).toJson());
     }
 
@@ -54,7 +54,7 @@ class MongoFilterUtilTest {
     })
     void testNestedFilter(String data, String expected) {
         InventoryQuery query = BeanUtil.parse(data, InventoryQuery.class);
-        Bson filters = MongoFilterUtil.buildFilter(query);
+        Bson filters = MongoFilterBuilder.buildFilter(query);
         assertEquals(expected, filters.toBsonDocument(Document.class, codecRegistry).toJson());
     }
 
@@ -67,7 +67,7 @@ class MongoFilterUtilTest {
             "item;qty,asc | {\"item\": 1, \"qty\": 1}",
     }, delimiter = '|')
     void buildSort(String sort, String expected) {
-        Bson orderBy = MongoFilterUtil.buildSort(sort);
+        Bson orderBy = MongoFilterBuilder.buildSort(sort);
         assertEquals(expected, orderBy.toBsonDocument(Document.class, codecRegistry).toJson());
     }
 }

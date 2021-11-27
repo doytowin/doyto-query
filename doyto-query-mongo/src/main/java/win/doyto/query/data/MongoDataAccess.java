@@ -14,7 +14,7 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.IdWrapper;
-import win.doyto.query.core.MongoFilterUtil;
+import win.doyto.query.core.MongoFilterBuilder;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.BeanUtil;
@@ -60,7 +60,7 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
     }
 
     private Bson buildFilterForChange(Q query) {
-        return query.needPaging() ? in(MONGO_ID, queryObjectId(query)) : MongoFilterUtil.buildFilter(query);
+        return query.needPaging() ? in(MONGO_ID, queryObjectId(query)) : MongoFilterBuilder.buildFilter(query);
     }
 
     @Override
@@ -70,16 +70,16 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
 
     @Override
     public long count(Q query) {
-        return collection.countDocuments(MongoFilterUtil.buildFilter(query));
+        return collection.countDocuments(MongoFilterBuilder.buildFilter(query));
     }
 
     @Override
     public <V> List<V> queryColumns(Q query, Class<V> clazz, String... columns) {
         FindIterable<Document> findIterable = collection
-                .find(MongoFilterUtil.buildFilter(query))
+                .find(MongoFilterBuilder.buildFilter(query))
                 .projection(Projections.include(columns));
         if (query.getSort() != null) {
-            findIterable.sort(MongoFilterUtil.buildSort(query.getSort()));
+            findIterable.sort(MongoFilterBuilder.buildSort(query.getSort()));
         }
         if (query.needPaging()) {
             findIterable.skip(query.calcOffset()).limit(query.getPageSize());
@@ -157,13 +157,13 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
 
     @Override
     public int patch(E e) {
-        Bson updates = MongoFilterUtil.buildUpdates(e);
+        Bson updates = MongoFilterBuilder.buildUpdates(e);
         return (int) collection.updateOne(getIdFilter(e.getId()), updates).getModifiedCount();
     }
 
     @Override
     public int patch(E e, Q q) {
-        Bson updates = MongoFilterUtil.buildUpdates(e);
+        Bson updates = MongoFilterBuilder.buildUpdates(e);
         Bson inId = buildFilterForChange(q);
         return (int) collection.updateMany(inId, updates).getModifiedCount();
     }
