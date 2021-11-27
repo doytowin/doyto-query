@@ -2,6 +2,7 @@ package win.doyto.query.data;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mongodb.MongoClient;
+import org.assertj.core.groups.Tuple;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -300,5 +301,20 @@ class MongoDataAccessTest {
         assertThat(inventoryEntities)
                 .extracting("item")
                 .containsExactly("postcard", "planner", "paper", "notebook", "journal");
+    }
+
+    @Test
+    void sortForNestedField() {
+        InventoryQuery query = InventoryQuery.builder().sort("size.h;item,desc").build();
+        List<InventoryEntity> inventoryEntities = mongoDataAccess.query(query);
+        assertThat(inventoryEntities)
+                .extracting("item", "size.h")
+                .containsExactly(
+                        Tuple.tuple("paper", 8.5),
+                        Tuple.tuple("notebook", 8.5),
+                        Tuple.tuple("postcard", 10.0),
+                        Tuple.tuple("journal", 14.0),
+                        Tuple.tuple("planner", 22.85)
+                );
     }
 }
