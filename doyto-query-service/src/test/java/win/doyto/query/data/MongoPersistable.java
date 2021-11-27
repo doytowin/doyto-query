@@ -1,10 +1,9 @@
 package win.doyto.query.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import lombok.Setter;
-import org.bson.Document;
 import org.bson.types.ObjectId;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.BeanUtil;
@@ -46,15 +45,8 @@ public abstract class MongoPersistable<I extends Serializable> implements Persis
     }
 
     @JsonProperty("_id")
+    @JsonDeserialize(using = ObjectIdDeserializer.class)
     private ObjectId objectId;
-
-    @JsonSetter("_id")
-    public void setOid(Document objectId) {
-        if (objectId != null) {
-            String $oid = objectId.get("$oid", String.class);
-            this.setObjectId(new ObjectId($oid));
-        }
-    }
 
     public void setObjectId(ObjectId objectId) {
         this.objectId = objectId;
