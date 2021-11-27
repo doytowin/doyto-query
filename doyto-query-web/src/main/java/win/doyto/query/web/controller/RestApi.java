@@ -1,6 +1,7 @@
 package win.doyto.query.web.controller;
 
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.service.PageList;
 import win.doyto.query.validation.PageGroup;
