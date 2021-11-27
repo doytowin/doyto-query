@@ -52,4 +52,4 @@ DoytoQuery -- A Java implementation for the 2nd generation ORM Framework
   -  [https://query.doyto.win/](https://query.doyto.win/)
 
 - Architecture for 0.3.x
-  ![architecture-0.3.x](./doc/images/architecture-0.3.x.png)
+  ![architecture-0.3.x](docs/images/architecture-0.3.x.png)
