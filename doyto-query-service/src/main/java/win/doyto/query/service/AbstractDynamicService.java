@@ -15,6 +15,7 @@ import org.springframework.transaction.support.*;
 import win.doyto.query.cache.CacheWrapper;
 import win.doyto.query.core.*;
 import win.doyto.query.data.DatabaseOperations;
+import win.doyto.query.data.DefaultDataAccess;
 import win.doyto.query.entity.EntityAspect;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.entity.UserIdProvider;

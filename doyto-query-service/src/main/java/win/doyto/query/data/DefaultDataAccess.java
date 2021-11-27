@@ -1,11 +1,11 @@
-package win.doyto.query.core;
+package win.doyto.query.data;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
-import win.doyto.query.data.DatabaseOperations;
+import win.doyto.query.core.*;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.ColumnUtil;
 
