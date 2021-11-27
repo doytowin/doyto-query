@@ -16,6 +16,8 @@ import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.MongoFilterBuilder;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.entity.ObjectIdAware;
+import win.doyto.query.entity.ObjectIdMapper;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.BeanUtil;
 

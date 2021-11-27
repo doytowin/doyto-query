@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.bson.types.ObjectId;
-import win.doyto.query.data.MongoPersistable;
+import win.doyto.query.entity.MongoPersistable;
 
 import javax.persistence.Table;
 

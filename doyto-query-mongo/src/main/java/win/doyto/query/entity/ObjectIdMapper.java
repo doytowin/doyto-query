@@ -1,4 +1,4 @@
-package win.doyto.query.data;
+package win.doyto.query.entity;
 
 import lombok.experimental.UtilityClass;
 import org.bson.types.ObjectId;
@@ -33,7 +33,7 @@ public class ObjectIdMapper {
     }
 
     @SuppressWarnings("unchecked")
-    static <I> I convert(Class<?> clazz, ObjectId objectId) {
+    public static <I> I convert(Class<?> clazz, ObjectId objectId) {
         return (I) classFuncMap.get(clazz).apply(objectId);
     }
 }

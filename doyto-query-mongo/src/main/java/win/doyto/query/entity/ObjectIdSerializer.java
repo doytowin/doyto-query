@@ -1,4 +1,4 @@
-package win.doyto.query.data;
+package win.doyto.query.entity;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;

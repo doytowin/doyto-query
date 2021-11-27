@@ -1,4 +1,4 @@
-package win.doyto.query.data;
+package win.doyto.query.entity;
 
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;

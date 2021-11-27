@@ -2,7 +2,7 @@ package win.doyto.query.data.inventory;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.data.MongoPersistable;
+import win.doyto.query.entity.MongoPersistable;
 
 import javax.persistence.Table;
 

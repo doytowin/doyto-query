@@ -1,4 +1,4 @@
-package win.doyto.query.data;
+package win.doyto.query.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
-import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
 import javax.persistence.GeneratedValue;
