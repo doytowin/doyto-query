@@ -26,8 +26,8 @@ import javax.persistence.Table;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.in;
-import static com.mongodb.client.model.Sorts.descending;
 import static win.doyto.query.core.MongoFilterUtil.buildFilter;
+import static win.doyto.query.core.MongoFilterUtil.buildSort;
 
 /**
  * MongoDataAccess
@@ -50,10 +50,6 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
 
     private Bson getIdFilter(Object id) {
         return eq(MONGO_ID, new ObjectId(id.toString()));
-    }
-
-    static Bson buildSort(String sort) {
-        return descending("item");
     }
 
     private Bson buildFilterForChange(Q query) {

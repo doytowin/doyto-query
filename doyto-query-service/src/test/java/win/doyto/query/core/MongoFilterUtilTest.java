@@ -58,4 +58,16 @@ class MongoFilterUtilTest {
         assertEquals(expected, filters.toBsonDocument(Document.class, codecRegistry).toJson());
     }
 
+    @ParameterizedTest
+    @CsvSource(value = {
+            "item,desc | {\"item\": -1}",
+            "item,asc | {\"item\": 1}",
+            "item | {\"item\": 1}",
+            "item,desc;qty,asc | {\"item\": -1, \"qty\": 1}",
+            "item;qty,asc | {\"item\": 1, \"qty\": 1}",
+    }, delimiter = '|')
+    void buildSort(String sort, String expected) {
+        Bson orderBy = MongoFilterUtil.buildSort(sort);
+        assertEquals(expected, orderBy.toBsonDocument(Document.class, codecRegistry).toJson());
+    }
 }

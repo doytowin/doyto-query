@@ -14,9 +14,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.regex;
+import static com.mongodb.client.model.Sorts.*;
 
 /**
  * MongoFilterUtil
@@ -88,5 +91,19 @@ public class MongoFilterUtil {
                 }
             }
         }
+    }
+
+    public static Bson buildSort(String sort) {
+        List<Bson> sortList = new ArrayList<>();
+        Matcher matcher = Pattern.compile("(\\w+)(,asc|,desc)?").matcher(sort);
+        while (matcher.find()) {
+            String filedName = matcher.group(1);
+            if (StringUtils.contains(matcher.group(2), "desc")) {
+                sortList.add(descending(filedName));
+            } else {
+                sortList.add(ascending(filedName));
+            }
+        }
+        return orderBy(sortList);
     }
 }
