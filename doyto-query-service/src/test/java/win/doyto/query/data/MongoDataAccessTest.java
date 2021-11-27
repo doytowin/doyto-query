@@ -317,4 +317,16 @@ class MongoDataAccessTest {
                         Tuple.tuple("planner", 22.85)
                 );
     }
+
+    @Test
+    void queryIds() {
+        InventoryQuery query = InventoryQuery.builder().status("A").build();
+
+        //when
+        List<String> ids = mongoDataAccess.queryIds(query);
+        List<InventoryEntity> entities = mongoDataAccess.query(query);
+
+        //then
+        assertThat(entities).extracting("id").hasSameElementsAs(ids);
+    }
 }

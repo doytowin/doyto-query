@@ -169,9 +169,16 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
         return (int) collection.updateMany(inId, updates).getModifiedCount();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<I> queryIds(Q query) {
-        return null;
+        List<ObjectId> objectIds = queryObjectId(query);
+        List<I> idList = new ArrayList<>();
+        for (ObjectId objectId : objectIds) {
+            I id = (I) MongoPersistable.classFuncMap.get(entityClass).apply(objectId);
+            idList.add(id);
+        }
+        return idList;
     }
 
     @SuppressWarnings("unchecked")
