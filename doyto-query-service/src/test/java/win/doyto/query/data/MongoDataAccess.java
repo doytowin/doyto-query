@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javax.persistence.Table;
 
@@ -78,7 +77,6 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
 
     @Override
     public <V> List<V> queryColumns(Q query, Class<V> clazz, String... columns) {
-        List<V> list = new ArrayList<>();
         FindIterable<Document> findIterable = collection
                 .find(buildFilter(query))
                 .projection(Projections.include(columns));
@@ -88,23 +86,30 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
         if (query.needPaging()) {
             findIterable.skip(query.calcOffset()).limit(query.getPageSize());
         }
-        findIterable.forEach((Consumer<Document>) document -> {
-            V e;
-            if (columns.length == 1) {
+        return findIterable
+                .map(document -> convert(document, columns, clazz))
+                .into(new ArrayList<>());
+    }
+
+    private <V> V convert(Document document, String[] columns, Class<V> clazz) {
+        V e;
+        if (columns.length == 1) {
+            if (columns[0].contains(".")) {
                 e = document.getEmbedded(splitToKeys(columns[0]), clazz);
             } else {
-                e = BeanUtil.parse(document.toJson(), clazz);
+                e = document.get(columns[0], clazz);
             }
-            if (log.isDebugEnabled()) {
-                log.debug("Entity parsed: {}", BeanUtil.stringify(e));
-            }
-            list.add(e);
-        });
-        return list;
+        } else {
+            e = BeanUtil.parse(document.toJson(), clazz);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Entity parsed: {}", BeanUtil.stringify(e));
+        }
+        return e;
     }
 
     private List<String> splitToKeys(String column) {
-        return Arrays.asList(StringUtils.split(column, "\\."));
+        return Arrays.asList(StringUtils.split(column, "."));
     }
 
     @Override
