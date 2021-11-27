@@ -26,6 +26,7 @@ import javax.persistence.Table;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.in;
+import static com.mongodb.client.model.Sorts.descending;
 import static win.doyto.query.core.MongoFilterUtil.buildFilter;
 
 /**
@@ -51,6 +52,10 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
         return eq(MONGO_ID, new ObjectId(id.toString()));
     }
 
+    static Bson buildSort(String sort) {
+        return descending("item");
+    }
+
     private Bson buildFilterForChange(Q query) {
         return query.needPaging() ? in(MONGO_ID, queryOid(query)) : buildFilter(query);
     }
@@ -67,12 +72,16 @@ public class MongoDataAccess<E extends MongoPersistable<I>, I extends Serializab
 
     @Override
     public <V> List<V> queryColumns(Q query, Class<V> clazz, String... columns) {
+        List<V> list = new ArrayList<>();
         FindIterable<Document> findIterable = collection
                 .find(buildFilter(query))
-                .projection(Projections.include(columns))
-                .skip(query.calcOffset())
-                .limit(query.getPageSize());
-        List<V> list = new ArrayList<>();
+                .projection(Projections.include(columns));
+        if (query.getSort() != null) {
+            findIterable.sort(buildSort(query.getSort()));
+        }
+        if (query.needPaging()) {
+            findIterable.skip(query.calcOffset()).limit(query.getPageSize());
+        }
         findIterable.forEach((Consumer<Document>) document -> {
             V e;
             if (columns.length == 1) {

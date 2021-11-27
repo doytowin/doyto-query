@@ -292,4 +292,13 @@ class MongoDataAccessTest {
         List<Double> items = mongoDataAccess.queryColumns(query, Double.class, "size.h");
         assertThat(items).containsExactly(14., 8.5);
     }
+
+    @Test
+    void sort() {
+        InventoryQuery query = InventoryQuery.builder().sort("item,desc").build();
+        List<InventoryEntity> inventoryEntities = mongoDataAccess.query(query);
+        assertThat(inventoryEntities)
+                .extracting("item")
+                .containsExactly("postcard", "planner", "paper", "notebook", "journal");
+    }
 }
