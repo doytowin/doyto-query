@@ -23,7 +23,7 @@ public abstract class MongoPersistable<I extends Serializable> implements Persis
     @GeneratedValue
     private I id;
 
-    public MongoPersistable() {
+    protected MongoPersistable() {
         ObjectIdMapper.initIdMapper(this.getClass());
     }
 

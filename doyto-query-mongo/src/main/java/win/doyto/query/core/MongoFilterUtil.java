@@ -3,6 +3,7 @@ package win.doyto.query.core;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -10,7 +11,7 @@ import win.doyto.query.entity.Persistable;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -26,12 +27,13 @@ import static com.mongodb.client.model.Sorts.*;
  *
  * @author f0rb on 2021-11-23
  */
+@UtilityClass
 public class MongoFilterUtil {
 
     private static final Map<QuerySuffix, BiFunction<String, Object, Bson>> suffixFuncMap;
 
     static {
-        suffixFuncMap = new HashMap<>();
+        suffixFuncMap = new EnumMap<>(QuerySuffix.class);
         suffixFuncMap.put(QuerySuffix.Eq, Filters::eq);
         suffixFuncMap.put(QuerySuffix.Contain, (s, v) -> regex(s, v.toString()));
         suffixFuncMap.put(QuerySuffix.Lt, Filters::lt);

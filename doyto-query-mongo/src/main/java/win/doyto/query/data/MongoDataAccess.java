@@ -112,11 +112,9 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
 
     @Override
     public E get(IdWrapper<I> w) {
-        FindIterable<Document> findIterable = collection.find(getIdFilter(w.getId()));
-        for (Document document : findIterable) {
-            return BeanUtil.parse(document.toJson(), entityClass);
-        }
-        return null;
+        return collection
+                .find(getIdFilter(w.getId()))
+                .map(document -> BeanUtil.parse(document.toJson(), entityClass)).first();
     }
 
     @Override

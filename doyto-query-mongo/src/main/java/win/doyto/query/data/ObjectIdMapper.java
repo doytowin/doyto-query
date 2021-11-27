@@ -1,5 +1,6 @@
 package win.doyto.query.data;
 
+import lombok.experimental.UtilityClass;
 import org.bson.types.ObjectId;
 import win.doyto.query.util.BeanUtil;
 
@@ -12,6 +13,7 @@ import java.util.function.Function;
  *
  * @author f0rb on 2021-11-27
  */
+@UtilityClass
 public class ObjectIdMapper {
     private static final Map<Class<?>, Function<ObjectId, ?>> classFuncMap = new HashMap<>();
 
