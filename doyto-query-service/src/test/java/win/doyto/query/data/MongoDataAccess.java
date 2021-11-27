@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import javax.persistence.Table;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -172,13 +173,10 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
     @SuppressWarnings("unchecked")
     @Override
     public List<I> queryIds(Q query) {
-        List<ObjectId> objectIds = queryObjectId(query);
-        List<I> idList = new ArrayList<>();
-        for (ObjectId objectId : objectIds) {
-            I id = (I) MongoPersistable.classFuncMap.get(entityClass).apply(objectId);
-            idList.add(id);
-        }
-        return idList;
+        return queryObjectId(query)
+                .stream()
+                .<I>map(objectId -> ObjectIdMapper.convert(entityClass, objectId))
+                .collect(Collectors.toList());
     }
 
     @SuppressWarnings("unchecked")
