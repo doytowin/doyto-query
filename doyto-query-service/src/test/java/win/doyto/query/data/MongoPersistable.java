@@ -9,6 +9,9 @@ import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 import javax.persistence.GeneratedValue;
 
 /**
@@ -21,14 +24,24 @@ import javax.persistence.GeneratedValue;
 @SuppressWarnings("unchecked")
 public abstract class MongoPersistable<I extends Serializable> implements Persistable<I>, ObjectIdAware {
 
+    static Map<Class<?>, Function<ObjectId, ?>> classFuncMap = new HashMap<>();
+
     @GeneratedValue
     private I id;
 
-    @GeneratedValue
-    private Class<I> idType;
-
     public MongoPersistable() {
-        this.idType = (Class<I>) BeanUtil.getActualTypeArguments(this.getClass())[0];
+        classFuncMap.computeIfAbsent(this.getClass(), clazz -> {
+            Class<I> idType = (Class<I>) BeanUtil.getActualTypeArguments(clazz)[0];
+            Function<ObjectId, ?> setIdFunc;
+            if (idType.isAssignableFrom(String.class)) {
+                setIdFunc = ObjectId::toHexString;
+            } else if (idType.isAssignableFrom(ObjectId.class)) {
+                setIdFunc = objectId -> objectId;
+            } else {
+                setIdFunc = objectId -> null;
+            }
+            return setIdFunc;
+        });
     }
 
     @JsonProperty("_id")
@@ -44,11 +57,7 @@ public abstract class MongoPersistable<I extends Serializable> implements Persis
     public void setObjectId(ObjectId objectId) {
         this.oid = objectId;
         if (this.id == null) {
-            if (idType.isAssignableFrom(String.class)) {
-                this.id = (I) objectId.toHexString();
-            } else if (idType.isAssignableFrom(ObjectId.class)) {
-                this.id = (I) objectId;
-            }
+            this.id = (I) classFuncMap.get(this.getClass()).apply(objectId);
         }
     }
 }
