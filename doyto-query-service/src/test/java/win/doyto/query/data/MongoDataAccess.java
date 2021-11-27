@@ -1,5 +1,6 @@
 package win.doyto.query.data;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -42,7 +43,6 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
     @Getter
     private final MongoCollection<Document> collection;
 
-    @SuppressWarnings("unchecked")
     public MongoDataAccess(MongoClient mongoClient, Class<E> testEntityClass) {
         this.entityClass = testEntityClass;
         Table table = testEntityClass.getAnnotation(Table.class);
@@ -141,10 +141,7 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
 
     @Override
     public int batchInsert(Iterable<E> entities, String... columns) {
-        List<Document> documents = new ArrayList<>();
-        for (E entity : entities) {
-            documents.add( BeanUtil.convertToIgnoreNull(entity, Document.class));
-        }
+        List<Document> documents = BeanUtil.convertToIgnoreNull(entities, new TypeReference<List<Document>>() {});
         collection.insertMany(documents);
         int i = 0;
         for (E entity : entities) {
@@ -175,7 +172,6 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
         return (int) collection.updateMany(inId, updates).getModifiedCount();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<I> queryIds(Q query) {
         return queryObjectId(query)
@@ -184,7 +180,6 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
                 .collect(Collectors.toList());
     }
 
-    @SuppressWarnings("unchecked")
     public List<ObjectId> queryObjectId(Q query) {
         return queryColumns(query, ObjectId.class, MONGO_ID);
     }
