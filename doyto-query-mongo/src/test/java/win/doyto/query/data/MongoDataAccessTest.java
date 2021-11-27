@@ -53,10 +53,10 @@ class MongoDataAccessTest {
         InventoryQuery query = InventoryQuery.builder().build();
         List<InventoryEntity> list = mongoDataAccess.query(query);
         assertThat(list)
-                .hasSize(5)
-                .element(1)
-                .extracting("item", "qty", "status", "size.h", "size.w", "size.uom")
-                .containsExactly("notebook", 50, "A", 8.5, 11d, "in");
+                  .hasSize(5)
+                  .element(1)
+                  .extracting("item", "qty", "status", "size.h", "size.w", "size.uom")
+                  .containsExactly("notebook", 50, "A", 8.5, 11d, "in");
     }
 
     @Test
@@ -74,10 +74,10 @@ class MongoDataAccessTest {
         InventoryQuery query = InventoryQuery.builder().status("A").build();
         List<InventoryEntity> list = mongoDataAccess.query(query);
         assertThat(list)
-                .hasSize(3)
-                .element(1)
-                .extracting("item", "qty", "status", "size.h", "size.w", "size.uom")
-                .containsExactly("notebook", 50, "A", 8.5, 11d, "in");
+                  .hasSize(3)
+                  .element(1)
+                  .extracting("item", "qty", "status", "size.h", "size.w", "size.uom")
+                  .containsExactly("notebook", 50, "A", 8.5, 11d, "in");
     }
 
     @Test
@@ -85,10 +85,10 @@ class MongoDataAccessTest {
         InventoryQuery query = InventoryQuery.builder().itemContain("t").status("A").build();
         List<InventoryEntity> list = mongoDataAccess.query(query);
         assertThat(list)
-                .hasSize(2)
-                .first()
-                .extracting("item", "status")
-                .containsExactly("notebook", "A");
+                  .hasSize(2)
+                  .first()
+                  .extracting("item", "status")
+                  .containsExactly("notebook", "A");
     }
 
     @Test
@@ -97,10 +97,10 @@ class MongoDataAccessTest {
         InventoryQuery query = InventoryQuery.builder().size(sizeQuery).status("A").build();
         List<InventoryEntity> list = mongoDataAccess.query(query);
         assertThat(list)
-                .hasSize(1)
-                .first()
-                .extracting("item", "status", "size.h")
-                .containsExactly("notebook", "A", 8.5);
+                  .hasSize(1)
+                  .first()
+                  .extracting("item", "status", "size.h")
+                  .containsExactly("notebook", "A", 8.5);
     }
 
     @Test
@@ -136,8 +136,8 @@ class MongoDataAccessTest {
         //id remains the same and `status` changes to C and `size.h` changes to 100.
         InventoryEntity updated = mongoDataAccess.get(first.getId());
         assertThat(updated)
-                .extracting("id", "status", "size.h")
-                .containsExactly(first.getId(), "C", 100.)
+                  .extracting("id", "status", "size.h")
+                  .containsExactly(first.getId(), "C", 100.)
         ;
     }
 
@@ -235,10 +235,10 @@ class MongoDataAccessTest {
         InventoryQuery query = InventoryQuery.builder().build();
         List<InventoryEntity> entities = mongoDataAccess.queryColumns(query, InventoryEntity.class, "item", "size.h");
         assertThat(entities)
-                .hasSize(5)
-                .first()
-                .extracting("item", "qty", "status", "size.h", "size.w", "size.uom")
-                .containsExactly("journal", null, null, 14.0, null, null);
+                  .hasSize(5)
+                  .first()
+                  .extracting("item", "qty", "status", "size.h", "size.w", "size.uom")
+                  .containsExactly("journal", null, null, 14.0, null, null);
     }
 
     @Test
@@ -299,8 +299,8 @@ class MongoDataAccessTest {
         InventoryQuery query = InventoryQuery.builder().sort("item,desc").build();
         List<InventoryEntity> inventoryEntities = mongoDataAccess.query(query);
         assertThat(inventoryEntities)
-                .extracting("item")
-                .containsExactly("postcard", "planner", "paper", "notebook", "journal");
+                  .extracting("item")
+                  .containsExactly("postcard", "planner", "paper", "notebook", "journal");
     }
 
     @Test
@@ -308,8 +308,8 @@ class MongoDataAccessTest {
         InventoryQuery query = InventoryQuery.builder().sort("size.h;item,desc").build();
         List<InventoryEntity> inventoryEntities = mongoDataAccess.query(query);
         assertThat(inventoryEntities)
-                .extracting("item", "size.h")
-                .containsExactly(
+                  .extracting("item", "size.h")
+                  .containsExactly(
                         Tuple.tuple("paper", 8.5),
                         Tuple.tuple("notebook", 8.5),
                         Tuple.tuple("postcard", 10.0),

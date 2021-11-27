@@ -28,8 +28,6 @@ import javax.persistence.Table;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.in;
-import static win.doyto.query.core.MongoFilterUtil.buildFilter;
-import static win.doyto.query.core.MongoFilterUtil.buildSort;
 
 /**
  * MongoDataAccess
@@ -62,7 +60,7 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
     }
 
     private Bson buildFilterForChange(Q query) {
-        return query.needPaging() ? in(MONGO_ID, queryObjectId(query)) : buildFilter(query);
+        return query.needPaging() ? in(MONGO_ID, queryObjectId(query)) : MongoFilterUtil.buildFilter(query);
     }
 
     @Override
@@ -72,16 +70,16 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
 
     @Override
     public long count(Q query) {
-        return collection.countDocuments(buildFilter(query));
+        return collection.countDocuments(MongoFilterUtil.buildFilter(query));
     }
 
     @Override
     public <V> List<V> queryColumns(Q query, Class<V> clazz, String... columns) {
         FindIterable<Document> findIterable = collection
-                .find(buildFilter(query))
+                .find(MongoFilterUtil.buildFilter(query))
                 .projection(Projections.include(columns));
         if (query.getSort() != null) {
-            findIterable.sort(buildSort(query.getSort()));
+            findIterable.sort(MongoFilterUtil.buildSort(query.getSort()));
         }
         if (query.needPaging()) {
             findIterable.skip(query.calcOffset()).limit(query.getPageSize());
