@@ -125,9 +125,4 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <build>
-        <sourceDirectory>${sourceDirectory}</sourceDirectory>
-    </build>
-
 </project>

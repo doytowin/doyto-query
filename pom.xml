@@ -65,6 +65,7 @@
                     <include>**/*.yml</include>
                     <include>**/*.sql</include>
                     <include>**/*.xml</include>
+                    <include>**/*.json</include>
                 </includes>
             </testResource>
         </testResources>
