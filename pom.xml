@@ -32,6 +32,7 @@
         <module>doyto-query-api</module>
         <module>doyto-query-core</module>
         <module>doyto-query-service</module>
+        <module>doyto-query-web</module>
         <module>doyto-query-webflux</module>
         <module>doyto-query-mongo</module>
     </modules>
