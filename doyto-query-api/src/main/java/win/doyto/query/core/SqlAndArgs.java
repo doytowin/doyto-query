@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static win.doyto.query.core.CommonUtil.wrapWithParenthesis;
-import static win.doyto.query.core.Constant.SEPARATOR;
-
 /**
  * SqlAndArgs
  *
@@ -36,9 +33,10 @@ public class SqlAndArgs {
     private void logSqlInfo() {
         if (log.isDebugEnabled()) {
             log.debug("SQL  : {}", sql);
-            String params = Arrays.stream(args)
-                                  .map(arg -> arg + (arg == null ? "" : wrapWithParenthesis(arg.getClass().getName())))
-                                  .collect(Collectors.joining(SEPARATOR));
+            String params = Arrays
+                    .stream(args)
+                    .map(arg -> arg + (arg == null ? "" : "(" + arg.getClass().getName() + ")"))
+                    .collect(Collectors.joining(", "));
             log.debug("Param: {}", params);
         }
     }
