@@ -2,7 +2,6 @@ package win.doyto.query.cache;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
-import win.doyto.query.core.Invocable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -24,16 +23,16 @@ class CacheWrapperTest {
         cacheWrapper.setCache(new ConcurrentMapCache("test"));
 
         @SuppressWarnings("unchecked")
-        Invocable<Object> invocable = mock(Invocable.class);
-        when(invocable.invoke()).thenReturn(null);
-        assertNull(cacheWrapper.execute("t", invocable));
-        assertNull(cacheWrapper.execute("t2", invocable));
+        CacheInvoker<Object> cacheInvoker = mock(CacheInvoker.class);
+        when(cacheInvoker.invoke()).thenReturn(null);
+        assertNull(cacheWrapper.execute("t", cacheInvoker));
+        assertNull(cacheWrapper.execute("t2", cacheInvoker));
 
         Thread.sleep(5L);
 
-        assertNull(cacheWrapper.execute("t", invocable));
-        assertNull(cacheWrapper.execute("t2", invocable));
-        verify(invocable, times(2)).invoke();
+        assertNull(cacheWrapper.execute("t", cacheInvoker));
+        assertNull(cacheWrapper.execute("t2", cacheInvoker));
+        verify(cacheInvoker, times(2)).invoke();
     }
 
     @Test
@@ -55,12 +54,12 @@ class CacheWrapperTest {
 
 
         AtomicInteger times = new AtomicInteger();
-        Invocable<Object> invocable = times::incrementAndGet;
-        assertEquals(1, cacheWrapper.execute("hello", invocable));
+        CacheInvoker<Object> cacheInvoker = times::incrementAndGet;
+        assertEquals(1, cacheWrapper.execute("hello", cacheInvoker));
 
         Thread.sleep(5L);
 
-        assertEquals(2, cacheWrapper.execute("hello", invocable));
+        assertEquals(2, cacheWrapper.execute("hello", cacheInvoker));
     }
 
 }

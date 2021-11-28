@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.support.NoOpCache;
-import win.doyto.query.core.Invocable;
 
 import java.util.concurrent.*;
 
@@ -27,9 +26,9 @@ class CacheUtil {
     public static final Cache noOpCache = new NoOpCache("noop");
 
     @SuppressWarnings("unchecked")
-    public static <V> V invoke(Cache cache, Object key, Invocable<V> invocable) {
+    public static <V> V invoke(Cache cache, Object key, CacheInvoker<V> cacheInvoker) {
         if (cache instanceof NoOpCache || key == null) {
-            return invocable.invoke();
+            return cacheInvoker.invoke();
         }
         try {
             Cache.ValueWrapper valueWrapper = cache.get(key);
@@ -39,7 +38,7 @@ class CacheUtil {
         } catch (Exception e) {
             log.error(String.format("Cache#get failed: [cache=%s, key=%s]", cache.getName(), key), e);
         }
-        V value = invocable.invoke();
+        V value = cacheInvoker.invoke();
         executorService.execute(() -> cache.put(key, value));
         return value;
     }

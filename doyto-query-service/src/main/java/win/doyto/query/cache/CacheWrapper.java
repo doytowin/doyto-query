@@ -1,7 +1,6 @@
 package win.doyto.query.cache;
 
 import org.springframework.cache.Cache;
-import win.doyto.query.core.Invocable;
 
 /**
  * CacheWrapper
@@ -14,8 +13,8 @@ public interface CacheWrapper<T> {
         return new DefaultCacheWrapper<>();
     }
 
-    default T execute(String key, Invocable<T> invocable) {
-        return CacheUtil.invoke(getCache(), key, invocable);
+    default T execute(String key, CacheInvoker<T> cacheInvoker) {
+        return CacheUtil.invoke(getCache(), key, cacheInvoker);
     }
 
     void setCache(Cache cache);
