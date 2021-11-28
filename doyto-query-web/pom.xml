@@ -109,7 +109,7 @@
         </dependency>
         <dependency>
             <groupId>win.doyto</groupId>
-            <artifactId>doyto-query</artifactId>
+            <artifactId>doyto-query-service</artifactId>
             <version>${revision}</version>
         </dependency>
     </dependencies>

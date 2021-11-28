@@ -12,10 +12,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>doyto-query</artifactId>
-    <name>doyto-query</name>
-    <version>${revision}</version>
-    <url>https://query.doyto.win/</url>
+    <artifactId>doyto-query-service</artifactId>
 
     <dependencies>
         <dependency>
