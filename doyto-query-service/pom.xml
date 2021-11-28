@@ -58,6 +58,7 @@
             <groupId>win.doyto</groupId>
             <artifactId>doyto-query-test</artifactId>
             <version>${revision}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
