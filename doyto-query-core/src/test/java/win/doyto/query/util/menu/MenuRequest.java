@@ -1,4 +1,4 @@
-package win.doyto.query.demo.module.menu;
+package win.doyto.query.util.menu;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;

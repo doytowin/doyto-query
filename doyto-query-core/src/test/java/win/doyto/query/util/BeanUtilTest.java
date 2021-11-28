@@ -5,9 +5,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.core.DynamicEntity;
 import win.doyto.query.core.DynamicIdWrapper;
-import win.doyto.query.demo.module.menu.MenuEntity;
-import win.doyto.query.demo.module.menu.MenuIdWrapper;
-import win.doyto.query.demo.module.menu.MenuRequest;
+import win.doyto.query.util.menu.MenuEntity;
+import win.doyto.query.util.menu.MenuIdWrapper;
+import win.doyto.query.util.menu.MenuRequest;
 
 import java.util.List;
 

@@ -5,8 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.test.PermissionQuery;
-import win.doyto.query.demo.module.user.UserLevel;
-import win.doyto.query.demo.module.user.UserQuery;
+import win.doyto.query.core.test.UserLevel;
+import win.doyto.query.core.test.UserQuery;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

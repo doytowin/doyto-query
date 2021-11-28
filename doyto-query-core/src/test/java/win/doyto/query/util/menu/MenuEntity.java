@@ -1,8 +1,8 @@
-package win.doyto.query.demo.module.menu;
+package win.doyto.query.util.menu;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.entity.CommonEntity;
+import win.doyto.query.entity.AbstractPersistable;
 
 import java.util.Objects;
 import javax.persistence.Entity;
@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @Setter
 @Entity
 @Table(name = "menu${platform}")
-public class MenuEntity extends CommonEntity<Integer, Long> {
+public class MenuEntity extends AbstractPersistable<Integer> {
 
     private String platform;
 

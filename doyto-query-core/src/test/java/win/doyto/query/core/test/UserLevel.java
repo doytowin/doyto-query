@@ -1,4 +1,4 @@
-package win.doyto.query.demo.module.user;
+package win.doyto.query.core.test;
 
 /**
  * TestEnum
