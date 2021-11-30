@@ -1,4 +1,4 @@
-package win.doyto.query.entity;
+package win.doyto.query.mongodb.entity;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;

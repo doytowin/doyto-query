@@ -1,8 +1,8 @@
-package win.doyto.query.entity;
+package win.doyto.query.mongodb.entity;
 
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
-import win.doyto.query.data.inventory.InventoryEntity;
+import win.doyto.query.mongodb.test.inventory.InventoryEntity;
 import win.doyto.query.util.BeanUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;

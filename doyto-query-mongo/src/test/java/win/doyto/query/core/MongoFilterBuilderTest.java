@@ -11,7 +11,7 @@ import org.bson.conversions.Bson;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import win.doyto.query.core.test.TestQuery;
-import win.doyto.query.data.inventory.InventoryQuery;
+import win.doyto.query.mongodb.test.inventory.InventoryQuery;
 import win.doyto.query.util.BeanUtil;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

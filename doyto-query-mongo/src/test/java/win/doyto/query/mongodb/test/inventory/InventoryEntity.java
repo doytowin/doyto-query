@@ -1,8 +1,8 @@
-package win.doyto.query.data.inventory;
+package win.doyto.query.mongodb.test.inventory;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.entity.MongoPersistable;
+import win.doyto.query.mongodb.entity.MongoPersistable;
 
 import javax.persistence.Table;
 

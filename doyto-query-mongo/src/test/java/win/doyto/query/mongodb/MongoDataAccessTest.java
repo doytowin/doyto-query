@@ -1,4 +1,4 @@
-package win.doyto.query.data;
+package win.doyto.query.mongodb;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mongodb.MongoClient;
@@ -11,10 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.context.ActiveProfiles;
-import win.doyto.query.data.inventory.InventoryEntity;
-import win.doyto.query.data.inventory.InventoryQuery;
-import win.doyto.query.data.inventory.InventorySize;
-import win.doyto.query.data.inventory.SizeQuery;
+import win.doyto.query.mongodb.test.inventory.InventoryEntity;
+import win.doyto.query.mongodb.test.inventory.InventoryQuery;
+import win.doyto.query.mongodb.test.inventory.InventorySize;
+import win.doyto.query.mongodb.test.inventory.SizeQuery;
 import win.doyto.query.util.BeanUtil;
 
 import java.io.IOException;

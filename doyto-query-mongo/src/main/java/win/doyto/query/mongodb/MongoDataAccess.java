@@ -1,4 +1,4 @@
-package win.doyto.query.data;
+package win.doyto.query.mongodb;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mongodb.MongoClient;
@@ -16,9 +16,9 @@ import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.MongoFilterBuilder;
 import win.doyto.query.core.PageQuery;
-import win.doyto.query.entity.ObjectIdAware;
-import win.doyto.query.entity.ObjectIdMapper;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.mongodb.entity.ObjectIdAware;
+import win.doyto.query.mongodb.entity.ObjectIdMapper;
 import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;

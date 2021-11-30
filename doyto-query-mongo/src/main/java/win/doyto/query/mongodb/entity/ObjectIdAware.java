@@ -1,4 +1,4 @@
-package win.doyto.query.entity;
+package win.doyto.query.mongodb.entity;
 
 import org.bson.types.ObjectId;
 

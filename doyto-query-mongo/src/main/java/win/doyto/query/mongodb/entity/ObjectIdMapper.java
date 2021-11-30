@@ -1,4 +1,4 @@
-package win.doyto.query.entity;
+package win.doyto.query.mongodb.entity;
 
 import lombok.experimental.UtilityClass;
 import org.bson.types.ObjectId;

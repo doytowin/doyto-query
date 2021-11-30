@@ -1,4 +1,4 @@
-package win.doyto.query.data.inventory;
+package win.doyto.query.mongodb.test.inventory;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
