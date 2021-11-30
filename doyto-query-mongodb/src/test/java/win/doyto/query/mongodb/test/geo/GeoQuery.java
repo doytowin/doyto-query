@@ -13,4 +13,5 @@ import win.doyto.query.mongodb.model.Near;
 @Setter
 public class GeoQuery {
     private Near locNear;
+    private Near locNearSphere;
 }

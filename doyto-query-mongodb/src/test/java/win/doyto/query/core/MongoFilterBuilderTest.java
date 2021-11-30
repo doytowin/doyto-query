@@ -76,6 +76,8 @@ class MongoFilterBuilderTest {
     @CsvSource(value = {
             "{\"locNear\": {\"center\": {\"x\": 1.0, \"y\": 1.0}, \"maxDistance\": 5.0, \"minDistance\": 1.0}} " +
                     "| {\"loc\": {\"$near\": [1.0, 1.0], \"$maxDistance\": 5.0, \"$minDistance\": 1.0}}",
+            "{\"locNearSphere\": {\"center\": {\"x\": 1.0, \"y\": 1.0}, \"maxDistance\": 5.0, \"minDistance\": 1.0}} " +
+                    "| {\"loc\": {\"$nearSphere\": [1.0, 1.0], \"$maxDistance\": 5.0, \"$minDistance\": 1.0}}",
     }, delimiter = '|')
     void testGeoQuery(String data, String expected) {
         GeoQuery query = BeanUtil.parse(data, GeoQuery.class);

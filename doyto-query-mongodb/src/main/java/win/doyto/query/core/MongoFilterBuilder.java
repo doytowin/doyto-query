@@ -73,6 +73,10 @@ public class MongoFilterBuilder {
             String columnName = fieldName.substring(0, fieldName.length() - "Near".length());
             Near near = (Near) value;
             return Filters.near(columnName, near.getX(), near.getY(), near.getMaxDistance(), near.getMinDistance());
+        } else if (fieldName.endsWith("NearSphere")) {
+            String columnName = fieldName.substring(0, fieldName.length() - "NearSphere".length());
+            Near near = (Near) value;
+            return Filters.nearSphere(columnName, near.getX(), near.getY(), near.getMaxDistance(), near.getMinDistance());
         }
         QuerySuffix querySuffix = QuerySuffix.resolve(fieldName);
         String columnName = querySuffix.resolveColumnName(fieldName);
