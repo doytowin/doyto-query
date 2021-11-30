@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.mongodb.model.Near;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -68,6 +69,11 @@ public class MongoFilterBuilder {
     }
 
     private static Bson resolveFilter(String fieldName, Object value) {
+        if (fieldName.endsWith("Near")) {
+            String columnName = fieldName.substring(0, fieldName.length() - "Near".length());
+            Near near = (Near) value;
+            return Filters.near(columnName, near.getX(), near.getY(), near.getMaxDistance(), near.getMinDistance());
+        }
         QuerySuffix querySuffix = QuerySuffix.resolve(fieldName);
         String columnName = querySuffix.resolveColumnName(fieldName);
         return suffixFuncMap

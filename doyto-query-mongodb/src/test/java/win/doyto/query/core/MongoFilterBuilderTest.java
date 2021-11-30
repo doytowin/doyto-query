@@ -1,16 +1,14 @@
 package win.doyto.query.core;
 
 import org.bson.Document;
-import org.bson.codecs.DateCodec;
-import org.bson.codecs.IntegerCodec;
-import org.bson.codecs.IterableCodecProvider;
-import org.bson.codecs.StringCodec;
+import org.bson.codecs.*;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import win.doyto.query.core.test.TestQuery;
+import win.doyto.query.mongodb.test.geo.GeoQuery;
 import win.doyto.query.mongodb.test.inventory.InventoryQuery;
 import win.doyto.query.util.BeanUtil;
 
@@ -24,7 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class MongoFilterBuilderTest {
 
     private CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
-            CodecRegistries.fromCodecs(new StringCodec(), new IntegerCodec(), new DateCodec()),
+            CodecRegistries.fromCodecs(
+                    new StringCodec(), new IntegerCodec(), new DateCodec(),
+                    new BsonDocumentCodec()
+            ),
             CodecRegistries.fromProviders(new IterableCodecProvider())
     );
 
@@ -69,5 +70,16 @@ class MongoFilterBuilderTest {
     void buildSort(String sort, String expected) {
         Bson orderBy = MongoFilterBuilder.buildSort(sort);
         assertEquals(expected, orderBy.toBsonDocument(Document.class, codecRegistry).toJson());
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {
+            "{\"locNear\": {\"center\": {\"x\": 1.0, \"y\": 1.0}, \"maxDistance\": 5.0, \"minDistance\": 1.0}} " +
+                    "| {\"loc\": {\"$near\": [1.0, 1.0], \"$maxDistance\": 5.0, \"$minDistance\": 1.0}}",
+    }, delimiter = '|')
+    void testGeoQuery(String data, String expected) {
+        GeoQuery query = BeanUtil.parse(data, GeoQuery.class);
+        Bson filters = MongoFilterBuilder.buildFilter(query);
+        assertEquals(expected, filters.toBsonDocument(Document.class, codecRegistry).toJson());
     }
 }
