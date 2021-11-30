@@ -24,13 +24,14 @@ class MongoFilterBuilderTest {
     private CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
             CodecRegistries.fromCodecs(
                     new StringCodec(), new IntegerCodec(), new DateCodec(),
-                    new BsonDocumentCodec()
+                    new DocumentCodec(), new BsonDocumentCodec()
             ),
             CodecRegistries.fromProviders(new IterableCodecProvider())
     );
 
     @ParameterizedTest
     @CsvSource({
+            "{}, {}",
             "{\"username\": \"test\"}, {\"username\": \"test\"}",
             "{\"usernameContain\": \"admin\"}, '{\"username\": {\"$regex\": \"admin\", \"$options\": \"\"}}'",
             "{\"idLt\": 20}, {\"id\": {\"$lt\": 20}}",
@@ -42,6 +43,7 @@ class MongoFilterBuilderTest {
             "'{\"idNotIn\": [1,2,3]}', '{\"id\": {\"$nin\": [[1, 2, 3]]}}'",
             "{\"userLevel\": \"VIP\"}, {\"userLevel\": 0}",
             "{\"userLevelNot\": \"VIP\"}, {\"userLevel\": {\"$ne\": 0}}",
+
     })
     void testFilterSuffix(String data, String expected) {
         TestQuery query = BeanUtil.parse(data, TestQuery.class);
