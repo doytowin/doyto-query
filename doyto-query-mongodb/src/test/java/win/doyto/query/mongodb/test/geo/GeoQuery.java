@@ -3,6 +3,7 @@ package win.doyto.query.mongodb.test.geo;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.mongodb.model.Near;
+import win.doyto.query.mongodb.model.NearSphere;
 
 /**
  * GeoQuery
@@ -14,4 +15,5 @@ import win.doyto.query.mongodb.model.Near;
 public class GeoQuery {
     private Near locNear;
     private Near locNearSphere;
+    private NearSphere loc2Near;
 }

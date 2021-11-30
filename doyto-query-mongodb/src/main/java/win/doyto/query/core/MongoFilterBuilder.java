@@ -9,6 +9,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.mongodb.model.Near;
+import win.doyto.query.mongodb.model.NearSphere;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -69,10 +70,14 @@ public class MongoFilterBuilder {
     }
 
     private static Bson resolveFilter(String fieldName, Object value) {
-        if (fieldName.endsWith("Near")) {
+        if (fieldName.endsWith("Near") && value instanceof Near) {
             String columnName = fieldName.substring(0, fieldName.length() - "Near".length());
             Near near = (Near) value;
-            return Filters.near(columnName, near.getX(), near.getY(), near.getMaxDistance(), near.getMinDistance());
+            if (value instanceof NearSphere) {
+                return Filters.nearSphere(columnName, near.getX(), near.getY(), near.getMaxDistance(), near.getMinDistance());
+            } else {
+                return Filters.near(columnName, near.getX(), near.getY(), near.getMaxDistance(), near.getMinDistance());
+            }
         } else if (fieldName.endsWith("NearSphere")) {
             String columnName = fieldName.substring(0, fieldName.length() - "NearSphere".length());
             Near near = (Near) value;
