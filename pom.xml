@@ -32,7 +32,7 @@
         <module>doyto-query-core</module>
         <module>doyto-query-service</module>
         <module>doyto-query-webflux</module>
-        <module>doyto-query-mongo</module>
+        <module>doyto-query-mongodb</module>
     </modules>
 
     <dependencyManagement>
