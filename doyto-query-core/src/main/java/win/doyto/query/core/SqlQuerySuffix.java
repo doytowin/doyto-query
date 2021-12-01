@@ -27,7 +27,7 @@ import static win.doyto.query.core.Constant.SPACE;
 @SuppressWarnings("java:S115")
 @Getter
 @Slf4j
-enum QuerySuffix {
+enum SqlQuerySuffix {
     Not("!="),
     NotLike("NOT LIKE", ValueProcessor.LIKE_VALUE_PROCESSOR),
     Like("LIKE", ValueProcessor.LIKE_VALUE_PROCESSOR),
@@ -65,16 +65,16 @@ enum QuerySuffix {
     private final String op;
     private final ValueProcessor valueProcessor;
 
-    QuerySuffix(String op) {
+    SqlQuerySuffix(String op) {
         this(op, ValueProcessor.PLACE_HOLDER);
     }
 
-    QuerySuffix(String op, ValueProcessor valueProcessor) {
+    SqlQuerySuffix(String op, ValueProcessor valueProcessor) {
         this.op = op;
         this.valueProcessor = valueProcessor;
     }
 
-    static QuerySuffix resolve(String fieldName) {
+    static SqlQuerySuffix resolve(String fieldName) {
         Matcher matcher = SUFFIX_PTN.matcher(fieldName);
         return matcher.find() ? valueOf(matcher.group()) : NONE;
     }
@@ -95,11 +95,11 @@ enum QuerySuffix {
     }
 
     static String buildConditionForField(String fieldName, List<Object> argList, Object value) {
-        QuerySuffix querySuffix = resolve(fieldName);
-        value = querySuffix.valueProcessor.escapeValue(value);
-        String columnName = querySuffix.resolveColumnName(fieldName);
+        SqlQuerySuffix sqlQuerySuffix = resolve(fieldName);
+        value = sqlQuerySuffix.valueProcessor.escapeValue(value);
+        String columnName = sqlQuerySuffix.resolveColumnName(fieldName);
         columnName = ColumnUtil.convertColumn(columnName);
-        return querySuffix.buildColumnCondition(columnName, argList, value);
+        return sqlQuerySuffix.buildColumnCondition(columnName, argList, value);
     }
 
     String resolveColumnName(String fieldName) {
