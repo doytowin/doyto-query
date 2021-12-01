@@ -41,6 +41,7 @@ public enum QuerySuffix {
     Near(Near.class::isInstance),
     NearSphere(Near.class::isInstance),
     Center(Circle.class::isInstance),
+    CenterSphere(Circle.class::isInstance),
     NONE;
 
     private static final Pattern SUFFIX_PTN;

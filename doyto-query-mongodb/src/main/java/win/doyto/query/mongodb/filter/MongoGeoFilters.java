@@ -17,22 +17,27 @@ import win.doyto.query.geo.NearSphere;
 public class MongoGeoFilters {
 
     public static Bson near(String column, Object value)  {
-        Near near = (Near) value;
         if (value instanceof NearSphere) {
             return nearSphere(column, value);
         } else {
+            Near near = (Near) value;
             return Filters.near(column, near.getX(), near.getY(), near.getMaxDistance(), near.getMinDistance());
         }
     }
 
-    public static Bson nearSphere(String column, Object value)  {
+    public static Bson nearSphere(String column, Object value) {
         Near near = (Near) value;
         return Filters.nearSphere(column, near.getX(), near.getY(), near.getMaxDistance(), near.getMinDistance());
     }
 
-    public static Bson withinCenter(String column, Object value)  {
+    public static Bson withinCenter(String column, Object value) {
         Circle circle = (Circle) value;
         return Filters.geoWithinCenter(column, circle.getX(), circle.getY(), circle.getRadius());
+    }
+
+    public static Bson withinCenterSphere(String column, Object value) {
+        Circle circle = (Circle) value;
+        return Filters.geoWithinCenterSphere(column, circle.getX(), circle.getY(), circle.getRadius());
     }
 
 }

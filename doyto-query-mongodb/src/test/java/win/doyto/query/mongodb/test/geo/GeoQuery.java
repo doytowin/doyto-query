@@ -18,4 +18,5 @@ public class GeoQuery {
     private Near locNearSphere;
     private NearSphere loc2Near;
     private Circle locCenter;
+    private Circle locCenterSphere;
 }
