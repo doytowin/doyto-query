@@ -60,14 +60,14 @@ public enum QuerySuffix {
         return matcher.find() ? valueOf(matcher.group()) : NONE;
     }
 
-    static boolean isValidValue(Object value, Field field) {
+    public static boolean isValidValue(Object value, Field field) {
         return !(value == null
                 || (value instanceof Boolean && field.getType().isPrimitive() && Boolean.FALSE.equals(value))
                 || (resolve(field.getName()).shouldIgnore(value))
         );
     }
 
-    String resolveColumnName(String fieldName) {
+    public String resolveColumnName(String fieldName) {
         String suffix = this.name();
         return fieldName.endsWith(suffix) ? fieldName.substring(0, fieldName.length() - suffix.length()) : fieldName;
     }

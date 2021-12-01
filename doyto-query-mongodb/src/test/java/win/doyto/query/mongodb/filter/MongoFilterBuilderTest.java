@@ -1,4 +1,4 @@
-package win.doyto.query.core;
+package win.doyto.query.mongodb.filter;
 
 import org.bson.Document;
 import org.bson.codecs.*;

@@ -1,4 +1,4 @@
-package win.doyto.query.core;
+package win.doyto.query.mongodb.filter;
 
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
@@ -7,8 +7,11 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import win.doyto.query.core.BuildHelper;
+import win.doyto.query.core.CommonUtil;
+import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.QuerySuffix;
 import win.doyto.query.entity.Persistable;
-import win.doyto.query.mongodb.filter.MongoGeoFilters;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
