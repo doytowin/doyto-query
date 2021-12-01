@@ -50,6 +50,7 @@ public class MongoFilterBuilder {
         suffixFuncMap.put(Not, Filters::ne);
         suffixFuncMap.put(Near, MongoGeoFilters::near);
         suffixFuncMap.put(NearSphere, MongoGeoFilters::nearSphere);
+        suffixFuncMap.put(Center, MongoGeoFilters::withinCenter);
     }
 
     @SneakyThrows
