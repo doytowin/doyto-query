@@ -3,7 +3,11 @@ name: Maven build
 on:
   workflow_dispatch:
   push:
-    branches: [ main, webflux ]
+    branches: [ main, modules/**, features/** ]
+    paths-ignore:
+      - 'docs/**'
+      - 'LICENSE'
+      - 'README.md'
   pull_request:
     types: [opened, synchronize, reopened]
 
