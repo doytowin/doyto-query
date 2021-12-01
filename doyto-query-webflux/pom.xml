@@ -99,27 +99,5 @@
             <artifactId>r2dbc-h2</artifactId>
             <version>0.9.0.M1</version>
         </dependency>
-
     </dependencies>
-
-    <build>
-        <testResources>
-            <testResource>
-                <directory>./src/test/java</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>**/*.json</include>
-                </includes>
-            </testResource>
-            <testResource>
-                <directory>./src/test/resources</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>**/*.yml</include>
-                    <include>**/*.sql</include>
-                    <include>**/*.xml</include>
-                </includes>
-            </testResource>
-        </testResources>
-    </build>
 </project>

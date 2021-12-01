@@ -4,8 +4,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.mock.env.MockEnvironment;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import win.doyto.query.core.Dialect;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,7 +20,7 @@ class DoytoQueryInitializerTest {
     @BeforeEach
     void setUp() {
         DoytoQueryInitializer doytoQueryInitializer = new DoytoQueryInitializer();
-        ConfigurableApplicationContext context = new AnnotationConfigWebApplicationContext();
+        ConfigurableApplicationContext context = new GenericApplicationContext();
         doytoQueryInitializer.initialize(context);
     }
 

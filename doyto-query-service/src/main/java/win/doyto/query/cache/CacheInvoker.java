@@ -1,4 +1,4 @@
-package win.doyto.query.core;
+package win.doyto.query.cache;
 
 /**
  * Invocable
@@ -6,6 +6,7 @@ package win.doyto.query.core;
  * @author f0rb
  */
 @FunctionalInterface
-public interface Invocable<T> {
+public interface CacheInvoker
+        <T> {
     T invoke();
 }

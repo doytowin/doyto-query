@@ -12,9 +12,14 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.*;
+import win.doyto.query.cache.CacheInvoker;
 import win.doyto.query.cache.CacheWrapper;
-import win.doyto.query.core.*;
+import win.doyto.query.core.DataAccess;
+import win.doyto.query.core.IdWrapper;
+import win.doyto.query.core.MemoryDataAccess;
+import win.doyto.query.core.PageQuery;
 import win.doyto.query.data.DatabaseOperations;
+import win.doyto.query.data.DefaultDataAccess;
 import win.doyto.query.entity.EntityAspect;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.entity.UserIdProvider;
@@ -163,7 +168,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
         return doUpdate(e, () -> dataAccess.patch(e));
     }
 
-    private int doUpdate(E e, Invocable<Integer> invocable) {
+    private int doUpdate(E e, CacheInvoker<Integer> cacheInvoker) {
         userIdProvider.setupUserId(e);
         E origin;
         if (e == null || (origin = dataAccess.get(e.toIdWrapper())) == null) {
@@ -171,13 +176,13 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
         }
         if (!entityAspects.isEmpty()) {
             transactionOperations.execute(s -> {
-                invocable.invoke();
+                cacheInvoker.invoke();
                 E current = dataAccess.get(e.toIdWrapper());
                 entityAspects.forEach(entityAspect -> entityAspect.afterUpdate(origin, current));
                 return null;
             });
         } else {
-            invocable.invoke();
+            cacheInvoker.invoke();
         }
         evictCache(resolveCacheKey(e.toIdWrapper()));
         return 1;

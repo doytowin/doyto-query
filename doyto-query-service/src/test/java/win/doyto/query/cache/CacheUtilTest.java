@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.support.NoOpCache;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.core.Invocable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -24,7 +23,7 @@ import static org.mockito.Mockito.*;
  * @author f0rb on 2020-05-16
  */
 class CacheUtilTest {
-    private static class TestInvocable implements Invocable<String> {
+    private static class TestCacheInvoker implements CacheInvoker<String> {
         @Override
         public String invoke() {
             return "world";
@@ -36,12 +35,12 @@ class CacheUtilTest {
         ConcurrentMapCache cache = new ConcurrentMapCache("test");
         String key = "hello";
         assertNull(cache.get(key));
-        assertEquals("world", CacheUtil.invoke(cache, key, new TestInvocable()));
+        assertEquals("world", CacheUtil.invoke(cache, key, new TestCacheInvoker()));
 
         while(cache.get(key) == null) {
             System.out.println("waiting...");
         }
-        assertEquals("world", CacheUtil.invoke(cache, key, new TestInvocable()));
+        assertEquals("world", CacheUtil.invoke(cache, key, new TestCacheInvoker()));
     }
 
     @Test
@@ -79,8 +78,8 @@ class CacheUtilTest {
 
         //when
         AtomicInteger times = new AtomicInteger();
-        Invocable<Object> invocable = times::incrementAndGet;
-        assertEquals(1, cacheWrapper.execute("hello", invocable));
+        CacheInvoker<Object> cacheInvoker = times::incrementAndGet;
+        assertEquals(1, cacheWrapper.execute("hello", cacheInvoker));
 
         //then
         //通过ArgumentCaptor捕获所有log

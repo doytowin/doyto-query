@@ -12,10 +12,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>doyto-query</artifactId>
-    <name>doyto-query</name>
-    <version>${revision}</version>
-    <url>https://query.doyto.win/</url>
+    <artifactId>doyto-query-service</artifactId>
 
     <dependencies>
         <dependency>
@@ -61,6 +58,7 @@
             <groupId>win.doyto</groupId>
             <artifactId>doyto-query-test</artifactId>
             <version>${revision}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -137,28 +135,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <build>
-        <sourceDirectory>${sourceDirectory}</sourceDirectory>
-        <testResources>
-            <testResource>
-                <directory>./src/test/java</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>**/*.json</include>
-                </includes>
-            </testResource>
-            <testResource>
-                <directory>./src/test/resources</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>**/*.yml</include>
-                    <include>**/*.sql</include>
-                    <include>**/*.xml</include>
-                </includes>
-            </testResource>
-        </testResources>
-    </build>
 
     <scm>
         <tag>main</tag>

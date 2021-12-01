@@ -42,29 +42,29 @@ class StringJoinerTest {
     }
 
     @Test
-    void timeCost() {
+    void timeCost() throws Exception {
         String separator = " ";
         int size = 5;
 
-        Invocable<String> runJoiner = () -> new StringJoiner(separator, size)
-            .append("INSERT INTO")
-            .append("user")
-            .append("(username, password)")
-            .append("VALUES")
-            .append("(?, ?)")
-            .toString();
-        runJoiner.invoke();
+        Runnable runJoiner = () -> new StringJoiner(separator, size)
+                .append("INSERT INTO")
+                .append("user")
+                .append("(username, password)")
+                .append("VALUES")
+                .append("(?, ?)")
+                .toString();
+        runJoiner.run();
 
-        Invocable<String> runJoinList = () -> {
+        Runnable runJoinList = () -> {
             ArrayList<String> insertList = new ArrayList<>(size);
             insertList.add("INSERT INTO");
             insertList.add("user");
             insertList.add("(username, password)");
             insertList.add("VALUES");
             insertList.add("(?, ?)");
-            return StringUtils.join(insertList, separator);
+            StringUtils.join(insertList, separator);
         };
-        runJoinList.invoke();
+        runJoinList.run();
 
         long joinerCost = TimeRecorder.run(runJoiner);
         System.out.println("Time for StringJoiner :" + joinerCost);
@@ -76,9 +76,9 @@ class StringJoinerTest {
     }
 
     static class TimeRecorder {
-        static long run(Invocable<String> invocable) {
+        static long run(Runnable runnable) {
             long start = System.currentTimeMillis();
-            IntStream.range(0, TIMES).forEachOrdered(i -> invocable.invoke());
+            IntStream.range(0, TIMES).forEachOrdered(i -> runnable.run());
             return System.currentTimeMillis() - start;
         }
     }

@@ -11,8 +11,10 @@
     </parent>
 
     <artifactId>doyto-query-parent</artifactId>
+    <name>DoytoQuery</name>
     <packaging>pom</packaging>
     <version>${revision}</version>
+    <url>https://query.doyto.win/</url>
 
     <properties>
         <revision>0.3.0-SNAPSHOT</revision>
@@ -29,8 +31,10 @@
 
     <modules>
         <module>doyto-query-test</module>
+        <module>doyto-query-api</module>
         <module>doyto-query-core</module>
         <module>doyto-query-service</module>
+        <module>doyto-query-web</module>
         <module>doyto-query-webflux</module>
         <module>doyto-query-mongodb</module>
     </modules>
@@ -64,6 +68,7 @@
                     <include>**/*.yml</include>
                     <include>**/*.sql</include>
                     <include>**/*.xml</include>
+                    <include>**/*.json</include>
                 </includes>
             </testResource>
         </testResources>

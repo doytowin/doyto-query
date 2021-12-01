@@ -38,7 +38,7 @@ public abstract class DemoApplicationTest {
     protected MockHttpSession session;
 
     protected ResultActions requestJson(MockHttpServletRequestBuilder builder, String content, MockHttpSession session) throws Exception {
-        return mockMvc.perform(builder.content(content).contentType(MediaType.APPLICATION_JSON_UTF8).session(session));
+        return mockMvc.perform(builder.content(content).contentType(MediaType.APPLICATION_JSON).session(session));
     }
 
     protected ResultActions requestJson(MockHttpServletRequestBuilder builder, String content) throws Exception {
