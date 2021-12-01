@@ -7,10 +7,6 @@ on:
       - main
       - 'modules/**'
       - 'features/**'
-    paths:
-      - '!docs/**'
-      - '!LICENSE'
-      - '!README.md'
   pull_request:
     types: [opened, synchronize, reopened]
 
