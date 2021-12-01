@@ -132,13 +132,6 @@ class CommonUtil {
         return like.replaceAll("[%|_]", "\\\\$0");
     }
 
-    static boolean isValidValue(Object value, Field field) {
-        return !(value == null
-                || (value instanceof Boolean && field.getType().isPrimitive() && Boolean.FALSE.equals(value))
-                || (QuerySuffix.resolve(field.getName()).shouldIgnore(value))
-        );
-    }
-
     static String camelize(String or) {
         return or.substring(0, 1).toLowerCase() + or.substring(1);
     }

@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.regex;
 import static com.mongodb.client.model.Sorts.*;
+import static win.doyto.query.core.QuerySuffix.*;
 
 /**
  * MongoFilterUtil
@@ -36,15 +37,15 @@ public class MongoFilterBuilder {
 
     static {
         suffixFuncMap = new EnumMap<>(QuerySuffix.class);
-        suffixFuncMap.put(QuerySuffix.Eq, Filters::eq);
-        suffixFuncMap.put(QuerySuffix.Contain, (s, v) -> regex(s, v.toString()));
-        suffixFuncMap.put(QuerySuffix.Lt, Filters::lt);
-        suffixFuncMap.put(QuerySuffix.Le, Filters::lte);
-        suffixFuncMap.put(QuerySuffix.Gt, Filters::gt);
-        suffixFuncMap.put(QuerySuffix.Ge, Filters::gte);
-        suffixFuncMap.put(QuerySuffix.In, Filters::in);
-        suffixFuncMap.put(QuerySuffix.NotIn, Filters::nin);
-        suffixFuncMap.put(QuerySuffix.Not, Filters::ne);
+        suffixFuncMap.put(Eq, Filters::eq);
+        suffixFuncMap.put(Contain, (s, v) -> regex(s, v.toString()));
+        suffixFuncMap.put(Lt, Filters::lt);
+        suffixFuncMap.put(Le, Filters::lte);
+        suffixFuncMap.put(Gt, Filters::gt);
+        suffixFuncMap.put(Ge, Filters::gte);
+        suffixFuncMap.put(In, Filters::in);
+        suffixFuncMap.put(NotIn, Filters::nin);
+        suffixFuncMap.put(Not, Filters::ne);
     }
 
     @SneakyThrows
@@ -59,7 +60,7 @@ public class MongoFilterBuilder {
         Field[] fields = BuildHelper.initFields(query.getClass());
         for (Field field : fields) {
             Object value = CommonUtil.readFieldGetter(field, query);
-            if (CommonUtil.isValidValue(value, field)) {
+            if (isValidValue(value, field)) {
                 if (value instanceof PageQuery) {
                     buildFilter(value, field.getName(), filters);
                 } else {
@@ -83,7 +84,7 @@ public class MongoFilterBuilder {
             Near near = (Near) value;
             return Filters.nearSphere(columnName, near.getX(), near.getY(), near.getMaxDistance(), near.getMinDistance());
         }
-        QuerySuffix querySuffix = QuerySuffix.resolve(fieldName);
+        QuerySuffix querySuffix = resolve(fieldName);
         String columnName = querySuffix.resolveColumnName(fieldName);
         return suffixFuncMap
                 .getOrDefault(querySuffix, Filters::eq)
@@ -100,7 +101,7 @@ public class MongoFilterBuilder {
         prefix = StringUtils.isEmpty(prefix) ? "" : prefix + ".";
         for (Field field : BuildHelper.initFields(target.getClass())) {
             Object value = CommonUtil.readFieldGetter(field, target);
-            if (CommonUtil.isValidValue(value, field)) {
+            if (isValidValue(value, field)) {
                 if (value instanceof Persistable) {
                     buildUpdates(value, prefix + field.getName(), updates);
                 } else {
