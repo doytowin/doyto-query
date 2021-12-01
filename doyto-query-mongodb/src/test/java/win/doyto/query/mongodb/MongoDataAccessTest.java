@@ -39,7 +39,7 @@ class MongoDataAccessTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        List<InventoryEntity> data = BeanUtil.loadJsonData("inventory/inventory.json", new TypeReference<List<InventoryEntity>>() {});
+        List<InventoryEntity> data = BeanUtil.loadJsonData("test/inventory/inventory.json", new TypeReference<List<InventoryEntity>>() {});
         mongoDataAccess.batchInsert(data);
     }
 
