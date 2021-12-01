@@ -3,11 +3,14 @@ name: Maven build
 on:
   workflow_dispatch:
   push:
-    branches: [ main, modules/**, features/** ]
-    paths-ignore:
-      - 'docs/**'
-      - 'LICENSE'
-      - 'README.md'
+    branches:
+      - main
+      - 'modules/**'
+      - 'features/**'
+    paths:
+      - '!docs/**'
+      - '!LICENSE'
+      - '!README.md'
   pull_request:
     types: [opened, synchronize, reopened]
 
