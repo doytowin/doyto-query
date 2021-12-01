@@ -3,9 +3,7 @@ package win.doyto.query.mongodb.filter;
 import com.mongodb.client.model.Filters;
 import lombok.experimental.UtilityClass;
 import org.bson.conversions.Bson;
-import win.doyto.query.geo.Circle;
-import win.doyto.query.geo.Near;
-import win.doyto.query.geo.NearSphere;
+import win.doyto.query.geo.*;
 
 /**
  * MongoQuerySuffix
@@ -38,6 +36,13 @@ public class MongoGeoFilters {
     public static Bson withinCenterSphere(String column, Object value) {
         Circle circle = (Circle) value;
         return Filters.geoWithinCenterSphere(column, circle.getX(), circle.getY(), circle.getRadius());
+    }
+
+    public static Bson withinBox(String column, Object value) {
+        Box box = (Box) value;
+        Point p1 = box.getP1();
+        Point p2 = box.getP2();
+        return Filters.geoWithinBox(column, p1.getX(), p1.getY(), p2.getX(), p2.getY());
     }
 
 }

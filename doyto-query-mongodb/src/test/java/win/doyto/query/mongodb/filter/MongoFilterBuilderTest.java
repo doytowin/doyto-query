@@ -86,6 +86,8 @@ class MongoFilterBuilderTest {
                     "| {\"loc\": {\"$geoWithin\": {\"$center\": [[1.0, 1.0], 5.0]}}}",
             "{\"locCenterSphere\": {\"center\": {\"x\": 1.0, \"y\": 1.0}, \"radius\": 5.0}}" +
                     "| {\"loc\": {\"$geoWithin\": {\"$centerSphere\": [[1.0, 1.0], 5.0]}}}",
+            "{\"locBox\": {\"p1\": {\"x\": 1.0, \"y\": 2.0}, \"p2\": {\"x\": 2.0, \"y\": 1.0}}}" +
+                    "| {\"loc\": {\"$geoWithin\": {\"$box\": [[1.0, 2.0], [2.0, 1.0]]}}}",
     }, delimiter = '|')
     void testGeoQuery(String data, String expected) {
         GeoQuery query = BeanUtil.parse(data, GeoQuery.class);

@@ -52,6 +52,7 @@ public class MongoFilterBuilder {
         suffixFuncMap.put(NearSphere, MongoGeoFilters::nearSphere);
         suffixFuncMap.put(Center, MongoGeoFilters::withinCenter);
         suffixFuncMap.put(CenterSphere, MongoGeoFilters::withinCenterSphere);
+        suffixFuncMap.put(Box, MongoGeoFilters::withinBox);
     }
 
     @SneakyThrows
