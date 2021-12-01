@@ -3,6 +3,7 @@ package win.doyto.query.core;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import win.doyto.query.geo.Near;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -36,6 +37,8 @@ public enum QuerySuffix {
     Lt,
     Le,
     Eq,
+    Near(Near.class::isInstance),
+    NearSphere(Near.class::isInstance),
     NONE;
 
     private static final Pattern SUFFIX_PTN;

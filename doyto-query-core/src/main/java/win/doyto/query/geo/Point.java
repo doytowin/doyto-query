@@ -1,4 +1,4 @@
-package win.doyto.query.mongodb.model;
+package win.doyto.query.geo;
 
 import lombok.Getter;
 import lombok.Setter;

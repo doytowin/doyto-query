@@ -8,8 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import win.doyto.query.entity.Persistable;
-import win.doyto.query.mongodb.model.Near;
-import win.doyto.query.mongodb.model.NearSphere;
+import win.doyto.query.mongodb.filter.MongoGeoFilters;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -46,6 +45,8 @@ public class MongoFilterBuilder {
         suffixFuncMap.put(In, Filters::in);
         suffixFuncMap.put(NotIn, Filters::nin);
         suffixFuncMap.put(Not, Filters::ne);
+        suffixFuncMap.put(Near, MongoGeoFilters::near);
+        suffixFuncMap.put(NearSphere, MongoGeoFilters::nearSphere);
     }
 
     @SneakyThrows
@@ -71,19 +72,6 @@ public class MongoFilterBuilder {
     }
 
     private static Bson resolveFilter(String fieldName, Object value) {
-        if (fieldName.endsWith("Near") && value instanceof Near) {
-            String columnName = fieldName.substring(0, fieldName.length() - "Near".length());
-            Near near = (Near) value;
-            if (value instanceof NearSphere) {
-                return Filters.nearSphere(columnName, near.getX(), near.getY(), near.getMaxDistance(), near.getMinDistance());
-            } else {
-                return Filters.near(columnName, near.getX(), near.getY(), near.getMaxDistance(), near.getMinDistance());
-            }
-        } else if (fieldName.endsWith("NearSphere")) {
-            String columnName = fieldName.substring(0, fieldName.length() - "NearSphere".length());
-            Near near = (Near) value;
-            return Filters.nearSphere(columnName, near.getX(), near.getY(), near.getMaxDistance(), near.getMinDistance());
-        }
         QuerySuffix querySuffix = resolve(fieldName);
         String columnName = querySuffix.resolveColumnName(fieldName);
         return suffixFuncMap

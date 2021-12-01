@@ -2,8 +2,8 @@ package win.doyto.query.mongodb.test.geo;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.mongodb.model.Near;
-import win.doyto.query.mongodb.model.NearSphere;
+import win.doyto.query.geo.Near;
+import win.doyto.query.geo.NearSphere;
 
 /**
  * GeoQuery
