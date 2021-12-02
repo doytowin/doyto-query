@@ -26,7 +26,7 @@ import javax.persistence.Transient;
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-class CommonUtil {
+public class CommonUtil {
 
     private static final Pattern PTN_REPLACE = Pattern.compile("\\w*");
     private static final Pattern PTN_$EX = Pattern.compile("\\$\\{(\\w+)}");
@@ -65,7 +65,7 @@ class CommonUtil {
         return value;
     }
 
-    static Object readFieldGetter(Field field, Object target) {
+    public static Object readFieldGetter(Field field, Object target) {
         Object value;
         try {
             String fieldName = field.getName();
@@ -130,13 +130,6 @@ class CommonUtil {
 
     private static String escape(String like) {
         return like.replaceAll("[%|_]", "\\\\$0");
-    }
-
-    static boolean isValidValue(Object value, Field field) {
-        return !(value == null
-                || (value instanceof Boolean && field.getType().isPrimitive() && Boolean.FALSE.equals(value))
-                || (QuerySuffix.resolve(field.getName()).shouldIgnore(value))
-        );
     }
 
     static String camelize(String or) {

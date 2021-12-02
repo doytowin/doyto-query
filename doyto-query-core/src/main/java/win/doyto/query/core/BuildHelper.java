@@ -12,9 +12,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
-import static win.doyto.query.core.CommonUtil.isValidValue;
 import static win.doyto.query.core.CommonUtil.readFieldGetter;
 import static win.doyto.query.core.Constant.*;
+import static win.doyto.query.core.QuerySuffix.isValidValue;
 
 /**
  * BuildHelper
