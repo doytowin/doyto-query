@@ -1,10 +1,9 @@
-package win.doyto.query.data.rowmapper;
+package win.doyto.query.r2dbc;
 
 import io.r2dbc.spi.Row;
 import io.r2dbc.spi.RowMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import win.doyto.query.data.RowMapper;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;

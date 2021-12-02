@@ -1,4 +1,4 @@
-package win.doyto.query.data;
+package win.doyto.query.r2dbc;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -6,7 +6,6 @@ import win.doyto.query.core.PageQuery;
 import win.doyto.query.core.SqlAndArgs;
 import win.doyto.query.core.SqlBuilder;
 import win.doyto.query.core.SqlBuilderFactory;
-import win.doyto.query.data.rowmapper.BeanPropertyRowMapper;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.ColumnUtil;
 

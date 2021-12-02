@@ -1,4 +1,4 @@
-package win.doyto.query.data;
+package win.doyto.query.r2dbc;
 
 import io.r2dbc.spi.Connection;
 import io.r2dbc.spi.ConnectionFactory;

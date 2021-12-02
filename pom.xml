@@ -38,6 +38,7 @@
         <module>doyto-query-webflux</module>
         <module>doyto-query-mongo</module>
         <module>doyto-query-jdbc</module>
+        <module>doyto-query-r2dbc</module>
     </modules>
 
     <dependencies>

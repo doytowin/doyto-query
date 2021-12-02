@@ -1,4 +1,4 @@
-package win.doyto.query.data;
+package win.doyto.query.r2dbc;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

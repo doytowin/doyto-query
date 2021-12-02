@@ -1,4 +1,4 @@
-package win.doyto.query.data;
+package win.doyto.query.r2dbc;
 
 import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.pool.ConnectionPoolConfiguration;
@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 import win.doyto.query.core.SqlAndArgs;
-import win.doyto.query.data.rowmapper.BeanPropertyRowMapper;
-import win.doyto.query.web.demo.module.role.RoleEntity;
+import win.doyto.query.r2dbc.role.RoleEntity;
 
 import java.time.Duration;
 

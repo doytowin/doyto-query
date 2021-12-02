@@ -1,4 +1,4 @@
-package win.doyto.query.data;
+package win.doyto.query.r2dbc;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -8,8 +8,8 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.SqlAndArgs;
-import win.doyto.query.web.demo.module.role.RoleEntity;
-import win.doyto.query.web.demo.module.role.RoleQuery;
+import win.doyto.query.r2dbc.role.RoleEntity;
+import win.doyto.query.r2dbc.role.RoleQuery;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
