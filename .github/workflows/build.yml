@@ -3,7 +3,10 @@ name: Maven build
 on:
   workflow_dispatch:
   push:
-    branches: [ main, webflux ]
+    branches:
+      - main
+      - 'modules/**'
+      - 'features/**'
   pull_request:
     types: [opened, synchronize, reopened]
 

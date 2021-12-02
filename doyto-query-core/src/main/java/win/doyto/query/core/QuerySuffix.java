@@ -1,58 +1,48 @@
 package win.doyto.query.core;
 
-import lombok.Getter;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import win.doyto.query.annotation.Enumerated;
-import win.doyto.query.util.ColumnUtil;
+import win.doyto.query.geo.Circle;
+import win.doyto.query.geo.Near;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import javax.persistence.EnumType;
-
-import static win.doyto.query.core.Constant.SEPARATOR;
-import static win.doyto.query.core.Constant.SPACE;
 
 /**
  * QuerySuffix
  *
- * @author f0rb
+ * @author f0rb on 2021-12-01
  */
 @SuppressWarnings("java:S115")
-@Getter
 @Slf4j
-enum QuerySuffix {
-    Not("!="),
-    NotLike("NOT LIKE", ValueProcessor.LIKE_VALUE_PROCESSOR),
-    Like("LIKE", ValueProcessor.LIKE_VALUE_PROCESSOR),
-    Contain("LIKE", ValueProcessor.LIKE_VALUE_PROCESSOR),
-    Start("LIKE", new LikeValueProcessor() {
-        @Override
-        public Object escapeValue(Object value) {
-            return CommonUtil.escapeStart(String.valueOf(value));
-        }
-    }),
-    NotIn("NOT IN", new InValueProcessor() {
-        @Override
-        public boolean shouldIgnore(Object value) {
-            return super.shouldIgnore(value) || ((Collection<?>) value).isEmpty();
-        }
-    }),
-    In("IN", new InValueProcessor()),
-    NotNull("IS NOT NULL", ValueProcessor.EMPTY),
-    Null("IS NULL", ValueProcessor.EMPTY),
-    Gt(">"),
-    Ge(">="),
-    Lt("<"),
-    Le("<="),
-    Eq("="),
-    NONE("=");
+@AllArgsConstructor
+public enum QuerySuffix {
+    Not,
+    NotLike(Constants.LIKE_PREDICATE),
+    Like(Constants.LIKE_PREDICATE),
+    Contain(Constants.LIKE_PREDICATE),
+    Start(Constants.LIKE_PREDICATE),
+    NotIn(new NotInPredicate()),
+    In(new InPredicate()),
+    NotNull,
+    Null,
+    Gt,
+    Ge,
+    Lt,
+    Le,
+    Eq,
+    Near(Near.class::isInstance),
+    NearSphere(Near.class::isInstance),
+    Center(Circle.class::isInstance),
+    CenterSphere(Circle.class::isInstance),
+    NONE, Box;
 
     private static final Pattern SUFFIX_PTN;
 
@@ -62,164 +52,59 @@ enum QuerySuffix {
         SUFFIX_PTN = Pattern.compile("(" + suffixPtn + ")$");
     }
 
-    private final String op;
-    private final ValueProcessor valueProcessor;
-
-    QuerySuffix(String op) {
-        this(op, ValueProcessor.PLACE_HOLDER);
+    QuerySuffix() {
+        this(c -> true);
     }
 
-    QuerySuffix(String op, ValueProcessor valueProcessor) {
-        this.op = op;
-        this.valueProcessor = valueProcessor;
-    }
+    private Predicate<Object> typeValidator;
 
-    static QuerySuffix resolve(String fieldName) {
+    public static QuerySuffix resolve(String fieldName) {
         Matcher matcher = SUFFIX_PTN.matcher(fieldName);
         return matcher.find() ? valueOf(matcher.group()) : NONE;
     }
 
-    static String buildConditionForFieldContainsOr(String fieldNameWithOr, List<Object> argList, Object value) {
-        final String alias;
-        int indexOfDot = fieldNameWithOr.indexOf('.') + 1;
-        if (indexOfDot > 0) {
-            alias = fieldNameWithOr.substring(0, indexOfDot);
-            fieldNameWithOr = fieldNameWithOr.substring(indexOfDot);
-        } else {
-            alias = "";
-        }
-        String andSql = Arrays.stream(CommonUtil.splitByOr(fieldNameWithOr))
-                              .map(fieldName -> buildConditionForField(alias + fieldName, argList, value))
-                              .collect(Collectors.joining(Constant.SPACE_OR));
-        return CommonUtil.wrapWithParenthesis(andSql);
+    public static boolean isValidValue(Object value, Field field) {
+        return !(value == null
+                || (value instanceof Boolean && field.getType().isPrimitive() && Boolean.FALSE.equals(value))
+                || (resolve(field.getName()).shouldIgnore(value))
+        );
     }
 
-    static String buildConditionForField(String fieldName, List<Object> argList, Object value) {
-        QuerySuffix querySuffix = resolve(fieldName);
-        value = querySuffix.valueProcessor.escapeValue(value);
-        String columnName = querySuffix.resolveColumnName(fieldName);
-        columnName = ColumnUtil.convertColumn(columnName);
-        return querySuffix.buildColumnCondition(columnName, argList, value);
-    }
-
-    String resolveColumnName(String fieldName) {
+    public String resolveColumnName(String fieldName) {
         String suffix = this.name();
         return fieldName.endsWith(suffix) ? fieldName.substring(0, fieldName.length() - suffix.length()) : fieldName;
     }
 
-    private String buildColumnCondition(String columnName, List<Object> argList, Object value) {
-        if (shouldIgnore(value)) {
-            return null;
-        }
-        String placeHolderEx = valueProcessor.getPlaceHolderEx(value);
-        appendArg(argList, value, placeHolderEx);
-        return buildColumnClause(columnName, placeHolderEx);
-    }
-
     public boolean shouldIgnore(Object value) {
-        return valueProcessor.shouldIgnore(value);
+        return !typeValidator.test(value);
     }
 
-    private String buildColumnClause(String columnName, String placeHolderEx) {
-        if (!placeHolderEx.isEmpty()) {
-            placeHolderEx = SPACE + placeHolderEx;
-        }
-        return columnName + SPACE + getOp() + placeHolderEx;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static void appendArg(List<Object> argList, Object value, String placeHolderEx) {
-        if (value instanceof Collection) {
-            appendCollectionArg(argList, (Collection<Object>) value);
-        } else if (placeHolderEx.contains(Constant.PLACE_HOLDER)) {
-            appendSingleArg(argList, value);
+    static class InPredicate implements Predicate<Object> {
+        @Override
+        public boolean test(Object o) {
+            if (o instanceof Collection) {
+                return true;
+            }
+            log.warn("Type of field which ends with In/NotIn should be Collection.");
+            return false;
         }
     }
 
-    private static void appendSingleArg(List<Object> argList, Object value) {
-        argList.add(value);
-    }
-
-    private static void appendCollectionArg(List<Object> argList, Collection<Object> collection) {
-        if (collection.isEmpty()) {
-            return;
+    static class NotInPredicate extends InPredicate {
+        @Override
+        public boolean test(Object o) {
+            return super.test(o) && !((Collection<?>) o).isEmpty();
         }
-        Object next = collection.iterator().next();
-        if (next instanceof Enum<?>) {
-            appendEnumCollectionArg(argList, collection, next);
-        } else {
-            appendCommonCollectionArg(argList, collection);
-        }
-    }
-
-    private static void appendEnumCollectionArg(List<Object> argList, Collection<Object> collection, Object instance) {
-        Enumerated enumerated = instance.getClass().getAnnotation(Enumerated.class);
-        boolean enumToString = enumerated != null && enumerated.value() == EnumType.STRING;
-        Function<Enum<?>, ?> enumMapper = enumToString ? Enum::toString : Enum::ordinal;
-        collection.stream().map(element -> enumMapper.apply((Enum<?>) element)).forEach(argList::add);
-    }
-
-    private static void appendCommonCollectionArg(List<Object> argList, Collection<Object> collection) {
-        argList.addAll(collection);
     }
 
     @SuppressWarnings("java:S1214")
-    interface ValueProcessor {
-        ValueProcessor PLACE_HOLDER = value -> Constant.PLACE_HOLDER;
-        ValueProcessor EMPTY = value -> Constant.EMPTY;
-        ValueProcessor LIKE_VALUE_PROCESSOR = new LikeValueProcessor();
-
-        String getPlaceHolderEx(Object value);
-
-        default Object escapeValue(Object value) {
-            return value;
-        }
-
-        /**
-         * For Like operator
-         */
-        default boolean shouldIgnore(Object value) {
-            return false;
-        }
-    }
-
-    static class InValueProcessor implements ValueProcessor {
-        @Override
-        public boolean shouldIgnore(Object value) {
-            if (!(value instanceof Collection)) {
-                log.warn("Type of field which ends with In/NotIn should be Collection.");
-                return true;
+    private interface Constants {
+        Predicate<Object> LIKE_PREDICATE = value -> {
+            if (value instanceof String) {
+                return !StringUtils.isBlank((String) value);
             }
+            log.warn("Type of field which ends with Like should be String.");
             return false;
-        }
-
-        @Override
-        public String getPlaceHolderEx(Object value) {
-            int size = ((Collection<?>) value).size();
-            String placeHolders = IntStream.range(0, size).mapToObj(i -> Constant.PLACE_HOLDER).collect(Collectors.joining(SEPARATOR));
-            return CommonUtil.wrapWithParenthesis(StringUtils.trimToNull(placeHolders));
-        }
+        };
     }
-
-    private static class LikeValueProcessor implements ValueProcessor {
-        @Override
-        public String getPlaceHolderEx(Object value) {
-            return Constant.PLACE_HOLDER;
-        }
-
-        @Override
-        public boolean shouldIgnore(Object value) {
-            if (!(value instanceof String)) {
-                log.warn("Type of field which ends with Like should be String.");
-                return true;
-            }
-            return StringUtils.isBlank((String) value);
-        }
-
-        @Override
-        public Object escapeValue(Object value) {
-            return CommonUtil.escapeLike(String.valueOf(value));
-        }
-    }
-
 }

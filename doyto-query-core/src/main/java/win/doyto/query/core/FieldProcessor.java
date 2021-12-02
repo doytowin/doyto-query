@@ -59,9 +59,9 @@ final class FieldProcessor {
 
     private static Processor chooseProcessorForFieldWithOr(String fieldName) {
         if (CommonUtil.containsOr(fieldName)) {
-            return (argList, value) -> QuerySuffix.buildConditionForFieldContainsOr(fieldName, argList, value);
+            return (argList, value) -> SqlQuerySuffix.buildConditionForFieldContainsOr(fieldName, argList, value);
         } else {
-            return (argList, value) -> QuerySuffix.buildConditionForField(fieldName, argList, value);
+            return (argList, value) -> SqlQuerySuffix.buildConditionForField(fieldName, argList, value);
         }
     }
 
@@ -92,9 +92,9 @@ final class FieldProcessor {
         } else {
             String fieldName = field.getName();
             if (CommonUtil.containsOr(fieldName)) {
-                processor = (argList, value) -> WHERE + QuerySuffix.buildConditionForFieldContainsOr(fieldName, argList, value);
+                processor = (argList, value) -> WHERE + SqlQuerySuffix.buildConditionForFieldContainsOr(fieldName, argList, value);
             } else {
-                processor = (argList, value) -> WHERE + QuerySuffix.buildConditionForField(fieldName, argList, value);
+                processor = (argList, value) -> WHERE + SqlQuerySuffix.buildConditionForField(fieldName, argList, value);
             }
         }
         return processor;
