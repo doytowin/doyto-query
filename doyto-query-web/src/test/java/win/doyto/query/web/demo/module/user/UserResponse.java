@@ -17,4 +17,8 @@ public class UserResponse {
     private String mobile;
     private String nickname;
     private Boolean valid;
+    private String memo;
+    private UserLevel userLevel;
+    private String address;
+
 }

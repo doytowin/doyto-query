@@ -20,4 +20,14 @@ import win.doyto.query.core.PageQuery;
 public class UserQuery extends PageQuery {
     private String username;
     private String email;
+    private String mobile;
+    private String usernameOrEmailOrMobile;
+    private String usernameLike;
+    private String emailLike;
+    private boolean memoNull;
+    private UserLevel userLevel;
+
+    public void setAccount(String account) {
+        this.usernameOrEmailOrMobile = account;
+    }
 }

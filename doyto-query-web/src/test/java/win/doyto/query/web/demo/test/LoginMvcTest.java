@@ -1,4 +1,4 @@
-package win.doyto.query.demo.test;
+package win.doyto.query.web.demo.test;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpSession;
@@ -18,11 +18,11 @@ class LoginMvcTest extends DemoApplicationTest {
     @Test
     void login() throws Exception {
         String content = "{\"account\":\"f0rb\",\"password\":\"123456\"}";
-        MvcResult mvcResult = requestJson(post("/login"), content).andExpect(statusIs200()).andReturn();
+        MvcResult mvcResult = performAndExpectSuccess(post("/login"), content).andReturn();
         MockHttpSession session = (MockHttpSession) mvcResult.getRequest().getSession();
         mockMvc.perform(get("/account").session(session))
-               .andExpect(jsonPath("$.id").value("1"))
-               .andExpect(jsonPath("$.nickname").value("测试1"))
+               .andExpect(jsonPath("$.data.id").value("1"))
+               .andExpect(jsonPath("$.data.nickname").value("测试1"))
         ;
     }
 }

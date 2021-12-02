@@ -29,4 +29,7 @@ public class UserRequest {
     private String password;
     private String nickname;
     private Boolean valid = true;
+    private String memo;
+    private UserLevel userLevel;
+    private String address;
 }

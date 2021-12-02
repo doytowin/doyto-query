@@ -5,6 +5,8 @@ import lombok.Setter;
 import win.doyto.query.entity.CommonEntity;
 import win.doyto.query.validation.CreateGroup;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -27,4 +29,7 @@ public class UserEntity extends CommonEntity<Long, Long> {
     private String password;
     private String nickname;
     private Boolean valid;
+    private String memo;
+    @Enumerated(EnumType.STRING)
+    private UserLevel userLevel;
 }

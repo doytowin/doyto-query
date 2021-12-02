@@ -1,10 +1,10 @@
-package win.doyto.query.demo.test;
+package win.doyto.query.web.demo.test;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.support.NoOpCache;
 import win.doyto.query.cache.CacheWrapper;
-import win.doyto.query.demo.module.role.RoleController;
+import win.doyto.query.web.demo.module.role.RoleController;
 
 import javax.annotation.Resource;
 

@@ -1,4 +1,4 @@
-package win.doyto.query.demo.module.auth;
+package win.doyto.query.web.demo.module.auth;
 
 import lombok.Getter;
 import lombok.Setter;

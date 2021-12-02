@@ -1,11 +1,11 @@
-package win.doyto.query.demo.module.auth;
+package win.doyto.query.web.demo.module.auth;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
-import win.doyto.query.demo.module.user.UserData;
-import win.doyto.query.demo.module.user.UserResponse;
+import win.doyto.query.web.demo.module.user.UserData;
+import win.doyto.query.web.demo.module.user.UserResponse;
 
 import javax.servlet.http.HttpServletRequest;
 
