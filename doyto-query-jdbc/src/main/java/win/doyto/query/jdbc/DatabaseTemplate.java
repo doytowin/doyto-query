@@ -1,4 +1,4 @@
-package win.doyto.query.data;
+package win.doyto.query.jdbc;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcOperations;

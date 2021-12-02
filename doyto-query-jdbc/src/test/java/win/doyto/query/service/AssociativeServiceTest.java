@@ -1,7 +1,6 @@
-package win.doyto.query.demo.test;
+package win.doyto.query.service;
 
 import org.junit.jupiter.api.Test;
-import win.doyto.query.service.AssociativeService;
 
 import java.util.Arrays;
 import javax.annotation.Resource;
@@ -15,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author f0rb on 2020-04-11
  */
-class AssociativeServiceTest extends DemoApplicationTest {
+class AssociativeServiceTest extends JdbcApplicationTest {
 
     @Resource
     AssociativeService<Long, Integer> userAndRoleAssociativeService;

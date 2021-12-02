@@ -1,4 +1,4 @@
-package win.doyto.query.data;
+package win.doyto.query.jdbc;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -23,7 +23,7 @@ import javax.persistence.Id;
  *
  * @author f0rb
  */
-public final class DefaultDataAccess<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> implements DataAccess<E, I, Q> {
+public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> implements DataAccess<E, I, Q> {
 
     private static final Map<Class<?>, RowMapper<?>> classRowMapperMap;
 
@@ -40,7 +40,7 @@ public final class DefaultDataAccess<E extends Persistable<I>, I extends Seriali
     private final BiConsumer<E, Number> setIdFunc;
 
     @SuppressWarnings("unchecked")
-    public DefaultDataAccess(DatabaseOperations databaseOperations, Class<E> entityClass, Class<I> idClass, RowMapper<E> rowMapper) {
+    public JdbcDataAccess(DatabaseOperations databaseOperations, Class<E> entityClass, Class<I> idClass, RowMapper<E> rowMapper) {
         classRowMapperMap.put(entityClass, rowMapper);
         this.databaseOperations = databaseOperations;
         this.rowMapper = rowMapper;

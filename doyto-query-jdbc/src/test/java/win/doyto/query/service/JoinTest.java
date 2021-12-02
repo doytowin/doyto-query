@@ -1,8 +1,7 @@
-package win.doyto.query.demo.test;
+package win.doyto.query.service;
 
 import org.junit.jupiter.api.Test;
-import win.doyto.query.data.DatabaseOperations;
-import win.doyto.query.service.*;
+import win.doyto.query.jdbc.DatabaseOperations;
 
 import java.util.List;
 import javax.annotation.Resource;
@@ -14,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author f0rb on 2020-04-11
  */
-class JoinTest extends DemoApplicationTest {
+class JoinTest extends JdbcApplicationTest {
 
     @Resource
     private DatabaseOperations databaseOperations;

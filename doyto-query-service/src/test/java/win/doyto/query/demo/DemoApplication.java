@@ -7,8 +7,8 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import win.doyto.query.data.DatabaseOperations;
-import win.doyto.query.data.DatabaseTemplate;
+import win.doyto.query.jdbc.DatabaseOperations;
+import win.doyto.query.jdbc.DatabaseTemplate;
 import win.doyto.query.service.AssociativeService;
 import win.doyto.query.service.TemplateAssociativeService;
 import win.doyto.query.web.WebMvcConfigurerAdapter;
@@ -44,7 +44,7 @@ public class DemoApplication extends WebMvcConfigurerAdapter {
 
     @Bean
     @ConditionalOnClass({JdbcOperations.class})
-    public DatabaseOperations dataOperations(JdbcOperations jdbcOperations) {
+    public DatabaseOperations databaseOperations(JdbcOperations jdbcOperations) {
         return new DatabaseTemplate(jdbcOperations);
     }
 }

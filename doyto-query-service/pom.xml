@@ -27,6 +27,11 @@
 
         <!-- OPTIONAL -->
         <dependency>
+            <groupId>win.doyto</groupId>
+            <artifactId>doyto-query-jdbc</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>

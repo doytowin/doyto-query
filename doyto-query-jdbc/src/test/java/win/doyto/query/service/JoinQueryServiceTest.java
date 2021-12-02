@@ -16,7 +16,7 @@ class JoinQueryServiceTest {
 
     @Test
     void buildJoinSelectAndArgs() {
-        JoinQueryService<TestJoinView, TestJoinQuery> JoinQueryService = new JoinQueryService<>(TestJoinView.class);
+        JoinQueryService<TestJoinView, TestJoinQuery> joinQueryService = new JoinQueryService<>(TestJoinView.class);
 
         TestJoinQuery testJoinQuery = new TestJoinQuery();
         testJoinQuery.setRoleName("VIP");
@@ -27,7 +27,7 @@ class JoinQueryServiceTest {
             "left join t_user_and_role ur on ur.userId = u.id " +
             "inner join role r on r.id = ur.roleId and r.roleName = ? " +
             "WHERE u.userLevel = ?";
-        SqlAndArgs sqlAndArgs = JoinQueryService.buildJoinSelectAndArgs(testJoinQuery);
+        SqlAndArgs sqlAndArgs = joinQueryService.buildJoinSelectAndArgs(testJoinQuery);
         assertEquals(expected, sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly("VIP", TestEnum.VIP.ordinal());
     }

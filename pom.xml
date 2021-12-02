@@ -37,6 +37,7 @@
         <module>doyto-query-web</module>
         <module>doyto-query-webflux</module>
         <module>doyto-query-mongo</module>
+        <module>doyto-query-jdbc</module>
     </modules>
 
     <dependencies>
@@ -55,6 +56,11 @@
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -65,6 +71,23 @@
                 <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>win.doyto</groupId>
+                <artifactId>doyto-query-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>win.doyto</groupId>
+                <artifactId>doyto-query-core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>win.doyto</groupId>
+                <artifactId>doyto-query-test</artifactId>
+                <version>${revision}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

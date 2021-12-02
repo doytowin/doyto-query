@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 import win.doyto.query.core.SqlAndArgs;
-import win.doyto.query.data.DatabaseOperations;
 import win.doyto.query.entity.UserIdProvider;
+import win.doyto.query.jdbc.DatabaseOperations;
 
 import java.util.Collection;
 import java.util.List;

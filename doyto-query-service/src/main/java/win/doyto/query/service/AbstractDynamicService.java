@@ -18,11 +18,11 @@ import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.MemoryDataAccess;
 import win.doyto.query.core.PageQuery;
-import win.doyto.query.data.DatabaseOperations;
-import win.doyto.query.data.DefaultDataAccess;
 import win.doyto.query.entity.EntityAspect;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.entity.UserIdProvider;
+import win.doyto.query.jdbc.DatabaseOperations;
+import win.doyto.query.jdbc.JdbcDataAccess;
 import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;
@@ -67,9 +67,9 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
         dataAccess = new MemoryDataAccess<>(entityClass);
     }
 
-    @Autowired
+    @Autowired(required = false)
     public void setDatabaseOperations(DatabaseOperations databaseOperations) {
-        dataAccess = new DefaultDataAccess<>(databaseOperations, entityClass, idClass, getRowMapper());
+        dataAccess = new JdbcDataAccess<>(databaseOperations, entityClass, idClass, getRowMapper());
     }
 
     protected RowMapper<E> getRowMapper() {
