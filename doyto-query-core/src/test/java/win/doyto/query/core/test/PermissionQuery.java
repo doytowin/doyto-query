@@ -8,7 +8,6 @@ import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.NestedQueries;
 import win.doyto.query.annotation.NestedQuery;
 import win.doyto.query.core.PageQuery;
-import win.doyto.query.demo.module.user.UserQuery;
 
 import java.util.List;
 

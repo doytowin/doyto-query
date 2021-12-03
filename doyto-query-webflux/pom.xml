@@ -28,7 +28,7 @@
 
         <dependency>
             <groupId>win.doyto</groupId>
-            <artifactId>doyto-query-core</artifactId>
+            <artifactId>doyto-query-r2dbc</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
