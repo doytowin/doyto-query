@@ -12,6 +12,8 @@ import win.doyto.query.core.CommonUtil;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.core.QuerySuffix;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.mongodb.entity.BsonDeserializer;
+import win.doyto.query.util.BeanUtil;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -53,6 +55,8 @@ public class MongoFilterBuilder {
         suffixFuncMap.put(Center, MongoGeoFilters::withinCenter);
         suffixFuncMap.put(CenterSphere, MongoGeoFilters::withinCenterSphere);
         suffixFuncMap.put(Box, MongoGeoFilters::withinBox);
+
+        BeanUtil.register(Bson.class, new BsonDeserializer());
     }
 
     @SneakyThrows
@@ -73,6 +77,10 @@ public class MongoFilterBuilder {
                 } else {
                     filters.add(resolveFilter(prefix + field.getName(), value));
                 }
+            } else if (value instanceof Bson) {
+                String fieldName = field.getName();
+                String column = resolve(fieldName).resolveColumnName(fieldName);
+                filters.add(new Document(column, value));
             }
         }
     }

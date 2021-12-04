@@ -8,6 +8,7 @@ import org.bson.conversions.Bson;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import win.doyto.query.core.test.TestQuery;
+import win.doyto.query.mongodb.entity.BsonDeserializer;
 import win.doyto.query.mongodb.test.geo.GeoQuery;
 import win.doyto.query.mongodb.test.inventory.InventoryQuery;
 import win.doyto.query.util.BeanUtil;
@@ -88,8 +89,11 @@ class MongoFilterBuilderTest {
                     "| {\"loc\": {\"$geoWithin\": {\"$centerSphere\": [[1.0, 1.0], 5.0]}}}",
             "{\"locBox\": {\"p1\": {\"x\": 1.0, \"y\": 2.0}, \"p2\": {\"x\": 2.0, \"y\": 1.0}}}" +
                     "| {\"loc\": {\"$geoWithin\": {\"$box\": [[1.0, 2.0], [2.0, 1.0]]}}}",
+            "{\"locBsonBox\": {\"$geoWithin\": {\"$box\": [[1.0, 2.0], [2.0, 1.0]]}}}" +
+                    "| {\"locBson\": {\"$geoWithin\": {\"$box\": [[1.0, 2.0], [2.0, 1.0]]}}}",
     }, delimiter = '|')
     void testGeoQuery(String data, String expected) {
+        BeanUtil.register(Bson.class, new BsonDeserializer());
         GeoQuery query = BeanUtil.parse(data, GeoQuery.class);
         Bson filters = MongoFilterBuilder.buildFilter(query);
         assertEquals(expected, filters.toBsonDocument(Document.class, codecRegistry).toJson());

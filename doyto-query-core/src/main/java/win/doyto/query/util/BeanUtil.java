@@ -1,10 +1,13 @@
 package win.doyto.query.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -95,5 +98,12 @@ public class BeanUtil {
     @SneakyThrows
     public static <T> T copyNonNull(Object from, T to) {
         return objectMapper2.updateValue(to, from);
+    }
+
+    public static <T> void register(Class<T> clazz, JsonDeserializer<T> jsonDeserializer) {
+        SimpleModule mod = new SimpleModule(clazz.getName(), new Version(1, 0, 0, "", "win.doyto", "doyto-query-code"));
+        mod.addDeserializer(clazz, jsonDeserializer);
+        objectMapper.registerModule(mod);
+        objectMapper2.registerModule(mod);
     }
 }

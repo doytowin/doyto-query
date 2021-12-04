@@ -2,6 +2,7 @@ package win.doyto.query.mongodb.test.geo;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bson.conversions.Bson;
 import win.doyto.query.geo.Box;
 import win.doyto.query.geo.Circle;
 import win.doyto.query.geo.Near;
@@ -21,4 +22,5 @@ public class GeoQuery {
     private Circle locCenter;
     private Circle locCenterSphere;
     private Box locBox;
+    private Bson locBsonBox;
 }
