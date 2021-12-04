@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import win.doyto.query.core.*;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.util.BeanUtil;
 import win.doyto.query.util.ColumnUtil;
 
 import java.io.Serializable;
@@ -40,7 +41,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     private final BiConsumer<E, Number> setIdFunc;
 
     @SuppressWarnings("unchecked")
-    public JdbcDataAccess(DatabaseOperations databaseOperations, Class<E> entityClass, Class<I> idClass, RowMapper<E> rowMapper) {
+    public JdbcDataAccess(DatabaseOperations databaseOperations, Class<E> entityClass, RowMapper<E> rowMapper) {
         classRowMapperMap.put(entityClass, rowMapper);
         this.databaseOperations = databaseOperations;
         this.rowMapper = rowMapper;
@@ -50,6 +51,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
         Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
         this.isGeneratedId = idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class);
 
+        Class<?> idClass = BeanUtil.getIdClass(entityClass);
         if (idClass.isAssignableFrom(Integer.class)) {
             setIdFunc = (e, key) -> e.setId((I) (Integer) key.intValue());
         } else if (idClass.isAssignableFrom(Long.class)) {
