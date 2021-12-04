@@ -1,10 +1,7 @@
 package win.doyto.query.jdbc;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.ColumnMapRowMapper;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.SingleColumnRowMapper;
+import org.springframework.jdbc.core.*;
 import win.doyto.query.core.*;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.BeanUtil;
@@ -39,6 +36,10 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     private final String[] columnsForSelect;
     private final boolean isGeneratedId;
     private final BiConsumer<E, Number> setIdFunc;
+
+    public JdbcDataAccess(JdbcOperations jdbcOperations, Class<E> entityClass) {
+        this(new DatabaseTemplate(jdbcOperations), entityClass, new BeanPropertyRowMapper<>(entityClass));
+    }
 
     @SuppressWarnings("unchecked")
     public JdbcDataAccess(DatabaseOperations databaseOperations, Class<E> entityClass, RowMapper<E> rowMapper) {
