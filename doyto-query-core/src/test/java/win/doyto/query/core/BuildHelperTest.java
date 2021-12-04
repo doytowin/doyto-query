@@ -21,4 +21,8 @@ class BuildHelperTest {
         assertEquals(" ORDER BY field(gender,'male','female'), id desc", BuildHelper.buildOrderBy(pageQuery));
     }
 
+    @Test
+    void initFieldsShouldIgnorePageQuery() {
+        assertEquals(0, BuildHelper.initFields(PageQuery.class).length);
+    }
 }
