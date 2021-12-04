@@ -2,13 +2,16 @@ package win.doyto.query.service;
 
 import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.support.NoOpCache;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.*;
@@ -21,8 +24,6 @@ import win.doyto.query.core.PageQuery;
 import win.doyto.query.entity.EntityAspect;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.entity.UserIdProvider;
-import win.doyto.query.jdbc.DatabaseOperations;
-import win.doyto.query.jdbc.JdbcDataAccess;
 import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;
@@ -30,6 +31,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.Table;
 
 /**
  * AbstractDynamicService
@@ -37,12 +39,11 @@ import java.util.stream.Collectors;
  * @author f0rb on 2019-05-28
  */
 public abstract class AbstractDynamicService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery>
-    implements DynamicService<E, I, Q> {
+        implements DynamicService<E, I, Q>, BeanFactoryAware {
 
     protected DataAccess<E, I, Q> dataAccess;
 
     protected final Class<E> entityClass;
-    private final Class<I> idClass;
 
     protected final CacheWrapper<E> entityCacheWrapper = CacheWrapper.createInstance();
     protected final CacheWrapper<List<E>> queryCacheWrapper = CacheWrapper.createInstance();
@@ -63,17 +64,22 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     @SuppressWarnings("unchecked")
     protected AbstractDynamicService() {
         entityClass = (Class<E>) BeanUtil.getActualTypeArguments(getClass())[0];
-        idClass = (Class<I>) BeanUtil.getActualTypeArguments(getClass())[1];
         dataAccess = new MemoryDataAccess<>(entityClass);
     }
 
-    @Autowired(required = false)
-    public void setDatabaseOperations(DatabaseOperations databaseOperations) {
-        dataAccess = new JdbcDataAccess<>(databaseOperations, entityClass, idClass, getRowMapper());
-    }
-
-    protected RowMapper<E> getRowMapper() {
-        return new BeanPropertyRowMapper<>(entityClass);
+    @SuppressWarnings("unchecked")
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        if (entityClass.isAnnotationPresent(Table.class)) {
+            try {
+                ClassLoader classLoader = beanFactory.getClass().getClassLoader();
+                Class<?> jdbcDataAccessClass = classLoader.loadClass("win.doyto.query.jdbc.JdbcDataAccess");
+                Object jdbcOperations = beanFactory.getBean("jdbcTemplate");
+                dataAccess = (DataAccess<E, I, Q>) ConstructorUtils.invokeConstructor(jdbcDataAccessClass, jdbcOperations, entityClass);
+            } catch (Exception e) {
+                throw new BeanInitializationException("Failed to create DataAccess for " + entityClass.getName(), e);
+            }
+        }
     }
 
     @Autowired(required = false)

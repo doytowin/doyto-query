@@ -26,6 +26,10 @@ public class BuildHelper {
     private static final Pattern PTN_SORT = Pattern.compile(",(asc|desc)", Pattern.CASE_INSENSITIVE);
     private static final Map<Class<?>, Field[]> classFieldsMap = new ConcurrentHashMap<>();
 
+    static {
+        classFieldsMap.put(PageQuery.class, new Field[]{});
+    }
+
     static String buildStart(String[] columns, String from) {
         return Constant.SELECT + StringUtils.join(columns, SEPARATOR) + FROM + from;
     }

@@ -2,9 +2,11 @@ package win.doyto.query.r2dbc;
 
 import io.r2dbc.spi.Row;
 import io.r2dbc.spi.RowMetadata;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -21,17 +23,20 @@ public class BeanPropertyRowMapper<E> implements RowMapper<E> {
     private final Class<E> mappedClass;
     private final Map<String, PropertyDescriptor> fieldMap = new LinkedHashMap<>();
 
+    @SneakyThrows
     public BeanPropertyRowMapper(Class<E> mappedClass) {
         this.mappedClass = mappedClass;
-        PropertyDescriptor[] propertyDescriptors = BeanUtils.getPropertyDescriptors(mappedClass);
+        BeanInfo beanInfo = Introspector.getBeanInfo(mappedClass);
+        PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
         Arrays.stream(propertyDescriptors)
               .filter(pd -> pd.getWriteMethod() != null)
               .forEach(pd -> this.fieldMap.put(pd.getName(), pd));
     }
 
     @Override
+    @SneakyThrows
     public E apply(Row row, RowMetadata rowMetadata) {
-        E entity = BeanUtils.instantiateClass(mappedClass);
+        E entity = mappedClass.newInstance();
 
         Object value;
         for (PropertyDescriptor pd : fieldMap.values()) {

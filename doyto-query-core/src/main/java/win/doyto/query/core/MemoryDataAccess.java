@@ -35,7 +35,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     private final AtomicLong idGenerator = new AtomicLong(0);
     private final List<Field> fields;
     private final Field idField;
-    private final Class<I> idFieldType;
+    private final Class<I> idClass;
 
     public MemoryDataAccess(Class<E> entityClass) {
         tableMap.put(entityClass, entitiesMap);
@@ -46,25 +46,18 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         Arrays.stream(allFields).filter(CommonUtil::fieldFilter).forEachOrdered(tempFields::add);
         fields = Collections.unmodifiableList(tempFields);
         Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
+        idClass = BeanUtil.getIdClass(entityClass);
         if (idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class)) {
             idField = idFields[0];
-            Class<I> type;
-            try {
-                type = (Class<I>) BeanUtil.getActualTypeArguments(entityClass)[0];
-            } catch (ClassCastException e) {
-                type = (Class<I>) idField.getType();
-            }
-            idFieldType = type;
         } else {
             idField = null;
-            idFieldType = null;
         }
 
     }
 
     protected void generateNewId(E entity) {
         try {
-            Object newId = chooseIdValue(idGenerator.incrementAndGet(), idFieldType);
+            Object newId = chooseIdValue(idGenerator.incrementAndGet(), idClass);
             writeField(idField, entity, newId);
         } catch (Exception e) {
             log.warn("写入id失败: {} - {}", entity.getClass(), e.getMessage());
@@ -86,7 +79,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
 
     @Override
     public List<I> queryIds(Q query) {
-        return queryColumns(query, idFieldType, "id");
+        return queryColumns(query, idClass, "id");
     }
 
     @Override
