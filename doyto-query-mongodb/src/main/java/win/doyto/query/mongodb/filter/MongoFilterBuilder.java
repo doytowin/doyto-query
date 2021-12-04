@@ -72,10 +72,11 @@ public class MongoFilterBuilder {
         for (Field field : fields) {
             Object value = CommonUtil.readFieldGetter(field, query);
             if (isValidValue(value, field)) {
+                String newPrefix = prefix + field.getName();
                 if (value instanceof PageQuery) {
-                    buildFilter(value, field.getName(), filters);
+                    buildFilter(value, newPrefix, filters);
                 } else {
-                    filters.add(resolveFilter(prefix + field.getName(), value));
+                    filters.add(resolveFilter(newPrefix, value));
                 }
             } else if (value instanceof Bson) {
                 String fieldName = field.getName();

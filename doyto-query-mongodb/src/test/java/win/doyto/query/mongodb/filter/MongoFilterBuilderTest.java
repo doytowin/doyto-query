@@ -53,9 +53,11 @@ class MongoFilterBuilderTest {
     }
 
     @ParameterizedTest
-    @CsvSource({
-            "{\"size\":{\"hLt\":15}},  {\"size.h\": {\"$lt\": 15}}",
-    })
+    @CsvSource(value = {
+            "{\"size\":{\"hLt\":15}} | {\"size.h\": {\"$lt\": 15}}",
+            "{\"size\":{\"hLt\":15,\"unit\":{\"name\":\"inch\"}}}" +
+                    "| {\"size.h\": {\"$lt\": 15}, \"size.unit.name\": \"inch\"}",
+    }, delimiter = '|')
     void testNestedFilter(String data, String expected) {
         InventoryQuery query = BeanUtil.parse(data, InventoryQuery.class);
         Bson filters = MongoFilterBuilder.buildFilter(query);

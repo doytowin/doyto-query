@@ -8,16 +8,15 @@ import lombok.experimental.SuperBuilder;
 import win.doyto.query.core.PageQuery;
 
 /**
- * SizeQuery
+ * UnitQuery
  *
- * @author f0rb on 2021-11-24
+ * @author f0rb on 2021-12-04
  */
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SizeQuery extends PageQuery {
-    private Integer hLt;
-    private UnitQuery unit;
+public class UnitQuery extends PageQuery {
+    private String name;
 }
