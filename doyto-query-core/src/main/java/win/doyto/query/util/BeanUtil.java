@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import win.doyto.query.geo.Point;
+import win.doyto.query.geo.PointDeserializer;
 
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
@@ -38,6 +40,9 @@ public class BeanUtil {
         objectMapper2 = objectMapper
                 .copy()
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+        BeanUtil.register(Point.class, new PointDeserializer());
+
     }
 
     public static Type[] getActualTypeArguments(Class<?> clazz) {

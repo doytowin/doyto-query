@@ -55,6 +55,7 @@ public class MongoFilterBuilder {
         suffixFuncMap.put(Center, MongoGeoFilters::withinCenter);
         suffixFuncMap.put(CenterSphere, MongoGeoFilters::withinCenterSphere);
         suffixFuncMap.put(Box, MongoGeoFilters::withinBox);
+        suffixFuncMap.put(Py, MongoGeoFilters::polygon);
 
         BeanUtil.register(Bson.class, new BsonDeserializer());
     }

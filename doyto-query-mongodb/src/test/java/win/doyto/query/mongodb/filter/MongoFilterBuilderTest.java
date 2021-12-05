@@ -93,6 +93,8 @@ class MongoFilterBuilderTest {
                     "| {\"loc\": {\"$geoWithin\": {\"$box\": [[1.0, 2.0], [2.0, 1.0]]}}}",
             "{\"locBsonBox\": {\"$geoWithin\": {\"$box\": [[1.0, 2.0], [2.0, 1.0]]}}}" +
                     "| {\"locBson\": {\"$geoWithin\": {\"$box\": [[1.0, 2.0], [2.0, 1.0]]}}}",
+            "{\"locPy\": [[1.0, 1.0], [1.0, 2.0], [2.0, 2.0], [2.0, 1.0]]}" +
+                    "| {\"loc\": {\"$geoWithin\": {\"$polygon\": [[1.0, 1.0], [1.0, 2.0], [2.0, 2.0], [2.0, 1.0]]}}}",
     }, delimiter = '|')
     void testGeoQuery(String data, String expected) {
         BeanUtil.register(Bson.class, new BsonDeserializer());
