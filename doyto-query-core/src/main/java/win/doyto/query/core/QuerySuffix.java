@@ -46,6 +46,7 @@ public enum QuerySuffix {
     Box(Box.class::isInstance),
     // short for Polygon
     Py(o -> o instanceof Collection && ((Collection<?>) o).size() >= 3),
+    Within,
 
     NONE;
 

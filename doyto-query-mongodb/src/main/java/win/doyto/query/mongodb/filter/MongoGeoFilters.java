@@ -56,4 +56,7 @@ public class MongoGeoFilters {
         return Filters.geoWithinPolygon(column, points);
     }
 
+    public static Bson within(String column, Object value) {
+        return Filters.geoWithin(column, (Bson) value);
+    }
 }
