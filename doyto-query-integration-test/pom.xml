@@ -1,46 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <parent>
-        <groupId>win.doyto</groupId>
         <artifactId>doyto-query-parent</artifactId>
+        <groupId>win.doyto</groupId>
         <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>doyto-query-web</artifactId>
+    <artifactId>doyto-query-integration-test</artifactId>
 
     <properties>
-        <spring.boot.version>2.2.13.RELEASE</spring.boot.version>
+        <skipDeploy>true</skipDeploy>
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>win.doyto</groupId>
-            <artifactId>doyto-query-core</artifactId>
+            <artifactId>doyto-query-web</artifactId>
             <version>${revision}</version>
         </dependency>
-
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>win.doyto</groupId>
+            <artifactId>doyto-query-jdbc</artifactId>
+            <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>jakarta.annotation</groupId>
-            <artifactId>jakarta.annotation-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
+            <groupId>win.doyto</groupId>
+            <artifactId>doyto-query-dialect</artifactId>
+            <version>0.0.1-RELEASE</version>
         </dependency>
 
         <dependency>

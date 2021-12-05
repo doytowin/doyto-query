@@ -37,6 +37,7 @@
         <module>doyto-query-web</module>
         <module>doyto-query-jdbc</module>
         <module>doyto-query-mongodb</module>
+        <module>doyto-query-integration-test</module>
     </modules>
 
     <dependencies>

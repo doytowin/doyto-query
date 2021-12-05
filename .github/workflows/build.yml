@@ -45,7 +45,8 @@ jobs:
           mvn -B clean test && \
           mvn -B jacoco:report sonar:sonar \
           -Dsonar.projectKey=win.doyto:doyto-query \
-          -Dsonar.projectName=doyto-query
+          -Dsonar.projectName=doyto-query \
+          -Dsonar.exclusions=doyto-query-test/**,doyto-query-integration-test/**,**/pom.xml
       - name: Set up JDK 8
         if: ${{ github.ref == 'refs/heads/main' }}
         uses: actions/setup-java@v2

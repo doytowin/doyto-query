@@ -8,6 +8,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.transaction.annotation.Transactional;
 import win.doyto.query.web.demo.DemoApplication;
 import win.doyto.query.web.response.ErrorCode;
 
@@ -22,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author f0rb
  */
+@Transactional
 @ActiveProfiles("test")
 @SpringBootTest(classes = DemoApplication.class)
 @AutoConfigureMockMvc
