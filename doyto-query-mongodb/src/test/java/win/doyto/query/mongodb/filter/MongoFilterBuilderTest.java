@@ -102,4 +102,14 @@ class MongoFilterBuilderTest {
         Bson filters = MongoFilterBuilder.buildFilter(query);
         assertEquals(expected, filters.toBsonDocument(Document.class, codecRegistry).toJson());
     }
+
+    @ParameterizedTest
+    @CsvSource(value = {
+             "{\"locPolygon\": [[1.0, 1.0], [1.0, 2.0]]}  | Polygon query should provide at lease 3 points.",
+    }, delimiter = '|')
+    void failureCaseForGeoQuery(String data, String message) {
+        GeoQuery query = BeanUtil.parse(data, GeoQuery.class);
+        Bson filters = MongoFilterBuilder.buildFilter(query);
+        assertEquals("{}", filters.toBsonDocument(Document.class, codecRegistry).toJson(), message);
+    }
 }

@@ -44,7 +44,8 @@ public enum QuerySuffix {
     Center(Circle.class::isInstance),
     CenterSphere(Circle.class::isInstance),
     Box(Box.class::isInstance),
-    Py(Collection.class::isInstance), // short for Polygon
+    // short for Polygon
+    Py(o -> o instanceof Collection && ((Collection<?>) o).size() >= 3),
 
     NONE;
 
