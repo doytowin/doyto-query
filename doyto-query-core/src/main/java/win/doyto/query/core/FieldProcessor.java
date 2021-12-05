@@ -82,13 +82,13 @@ final class FieldProcessor {
         return (argList, value) -> resolvedNestedQueries(argList, value, nestedQueries, processor);
     }
 
-    protected static Processor chooseProcessorForNestedQuery(Field field) {
+    private static Processor chooseProcessorForNestedQuery(Field field) {
         Processor processor;
         Class<?> fieldType = field.getType();
         if (boolean.class.isAssignableFrom(fieldType)) {
             processor = EMPTY_PROCESSOR;
-        } else if (PageQuery.class.isAssignableFrom(fieldType)) {
-            processor = (argList, value) -> BuildHelper.buildWhere((PageQuery) value, argList);
+        } else if (Pageable.class.isAssignableFrom(fieldType)) {
+            processor = (argList, value) -> BuildHelper.buildWhere((Pageable) value, argList);
         } else {
             String fieldName = field.getName();
             if (CommonUtil.containsOr(fieldName)) {
@@ -100,13 +100,13 @@ final class FieldProcessor {
         return processor;
     }
 
-    protected static String resolvedNestedQueries(List<Object> argList, Object value, NestedQueries nestedQueries, Processor processor) {
-        StringBuilder subquery = resolvedNestedQueries(nestedQueries);
-        IntStream.range(0, StringUtils.countMatches(subquery, PLACE_HOLDER)).mapToObj(i -> value).forEach(argList::add);
+    private static String resolvedNestedQueries(List<Object> argList, Object value, NestedQueries nestedQueries, Processor processor) {
+        StringBuilder nestQuery = resolvedNestedQueries(nestedQueries);
+        IntStream.range(0, StringUtils.countMatches(nestQuery, PLACE_HOLDER)).mapToObj(i -> value).forEach(argList::add);
         if (nestedQueries.appendWhere()) {
-            subquery.append(processor.process(argList, value));
+            nestQuery.append(processor.process(argList, value));
         }
-        return nestedQueries.column() + subquery + StringUtils.repeat(')', nestedQueries.value().length);
+        return nestedQueries.column() + nestQuery + StringUtils.repeat(')', nestedQueries.value().length);
     }
 
     private static StringBuilder resolvedNestedQueries(NestedQueries nestedQueries) {

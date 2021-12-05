@@ -53,28 +53,28 @@ public class QueryBuilder {
     }
 
     @SuppressWarnings("java:S4973")
-    private String build(PageQuery pageQuery, List<Object> argList, String... columns) {
-        String sql = BuildHelper.buildStart(columns, resolveTableName(pageQuery.toIdWrapper()));
-        sql = replaceHolderInString(pageQuery, sql);
-        sql += BuildHelper.buildWhere(pageQuery, argList);
+    private String build(Pageable query, List<Object> argList, String... columns) {
+        String sql = BuildHelper.buildStart(columns, resolveTableName(query.toIdWrapper()));
+        sql = replaceHolderInString(query, sql);
+        sql += BuildHelper.buildWhere(query, argList);
         // intentionally use ==
         if (!(columns.length == 1 && COUNT == columns[0])) {
             // not SELECT COUNT(*)
-            sql += BuildHelper.buildOrderBy(pageQuery);
-            sql = BuildHelper.buildPaging(sql, pageQuery);
+            sql += BuildHelper.buildOrderBy(query);
+            sql = BuildHelper.buildPaging(sql, query);
         }
         return sql;
     }
 
-    String buildSelectAndArgs(PageQuery query, List<Object> argList) {
+    String buildSelectAndArgs(Pageable query, List<Object> argList) {
         return build(query, argList, "*");
     }
 
-    public SqlAndArgs buildCountAndArgs(PageQuery query) {
+    public SqlAndArgs buildCountAndArgs(Pageable query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> build(query, argList, COUNT));
     }
 
-    public SqlAndArgs buildSelectColumnsAndArgs(PageQuery query, String... columns) {
+    public SqlAndArgs buildSelectColumnsAndArgs(Pageable query, String... columns) {
         return SqlAndArgs.buildSqlWithArgs(argList -> build(query, argList, columns));
     }
 
@@ -97,7 +97,7 @@ public class QueryBuilder {
         return columnStr;
     }
 
-    public SqlAndArgs buildSelectIdAndArgs(PageQuery query) {
+    public SqlAndArgs buildSelectIdAndArgs(Pageable query) {
         return buildSelectColumnsAndArgs(query, idColumn);
     }
 

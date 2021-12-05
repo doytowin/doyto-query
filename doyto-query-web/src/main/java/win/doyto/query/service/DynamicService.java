@@ -1,7 +1,7 @@
 package win.doyto.query.service;
 
 import win.doyto.query.core.IdWrapper;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.Pageable;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author f0rb on 2019-06-01
  */
-public interface DynamicService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> extends QueryService<E, Q> {
+public interface DynamicService<E extends Persistable<I>, I extends Serializable, Q extends Pageable> extends QueryService<E, Q> {
 
     List<I> queryIds(Q query);
 

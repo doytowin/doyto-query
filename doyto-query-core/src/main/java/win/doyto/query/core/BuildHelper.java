@@ -30,9 +30,8 @@ public class BuildHelper {
         return Constant.SELECT + StringUtils.join(columns, SEPARATOR) + FROM + from;
     }
 
-    public static String buildWhere(PageQuery query, List<Object> argList) {
-        Class<? extends PageQuery> clazz = query.getClass();
-        Field[] fields = initFields(clazz);
+    public static String buildWhere(Pageable query, List<Object> argList) {
+        Field[] fields = initFields(query.getClass());
         StringJoiner whereJoiner = new StringJoiner(" AND ", fields.length);
         for (Field field : fields) {
             Object value = readFieldGetter(field, query);
@@ -56,14 +55,14 @@ public class BuildHelper {
         return classFieldsMap.get(queryClass);
     }
 
-    static String buildOrderBy(PageQuery pageQuery) {
+    static String buildOrderBy(Pageable pageQuery) {
         if (pageQuery.getSort() == null) {
             return "";
         }
         return " ORDER BY " + PTN_SORT.matcher(pageQuery.getSort()).replaceAll(" $1").replace(";", SEPARATOR);
     }
 
-    static String buildPaging(String sql, PageQuery pageQuery) {
+    static String buildPaging(String sql, Pageable pageQuery) {
         if (pageQuery.needPaging()) {
             sql = GlobalConfiguration.dialect().buildPageSql(sql, pageQuery.getPageSize(), pageQuery.calcOffset());
         }

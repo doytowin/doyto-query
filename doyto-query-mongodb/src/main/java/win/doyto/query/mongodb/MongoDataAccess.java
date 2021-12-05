@@ -14,7 +14,7 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.IdWrapper;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.Pageable;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.mongodb.entity.ObjectIdAware;
 import win.doyto.query.mongodb.entity.ObjectIdMapper;
@@ -37,7 +37,7 @@ import static com.mongodb.client.model.Filters.in;
  * @author f0rb on 2021-11-23
  */
 @Slf4j
-public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> implements DataAccess<E, I, Q> {
+public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q extends Pageable> implements DataAccess<E, I, Q> {
     private static final String MONGO_ID = "_id";
     private final Class<E> entityClass;
     @Getter

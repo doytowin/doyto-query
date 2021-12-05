@@ -9,7 +9,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import win.doyto.query.core.BuildHelper;
 import win.doyto.query.core.CommonUtil;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.Pageable;
 import win.doyto.query.core.QuerySuffix;
 import win.doyto.query.entity.Persistable;
 
@@ -68,7 +68,7 @@ public class MongoFilterBuilder {
         for (Field field : fields) {
             Object value = CommonUtil.readFieldGetter(field, query);
             if (isValidValue(value, field)) {
-                if (value instanceof PageQuery) {
+                if (value instanceof Pageable) {
                     buildFilter(value, field.getName(), filters);
                 } else {
                     filters.add(resolveFilter(prefix + field.getName(), value));

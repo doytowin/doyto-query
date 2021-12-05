@@ -2,7 +2,7 @@ package win.doyto.query.r2dbc;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.Pageable;
 import win.doyto.query.core.SqlAndArgs;
 import win.doyto.query.core.SqlBuilder;
 import win.doyto.query.core.SqlBuilderFactory;
@@ -16,7 +16,7 @@ import java.io.Serializable;
  *
  * @author f0rb on 2021-11-18
  */
-public class ReactiveDatabaseDataAccess<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> implements ReactiveDataAccess<E, I, Q> {
+public class ReactiveDatabaseDataAccess<E extends Persistable<I>, I extends Serializable, Q extends Pageable> implements ReactiveDataAccess<E, I, Q> {
 
     private R2dbcOperations r2dbcOperations;
     private SqlBuilder<E> sqlBuilder;

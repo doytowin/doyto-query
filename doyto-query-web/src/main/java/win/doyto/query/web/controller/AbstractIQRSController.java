@@ -2,7 +2,7 @@ package win.doyto.query.web.controller;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.Pageable;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.service.AbstractCrudService;
 import win.doyto.query.service.PageList;
@@ -29,7 +29,7 @@ import javax.annotation.Resource;
  */
 @JsonBody
 public abstract class AbstractIQRSController
-        <E extends Persistable<I>, I extends Serializable, Q extends PageQuery, R, S>
+        <E extends Persistable<I>, I extends Serializable, Q extends Pageable, R, S>
         extends AbstractCrudService<E, I, Q> {
 
     @Resource

@@ -146,7 +146,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
     }
 
     @Override
-    public SqlAndArgs buildPatchAndArgsWithQuery(E entity, PageQuery query) {
+    public SqlAndArgs buildPatchAndArgsWithQuery(E entity, Pageable query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             String sql = buildPatchAndArgs(entity, argList)
                     + BuildHelper.buildWhere(query, argList);
@@ -155,7 +155,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
     }
 
     @Override
-    public SqlAndArgs buildDeleteAndArgs(PageQuery query) {
+    public SqlAndArgs buildDeleteAndArgs(Pageable query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             String sql = buildDeleteFromTable(query.toIdWrapper())
                     +  BuildHelper.buildWhere(query, argList);

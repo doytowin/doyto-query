@@ -1,6 +1,6 @@
 package win.doyto.query.web.controller;
 
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.Pageable;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
@@ -10,7 +10,7 @@ import java.io.Serializable;
  *
  * @author f0rb on 2020-01-29
  */
-public abstract class AbstractIQEEController<E extends Persistable<I>, I extends Serializable, Q extends PageQuery>
+public abstract class AbstractIQEEController<E extends Persistable<I>, I extends Serializable, Q extends Pageable>
         extends AbstractIQRSController<E, I, Q, E, E> {
 
     protected AbstractIQEEController() {

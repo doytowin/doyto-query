@@ -64,7 +64,7 @@ public class JoinQueryBuilder {
     }
 
     @SuppressWarnings("java:S4973")
-    private String build(PageQuery pageQuery, List<Object> argList, String... columns) {
+    private String build(Pageable pageQuery, List<Object> argList, String... columns) {
         pageQuery = SerializationUtils.clone(pageQuery);
 
         String join = resolveJoin(pageQuery, argList, joinSql);
@@ -88,11 +88,11 @@ public class JoinQueryBuilder {
         return sql;
     }
 
-    public SqlAndArgs buildJoinSelectAndArgs(PageQuery query) {
+    public SqlAndArgs buildJoinSelectAndArgs(Pageable query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> build(query, argList, columnsForSelect));
     }
 
-    public SqlAndArgs buildJoinCountAndArgs(PageQuery query) {
+    public SqlAndArgs buildJoinCountAndArgs(Pageable query) {
         return SqlAndArgs.buildSqlWithArgs((argList -> build(query, argList, COUNT)));
     }
 }

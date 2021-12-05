@@ -3,7 +3,7 @@ package win.doyto.query.service;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import win.doyto.query.core.JoinQueryBuilder;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.Pageable;
 import win.doyto.query.core.SqlAndArgs;
 import win.doyto.query.jdbc.DatabaseOperations;
 
@@ -15,7 +15,7 @@ import java.util.List;
  * @author f0rb on 2019-06-09
  */
 @AllArgsConstructor
-public class JoinQueryService<E, Q extends PageQuery> {
+public class JoinQueryService<E, Q extends Pageable> {
 
     private DatabaseOperations databaseOperations;
     private final JoinQueryBuilder joinQueryBuilder;

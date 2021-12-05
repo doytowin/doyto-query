@@ -9,13 +9,13 @@ import win.doyto.query.entity.Persistable;
  */
 public interface SqlBuilder<E extends Persistable<?>> {
 
-    SqlAndArgs buildCountAndArgs(PageQuery query);
+    SqlAndArgs buildCountAndArgs(Pageable query);
 
-    SqlAndArgs buildSelectColumnsAndArgs(PageQuery query, String... columns);
+    SqlAndArgs buildSelectColumnsAndArgs(Pageable query, String... columns);
 
     SqlAndArgs buildSelectById(IdWrapper<?> idWrapper, String... columns);
 
-    SqlAndArgs buildSelectIdAndArgs(PageQuery query);
+    SqlAndArgs buildSelectIdAndArgs(Pageable query);
 
     SqlAndArgs buildCreateAndArgs(E testEntity);
 
@@ -25,9 +25,9 @@ public interface SqlBuilder<E extends Persistable<?>> {
 
     SqlAndArgs buildPatchAndArgsWithId(E entity);
 
-    SqlAndArgs buildPatchAndArgsWithQuery(E entity, PageQuery query);
+    SqlAndArgs buildPatchAndArgsWithQuery(E entity, Pageable query);
 
-    SqlAndArgs buildDeleteAndArgs(PageQuery query);
+    SqlAndArgs buildDeleteAndArgs(Pageable query);
 
     SqlAndArgs buildDeleteById(IdWrapper<?> w);
 

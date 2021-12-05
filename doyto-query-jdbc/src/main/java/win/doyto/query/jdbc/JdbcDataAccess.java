@@ -23,7 +23,7 @@ import javax.persistence.Id;
  *
  * @author f0rb
  */
-public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> implements DataAccess<E, I, Q> {
+public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q extends Pageable> implements DataAccess<E, I, Q> {
 
     private static final Map<Class<?>, RowMapper<?>> classRowMapperMap;
 

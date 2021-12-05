@@ -28,7 +28,7 @@ import static win.doyto.query.core.QuerySuffix.*;
  */
 @Slf4j
 @SuppressWarnings({"unchecked", "java:S3740"})
-public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> implements DataAccess<E, I, Q> {
+public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q extends Pageable> implements DataAccess<E, I, Q> {
     protected static final Map<Class<?>, Map<?, ?>> tableMap = new ConcurrentHashMap<>();
 
     protected final Map<I, E> entitiesMap = new ConcurrentHashMap<>();
@@ -200,9 +200,9 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         return queryList;
     }
 
-    private List<E> truncateByPaging(List<E> queryList, PageQuery pageQuery) {
-        int from = pageQuery.calcOffset();
-        int end = Math.min(queryList.size(), from + pageQuery.getPageSize());
+    private List<E> truncateByPaging(List<E> queryList, Q query) {
+        int from = query.calcOffset();
+        int end = Math.min(queryList.size(), from + query.getPageSize());
         if (from <= end) {
             queryList = queryList.subList(from, end);
         }

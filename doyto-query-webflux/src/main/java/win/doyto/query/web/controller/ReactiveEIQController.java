@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.Pageable;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.r2dbc.ReactiveDataAccess;
 import win.doyto.query.r2dbc.ReactiveMemoryDataAccess;
@@ -24,7 +24,7 @@ import java.util.List;
  */
 @Slf4j
 @JsonBody
-public abstract class ReactiveEIQController<E extends Persistable<I>, I extends Serializable, Q extends PageQuery>
+public abstract class ReactiveEIQController<E extends Persistable<I>, I extends Serializable, Q extends Pageable>
         implements ReactiveRestApi<E, I, Q> {
 
     private ReactiveDataAccess<E, I, Q> reactiveDataAccess;
