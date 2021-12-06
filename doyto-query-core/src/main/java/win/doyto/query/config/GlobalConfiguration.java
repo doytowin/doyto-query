@@ -20,7 +20,7 @@ public class GlobalConfiguration {
 
     private boolean mapCamelCaseToUnderscore;
     private boolean ignoreCacheException = true;
-    private Dialect dialect = new MySQLDialect();
+    private Dialect dialect = (sql, limit, offset) -> sql + " LIMIT " + limit + " OFFSET " + offset;
     private Function<Integer, Integer> startPageNumberAdjuster;
 
     public static int adjustStartPageNumber(Integer page) {

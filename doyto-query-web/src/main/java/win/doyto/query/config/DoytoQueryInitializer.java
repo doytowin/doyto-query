@@ -38,7 +38,10 @@ public class DoytoQueryInitializer implements ApplicationContextInitializer<Conf
     }
 
     private void configDialect(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {
-        String dialectClass = environment.getProperty(getKey("dialect"), globalConfiguration.getDialect().getClass().getName());
+        String dialectClass = environment.getProperty(getKey("dialect"));
+        if (dialectClass == null) {
+            return;
+        }
         Dialect dialect = newDialect(dialectClass);
         globalConfiguration.setDialect(dialect);
     }
