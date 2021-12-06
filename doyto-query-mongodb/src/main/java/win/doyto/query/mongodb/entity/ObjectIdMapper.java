@@ -19,7 +19,7 @@ public class ObjectIdMapper {
 
     static void initIdMapper(Class<? extends MongoPersistable> aClass) {
         classFuncMap.computeIfAbsent(aClass, clazz -> {
-            Class<?> idType = (Class<?>) BeanUtil.getActualTypeArguments(clazz)[0];
+            Class<?> idType = BeanUtil.getIdClass(clazz);
             Function<ObjectId, ?> setIdFunc;
             if (idType.isAssignableFrom(String.class)) {
                 setIdFunc = ObjectId::toHexString;

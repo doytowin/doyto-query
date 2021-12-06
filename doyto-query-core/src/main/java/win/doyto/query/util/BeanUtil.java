@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
@@ -95,5 +96,12 @@ public class BeanUtil {
     @SneakyThrows
     public static <T> T copyNonNull(Object from, T to) {
         return objectMapper2.updateValue(to, from);
+    }
+
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    public static <I> Class<I> getIdClass(Class<?> entityClass) {
+        PropertyDescriptor propertyDescriptor = new PropertyDescriptor("id", entityClass);
+        return (Class<I>) propertyDescriptor.getPropertyType();
     }
 }

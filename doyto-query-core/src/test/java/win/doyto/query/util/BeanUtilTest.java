@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.core.DynamicEntity;
 import win.doyto.query.core.DynamicIdWrapper;
+import win.doyto.query.core.test.TestEntity;
 import win.doyto.query.util.menu.MenuEntity;
 import win.doyto.query.util.menu.MenuIdWrapper;
 import win.doyto.query.util.menu.MenuRequest;
@@ -95,5 +96,10 @@ class BeanUtilTest {
                 .hasFieldOrPropertyWithValue("id", 1)
                 .hasFieldOrPropertyWithValue("user", "test")
                 .hasFieldOrPropertyWithValue("project", "i18n");
+    }
+
+    @Test
+    void getIdClass() {
+        assertThat(BeanUtil.getIdClass(TestEntity.class)).isEqualTo(Integer.class);
     }
 }

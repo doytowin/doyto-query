@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+      - modules/jdbc
+      - modules/mongodb
       - 'modules/**'
       - 'features/**'
   pull_request:
@@ -45,6 +47,7 @@ jobs:
           -Dsonar.projectKey=win.doyto:doyto-query \
           -Dsonar.projectName=doyto-query
       - name: Set up JDK 8
+        if: ${{ github.ref == 'refs/heads/main' }}
         uses: actions/setup-java@v2
         with:
           java-version: 8
@@ -55,6 +58,7 @@ jobs:
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }} # Value of the GPG private key to import
           gpg-passphrase: MAVEN_GPG_PASSPHRASE # env variable for GPG private key passphrase
       - name: Deploy to Nexus
+        if: ${{ github.ref == 'refs/heads/main' }}
         env:
           GPG_TTY: $(tty)
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
