@@ -1,7 +1,7 @@
 package win.doyto.query.service;
 
 import win.doyto.query.core.IdWrapper;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.Pageable;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
@@ -11,7 +11,7 @@ import java.io.Serializable;
  *
  * @author f0rb
  */
-public interface CrudService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery>
+public interface CrudService<E extends Persistable<I>, I extends Serializable, Q extends Pageable>
         extends DynamicService<E, I, Q> {
 
     default E get(I id) {

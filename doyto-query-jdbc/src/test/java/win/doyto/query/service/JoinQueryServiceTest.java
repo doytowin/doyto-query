@@ -1,10 +1,10 @@
 package win.doyto.query.service;
 
 import org.junit.jupiter.api.Test;
-import win.doyto.query.core.SqlAndArgs;
-import win.doyto.query.core.test.TestEnum;
+import win.doyto.query.sql.SqlAndArgs;
+import win.doyto.query.test.TestEnum;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -59,8 +59,7 @@ class JoinQueryServiceTest {
         JoinQueryService<UserCountByRoleView, TestJoinQuery> JoinQueryService
             = new JoinQueryService<>(UserCountByRoleView.class);
 
-        TestJoinQuery testJoinQuery = new TestJoinQuery();
-        testJoinQuery.setSort("userCount,asc").setPageSize(5);
+        TestJoinQuery testJoinQuery = TestJoinQuery.builder().pageSize(5).sort("userCount,asc").build();
 
         String expected = "SELECT r.roleName AS roleName, count(u.id) AS userCount " +
             "FROM user u " +

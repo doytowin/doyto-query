@@ -20,7 +20,7 @@ import win.doyto.query.cache.CacheWrapper;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.MemoryDataAccess;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.Pageable;
 import win.doyto.query.entity.EntityAspect;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.entity.UserIdProvider;
@@ -38,7 +38,7 @@ import javax.persistence.Table;
  *
  * @author f0rb on 2019-05-28
  */
-public abstract class AbstractDynamicService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery>
+public abstract class AbstractDynamicService<E extends Persistable<I>, I extends Serializable, Q extends Pageable>
         implements DynamicService<E, I, Q>, BeanFactoryAware {
 
     protected DataAccess<E, I, Q> dataAccess;

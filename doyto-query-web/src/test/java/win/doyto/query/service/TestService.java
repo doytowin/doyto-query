@@ -1,7 +1,7 @@
 package win.doyto.query.service;
 
-import win.doyto.query.core.test.TestEntity;
-import win.doyto.query.core.test.TestQuery;
+import win.doyto.query.test.TestEntity;
+import win.doyto.query.test.TestQuery;
 
 /**
  * TestService

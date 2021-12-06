@@ -2,7 +2,7 @@ package win.doyto.query.r2dbc;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import win.doyto.query.core.SqlAndArgs;
+import win.doyto.query.sql.SqlAndArgs;
 
 /**
  * ReactiveDatabaseOptions

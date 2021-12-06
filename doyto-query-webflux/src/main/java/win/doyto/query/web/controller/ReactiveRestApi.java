@@ -2,7 +2,7 @@ package win.doyto.query.web.controller;
 
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.Pageable;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.service.PageList;
 
@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @author f0rb on 2021-11-13
  */
-public interface ReactiveRestApi<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> {
+public interface ReactiveRestApi<E extends Persistable<I>, I extends Serializable, Q extends Pageable> {
     @PostMapping
     Mono<Void> create(@RequestBody List<E> list);
 

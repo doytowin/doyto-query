@@ -2,7 +2,7 @@ package win.doyto.query.r2dbc;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.Pageable;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
@@ -12,7 +12,7 @@ import java.io.Serializable;
  *
  * @author f0rb on 2021-10-28
  */
-public interface ReactiveDataAccess<E extends Persistable<I>, I extends Serializable, Q extends PageQuery> {
+public interface ReactiveDataAccess<E extends Persistable<I>, I extends Serializable, Q extends Pageable> {
 
     Mono<E> create(E e);
 

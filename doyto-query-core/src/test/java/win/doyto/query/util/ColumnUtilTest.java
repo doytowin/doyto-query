@@ -3,7 +3,8 @@ package win.doyto.query.util;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.core.test.TestEntity;
+import win.doyto.query.core.PageQuery;
+import win.doyto.query.test.TestEntity;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,4 +28,10 @@ class ColumnUtilTest {
         String columns = StringUtils.join(ColumnUtil.resolveSelectColumns(TestEntity.class), ", ");
         assertEquals("username, password, mobile, email, nickname, user_level AS userLevel, memo, valid, id", columns);
     }
+
+    @Test
+    void initFieldsShouldIgnorePageQuery() {
+        assertEquals(0, ColumnUtil.initFields(PageQuery.class).length);
+    }
+
 }

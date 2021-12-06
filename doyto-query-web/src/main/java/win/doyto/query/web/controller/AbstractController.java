@@ -2,7 +2,7 @@ package win.doyto.query.web.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import win.doyto.query.core.IdWrapper;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.Pageable;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.service.DynamicService;
 import win.doyto.query.service.PageList;
@@ -27,7 +27,7 @@ import javax.annotation.Resource;
 abstract class AbstractController<
         E extends Persistable<I>,
         I extends Serializable,
-        Q extends PageQuery,
+        Q extends Pageable,
         R, S,
         W extends IdWrapper<I>,
         C extends DynamicService<E, I, Q>

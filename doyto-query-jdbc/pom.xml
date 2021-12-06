@@ -21,7 +21,7 @@
 
         <dependency>
             <groupId>win.doyto</groupId>
-            <artifactId>doyto-query-core</artifactId>
+            <artifactId>doyto-query-sql</artifactId>
         </dependency>
         <dependency>
             <groupId>win.doyto</groupId>
