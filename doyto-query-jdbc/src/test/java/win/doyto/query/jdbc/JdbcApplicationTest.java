@@ -1,4 +1,4 @@
-package win.doyto.query.service;
+package win.doyto.query.jdbc;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;

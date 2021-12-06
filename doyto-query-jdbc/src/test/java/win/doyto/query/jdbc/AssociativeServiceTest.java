@@ -1,9 +1,11 @@
-package win.doyto.query.service;
+package win.doyto.query.jdbc;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import win.doyto.query.service.AssociativeService;
 
 import java.util.Arrays;
-import javax.annotation.Resource;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
@@ -16,7 +18,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class AssociativeServiceTest extends JdbcApplicationTest {
 
-    @Resource
+    @Autowired
+    @Qualifier("userAndRoleAssociativeService")
     AssociativeService<Long, Integer> userAndRoleAssociativeService;
 
     @Test

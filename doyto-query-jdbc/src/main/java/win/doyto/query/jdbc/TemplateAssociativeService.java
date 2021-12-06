@@ -1,10 +1,11 @@
-package win.doyto.query.service;
+package win.doyto.query.jdbc;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 import win.doyto.query.entity.UserIdProvider;
-import win.doyto.query.jdbc.DatabaseOperations;
+import win.doyto.query.service.AssociativeService;
 import win.doyto.query.sql.AssociativeSqlBuilder;
 import win.doyto.query.sql.SqlAndArgs;
 
@@ -25,7 +26,6 @@ public class TemplateAssociativeService<L, R> implements AssociativeService<L, R
     private final SingleColumnRowMapper<L> leftRowMapper = new SingleColumnRowMapper<>();
     private final SingleColumnRowMapper<R> rightRowMapper = new SingleColumnRowMapper<>();
 
-    @Autowired
     private DatabaseOperations databaseOperations;
 
     @Autowired(required = false)
@@ -37,6 +37,11 @@ public class TemplateAssociativeService<L, R> implements AssociativeService<L, R
 
     public TemplateAssociativeService(String table, String left, String right, String createUserColumn) {
         this.sqlBuilder = new AssociativeSqlBuilder(table, left, right, createUserColumn);
+    }
+
+    @Autowired
+    public void setJdbcOperations(JdbcOperations jdbcOperations) {
+        this.databaseOperations = new DatabaseTemplate(jdbcOperations);
     }
 
     @Override

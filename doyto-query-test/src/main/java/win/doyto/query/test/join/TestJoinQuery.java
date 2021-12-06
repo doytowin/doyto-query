@@ -1,4 +1,4 @@
-package win.doyto.query.service;
+package win.doyto.query.test.join;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,8 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.QueryTableAlias;
-import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.TestEnum;
+import win.doyto.query.test.TestPageQuery;
 
 /**
  * TestJoinQuery
@@ -19,7 +19,7 @@ import win.doyto.query.test.TestEnum;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TestJoinQuery extends PageQuery {
+public class TestJoinQuery extends TestPageQuery {
 
     private String roleName;
 

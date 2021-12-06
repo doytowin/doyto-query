@@ -1,9 +1,11 @@
-package win.doyto.query.service;
+package win.doyto.query.jdbc;
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcOperations;
 import win.doyto.query.core.Pageable;
-import win.doyto.query.jdbc.DatabaseOperations;
+import win.doyto.query.service.QueryService;
 import win.doyto.query.sql.JoinQueryBuilder;
 import win.doyto.query.sql.SqlAndArgs;
 
@@ -15,20 +17,20 @@ import java.util.List;
  * @author f0rb on 2019-06-09
  */
 @AllArgsConstructor
-public class JoinQueryService<E, Q extends Pageable> implements QueryService<E, Q> {
+public class ComplexQueryService<E, Q extends Pageable> implements QueryService<E, Q> {
 
     private DatabaseOperations databaseOperations;
     private final JoinQueryBuilder joinQueryBuilder;
     private final BeanPropertyRowMapper<E> beanPropertyRowMapper;
 
-    public JoinQueryService(Class<E> entityClass) {
+    public ComplexQueryService(Class<E> entityClass) {
         this.joinQueryBuilder = new JoinQueryBuilder(entityClass);
         this.beanPropertyRowMapper = new BeanPropertyRowMapper<>(entityClass);
     }
 
-    public JoinQueryService(DatabaseOperations databaseOperations, Class<E> entityClass) {
-        this(entityClass);
-        this.databaseOperations = databaseOperations;
+    @Autowired
+    public void setJdbcOperations(JdbcOperations jdbcOperations) {
+        this.databaseOperations = new DatabaseTemplate(jdbcOperations);
     }
 
     public List<E> query(Q q) {

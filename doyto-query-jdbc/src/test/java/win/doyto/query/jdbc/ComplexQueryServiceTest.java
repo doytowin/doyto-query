@@ -1,8 +1,11 @@
-package win.doyto.query.service;
+package win.doyto.query.jdbc;
 
 import org.junit.jupiter.api.Test;
 import win.doyto.query.sql.SqlAndArgs;
 import win.doyto.query.test.TestEnum;
+import win.doyto.query.test.join.TestJoinQuery;
+import win.doyto.query.test.join.TestJoinView;
+import win.doyto.query.test.join.UserCountByRoleView;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,11 +15,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author f0rb on 2019-06-09
  */
-class JoinQueryServiceTest {
+class ComplexQueryServiceTest {
 
     @Test
     void buildJoinSelectAndArgs() {
-        JoinQueryService<TestJoinView, TestJoinQuery> joinQueryService = new JoinQueryService<>(TestJoinView.class);
+        ComplexQueryService<TestJoinView, TestJoinQuery> complexQueryService = new ComplexQueryService<>(TestJoinView.class);
 
         TestJoinQuery testJoinQuery = new TestJoinQuery();
         testJoinQuery.setRoleName("VIP");
@@ -27,7 +30,7 @@ class JoinQueryServiceTest {
             "left join t_user_and_role ur on ur.userId = u.id " +
             "inner join role r on r.id = ur.roleId and r.roleName = ? " +
             "WHERE u.userLevel = ?";
-        SqlAndArgs sqlAndArgs = joinQueryService.buildJoinSelectAndArgs(testJoinQuery);
+        SqlAndArgs sqlAndArgs = complexQueryService.buildJoinSelectAndArgs(testJoinQuery);
         assertEquals(expected, sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly("VIP", TestEnum.VIP.ordinal());
     }
@@ -36,7 +39,7 @@ class JoinQueryServiceTest {
     @Test
     void buildJoinSelectAndArgsWithAlias() {
 
-        JoinQueryService<TestJoinView, TestJoinQuery> JoinQueryService = new JoinQueryService<>(TestJoinView.class);
+        ComplexQueryService<TestJoinView, TestJoinQuery> ComplexQueryService = new ComplexQueryService<>(TestJoinView.class);
 
         TestJoinQuery testJoinQuery = new TestJoinQuery();
         testJoinQuery.setRoleName("VIP");
@@ -48,7 +51,7 @@ class JoinQueryServiceTest {
             "left join t_user_and_role ur on ur.userId = u.id " +
             "inner join role r on r.id = ur.roleId and r.roleName = ? " +
             "WHERE u.userLevel = ? AND (r.roleName LIKE ? OR r.roleCode LIKE ?)";
-        SqlAndArgs sqlAndArgs = JoinQueryService.buildJoinSelectAndArgs(testJoinQuery);
+        SqlAndArgs sqlAndArgs = ComplexQueryService.buildJoinSelectAndArgs(testJoinQuery);
         assertEquals(expected, sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly("VIP", TestEnum.VIP.ordinal(), "%VIP%", "%VIP%");
 
@@ -56,8 +59,8 @@ class JoinQueryServiceTest {
 
     @Test
     void buildJoinGroupBy() {
-        JoinQueryService<UserCountByRoleView, TestJoinQuery> JoinQueryService
-            = new JoinQueryService<>(UserCountByRoleView.class);
+        ComplexQueryService<UserCountByRoleView, TestJoinQuery> ComplexQueryService
+            = new ComplexQueryService<>(UserCountByRoleView.class);
 
         TestJoinQuery testJoinQuery = TestJoinQuery.builder().pageSize(5).sort("userCount,asc").build();
 
@@ -68,7 +71,7 @@ class JoinQueryServiceTest {
             "GROUP BY r.roleName HAVING count(*) > 0 " +
             "ORDER BY userCount asc " +
             "LIMIT 5 OFFSET 0";
-        SqlAndArgs sqlAndArgs = JoinQueryService.buildJoinSelectAndArgs(testJoinQuery);
+        SqlAndArgs sqlAndArgs = ComplexQueryService.buildJoinSelectAndArgs(testJoinQuery);
         assertEquals(expected, sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).isEmpty();
     }
