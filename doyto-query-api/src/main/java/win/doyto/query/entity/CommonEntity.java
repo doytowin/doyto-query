@@ -37,4 +37,13 @@ public abstract class CommonEntity<I extends Serializable, U extends Serializabl
      */
     private Date updateTime;
 
+    public void setCreateUserId(U createUserId) {
+        this.createUserId = createUserId;
+        this.createTime = new Date();
+    }
+
+    public void setUpdateUserId(U updateUserId) {
+        this.updateUserId = updateUserId;
+        this.setUpdateTime(new Date());
+    }
 }
