@@ -10,11 +10,19 @@ import java.io.Serializable;
 public interface Pageable extends Serializable {
     void forcePaging();
 
-    String getSort();
-
     boolean needPaging();
 
+    void setPageSize(Integer size);
+
     int getPageSize();
+
+    void setPageNumber(Integer page);
+
+    int getPageNumber();
+
+    void setSort(String sort);
+
+    String getSort();
 
     int calcOffset();
 

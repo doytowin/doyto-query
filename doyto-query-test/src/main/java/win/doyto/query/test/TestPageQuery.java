@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.core.Pageable;
 import win.doyto.query.validation.PageGroup;
@@ -18,7 +17,6 @@ import java.util.regex.Pattern;
  */
 @Getter
 @Setter
-@Accessors(chain = true)
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor

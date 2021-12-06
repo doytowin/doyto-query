@@ -48,8 +48,7 @@ class QueryBuilderTest {
 
     @Test
     void buildSelectWithWhereAndPage() {
-        TestQuery testQuery = TestQuery.builder().username("test").build();
-        testQuery.setPageNumber(3).setPageSize(10);
+        TestQuery testQuery = TestQuery.builder().username("test").pageNumber(3).pageSize(10).build();
         assertEquals("SELECT * FROM user WHERE username = ? LIMIT 10 OFFSET 30",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
     }
@@ -81,9 +80,8 @@ class QueryBuilderTest {
 
     @Test
     void buildCountAndArgsWithWhere() {
-        TestQuery testQuery = TestQuery.builder().username("test").build();
-        testQuery.setPageNumber(2).setPageSize(10);
-        testQuery.setSort("createTime,asc");
+        TestQuery testQuery = TestQuery.builder().username("test").pageNumber(2).pageSize(10).sort("createTime,asc").build();
+
         assertEquals("SELECT * FROM user WHERE username = ? ORDER BY createTime asc LIMIT 10 OFFSET 20",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
 
@@ -191,8 +189,9 @@ class QueryBuilderTest {
 
     @Test
     void supportSort() {
-        TestQuery testQuery = TestQuery.builder().usernameLike("test").build();
-        testQuery.setPageNumber(5).setPageSize(10).setSort("id,desc;createTime,asc");
+        TestQuery testQuery = TestQuery.builder().usernameLike("test")
+                                       .pageNumber(5).pageSize(10)
+                                       .sort("id,desc;createTime,asc").build();
         assertEquals("SELECT * FROM user WHERE username LIKE ? ORDER BY id desc, createTime asc LIMIT 10 OFFSET 50",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
     }

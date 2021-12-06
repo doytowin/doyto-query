@@ -15,7 +15,7 @@ import java.util.List;
  * @author f0rb on 2019-06-09
  */
 @AllArgsConstructor
-public class JoinQueryService<E, Q extends Pageable> {
+public class JoinQueryService<E, Q extends Pageable> implements QueryService<E, Q> {
 
     private DatabaseOperations databaseOperations;
     private final JoinQueryBuilder joinQueryBuilder;
@@ -45,8 +45,4 @@ public class JoinQueryService<E, Q extends Pageable> {
         return joinQueryBuilder.buildJoinSelectAndArgs(q);
     }
 
-    public PageList<E> page(Q q) {
-        q.forcePaging();
-        return new PageList<>(query(q), count(q));
-    }
 }

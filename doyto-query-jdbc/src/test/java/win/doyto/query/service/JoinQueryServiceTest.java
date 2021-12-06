@@ -59,8 +59,7 @@ class JoinQueryServiceTest {
         JoinQueryService<UserCountByRoleView, TestJoinQuery> JoinQueryService
             = new JoinQueryService<>(UserCountByRoleView.class);
 
-        TestJoinQuery testJoinQuery = new TestJoinQuery();
-        testJoinQuery.setSort("userCount,asc").setPageSize(5);
+        TestJoinQuery testJoinQuery = TestJoinQuery.builder().pageSize(5).sort("userCount,asc").build();
 
         String expected = "SELECT r.roleName AS roleName, count(u.id) AS userCount " +
             "FROM user u " +

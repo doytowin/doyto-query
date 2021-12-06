@@ -167,8 +167,7 @@ class CrudBuilderTest {
 
     @Test
     void buildDeleteAndArgs() {
-        TestQuery testQuery = TestQuery.builder().username("test").build();
-        testQuery.setPageNumber(3).setPageSize(10);
+        TestQuery testQuery = TestQuery.builder().username("test").pageNumber(3).pageSize(10).build();
 
         SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildDeleteAndArgs(testQuery);
 

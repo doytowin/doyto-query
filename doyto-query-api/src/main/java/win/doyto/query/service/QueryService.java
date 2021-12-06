@@ -26,11 +26,13 @@ public interface QueryService<E, Q extends Pageable> {
     }
 
     default E get(Q query) {
-        return CollectionUtil.first(query(query), query);
+        return get(query, e -> e);
     }
 
     default <V> V get(Q query, Function<E, V> transfer) {
-        return CollectionUtil.first(query(query, transfer), query);
+        query.setPageSize(1);
+        List<E> list = query(query);
+        return list.isEmpty() ? null : transfer.apply(list.get(0));
     }
 
     default <V> List<V> query(Q query, Function<E, V> transfer) {
