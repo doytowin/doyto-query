@@ -8,6 +8,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.NestedQueries;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.BeanUtil;
+import win.doyto.query.util.CommonUtil;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -18,8 +19,8 @@ import java.util.stream.Collectors;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-import static win.doyto.query.core.CommonUtil.*;
 import static win.doyto.query.core.QuerySuffix.*;
+import static win.doyto.query.util.CommonUtil.*;
 
 /**
  * MemoryDataAccess

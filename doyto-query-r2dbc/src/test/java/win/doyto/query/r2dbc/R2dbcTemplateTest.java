@@ -9,8 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
-import win.doyto.query.core.SqlAndArgs;
 import win.doyto.query.r2dbc.role.RoleEntity;
+import win.doyto.query.sql.SqlAndArgs;
 
 import java.time.Duration;
 

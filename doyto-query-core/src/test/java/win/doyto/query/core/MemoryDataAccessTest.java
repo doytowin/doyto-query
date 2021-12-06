@@ -2,16 +2,16 @@ package win.doyto.query.core;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import win.doyto.query.core.test.TestEntity;
-import win.doyto.query.core.test.TestEnum;
-import win.doyto.query.core.test.TestQuery;
+import win.doyto.query.test.TestEntity;
+import win.doyto.query.test.TestEnum;
+import win.doyto.query.test.TestQuery;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static win.doyto.query.core.test.TestEntity.initUserEntities;
+import static win.doyto.query.test.TestEntity.initUserEntities;
 
 /**
  * MemoryDataAccessTest

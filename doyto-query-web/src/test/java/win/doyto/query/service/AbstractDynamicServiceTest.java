@@ -4,15 +4,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import win.doyto.query.core.IdWrapper;
-import win.doyto.query.core.test.TestEntity;
-import win.doyto.query.core.test.TestQuery;
 import win.doyto.query.entity.EntityAspect;
+import win.doyto.query.test.TestEntity;
+import win.doyto.query.test.TestQuery;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static win.doyto.query.core.test.TestEntity.initUserEntities;
+import static win.doyto.query.test.TestEntity.initUserEntities;
 
 /**
  * AbstractServiceTest

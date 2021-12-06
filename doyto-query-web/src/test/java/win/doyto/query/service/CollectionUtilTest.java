@@ -6,8 +6,8 @@ import ch.qos.logback.core.Appender;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
-import win.doyto.query.core.test.TestEntity;
-import win.doyto.query.core.test.TestQuery;
+import win.doyto.query.test.TestEntity;
+import win.doyto.query.test.TestQuery;
 
 import java.util.Arrays;
 import java.util.List;
@@ -67,10 +67,10 @@ class CollectionUtilTest {
                 .hasSize(LOG_COUNT)
                 .extracting(ILoggingEvent::getFormattedMessage)
                 .contains(
-                        "Found 2 elements of class win.doyto.query.core.test.TestEntity for query: " +
-                                "win.doyto.query.core.test.TestQuery[usernameLike=test,memoNull=false,memoNotNull=false]",
-                        "Repetitive elements: \nwin.doyto.query.core.test.TestEntity[username=test2]\n" +
-                                "win.doyto.query.core.test.TestEntity[username=test1,password=password]"
+                        "Found 2 elements of class win.doyto.query.test.TestEntity for query: " +
+                                "win.doyto.query.test.TestQuery[usernameLike=test,memoNull=false,memoNotNull=false]",
+                        "Repetitive elements: \nwin.doyto.query.test.TestEntity[username=test2]\n" +
+                                "win.doyto.query.test.TestEntity[username=test1,password=password]"
                 );
 
     }

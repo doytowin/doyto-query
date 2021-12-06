@@ -2,8 +2,13 @@ package win.doyto.query.jdbc;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.jdbc.core.*;
-import win.doyto.query.core.*;
+import win.doyto.query.core.DataAccess;
+import win.doyto.query.core.IdWrapper;
+import win.doyto.query.core.Pageable;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.sql.SqlAndArgs;
+import win.doyto.query.sql.SqlBuilder;
+import win.doyto.query.sql.SqlBuilderFactory;
 import win.doyto.query.util.BeanUtil;
 import win.doyto.query.util.ColumnUtil;
 

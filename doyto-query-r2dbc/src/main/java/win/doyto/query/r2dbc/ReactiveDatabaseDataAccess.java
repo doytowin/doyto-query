@@ -3,10 +3,10 @@ package win.doyto.query.r2dbc;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import win.doyto.query.core.Pageable;
-import win.doyto.query.core.SqlAndArgs;
-import win.doyto.query.core.SqlBuilder;
-import win.doyto.query.core.SqlBuilderFactory;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.sql.SqlAndArgs;
+import win.doyto.query.sql.SqlBuilder;
+import win.doyto.query.sql.SqlBuilderFactory;
 import win.doyto.query.util.ColumnUtil;
 
 import java.io.Serializable;

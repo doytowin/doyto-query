@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import win.doyto.query.core.SqlAndArgs;
+import win.doyto.query.sql.SqlAndArgs;
 
 import java.util.function.Function;
 import java.util.stream.Collectors;

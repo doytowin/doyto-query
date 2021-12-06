@@ -3,9 +3,10 @@ package win.doyto.query.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.transaction.annotation.Transactional;
-import win.doyto.query.core.SqlAndArgs;
 import win.doyto.query.entity.UserIdProvider;
 import win.doyto.query.jdbc.DatabaseOperations;
+import win.doyto.query.sql.AssociativeSqlBuilder;
+import win.doyto.query.sql.SqlAndArgs;
 
 import java.util.Collection;
 import java.util.List;
@@ -58,24 +59,24 @@ public class TemplateAssociativeService<L, R> implements AssociativeService<L, R
 
     @Override
     public List<R> getByLeftId(L leftId) {
-        SqlAndArgs sqlAndArgs = new SqlAndArgs(sqlBuilder.getByLeftId, leftId);
+        SqlAndArgs sqlAndArgs = new SqlAndArgs(sqlBuilder.getGetByLeftId(), leftId);
         return databaseOperations.query(sqlAndArgs, rightRowMapper);
     }
 
     @Override
     public int deleteByLeftId(L leftId) {
-        return databaseOperations.update(sqlBuilder.deleteByLeftId, leftId);
+        return databaseOperations.update(sqlBuilder.getDeleteByLeftId(), leftId);
     }
 
     @Override
     public List<L> getByRightId(R rightId) {
-        SqlAndArgs sqlAndArgs = new SqlAndArgs(sqlBuilder.getByRightId, rightId);
+        SqlAndArgs sqlAndArgs = new SqlAndArgs(sqlBuilder.getGetByRightId(), rightId);
         return databaseOperations.query(sqlAndArgs, leftRowMapper);
     }
 
     @Override
     public int deleteByRightId(R rightId) {
-        return databaseOperations.update(sqlBuilder.deleteByRightId, rightId);
+        return databaseOperations.update(sqlBuilder.getDeleteByRightId(), rightId);
     }
 
     @Override

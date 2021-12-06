@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-import win.doyto.query.core.SqlAndArgs;
+import win.doyto.query.sql.SqlAndArgs;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
