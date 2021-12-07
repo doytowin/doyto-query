@@ -35,9 +35,7 @@
         <module>doyto-query-core</module>
         <module>doyto-query-sql</module>
         <module>doyto-query-web</module>
-        <module>doyto-query-webflux</module>
         <module>doyto-query-jdbc</module>
-        <module>doyto-query-r2dbc</module>
         <module>doyto-query-mongodb</module>
     </modules>
 
