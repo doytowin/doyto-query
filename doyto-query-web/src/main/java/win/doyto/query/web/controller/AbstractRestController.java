@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.Pageable;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.service.AbstractCrudService;
 import win.doyto.query.service.CrudService;
 import win.doyto.query.web.response.JsonBody;
 
@@ -12,6 +13,14 @@ import java.io.Serializable;
 
 /**
  * AbstractRestController
+ * <p>
+ * 4 kind of usage: <br>
+ * <ol>
+ * <li>Custom service with R/S type</li>
+ * <li>Custom service with E/E type</li>
+ * <li>Build-in service with R/S type</li>
+ * <li>Build-in service with E/E type</li>
+ * </ol>
  *
  * @author f0rb on 2020-01-29
  */
@@ -22,6 +31,16 @@ public abstract class AbstractRestController<E extends Persistable<I>, I extends
 
     protected AbstractRestController(CrudService<E, I, Q> service) {
         super(service, new TypeReference<IdWrapper.Simple<I>>() {});
+    }
+
+    protected AbstractRestController() {
+        this(null);
+        service = new AbstractCrudService<E, I, Q>() {
+            @Override
+            protected Class<?> getConcreteClass() {
+                return AbstractRestController.this.getClass();
+            }
+        };
     }
 
     @Override

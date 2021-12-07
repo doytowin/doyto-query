@@ -22,7 +22,8 @@ class CacheTest extends DemoApplicationTest {
 
     @Test
     void defaultNoCache() throws IllegalAccessException {
-        CacheWrapper<?> entityCacheWrapper = (CacheWrapper<?>) FieldUtils.readField(roleController, "entityCacheWrapper", true);
+        Object service = FieldUtils.readField(roleController, "service", true);
+        CacheWrapper<?> entityCacheWrapper = (CacheWrapper<?>) FieldUtils.readField(service, "entityCacheWrapper", true);
         assertThat(entityCacheWrapper.getCache()).isInstanceOf(NoOpCache.class);
     }
 }

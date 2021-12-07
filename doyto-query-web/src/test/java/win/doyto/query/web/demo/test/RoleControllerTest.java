@@ -26,7 +26,7 @@ class RoleControllerTest {
     @BeforeEach
     void setUp() throws IOException {
         roleController = new RoleController();
-        roleController.add(BeanUtil.loadJsonData("/role.json", new TypeReference<List<RoleEntity>>() {}));
+        roleController.create(BeanUtil.loadJsonData("/role.json", new TypeReference<List<RoleEntity>>() {}));
     }
 
     @Test
@@ -39,7 +39,7 @@ class RoleControllerTest {
     @Test
     void add() {
         RoleEntity roleEntity = new RoleEntity();
-        roleController.add(roleEntity);
+        roleController.create(roleEntity);
         assertEquals(4, roleController.count(RoleQuery.builder().build()));
     }
 }

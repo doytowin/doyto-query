@@ -20,6 +20,8 @@ public interface RestApi<I, Q extends Pageable, R, S> {
 
     List<S> query(Q q);
 
+    long count(Q q);
+
     @GetMapping
     PageList<S> page(@Validated(PageGroup.class) Q q);
 

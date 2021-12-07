@@ -2,7 +2,7 @@ package win.doyto.query.web.demo.module.role;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import win.doyto.query.web.controller.AbstractIQEEController;
+import win.doyto.query.web.controller.AbstractEIQController;
 
 /**
  * UserController
@@ -11,5 +11,5 @@ import win.doyto.query.web.controller.AbstractIQEEController;
  */
 @RestController
 @RequestMapping("role")
-public class RoleController extends AbstractIQEEController<RoleEntity, Long, RoleQuery> {
+public class RoleController extends AbstractEIQController<RoleEntity, Long, RoleQuery> {
 }
