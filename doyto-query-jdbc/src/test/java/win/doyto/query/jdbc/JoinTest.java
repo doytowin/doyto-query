@@ -25,24 +25,24 @@ class JoinTest extends JdbcApplicationTest {
 
     @Test
     void queryForJoin() {
-        ComplexQueryService<UserCountByRoleView, Pageable> complexQueryService = new ComplexQueryService<>(UserCountByRoleView.class);
-        complexQueryService.setJdbcOperations(jdbcOperations);
+        JdbcComplexQueryService<UserCountByRoleView, Pageable> jdbcComplexQueryService = new JdbcComplexQueryService<>(UserCountByRoleView.class);
+        jdbcComplexQueryService.setJdbcOperations(jdbcOperations);
 
         TestJoinQuery query = new TestJoinQuery();
         query.setSort("userCount,desc");
 
-        List<UserCountByRoleView> list = complexQueryService.query(query);
+        List<UserCountByRoleView> list = jdbcComplexQueryService.query(query);
         assertThat(list).extracting(UserCountByRoleView::getUserCount).containsExactly(3, 2);
     }
 
     @Test
     void pageForJoin() {
-        ComplexQueryService<TestJoinView, Pageable> complexQueryService = new ComplexQueryService<>(TestJoinView.class);
-        complexQueryService.setJdbcOperations(jdbcOperations);
+        JdbcComplexQueryService<TestJoinView, Pageable> jdbcComplexQueryService = new JdbcComplexQueryService<>(TestJoinView.class);
+        jdbcComplexQueryService.setJdbcOperations(jdbcOperations);
 
         TestJoinQuery testJoinQuery = new TestJoinQuery();
         testJoinQuery.setRoleName("高级");
-        PageList<TestJoinView> page = complexQueryService.page(testJoinQuery);
+        PageList<TestJoinView> page = jdbcComplexQueryService.page(testJoinQuery);
         assertThat(page.getTotal()).isEqualTo(2);
         assertThat(page.getList()).extracting(TestJoinView::getUsername).containsExactly("f0rb", "user4");
         assertThat(testJoinQuery.getPageNumber()).isZero();

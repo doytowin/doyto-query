@@ -17,13 +17,13 @@ import java.util.List;
  * @author f0rb on 2019-06-09
  */
 @AllArgsConstructor
-public class ComplexQueryService<E, Q extends Pageable> implements QueryService<E, Q> {
+public class JdbcComplexQueryService<E, Q extends Pageable> implements QueryService<E, Q> {
 
     private DatabaseOperations databaseOperations;
     private final JoinQueryBuilder joinQueryBuilder;
     private final BeanPropertyRowMapper<E> beanPropertyRowMapper;
 
-    public ComplexQueryService(Class<E> entityClass) {
+    public JdbcComplexQueryService(Class<E> entityClass) {
         this.joinQueryBuilder = new JoinQueryBuilder(entityClass);
         this.beanPropertyRowMapper = new BeanPropertyRowMapper<>(entityClass);
     }

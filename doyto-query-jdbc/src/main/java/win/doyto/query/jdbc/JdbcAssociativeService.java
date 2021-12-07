@@ -20,7 +20,7 @@ import static java.util.Collections.singleton;
  *
  * @author f0rb on 2019-05-30
  */
-public class TemplateAssociativeService<L, R> implements AssociativeService<L, R> {
+public class JdbcAssociativeService<L, R> implements AssociativeService<L, R> {
 
     private final AssociativeSqlBuilder sqlBuilder;
     private final SingleColumnRowMapper<L> leftRowMapper = new SingleColumnRowMapper<>();
@@ -31,11 +31,11 @@ public class TemplateAssociativeService<L, R> implements AssociativeService<L, R
     @Autowired(required = false)
     private UserIdProvider<?> userIdProvider = () -> null;
 
-    public TemplateAssociativeService(String table, String left, String right) {
+    public JdbcAssociativeService(String table, String left, String right) {
         this(table, left, right, null);
     }
 
-    public TemplateAssociativeService(String table, String left, String right, String createUserColumn) {
+    public JdbcAssociativeService(String table, String left, String right, String createUserColumn) {
         this.sqlBuilder = new AssociativeSqlBuilder(table, left, right, createUserColumn);
     }
 

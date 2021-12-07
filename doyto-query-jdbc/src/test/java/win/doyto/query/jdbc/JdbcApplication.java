@@ -20,11 +20,11 @@ public class JdbcApplication {
 
     @Bean
     public AssociativeService<Long, Integer> userAndRoleAssociativeService() {
-        return new TemplateAssociativeService<>("t_user_and_role", "userId", "roleId", "createUserId");
+        return new JdbcAssociativeService<>("t_user_and_role", "userId", "roleId", "createUserId");
     }
 
     @Bean
     public AssociativeService<Integer, Integer> roleAndPermissionAssociativeService() {
-        return new TemplateAssociativeService<>("t_role_and_permission", "roleId", "permissionId");
+        return new JdbcAssociativeService<>("t_role_and_permission", "roleId", "permissionId");
     }
 }
