@@ -4,7 +4,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.support.NoOpCache;
 import win.doyto.query.cache.CacheWrapper;
-import win.doyto.query.web.demo.module.role.RoleController;
+import win.doyto.query.web.demo.test.role.RoleController;
 
 import javax.annotation.Resource;
 
@@ -22,7 +22,8 @@ class CacheTest extends DemoApplicationTest {
 
     @Test
     void defaultNoCache() throws IllegalAccessException {
-        CacheWrapper<?> entityCacheWrapper = (CacheWrapper<?>) FieldUtils.readField(roleController, "entityCacheWrapper", true);
+        Object service = roleController.getService();
+        CacheWrapper<?> entityCacheWrapper = (CacheWrapper<?>) FieldUtils.readField(service, "entityCacheWrapper", true);
         assertThat(entityCacheWrapper.getCache()).isInstanceOf(NoOpCache.class);
     }
 }

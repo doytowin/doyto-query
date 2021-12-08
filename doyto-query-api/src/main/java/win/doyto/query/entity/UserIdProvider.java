@@ -1,7 +1,6 @@
 package win.doyto.query.entity;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * UserIdProvider
@@ -19,12 +18,10 @@ public interface UserIdProvider<I extends Serializable> {
             if (e instanceof Persistable && ((Persistable<?>) e).isNew() && e instanceof CreateUserAware) {
                 CreateUserAware<I> createUserAware = (CreateUserAware<I>) e;
                 createUserAware.setCreateUserId(userId);
-                createUserAware.setCreateTime(new Date());
             }
             if (e instanceof UpdateUserAware) {
                 UpdateUserAware<I> updateUserAware = (UpdateUserAware<I>) e;
                 updateUserAware.setUpdateUserId(userId);
-                updateUserAware.setUpdateTime(new Date());
             }
         }
     }

@@ -1,8 +1,10 @@
 package win.doyto.query.web.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import win.doyto.query.core.IdWrapper;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.Pageable;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.service.DynamicService;
 import win.doyto.query.service.PageList;
@@ -15,6 +17,7 @@ import win.doyto.query.web.response.PresetErrorCode;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 
@@ -27,7 +30,7 @@ import javax.annotation.Resource;
 abstract class AbstractController<
         E extends Persistable<I>,
         I extends Serializable,
-        Q extends PageQuery,
+        Q extends Pageable,
         R, S,
         W extends IdWrapper<I>,
         C extends DynamicService<E, I, Q>
@@ -37,9 +40,10 @@ abstract class AbstractController<
     protected ListValidator listValidator = new ListValidator();
 
     private final Class<E> entityClass;
-    private final Class<S> responseClass;
     private final TypeReference<W> typeReference;
-    protected final C service;
+    protected C service;
+    protected Function<E, S> e2rspTransfer;
+    protected Function<R, E> req2eTransfer;
 
     @SuppressWarnings("unchecked")
     protected AbstractController(C service, TypeReference<W> typeReference) {
@@ -47,19 +51,26 @@ abstract class AbstractController<
         this.typeReference = typeReference;
         Type[] types = BeanUtil.getActualTypeArguments(getClass());
         this.entityClass = (Class<E>) types[0];
-        this.responseClass = (Class<S>) types[4];
+
+        req2eTransfer = r -> (E) r;
+        e2rspTransfer = e -> (S) e;
+        if (types.length > 4) {
+            if (!entityClass.equals(types[3])) {
+                req2eTransfer = r -> BeanUtil.convertTo(r, entityClass);
+            }
+            if (!entityClass.equals(types[4])) {
+                Class<S> responseClass = (Class<S>) types[4];
+                e2rspTransfer = e -> BeanUtil.convertTo(e, responseClass);
+            }
+        }
     }
 
     protected S buildResponse(E e) {
-        return BeanUtil.convertTo(e, responseClass);
+        return e2rspTransfer.apply(e);
     }
 
     protected E buildEntity(R r) {
-        return BeanUtil.convertTo(r, entityClass);
-    }
-
-    protected E buildEntity(E e, R r) {
-        return BeanUtil.copyTo(r, e);
+        return req2eTransfer.apply(r);
     }
 
     protected void checkResult(E e) {
@@ -67,11 +78,16 @@ abstract class AbstractController<
     }
 
     public PageList<S> page(Q q) {
-        return service.page(q, this::buildResponse);
+        q.forcePaging();
+        return new PageList<>(this.query(q), service.count(q));
     }
 
     public List<S> query(Q q) {
         return service.query(q, this::buildResponse);
+    }
+
+    public long count(Q q) {
+        return service.count(q);
     }
 
     public void patch(R request) {
@@ -84,7 +100,7 @@ abstract class AbstractController<
         W w = BeanUtil.convertTo(request, typeReference);
         E e = service.get(w);
         checkResult(e);
-        buildEntity(e, request).setId(w.getId());
+        BeanUtil.copyTo(request, e).setId(w.getId());
         service.update(e);
     }
 
@@ -97,4 +113,10 @@ abstract class AbstractController<
         }
     }
 
+    @Resource
+    public void setBeanFactory(AutowireCapableBeanFactory beanFactory) throws BeansException {
+        if (service.getClass().isAnonymousClass()) {
+            beanFactory.autowireBean(service);
+        }
+    }
 }

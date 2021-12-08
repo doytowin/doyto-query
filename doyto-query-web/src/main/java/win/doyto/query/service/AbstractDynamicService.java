@@ -5,7 +5,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +19,7 @@ import win.doyto.query.cache.CacheWrapper;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.MemoryDataAccess;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.Pageable;
 import win.doyto.query.entity.EntityAspect;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.entity.UserIdProvider;
@@ -31,6 +30,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.annotation.Resource;
 import javax.persistence.Table;
 
 /**
@@ -38,8 +38,8 @@ import javax.persistence.Table;
  *
  * @author f0rb on 2019-05-28
  */
-public abstract class AbstractDynamicService<E extends Persistable<I>, I extends Serializable, Q extends PageQuery>
-        implements DynamicService<E, I, Q>, BeanFactoryAware {
+public abstract class AbstractDynamicService<E extends Persistable<I>, I extends Serializable, Q extends Pageable>
+        implements DynamicService<E, I, Q> {
 
     protected DataAccess<E, I, Q> dataAccess;
 
@@ -63,12 +63,16 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
 
     @SuppressWarnings("unchecked")
     protected AbstractDynamicService() {
-        entityClass = (Class<E>) BeanUtil.getActualTypeArguments(getClass())[0];
+        entityClass = (Class<E>) BeanUtil.getActualTypeArguments(getConcreteClass())[0];
         dataAccess = new MemoryDataAccess<>(entityClass);
     }
 
+    protected Class<?> getConcreteClass() {
+        return getClass();
+    }
+
     @SuppressWarnings("unchecked")
-    @Override
+    @Resource
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         if (entityClass.isAnnotationPresent(Table.class)) {
             try {

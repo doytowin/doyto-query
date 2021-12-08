@@ -1,16 +1,13 @@
 package win.doyto.query.web.demo.test;
 
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.transaction.annotation.Transactional;
 import win.doyto.query.web.demo.DemoApplication;
 import win.doyto.query.web.response.ErrorCode;
 
@@ -25,8 +22,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author f0rb
  */
-@Transactional
-@ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @SpringBootTest(classes = DemoApplication.class)
 @AutoConfigureMockMvc

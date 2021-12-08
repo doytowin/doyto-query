@@ -20,7 +20,7 @@
         </dependency>
         <dependency>
             <groupId>win.doyto</groupId>
-            <artifactId>doyto-query-core</artifactId>
+            <artifactId>doyto-query-api</artifactId>
             <version>${revision}</version>
         </dependency>
     </dependencies>

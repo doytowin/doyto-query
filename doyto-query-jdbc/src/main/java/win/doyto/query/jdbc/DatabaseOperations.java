@@ -1,7 +1,7 @@
 package win.doyto.query.jdbc;
 
 import org.springframework.jdbc.core.RowMapper;
-import win.doyto.query.core.SqlAndArgs;
+import win.doyto.query.sql.SqlAndArgs;
 
 import java.util.List;
 

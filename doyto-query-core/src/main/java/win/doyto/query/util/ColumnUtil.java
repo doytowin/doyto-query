@@ -4,10 +4,14 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.Dialect;
+import win.doyto.query.core.PageQuery;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import javax.persistence.Column;
 import javax.persistence.Transient;
@@ -21,6 +25,24 @@ import javax.persistence.Transient;
 public class ColumnUtil {
 
     private static final Pattern PTN_CAPITAL_CHAR = Pattern.compile("([A-Z])");
+    private static final Map<Class<?>, Field[]> classFieldsMap = new ConcurrentHashMap<>();
+
+    static {
+        classFieldsMap.put(PageQuery.class, new Field[]{});
+    }
+
+    public static Field[] initFields(Class<?> queryClass) {
+        return initFields(queryClass, field -> {});
+    }
+
+    public static Field[] initFields(Class<?> queryClass, Consumer<Field> fieldConsumer) {
+        classFieldsMap.computeIfAbsent(queryClass, c -> {
+            Field[] fields = Arrays.stream(c.getDeclaredFields()).filter(CommonUtil::fieldFilter).toArray(Field[]::new);
+            Arrays.stream(fields).forEach(fieldConsumer);
+            return fields;
+        });
+        return classFieldsMap.get(queryClass);
+    }
 
     public static String convertColumn(String columnName) {
         return GlobalConfiguration.instance().isMapCamelCaseToUnderscore() ?

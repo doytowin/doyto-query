@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-import win.doyto.query.core.SqlAndArgs;
+import win.doyto.query.sql.SqlAndArgs;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -19,8 +19,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DatabaseTemplate implements DatabaseOperations {
 
+    private static RowMapper<Long> countRowMapper = new SingleColumnRowMapper<>(Long.class);
     private final JdbcOperations jdbcOperations;
-    private final RowMapper<Long> countRowMap = new SingleColumnRowMapper<>(Long.class);
 
     @Override
     public <V> List<V> query(SqlAndArgs sqlAndArgs, RowMapper<V> rowMapper) {
@@ -34,7 +34,7 @@ public class DatabaseTemplate implements DatabaseOperations {
 
     @Override
     public long count(SqlAndArgs sqlAndArgs) {
-        return jdbcOperations.queryForObject(sqlAndArgs.getSql(), countRowMap, sqlAndArgs.getArgs());
+        return jdbcOperations.queryForObject(sqlAndArgs.getSql(), countRowMapper, sqlAndArgs.getArgs());
     }
 
     public Number insert(SqlAndArgs sqlAndArgs) {

@@ -7,13 +7,13 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import win.doyto.query.core.BuildHelper;
-import win.doyto.query.core.CommonUtil;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.Pageable;
 import win.doyto.query.core.QuerySuffix;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.mongodb.entity.BsonDeserializer;
 import win.doyto.query.util.BeanUtil;
+import win.doyto.query.util.ColumnUtil;
+import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -70,12 +70,12 @@ public class MongoFilterBuilder {
 
     private static void buildFilter(Object query, String prefix, List<Bson> filters) {
         prefix = StringUtils.isEmpty(prefix) ? "" : prefix + ".";
-        Field[] fields = BuildHelper.initFields(query.getClass());
+        Field[] fields = ColumnUtil.initFields(query.getClass());
         for (Field field : fields) {
             Object value = CommonUtil.readFieldGetter(field, query);
             if (isValidValue(value, field)) {
                 String newPrefix = prefix + field.getName();
-                if (value instanceof PageQuery) {
+                if (value instanceof Pageable) {
                     buildFilter(value, newPrefix, filters);
                 } else {
                     filters.add(resolveFilter(newPrefix, value));
@@ -104,7 +104,7 @@ public class MongoFilterBuilder {
 
     private static void buildUpdates(Object target, String prefix, List<Bson> updates) {
         prefix = StringUtils.isEmpty(prefix) ? "" : prefix + ".";
-        for (Field field : BuildHelper.initFields(target.getClass())) {
+        for (Field field : ColumnUtil.initFields(target.getClass())) {
             Object value = CommonUtil.readFieldGetter(field, target);
             if (isValidValue(value, field)) {
                 if (value instanceof Persistable) {

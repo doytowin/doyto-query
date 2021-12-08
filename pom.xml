@@ -33,11 +33,11 @@
         <module>doyto-query-test</module>
         <module>doyto-query-api</module>
         <module>doyto-query-core</module>
+        <module>doyto-query-sql</module>
         <module>doyto-query-web</module>
-        <module>doyto-query-webflux</module>
         <module>doyto-query-jdbc</module>
-        <module>doyto-query-r2dbc</module>
         <module>doyto-query-mongodb</module>
+        <module>doyto-query-integration-test</module>
     </modules>
 
     <dependencies>
@@ -61,6 +61,16 @@
             <artifactId>logback-classic</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -81,6 +91,11 @@
             <dependency>
                 <groupId>win.doyto</groupId>
                 <artifactId>doyto-query-core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>win.doyto</groupId>
+                <artifactId>doyto-query-sql</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
