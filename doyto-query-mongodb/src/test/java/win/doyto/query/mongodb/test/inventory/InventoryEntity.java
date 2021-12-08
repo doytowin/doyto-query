@@ -2,9 +2,8 @@ package win.doyto.query.mongodb.test.inventory;
 
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.entity.MongoEntity;
 import win.doyto.query.mongodb.entity.MongoPersistable;
-
-import javax.persistence.Table;
 
 /**
  * InventoryEntity
@@ -13,7 +12,7 @@ import javax.persistence.Table;
  */
 @Getter
 @Setter
-@Table(catalog = "doyto", name = "c_inventory")
+@MongoEntity(database = "doyto", collection = "c_inventory")
 public class InventoryEntity extends MongoPersistable<String> {
 
     private String item;

@@ -21,6 +21,7 @@ import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.MemoryDataAccess;
 import win.doyto.query.core.Pageable;
 import win.doyto.query.entity.EntityAspect;
+import win.doyto.query.entity.MongoEntity;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.entity.UserIdProvider;
 import win.doyto.query.util.BeanUtil;
@@ -74,15 +75,27 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     @SuppressWarnings("unchecked")
     @Resource
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        if (entityClass.isAnnotationPresent(Table.class)) {
-            try {
-                ClassLoader classLoader = beanFactory.getClass().getClassLoader();
+        ClassLoader classLoader = beanFactory.getClass().getClassLoader();
+        try {
+            if (entityClass.isAnnotationPresent(Table.class)) {
                 Class<?> jdbcDataAccessClass = classLoader.loadClass("win.doyto.query.jdbc.JdbcDataAccess");
                 Object jdbcOperations = beanFactory.getBean("jdbcTemplate");
                 dataAccess = (DataAccess<E, I, Q>) ConstructorUtils.invokeConstructor(jdbcDataAccessClass, jdbcOperations, entityClass);
-            } catch (Exception e) {
-                throw new BeanInitializationException("Failed to create DataAccess for " + entityClass.getName(), e);
+            } else if (entityClass.isAnnotationPresent(MongoEntity.class)) {
+                Class<?> mongoDataAccessClass = classLoader.loadClass("win.doyto.query.mongodb.MongoDataAccess");
+                tryCreateEmbeddedMongoServerFirst(beanFactory);
+                Object mongoClient = beanFactory.getBean("mongo");
+                dataAccess = (DataAccess<E, I, Q>) ConstructorUtils.invokeConstructor(mongoDataAccessClass, mongoClient, entityClass);
             }
+        } catch (Exception e) {
+            throw new BeanInitializationException("Failed to create DataAccess for " + entityClass.getName(), e);
+        }
+    }
+
+    private void tryCreateEmbeddedMongoServerFirst(BeanFactory beanFactory) {
+        try {
+            beanFactory.getBean("embeddedMongoServer");
+        } catch (BeansException e) {//just ignore when no embeddedMongoServer provided
         }
     }
 

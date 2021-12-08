@@ -5,9 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.bson.types.ObjectId;
+import win.doyto.query.entity.MongoEntity;
 import win.doyto.query.mongodb.entity.MongoPersistable;
-
-import javax.persistence.Table;
 
 /**
  * SizeEntity
@@ -18,7 +17,7 @@ import javax.persistence.Table;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(catalog = "doyto", name = "c_inventory")
+@MongoEntity(database = "doyto", collection = "c_inventory")
 public class InventorySize extends MongoPersistable<ObjectId> {
     private Double h;
     private Double w;

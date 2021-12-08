@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import org.bson.types.ObjectId;
 import win.doyto.query.util.BeanUtil;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -25,6 +26,8 @@ public class ObjectIdMapper {
                 setIdFunc = ObjectId::toHexString;
             } else if (idType.isAssignableFrom(ObjectId.class)) {
                 setIdFunc = objectId -> objectId;
+            } else if (idType.isAssignableFrom(BigInteger.class)) {
+                setIdFunc = objectId -> new BigInteger(objectId.toHexString(), 16);
             } else {
                 setIdFunc = objectId -> null;
             }

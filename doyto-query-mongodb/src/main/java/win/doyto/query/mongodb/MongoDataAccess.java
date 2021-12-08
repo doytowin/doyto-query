@@ -15,6 +15,7 @@ import org.bson.types.ObjectId;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.Pageable;
+import win.doyto.query.entity.MongoEntity;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.mongodb.entity.ObjectIdAware;
 import win.doyto.query.mongodb.entity.ObjectIdMapper;
@@ -26,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.persistence.Table;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.in;
@@ -45,9 +45,9 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
 
     public MongoDataAccess(MongoClient mongoClient, Class<E> testEntityClass) {
         this.entityClass = testEntityClass;
-        Table table = testEntityClass.getAnnotation(Table.class);
-        MongoDatabase database = mongoClient.getDatabase(table.catalog());
-        this.collection = database.getCollection(table.name());
+        MongoEntity table = testEntityClass.getAnnotation(MongoEntity.class);
+        MongoDatabase database = mongoClient.getDatabase(table.database());
+        this.collection = database.getCollection(table.collection());
     }
 
     private void setObjectId(E entity, Document document) {

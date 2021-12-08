@@ -3,6 +3,7 @@ package win.doyto.query.core;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import win.doyto.query.geo.Box;
 import win.doyto.query.geo.Circle;
 import win.doyto.query.geo.Near;
 
@@ -42,7 +43,12 @@ public enum QuerySuffix {
     NearSphere(Near.class::isInstance),
     Center(Circle.class::isInstance),
     CenterSphere(Circle.class::isInstance),
-    NONE, Box;
+    Box(Box.class::isInstance),
+    // short for Polygon
+    Py(o -> o instanceof Collection && ((Collection<?>) o).size() >= 3),
+    Within,
+
+    NONE;
 
     private static final Pattern SUFFIX_PTN;
 

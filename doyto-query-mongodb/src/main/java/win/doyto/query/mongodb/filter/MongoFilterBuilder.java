@@ -10,6 +10,8 @@ import org.bson.conversions.Bson;
 import win.doyto.query.core.Pageable;
 import win.doyto.query.core.QuerySuffix;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.mongodb.entity.BsonDeserializer;
+import win.doyto.query.util.BeanUtil;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
@@ -53,6 +55,10 @@ public class MongoFilterBuilder {
         suffixFuncMap.put(Center, MongoGeoFilters::withinCenter);
         suffixFuncMap.put(CenterSphere, MongoGeoFilters::withinCenterSphere);
         suffixFuncMap.put(Box, MongoGeoFilters::withinBox);
+        suffixFuncMap.put(Py, MongoGeoFilters::polygon);
+        suffixFuncMap.put(Within, MongoGeoFilters::within);
+
+        BeanUtil.register(Bson.class, new BsonDeserializer());
     }
 
     @SneakyThrows
@@ -68,11 +74,16 @@ public class MongoFilterBuilder {
         for (Field field : fields) {
             Object value = CommonUtil.readFieldGetter(field, query);
             if (isValidValue(value, field)) {
+                String newPrefix = prefix + field.getName();
                 if (value instanceof Pageable) {
-                    buildFilter(value, field.getName(), filters);
+                    buildFilter(value, newPrefix, filters);
                 } else {
-                    filters.add(resolveFilter(prefix + field.getName(), value));
+                    filters.add(resolveFilter(newPrefix, value));
                 }
+            } else if (value instanceof Bson) {
+                String fieldName = field.getName();
+                String column = resolve(fieldName).resolveColumnName(fieldName);
+                filters.add(new Document(column, value));
             }
         }
     }

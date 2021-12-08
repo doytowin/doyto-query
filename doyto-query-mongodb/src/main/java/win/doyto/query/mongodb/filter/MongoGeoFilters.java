@@ -5,6 +5,9 @@ import lombok.experimental.UtilityClass;
 import org.bson.conversions.Bson;
 import win.doyto.query.geo.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * MongoQuerySuffix
  *
@@ -45,4 +48,15 @@ public class MongoGeoFilters {
         return Filters.geoWithinBox(column, p1.getX(), p1.getY(), p2.getX(), p2.getY());
     }
 
+    @SuppressWarnings("unchecked")
+    public static Bson polygon(String column, Object value) {
+        List<List<Double>> points = ((List<Point>) value)
+                .stream().map(Point::toList).collect(Collectors.toList());
+
+        return Filters.geoWithinPolygon(column, points);
+    }
+
+    public static Bson within(String column, Object value) {
+        return Filters.geoWithin(column, (Bson) value);
+    }
 }

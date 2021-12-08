@@ -7,6 +7,7 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import win.doyto.query.mongodb.entity.BsonDeserializer;
 import win.doyto.query.mongodb.test.geo.GeoQuery;
 import win.doyto.query.mongodb.test.inventory.InventoryQuery;
 import win.doyto.query.test.TestQuery;
@@ -52,9 +53,11 @@ class MongoFilterBuilderTest {
     }
 
     @ParameterizedTest
-    @CsvSource({
-            "{\"size\":{\"hLt\":15}},  {\"size.h\": {\"$lt\": 15}}",
-    })
+    @CsvSource(value = {
+            "{\"size\":{\"hLt\":15}} | {\"size.h\": {\"$lt\": 15}}",
+            "{\"size\":{\"hLt\":15,\"unit\":{\"name\":\"inch\"}}}" +
+                    "| {\"size.h\": {\"$lt\": 15}, \"size.unit.name\": \"inch\"}",
+    }, delimiter = '|')
     void testNestedFilter(String data, String expected) {
         InventoryQuery query = BeanUtil.parse(data, InventoryQuery.class);
         Bson filters = MongoFilterBuilder.buildFilter(query);
@@ -88,10 +91,27 @@ class MongoFilterBuilderTest {
                     "| {\"loc\": {\"$geoWithin\": {\"$centerSphere\": [[1.0, 1.0], 5.0]}}}",
             "{\"locBox\": {\"p1\": {\"x\": 1.0, \"y\": 2.0}, \"p2\": {\"x\": 2.0, \"y\": 1.0}}}" +
                     "| {\"loc\": {\"$geoWithin\": {\"$box\": [[1.0, 2.0], [2.0, 1.0]]}}}",
+            "{\"locBsonBox\": {\"$geoWithin\": {\"$box\": [[1.0, 2.0], [2.0, 1.0]]}}}" +
+                    "| {\"locBson\": {\"$geoWithin\": {\"$box\": [[1.0, 2.0], [2.0, 1.0]]}}}",
+            "{\"locPy\": [[1.0, 1.0], [1.0, 2.0], [2.0, 2.0], [2.0, 1.0]]}" +
+                    "| {\"loc\": {\"$geoWithin\": {\"$polygon\": [[1.0, 1.0], [1.0, 2.0], [2.0, 2.0], [2.0, 1.0]]}}}",
+            "{\"locWithin\": {\"$box\": [[1.0, 2.0], [2.0, 1.0]]}}}" +
+                    "| {\"loc\": {\"$geoWithin\": {\"$geometry\": {\"$box\": [[1.0, 2.0], [2.0, 1.0]]}}}}",
     }, delimiter = '|')
     void testGeoQuery(String data, String expected) {
+        BeanUtil.register(Bson.class, new BsonDeserializer());
         GeoQuery query = BeanUtil.parse(data, GeoQuery.class);
         Bson filters = MongoFilterBuilder.buildFilter(query);
         assertEquals(expected, filters.toBsonDocument(Document.class, codecRegistry).toJson());
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {
+             "{\"locPolygon\": [[1.0, 1.0], [1.0, 2.0]]}  | Polygon query should provide at lease 3 points.",
+    }, delimiter = '|')
+    void failureCaseForGeoQuery(String data, String message) {
+        GeoQuery query = BeanUtil.parse(data, GeoQuery.class);
+        Bson filters = MongoFilterBuilder.buildFilter(query);
+        assertEquals("{}", filters.toBsonDocument(Document.class, codecRegistry).toJson(), message);
     }
 }
