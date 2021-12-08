@@ -9,7 +9,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 class NonNullToStringStyle extends ToStringStyle {
 
-    public static final NonNullToStringStyle NON_NULL_STYLE = new NonNullToStringStyle(true);
     public static final NonNullToStringStyle NO_CLASS_NAME_NON_NULL_STYLE = new NonNullToStringStyle(false);
 
     private NonNullToStringStyle(boolean useClassName) {

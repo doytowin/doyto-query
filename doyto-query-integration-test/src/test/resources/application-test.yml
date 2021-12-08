@@ -20,5 +20,4 @@ doyto:
     config:
       dialect: win.doyto.query.dialect.HSQLDBDialect
       map-camel-case-to-underscore: true
-    caches:
-      - win.doyto.query.demo.module.user.UserEntity
+    caches: UserEntity, MenuEntity
