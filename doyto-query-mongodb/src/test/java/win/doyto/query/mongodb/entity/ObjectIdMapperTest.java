@@ -3,6 +3,7 @@ package win.doyto.query.mongodb.entity;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
@@ -23,5 +24,18 @@ class ObjectIdMapperTest {
         Object id = ObjectIdMapper.convert(ObjectIdEntity.class, objectId);
 
         assertSame(objectId, id);
+    }
+
+    static class ShortEntity extends MongoPersistable<Short> {
+    }
+
+    @Test
+    void setNullForEntity() {
+        ObjectIdMapper.initIdMapper(ShortEntity.class);
+
+        ObjectId objectId = new ObjectId();
+        Object id = ObjectIdMapper.convert(ShortEntity.class, objectId);
+
+        assertNull(id);
     }
 }
