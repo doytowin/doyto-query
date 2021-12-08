@@ -34,8 +34,6 @@ public abstract class MongoPersistable<I extends Serializable> implements Persis
 
     public void setObjectId(ObjectId objectId) {
         this.objectId = objectId;
-        if (this.id == null) {
-            this.id = ObjectIdMapper.convert(this.getClass(), objectId);
-        }
+        this.setId(ObjectIdMapper.convert(this.getClass(), objectId));
     }
 }
