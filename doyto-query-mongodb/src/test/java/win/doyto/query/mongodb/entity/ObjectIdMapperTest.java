@@ -3,8 +3,9 @@ package win.doyto.query.mongodb.entity;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import java.math.BigInteger;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * ObjectIdMapperTest
@@ -37,5 +38,18 @@ class ObjectIdMapperTest {
         Object id = ObjectIdMapper.convert(ShortEntity.class, objectId);
 
         assertNull(id);
+    }
+
+    static class BigIntegerEntity extends MongoPersistable<BigInteger> {
+    }
+
+    @Test
+    void setBigIntegerForEntity() {
+        ObjectIdMapper.initIdMapper(BigIntegerEntity.class);
+
+        ObjectId objectId = new ObjectId();
+        Object id = ObjectIdMapper.convert(BigIntegerEntity.class, objectId);
+
+        assertEquals(id, new BigInteger(objectId.toHexString(), 16));
     }
 }
