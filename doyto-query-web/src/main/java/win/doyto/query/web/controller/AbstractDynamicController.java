@@ -1,8 +1,8 @@
 package win.doyto.query.web.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
-import win.doyto.query.core.Pageable;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.service.DynamicService;
 import win.doyto.query.web.response.JsonBody;
@@ -16,7 +16,7 @@ import java.io.Serializable;
  */
 @JsonBody
 public abstract class AbstractDynamicController
-        <E extends Persistable<I>, I extends Serializable, Q extends Pageable, R, S, W extends IdWrapper<I>>
+        <E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery, R, S, W extends IdWrapper<I>>
         extends AbstractController<E, I, Q, R, S, W, DynamicService<E, I, Q>>
         implements RestApi<W, Q, R, S> {
 

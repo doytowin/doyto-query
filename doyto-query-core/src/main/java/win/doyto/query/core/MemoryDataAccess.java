@@ -29,7 +29,7 @@ import static win.doyto.query.util.CommonUtil.*;
  */
 @Slf4j
 @SuppressWarnings({"unchecked", "java:S3740"})
-public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q extends Pageable> implements DataAccess<E, I, Q> {
+public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery> implements DataAccess<E, I, Q> {
     protected static final Map<Class<?>, Map<?, ?>> tableMap = new ConcurrentHashMap<>();
 
     protected final Map<I, E> entitiesMap = new ConcurrentHashMap<>();

@@ -7,7 +7,7 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import win.doyto.query.core.Pageable;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.QuerySuffix;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.mongodb.entity.BsonDeserializer;
@@ -75,7 +75,7 @@ public class MongoFilterBuilder {
             Object value = CommonUtil.readFieldGetter(field, query);
             if (isValidValue(value, field)) {
                 String newPrefix = prefix + field.getName();
-                if (value instanceof Pageable) {
+                if (value instanceof DoytoQuery) {
                     buildFilter(value, newPrefix, filters);
                 } else {
                     filters.add(resolveFilter(newPrefix, value));

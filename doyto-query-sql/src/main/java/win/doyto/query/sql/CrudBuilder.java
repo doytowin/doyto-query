@@ -3,8 +3,8 @@ package win.doyto.query.sql;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
-import win.doyto.query.core.Pageable;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
@@ -149,7 +149,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
     }
 
     @Override
-    public SqlAndArgs buildPatchAndArgsWithQuery(E entity, Pageable query) {
+    public SqlAndArgs buildPatchAndArgsWithQuery(E entity, DoytoQuery query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             String sql = buildPatchAndArgs(entity, argList)
                     + BuildHelper.buildWhere(query, argList);
@@ -158,7 +158,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
     }
 
     @Override
-    public SqlAndArgs buildDeleteAndArgs(Pageable query) {
+    public SqlAndArgs buildDeleteAndArgs(DoytoQuery query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             String sql = buildDeleteFromTable(query.toIdWrapper())
                     +  BuildHelper.buildWhere(query, argList);

@@ -3,7 +3,7 @@ package win.doyto.query.jdbc;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
-import win.doyto.query.core.Pageable;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.service.PageList;
 import win.doyto.query.test.join.TestJoinQuery;
 import win.doyto.query.test.join.TestJoinView;
@@ -25,7 +25,7 @@ class JoinTest extends JdbcApplicationTest {
 
     @Test
     void queryForJoin() {
-        JdbcComplexQueryService<UserCountByRoleView, Pageable> jdbcComplexQueryService = new JdbcComplexQueryService<>(UserCountByRoleView.class);
+        JdbcComplexQueryService<UserCountByRoleView, DoytoQuery> jdbcComplexQueryService = new JdbcComplexQueryService<>(UserCountByRoleView.class);
         jdbcComplexQueryService.setJdbcOperations(jdbcOperations);
 
         TestJoinQuery query = new TestJoinQuery();
@@ -37,7 +37,7 @@ class JoinTest extends JdbcApplicationTest {
 
     @Test
     void pageForJoin() {
-        JdbcComplexQueryService<TestJoinView, Pageable> jdbcComplexQueryService = new JdbcComplexQueryService<>(TestJoinView.class);
+        JdbcComplexQueryService<TestJoinView, DoytoQuery> jdbcComplexQueryService = new JdbcComplexQueryService<>(TestJoinView.class);
         jdbcComplexQueryService.setJdbcOperations(jdbcOperations);
 
         TestJoinQuery testJoinQuery = new TestJoinQuery();

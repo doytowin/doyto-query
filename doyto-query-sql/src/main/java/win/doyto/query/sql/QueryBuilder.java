@@ -3,8 +3,8 @@ package win.doyto.query.sql;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
-import win.doyto.query.core.Pageable;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
@@ -56,7 +56,7 @@ public class QueryBuilder {
     }
 
     @SuppressWarnings("java:S4973")
-    private String build(Pageable query, List<Object> argList, String... columns) {
+    private String build(DoytoQuery query, List<Object> argList, String... columns) {
         String sql = BuildHelper.buildStart(columns, resolveTableName(query.toIdWrapper()));
         sql = replaceHolderInString(query, sql);
         sql += BuildHelper.buildWhere(query, argList);
@@ -69,15 +69,15 @@ public class QueryBuilder {
         return sql;
     }
 
-    String buildSelectAndArgs(Pageable query, List<Object> argList) {
+    String buildSelectAndArgs(DoytoQuery query, List<Object> argList) {
         return build(query, argList, "*");
     }
 
-    public SqlAndArgs buildCountAndArgs(Pageable query) {
+    public SqlAndArgs buildCountAndArgs(DoytoQuery query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> build(query, argList, COUNT));
     }
 
-    public SqlAndArgs buildSelectColumnsAndArgs(Pageable query, String... columns) {
+    public SqlAndArgs buildSelectColumnsAndArgs(DoytoQuery query, String... columns) {
         return SqlAndArgs.buildSqlWithArgs(argList -> build(query, argList, columns));
     }
 
@@ -100,7 +100,7 @@ public class QueryBuilder {
         return columnStr;
     }
 
-    public SqlAndArgs buildSelectIdAndArgs(Pageable query) {
+    public SqlAndArgs buildSelectIdAndArgs(DoytoQuery query) {
         return buildSelectColumnsAndArgs(query, idColumn);
     }
 

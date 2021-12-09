@@ -2,7 +2,7 @@ package win.doyto.query.sql;
 
 import org.apache.commons.lang3.SerializationUtils;
 import win.doyto.query.annotation.Joins;
-import win.doyto.query.core.Pageable;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
@@ -66,7 +66,7 @@ public class JoinQueryBuilder {
     }
 
     @SuppressWarnings("java:S4973")
-    private String build(Pageable pageQuery, List<Object> argList, String... columns) {
+    private String build(DoytoQuery pageQuery, List<Object> argList, String... columns) {
         pageQuery = SerializationUtils.clone(pageQuery);
 
         String join = resolveJoin(pageQuery, argList, joinSql);
@@ -90,11 +90,11 @@ public class JoinQueryBuilder {
         return sql;
     }
 
-    public SqlAndArgs buildJoinSelectAndArgs(Pageable query) {
+    public SqlAndArgs buildJoinSelectAndArgs(DoytoQuery query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> build(query, argList, columnsForSelect));
     }
 
-    public SqlAndArgs buildJoinCountAndArgs(Pageable query) {
+    public SqlAndArgs buildJoinCountAndArgs(DoytoQuery query) {
         return SqlAndArgs.buildSqlWithArgs((argList -> build(query, argList, COUNT)));
     }
 }

@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuppressWarnings("java:S3740")
-public class PageQuery implements Pageable {
+public class PageQuery implements DoytoQuery {
 
     @SuppressWarnings("java:S5843")
     protected static final String SORT_RX = "(\\w+,(asc|desc)|field\\(\\w+(,[\\w']+)++\\))(;(\\w+,(asc|desc)|field\\(\\w+(,[\\w']+)++\\)))*";

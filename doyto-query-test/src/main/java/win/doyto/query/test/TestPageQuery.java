@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.Pageable;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.validation.PageGroup;
 
 import java.util.regex.Pattern;
@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuppressWarnings("java:S3740")
-public class TestPageQuery implements Pageable {
+public class TestPageQuery implements DoytoQuery {
 
     @SuppressWarnings("java:S5843")
     protected static final String SORT_RX = "(\\w+,(asc|desc)|field\\(\\w+(,[\\w']+)++\\))(;(\\w+,(asc|desc)|field\\(\\w+(,[\\w']+)++\\)))*";

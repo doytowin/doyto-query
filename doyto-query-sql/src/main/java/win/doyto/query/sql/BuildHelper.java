@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.core.Pageable;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
@@ -28,7 +28,7 @@ public class BuildHelper {
         return Constant.SELECT + StringUtils.join(columns, SEPARATOR) + FROM + from;
     }
 
-    public static String buildWhere(Pageable query, List<Object> argList) {
+    public static String buildWhere(DoytoQuery query, List<Object> argList) {
         Field[] fields = ColumnUtil.initFields(query.getClass(), FieldProcessor::init);
         StringJoiner whereJoiner = new StringJoiner(" AND ", fields.length);
         for (Field field : fields) {
@@ -44,14 +44,14 @@ public class BuildHelper {
         return WHERE + whereJoiner;
     }
 
-    static String buildOrderBy(Pageable pageQuery) {
+    static String buildOrderBy(DoytoQuery pageQuery) {
         if (pageQuery.getSort() == null) {
             return "";
         }
         return " ORDER BY " + PTN_SORT.matcher(pageQuery.getSort()).replaceAll(" $1").replace(";", SEPARATOR);
     }
 
-    static String buildPaging(String sql, Pageable pageQuery) {
+    static String buildPaging(String sql, DoytoQuery pageQuery) {
         if (pageQuery.needPaging()) {
             sql = GlobalConfiguration.dialect().buildPageSql(sql, pageQuery.getPageSize(), pageQuery.calcOffset());
         }

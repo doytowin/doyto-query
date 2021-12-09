@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
-import win.doyto.query.core.Pageable;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.service.QueryService;
 import win.doyto.query.sql.JoinQueryBuilder;
 import win.doyto.query.sql.SqlAndArgs;
@@ -17,7 +17,7 @@ import java.util.List;
  * @author f0rb on 2019-06-09
  */
 @AllArgsConstructor
-public class JdbcComplexQueryService<E, Q extends Pageable> implements QueryService<E, Q> {
+public class JdbcComplexQueryService<E, Q extends DoytoQuery> implements QueryService<E, Q> {
 
     private DatabaseOperations databaseOperations;
     private final JoinQueryBuilder joinQueryBuilder;

@@ -3,8 +3,8 @@ package win.doyto.query.jdbc;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.jdbc.core.*;
 import win.doyto.query.core.DataAccess;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
-import win.doyto.query.core.Pageable;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.sql.SqlAndArgs;
 import win.doyto.query.sql.SqlBuilder;
@@ -26,7 +26,7 @@ import javax.persistence.Id;
  *
  * @author f0rb
  */
-public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q extends Pageable> implements DataAccess<E, I, Q> {
+public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery> implements DataAccess<E, I, Q> {
 
     private static final Map<Class<?>, RowMapper<?>> classRowMapperMap;
 

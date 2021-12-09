@@ -1,6 +1,6 @@
 package win.doyto.query.service;
 
-import win.doyto.query.core.Pageable;
+import win.doyto.query.core.DoytoQuery;
 
 import java.util.List;
 import java.util.function.Function;
@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  *
  * @author f0rb
  */
-public interface QueryService<E, Q extends Pageable> {
+public interface QueryService<E, Q extends DoytoQuery> {
 
     List<E> query(Q query);
 

@@ -2,8 +2,8 @@ package win.doyto.query.web.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.web.bind.annotation.PathVariable;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
-import win.doyto.query.core.Pageable;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.service.AbstractCrudService;
 import win.doyto.query.service.CrudService;
@@ -25,7 +25,7 @@ import java.io.Serializable;
  * @author f0rb on 2020-01-29
  */
 @JsonBody
-public abstract class AbstractRestController<E extends Persistable<I>, I extends Serializable, Q extends Pageable, R, S>
+public abstract class AbstractRestController<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery, R, S>
         extends AbstractController<E, I, Q, R, S, IdWrapper.Simple<I>, CrudService<E, I, Q>>
         implements RestApi<I, Q, R, S> {
 

@@ -17,9 +17,9 @@ import org.springframework.transaction.support.*;
 import win.doyto.query.cache.CacheInvoker;
 import win.doyto.query.cache.CacheWrapper;
 import win.doyto.query.core.DataAccess;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.MemoryDataAccess;
-import win.doyto.query.core.Pageable;
 import win.doyto.query.entity.EntityAspect;
 import win.doyto.query.entity.MongoEntity;
 import win.doyto.query.entity.Persistable;
@@ -39,7 +39,7 @@ import javax.persistence.Table;
  *
  * @author f0rb on 2019-05-28
  */
-public abstract class AbstractDynamicService<E extends Persistable<I>, I extends Serializable, Q extends Pageable>
+public abstract class AbstractDynamicService<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
         implements DynamicService<E, I, Q> {
 
     protected DataAccess<E, I, Q> dataAccess;

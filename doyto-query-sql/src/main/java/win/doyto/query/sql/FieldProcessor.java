@@ -7,7 +7,7 @@ import win.doyto.query.annotation.NestedQueries;
 import win.doyto.query.annotation.NestedQuery;
 import win.doyto.query.annotation.QueryField;
 import win.doyto.query.annotation.QueryTableAlias;
-import win.doyto.query.core.Pageable;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
@@ -89,8 +89,8 @@ final class FieldProcessor {
         Class<?> fieldType = field.getType();
         if (boolean.class.isAssignableFrom(fieldType)) {
             processor = EMPTY_PROCESSOR;
-        } else if (Pageable.class.isAssignableFrom(fieldType)) {
-            processor = (argList, value) -> BuildHelper.buildWhere((Pageable) value, argList);
+        } else if (DoytoQuery.class.isAssignableFrom(fieldType)) {
+            processor = (argList, value) -> BuildHelper.buildWhere((DoytoQuery) value, argList);
         } else {
             String fieldName = field.getName();
             if (CommonUtil.containsOr(fieldName)) {
