@@ -238,6 +238,9 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
 
     @Override
     public E get(IdWrapper<I> w) {
+        if (TransactionSynchronizationManager.isActualTransactionActive()) {
+            return fetch(w);
+        }
         return entityCacheWrapper.execute(resolveCacheKey(w), () -> fetch(w));
     }
 

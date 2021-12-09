@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author f0rb on 2020-04-11
  */
-@Rollback
 class MenuMvcTest extends DemoApplicationTest {
 
     private final String menuUri = "/01/menu/";
@@ -95,6 +94,7 @@ class MenuMvcTest extends DemoApplicationTest {
                 .andReturn();
         performAndExpectSuccess(put(menuUri1), "{\"id\":1,\"platform\":\"01\",\"memo\":\"new memo\"}");
         performAndExpectSuccess(get(menuUri1))
+                .andExpect(jsonPath("$.data.menuName").doesNotExist())
                 .andExpect(jsonPath("$.data.memo").value("new memo"))
                 .andExpect(jsonPath("$.data.updateUserId").value("1"));
     }
