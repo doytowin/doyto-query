@@ -2,7 +2,6 @@ package win.doyto.query.mongodb.filter;
 
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
-import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
@@ -61,7 +60,6 @@ public class MongoFilterBuilder {
         BeanUtil.register(Bson.class, new BsonDeserializer());
     }
 
-    @SneakyThrows
     public static Bson buildFilter(Object query) {
         List<Bson> filters = new ArrayList<>();
         buildFilter(query, "", filters);
