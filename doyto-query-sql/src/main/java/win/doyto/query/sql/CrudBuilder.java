@@ -180,6 +180,12 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
                 + WHERE + SqlQuerySuffix.In.buildColumnCondition(idColumn, argList, ids));
     }
 
+    @Override
+    public SqlAndArgs buildPatchAndArgsWithIds(E entity, List<?> ids) {
+        return SqlAndArgs.buildSqlWithArgs(argList -> buildPatchAndArgs(entity, argList)
+                + WHERE + SqlQuerySuffix.In.buildColumnCondition(idColumn, argList, ids));
+    }
+
     private String buildDeleteFromTable(IdWrapper<?> idWrapper) {
         return "DELETE FROM " + resolveTableName(idWrapper);
     }

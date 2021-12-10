@@ -22,6 +22,7 @@ import win.doyto.query.test.DynamicIdWrapper;
 
 import java.util.Arrays;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -55,5 +56,19 @@ class SqlBuilderTest {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildDeleteByIdIn(idWrapper, Arrays.asList());
         assertEquals("DELETE FROM t_dynamic_f0rb_i18n WHERE id IN (null)", sqlAndArgs.getSql());
         assertEquals(0, sqlAndArgs.getArgs().length);
+    }
+
+    @Test
+    void buildPatchAndArgsWithIds() {
+        DynamicEntity entity = new DynamicEntity();
+        entity.setId(1);
+        entity.setUser("f0rb");
+        entity.setProject("i18n");
+        entity.setScore(100);
+
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildPatchAndArgsWithIds(entity, Arrays.asList(1, 2, 3));
+
+        assertEquals("UPDATE t_dynamic_f0rb_i18n SET user_score = ? WHERE id IN (?, ?, ?)", sqlAndArgs.getSql());
+        assertThat(sqlAndArgs.getArgs()).containsExactly(100, 1, 2, 3);
     }
 }

@@ -35,5 +35,8 @@ public interface SqlBuilder<E extends Persistable<?>> {
 
     SqlAndArgs buildDeleteById(IdWrapper<?> w);
 
-    SqlAndArgs buildDeleteByIdIn(IdWrapper<?> w, List<?> asList);
+    SqlAndArgs buildDeleteByIdIn(IdWrapper<?> w, List<?> ids);
+
+    SqlAndArgs buildPatchAndArgsWithIds(E entity, List<?> ids);
+
 }
