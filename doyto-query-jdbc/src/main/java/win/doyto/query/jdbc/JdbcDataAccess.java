@@ -146,6 +146,9 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     @Override
     public final int patch(E e, Q q) {
         List<I> ids = queryIds(q);
+        if (ids.isEmpty()) {
+            return 0;
+        }
         SqlAndArgs sqlAndArgs = sqlBuilder.buildPatchAndArgsWithIds(e, ids);
         return databaseOperations.update(sqlAndArgs);
     }

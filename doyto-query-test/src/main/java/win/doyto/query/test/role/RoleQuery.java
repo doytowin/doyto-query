@@ -35,4 +35,5 @@ import win.doyto.query.test.TestPageQuery;
 @SuperBuilder
 public class RoleQuery extends TestPageQuery {
     private String roleNameLike;
+    private Boolean valid;
 }

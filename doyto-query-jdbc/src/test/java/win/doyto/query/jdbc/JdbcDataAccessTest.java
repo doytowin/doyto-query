@@ -63,4 +63,14 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
                 .extracting("valid")
                 .containsExactly(true, true, false, false, true);
     }
+
+    @Test
+    void shouldNotUpdateWhenNothingFound() {
+        RoleEntity patch = new RoleEntity();
+        patch.setValid(false);
+
+        jdbcDataAccess.patch(patch, RoleQuery.builder().roleNameLike("noop").build());
+
+        verify(databaseOperations, times(0)).update(any(SqlAndArgs.class));
+    }
 }
