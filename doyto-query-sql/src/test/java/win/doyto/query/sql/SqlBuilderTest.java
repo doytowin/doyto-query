@@ -44,4 +44,16 @@ class SqlBuilderTest {
         assertEquals("DELETE FROM t_dynamic_f0rb_i18n WHERE id IN (?, ?, ?)", sqlAndArgs.getSql());
         assertEquals(3, sqlAndArgs.getArgs().length);
     }
+
+    @Test
+    void buildDeleteByIdInWithEmptyIds() {
+        DynamicIdWrapper idWrapper = new DynamicIdWrapper();
+        idWrapper.setId(1);
+        idWrapper.setUser("f0rb");
+        idWrapper.setProject("i18n");
+
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildDeleteByIdIn(idWrapper, Arrays.asList());
+        assertEquals("DELETE FROM t_dynamic_f0rb_i18n WHERE id IN (null)", sqlAndArgs.getSql());
+        assertEquals(0, sqlAndArgs.getArgs().length);
+    }
 }
