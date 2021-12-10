@@ -28,7 +28,7 @@ class JdbcComplexQueryServiceTest {
         String expected = "SELECT username, r.roleName AS roleName " +
             "FROM user u " +
             "left join t_user_and_role ur on ur.userId = u.id " +
-            "inner join role r on r.id = ur.roleId and r.roleName = ? " +
+            "inner join t_role r on r.id = ur.roleId and r.roleName = ? " +
             "WHERE u.userLevel = ?";
         SqlAndArgs sqlAndArgs = jdbcComplexQueryService.buildJoinSelectAndArgs(testJoinQuery);
         assertEquals(expected, sqlAndArgs.getSql());
@@ -49,7 +49,7 @@ class JdbcComplexQueryServiceTest {
         String expected = "SELECT username, r.roleName AS roleName " +
             "FROM user u " +
             "left join t_user_and_role ur on ur.userId = u.id " +
-            "inner join role r on r.id = ur.roleId and r.roleName = ? " +
+            "inner join t_role r on r.id = ur.roleId and r.roleName = ? " +
             "WHERE u.userLevel = ? AND (r.roleName LIKE ? OR r.roleCode LIKE ?)";
         SqlAndArgs sqlAndArgs = JdbcComplexQueryService.buildJoinSelectAndArgs(testJoinQuery);
         assertEquals(expected, sqlAndArgs.getSql());
@@ -67,7 +67,7 @@ class JdbcComplexQueryServiceTest {
         String expected = "SELECT r.roleName AS roleName, count(u.id) AS userCount " +
             "FROM user u " +
             "left join t_user_and_role ur on ur.userId = u.id " +
-            "inner join role r on r.id = ur.roleId " +
+            "inner join t_role r on r.id = ur.roleId " +
             "GROUP BY r.roleName HAVING count(*) > 0 " +
             "ORDER BY userCount asc " +
             "LIMIT 5 OFFSET 0";
