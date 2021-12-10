@@ -19,11 +19,11 @@ import win.doyto.query.cache.CacheWrapper;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
-import win.doyto.query.core.MemoryDataAccess;
 import win.doyto.query.entity.EntityAspect;
 import win.doyto.query.entity.MongoEntity;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.entity.UserIdProvider;
+import win.doyto.query.memory.MemoryDataAccess;
 import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;
