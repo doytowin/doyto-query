@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-package win.doyto.query.web.demo.module.role;
+package win.doyto.query.test.role;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import win.doyto.query.test.role.RoleEntity;
-import win.doyto.query.test.role.RoleQuery;
-import win.doyto.query.web.controller.AbstractEIQController;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import win.doyto.query.test.TestPageQuery;
 
 /**
- * UserController
+ * UserQuery
  *
  * @author f0rb on 2020-04-01
  */
-@RestController
-@RequestMapping("role")
-public class RoleController extends AbstractEIQController<RoleEntity, Long, RoleQuery> {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
+public class RoleQuery extends TestPageQuery {
+    private String roleNameLike;
 }
