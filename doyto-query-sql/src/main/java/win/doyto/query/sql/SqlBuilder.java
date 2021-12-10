@@ -4,6 +4,8 @@ import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.entity.Persistable;
 
+import java.util.List;
+
 /**
  * SqlBuilder
  *
@@ -33,4 +35,5 @@ public interface SqlBuilder<E extends Persistable<?>> {
 
     SqlAndArgs buildDeleteById(IdWrapper<?> w);
 
+    SqlAndArgs buildDeleteByIdIn(IdWrapper<?> w, List<?> asList);
 }

@@ -174,6 +174,12 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
         });
     }
 
+    @Override
+    public SqlAndArgs buildDeleteByIdIn(IdWrapper<?> w, List<?> ids) {
+        return SqlAndArgs.buildSqlWithArgs(argList -> buildDeleteFromTable(w)
+                + WHERE + SqlQuerySuffix.In.buildColumnCondition(idColumn, argList, ids));
+    }
+
     private String buildDeleteFromTable(IdWrapper<?> idWrapper) {
         return "DELETE FROM " + resolveTableName(idWrapper);
     }

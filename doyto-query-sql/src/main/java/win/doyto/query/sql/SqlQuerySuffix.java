@@ -108,7 +108,7 @@ enum SqlQuerySuffix {
         return fieldName.endsWith(suffix) ? fieldName.substring(0, fieldName.length() - suffix.length()) : fieldName;
     }
 
-    private String buildColumnCondition(String columnName, List<Object> argList, Object value) {
+    String buildColumnCondition(String columnName, List<Object> argList, Object value) {
         if (shouldIgnore(value)) {
             return null;
         }
