@@ -10,6 +10,7 @@ import win.doyto.query.test.role.RoleEntity;
 import win.doyto.query.test.role.RoleQuery;
 
 import java.lang.reflect.Constructor;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -49,5 +50,17 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
     void shouldNotDeleteWhenNothingFound() {
         jdbcDataAccess.delete(RoleQuery.builder().roleNameLike("noop").build());
         verify(databaseOperations, times(0)).update(any(SqlAndArgs.class));
+    }
+
+    @Test
+    void updateByPage() {
+        RoleEntity patch = new RoleEntity();
+        patch.setValid(false);
+
+        jdbcDataAccess.patch(patch, RoleQuery.builder().pageNumber(1).pageSize(2).build());
+        List<RoleEntity> query = jdbcDataAccess.query(RoleQuery.builder().sort("id").build());
+        assertThat(query)
+                .extracting("valid")
+                .containsExactly(true, true, false, false, true);
     }
 }
