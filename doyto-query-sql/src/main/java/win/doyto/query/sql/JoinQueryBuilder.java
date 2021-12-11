@@ -43,6 +43,9 @@ public class JoinQueryBuilder {
     }
 
     private String buildJoinSql() {
+        if (!entityClass.isAnnotationPresent(Joins.class)) {
+            return "";
+        }
         Joins.Join[] joins = entityClass.getAnnotation(Joins.class).value();
         StringJoiner joiner = new StringJoiner(SPACE, joins.length);
         Arrays.stream(joins).map(Joins.Join::value).forEachOrdered(joiner::append);
@@ -69,17 +72,19 @@ public class JoinQueryBuilder {
     private String build(DoytoQuery pageQuery, List<Object> argList, String... columns) {
         pageQuery = SerializationUtils.clone(pageQuery);
 
-        String join = resolveJoin(pageQuery, argList, joinSql);
+        String join = joinSql.isEmpty() ? "" : resolveJoin(pageQuery, argList, joinSql);
         String from = tableName + join;
         String sql = buildStart(columns, from);
         sql += buildWhere(pageQuery, argList);
 
-        Joins joins = entityClass.getAnnotation(Joins.class);
-        if (!joins.groupBy().isEmpty()) {
-            sql += " GROUP BY " + joins.groupBy();
-        }
-        if (!joins.having().isEmpty()) {
-            sql += " HAVING " + joins.having();
+        if (entityClass.isAnnotationPresent(Joins.class)) {
+            Joins joins = entityClass.getAnnotation(Joins.class);
+            if (!joins.groupBy().isEmpty()) {
+                sql += " GROUP BY " + joins.groupBy();
+            }
+            if (!joins.having().isEmpty()) {
+                sql += " HAVING " + joins.having();
+            }
         }
         // intentionally use ==
         if (!(columns.length == 1 && COUNT == columns[0])) {
