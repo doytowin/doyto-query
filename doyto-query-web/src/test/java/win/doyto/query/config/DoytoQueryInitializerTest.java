@@ -1,3 +1,19 @@
+/*
+ * Copyright © 2019-2021 Forb Yuan
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package win.doyto.query.config;
 
 import org.junit.jupiter.api.AfterEach;
@@ -44,10 +60,18 @@ class DoytoQueryInitializerTest {
                      () -> doytoQueryInitializer.newDialect("fake.DialectClass"));
     }
 
+    /**
+     * Since the page number from request NOW starts from 1
+     * and the page number processed in backend always starts from 0,
+     * so we need to adjust the page number by minus 1,
+     * and the result should >= 0.
+     */
     @Test
     void testSetPageNumber() {
         GlobalConfiguration globalConfiguration = GlobalConfiguration.instance();
-        assertEquals(1, (int) globalConfiguration.getStartPageNumberAdjuster().apply(1));
+        assertEquals(0, (int) globalConfiguration.getStartPageNumberAdjuster().apply(1));
+        assertEquals(0, (int) globalConfiguration.getStartPageNumberAdjuster().apply(0));
+        assertEquals(7, (int) globalConfiguration.getStartPageNumberAdjuster().apply(8));
     }
 
     @Test

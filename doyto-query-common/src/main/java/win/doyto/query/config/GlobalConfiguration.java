@@ -36,7 +36,8 @@ public class GlobalConfiguration {
         private static final GlobalConfiguration instance = new GlobalConfiguration();
 
         static {
-            instance.setStartPageNumberFromOne(false);
+            // !!! Default to set page number starting from ONE since 0.3.0 !!!
+            instance.setStartPageNumberFromOne(true);
         }
     }
 

@@ -26,19 +26,22 @@ public class DoytoQueryInitializer implements ApplicationContextInitializer<Conf
     }
 
     private void configStartPageNumber(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {
-        globalConfiguration.setStartPageNumberFromOne(environment.getProperty(getKey("start-page-number-from-one"), boolean.class, false));
+        boolean defaultValue = true;
+        globalConfiguration.setStartPageNumberFromOne(environment.getProperty(key("start-page-number-from-one"), boolean.class, defaultValue));
     }
 
     void configCamelCase(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {
-        globalConfiguration.setMapCamelCaseToUnderscore(environment.getProperty(getKey("map-camel-case-to-underscore"), boolean.class, globalConfiguration.isMapCamelCaseToUnderscore()));
+        boolean defaultValue = globalConfiguration.isMapCamelCaseToUnderscore();
+        globalConfiguration.setMapCamelCaseToUnderscore(environment.getProperty(key("map-camel-case-to-underscore"), boolean.class, defaultValue));
     }
 
     private void configIgnoreCacheException(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {
-        globalConfiguration.setIgnoreCacheException(environment.getProperty(getKey("ignore-cache-exception"), boolean.class, globalConfiguration.isIgnoreCacheException()));
+        boolean defaultValue = globalConfiguration.isIgnoreCacheException();
+        globalConfiguration.setIgnoreCacheException(environment.getProperty(key("ignore-cache-exception"), boolean.class, defaultValue));
     }
 
     private void configDialect(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {
-        String dialectClass = environment.getProperty(getKey("dialect"));
+        String dialectClass = environment.getProperty(key("dialect"));
         if (dialectClass == null) {
             return;
         }
@@ -51,7 +54,7 @@ public class DoytoQueryInitializer implements ApplicationContextInitializer<Conf
         return (Dialect) Class.forName(dialectClass).getDeclaredConstructor().newInstance();
     }
 
-    private String getKey(String key) {
+    private String key(String key) {
         return DOYTO_QUERY_CONFIG + key;
     }
 }

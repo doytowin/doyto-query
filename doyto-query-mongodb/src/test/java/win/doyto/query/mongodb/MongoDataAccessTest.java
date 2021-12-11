@@ -174,7 +174,7 @@ class MongoDataAccessTest {
     @Test
     void paging() {
         // query [2,4)
-        InventoryQuery testQuery = InventoryQuery.builder().pageNumber(1).pageSize(2).build();
+        InventoryQuery testQuery = InventoryQuery.builder().pageNumber(2).pageSize(2).build();
         assertThat(mongoDataAccess.count(testQuery)).isEqualTo(5);
         assertThat(mongoDataAccess.query(testQuery))
                 .extracting("item")

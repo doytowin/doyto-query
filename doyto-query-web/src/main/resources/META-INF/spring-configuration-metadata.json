@@ -18,7 +18,7 @@
     {
       "name": "doyto.query.config.start-page-number-from-one",
       "type": "java.lang.Boolean",
-      "description": "Set start page number to 1. Default: false. Will set to true in next minor version."
+      "description": "Set start page number to 1. Default: true, since 0.3.0."
     },
     {
       "name": "doyto.query.caches",
