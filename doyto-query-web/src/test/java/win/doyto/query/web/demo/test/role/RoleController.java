@@ -1,5 +1,6 @@
 package win.doyto.query.web.demo.test.role;
 
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import win.doyto.query.web.controller.AbstractEIQController;
 import win.doyto.query.web.response.JsonBody;
 
 import java.util.List;
+import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -24,7 +26,10 @@ import javax.validation.constraints.Size;
 @RequestMapping("role")
 public class RoleController extends AbstractEIQController<RoleEntity, Long, RoleQuery> {
 
-    public CrudService getService() {
+    @Resource
+    private BeanFactory beanFactory;
+
+    public CrudService<RoleEntity, Long, RoleQuery> getService() {
         return service;
     }
 

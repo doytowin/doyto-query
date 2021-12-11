@@ -5,12 +5,16 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import win.doyto.query.config.InjectionBeanPostProcessor;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -74,6 +78,11 @@ public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL)
                 .setTimeZone(TimeZone.getTimeZone("GMT+8")) // 中国的东8时区
                 .setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+    }
+
+    @Bean
+    public BeanPostProcessor injectionBeanPostProcessor(AutowireCapableBeanFactory beanFactory) {
+        return new InjectionBeanPostProcessor(beanFactory);
     }
 
 }
