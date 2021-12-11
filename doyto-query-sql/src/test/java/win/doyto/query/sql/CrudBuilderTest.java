@@ -3,7 +3,10 @@ package win.doyto.query.sql;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.test.*;
+import win.doyto.query.test.DynamicEntity;
+import win.doyto.query.test.DynamicQuery;
+import win.doyto.query.test.TestEntity;
+import win.doyto.query.test.TestEnum;
 import win.doyto.query.util.CommonUtil;
 
 import java.util.ArrayList;
@@ -127,19 +130,6 @@ class CrudBuilderTest {
     }
 
     @Test
-    void buildPatchAndArgsWithQuery() {
-        TestEntity testEntity = new TestEntity();
-        testEntity.setNickname("测试");
-
-        TestQuery testQuery = TestQuery.builder().username("test").pageNumber(2).pageSize(5).build();
-
-        SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildPatchAndArgsWithQuery(testEntity, testQuery);
-
-        assertEquals("UPDATE user SET nickname = ? WHERE username = ? LIMIT 5", sqlAndArgs.getSql());
-        assertThat(sqlAndArgs.getArgs()).containsExactly("测试", "test");
-    }
-
-    @Test
     void createMulti() {
         SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildCreateAndArgs(Arrays.asList(new TestEntity(), new TestEntity(), new TestEntity()));
         assertEquals(
@@ -163,16 +153,6 @@ class CrudBuilderTest {
         assertEquals("SELECT * FROM t_dynamic_f0rb_${project} WHERE score < ?",
                      dynamicEntityCrudBuilder.buildSelectAndArgs(dynamicQuery, argList));
         assertThat(argList).containsExactly(80);
-    }
-
-    @Test
-    void buildDeleteAndArgs() {
-        TestQuery testQuery = TestQuery.builder().username("test").pageNumber(3).pageSize(10).build();
-
-        SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildDeleteAndArgs(testQuery);
-
-        assertEquals("DELETE FROM user WHERE username = ? LIMIT 10", sqlAndArgs.getSql());
-        assertThat(sqlAndArgs.getArgs()).containsExactly("test");
     }
 
     @Test
@@ -207,11 +187,4 @@ class CrudBuilderTest {
         assertThat(sqlAndArgs.getArgs()).containsExactly("中文", 100, 1);
     }
 
-    @Test
-    void buildDeleteAndArgsForDynamicTable() {
-        DynamicQuery dynamicQuery = DynamicQuery.builder().user("f0rb").project("i18n").scoreLt(100).pageSize(10).build();
-        SqlAndArgs sqlAndArgs = dynamicEntityCrudBuilder.buildDeleteAndArgs(dynamicQuery);
-        assertEquals("DELETE FROM t_dynamic_f0rb_i18n WHERE score < ? LIMIT 10", sqlAndArgs.getSql());
-        assertThat(sqlAndArgs.getArgs()).containsExactly(100);
-    }
 }

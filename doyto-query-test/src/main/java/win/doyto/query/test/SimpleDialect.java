@@ -10,6 +10,6 @@ import win.doyto.query.core.Dialect;
 public class SimpleDialect implements Dialect {
     @Override
     public String buildPageSql(String sql, int limit, long offset) {
-        return sql + " LIMIT " + limit + (sql.startsWith("SELECT") ? " OFFSET " + offset : "");
+        return sql + " LIMIT " + limit + " OFFSET " + offset;
     }
 }

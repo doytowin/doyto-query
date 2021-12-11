@@ -3,7 +3,6 @@ package win.doyto.query.sql;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.ColumnUtil;
@@ -145,24 +144,6 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
             String sql = buildPatchAndArgs(entity, argList) + whereId;
             argList.add(readField(idField, entity));
             return sql;
-        });
-    }
-
-    @Override
-    public SqlAndArgs buildPatchAndArgsWithQuery(E entity, DoytoQuery query) {
-        return SqlAndArgs.buildSqlWithArgs(argList -> {
-            String sql = buildPatchAndArgs(entity, argList)
-                    + BuildHelper.buildWhere(query, argList);
-            return BuildHelper.buildPaging(sql, query);
-        });
-    }
-
-    @Override
-    public SqlAndArgs buildDeleteAndArgs(DoytoQuery query) {
-        return SqlAndArgs.buildSqlWithArgs(argList -> {
-            String sql = buildDeleteFromTable(query.toIdWrapper())
-                    +  BuildHelper.buildWhere(query, argList);
-            return BuildHelper.buildPaging(sql, query);
         });
     }
 

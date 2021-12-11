@@ -29,10 +29,6 @@ public interface SqlBuilder<E extends Persistable<?>> {
 
     SqlAndArgs buildPatchAndArgsWithId(E entity);
 
-    SqlAndArgs buildPatchAndArgsWithQuery(E entity, DoytoQuery query);
-
-    SqlAndArgs buildDeleteAndArgs(DoytoQuery query);
-
     SqlAndArgs buildDeleteById(IdWrapper<?> w);
 
     SqlAndArgs buildDeleteByIdIn(IdWrapper<?> w, List<?> ids);
