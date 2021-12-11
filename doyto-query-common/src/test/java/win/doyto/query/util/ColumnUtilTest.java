@@ -4,7 +4,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.test.TestChildQuery;
 import win.doyto.query.test.TestEntity;
+import win.doyto.query.test.TestQuery;
+
+import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,8 +34,15 @@ class ColumnUtilTest {
     }
 
     @Test
-    void initFieldsShouldIgnorePageQuery() {
+    void initFieldsShouldIgnoreFieldsInPageQuery() {
         assertEquals(0, ColumnUtil.initFields(PageQuery.class).length);
+    }
+
+    @Test
+    void initFieldsSupportHierarchy() {
+        Field[] subFields = ColumnUtil.initFields(TestChildQuery.class);
+        Field[] parentFields = ColumnUtil.initFields(TestQuery.class);
+        assertEquals(1, subFields.length - parentFields.length);
     }
 
 }

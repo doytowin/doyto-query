@@ -9,6 +9,7 @@ import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.validation.PageGroup;
 
 import java.util.regex.Pattern;
+import javax.persistence.Transient;
 
 /**
  * PageQuery
@@ -27,13 +28,16 @@ public class PageQuery implements DoytoQuery {
     protected static final String SORT_RX = "(\\w+,(asc|desc)|field\\(\\w+(,[\\w']+)++\\))(;(\\w+,(asc|desc)|field\\(\\w+(,[\\w']+)++\\)))*";
     protected static final Pattern SORT_PTN = Pattern.compile(PageQuery.SORT_RX);
 
+    @Transient
     private Integer pageNumber;
 
+    @Transient
     private Integer pageSize;
 
     /**
      * Sorting field, format: field1,desc;field2,asc;field(col,'v1','v2')
      */
+    @Transient
     @javax.validation.constraints.Pattern(regexp = SORT_RX, message = "Sorting field format error", groups = PageGroup.class)
     private String sort;
 

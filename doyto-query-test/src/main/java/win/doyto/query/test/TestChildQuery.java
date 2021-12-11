@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql;
+package win.doyto.query.test;
 
-import org.junit.jupiter.api.Test;
-import win.doyto.query.test.TestPageQuery;
-import win.doyto.query.test.join.MaxIdView;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * JoinQueryBuilderTest
+ * TestChildQuery
  *
  * @author f0rb on 2021-12-11
  */
-class JoinQueryBuilderTest {
-    @Test
-    void supportAggregateQuery() {
-        JoinQueryBuilder joinQueryBuilder = new JoinQueryBuilder(MaxIdView.class);
-        SqlAndArgs sqlAndArgs = joinQueryBuilder.buildJoinSelectAndArgs(new TestPageQuery());
-        assertEquals("SELECT max(id) AS maxId FROM user", sqlAndArgs.getSql());
-    }
+@Getter
+@Setter
+public class TestChildQuery extends TestQuery{
+    private String oneMoreField;
 }

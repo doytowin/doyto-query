@@ -109,10 +109,10 @@ public class CommonUtil {
     }
 
     public static boolean fieldFilter(Field field) {
-        return !(field.getName().startsWith("$")              // $jacocoData
-            || Modifier.isStatic(field.getModifiers())      // static field
-            || field.isAnnotationPresent(GeneratedValue.class)// id
-            || field.isAnnotationPresent(Transient.class)   // Transient field
+        return !(field.getName().startsWith("$")                // $jacocoData
+            || Modifier.isStatic(field.getModifiers())          // static field
+            || field.isAnnotationPresent(GeneratedValue.class)  // id
+            || field.isAnnotationPresent(Transient.class)       // Transient field
         );
     }
 
