@@ -16,6 +16,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import win.doyto.query.config.InjectionBeanPostProcessor;
 
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -56,15 +57,20 @@ public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
 
     protected void configMappingJackson2HttpMessageConverter(MappingJackson2HttpMessageConverter converter) {
         configMediaTypes(converter);
+        configCharset(converter);
         configObjectMapper(converter.getObjectMapper());
     }
 
-    private void configMediaTypes(MappingJackson2HttpMessageConverter converter) {
+    protected void configMediaTypes(MappingJackson2HttpMessageConverter converter) {
         List<MediaType> supportedMediaTypes = new ArrayList<>();
         supportedMediaTypes.add(MediaType.APPLICATION_JSON);
         supportedMediaTypes.add(MediaType.valueOf("application/*+json"));
         supportedMediaTypes.add(MediaType.TEXT_HTML);
         converter.setSupportedMediaTypes(supportedMediaTypes);
+    }
+
+    protected void configCharset(MappingJackson2HttpMessageConverter converter) {
+        converter.setDefaultCharset(StandardCharsets.UTF_8);
     }
 
     public static ObjectMapper configObjectMapper(ObjectMapper objectMapper) {
