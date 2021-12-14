@@ -9,6 +9,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -89,6 +90,14 @@ public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
     @Bean
     public BeanPostProcessor injectionBeanPostProcessor(AutowireCapableBeanFactory beanFactory) {
         return new InjectionBeanPostProcessor(beanFactory);
+    }
+
+    @Bean
+    public ResourceBundleMessageSource resourceBundleMessageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasenames("error");
+        messageSource.setDefaultEncoding("UTF-8");
+        return messageSource;
     }
 
 }
