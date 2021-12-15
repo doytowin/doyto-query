@@ -37,7 +37,7 @@ class HttpUtilTest {
 
     @Test
     void writeJson() throws UnsupportedEncodingException {
-        HttpUtil.writeJson(response, PresetErrorCode.ERROR);
-        assertEquals("{\"code\":1,\"message\":\"系统内部异常\",\"success\":false}", response.getContentAsString());
+        HttpUtil.writeJson(response, PresetErrorCode.INTERNAL_ERROR);
+        assertEquals("{\"code\":1,\"message\":\"INTERNAL_ERROR\",\"success\":false}", response.getContentAsString());
     }
 }

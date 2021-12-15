@@ -3,7 +3,6 @@ package win.doyto.query.web.component;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.MessageSource;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
@@ -17,10 +16,10 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import win.doyto.query.web.response.ErrorCode;
 import win.doyto.query.web.response.ErrorCodeException;
 import win.doyto.query.web.response.ErrorResponse;
-import win.doyto.query.web.response.PresetErrorCode;
 
-import java.util.Locale;
 import javax.validation.ConstraintViolationException;
+
+import static win.doyto.query.web.response.PresetErrorCode.*;
 
 /**
  * CommonExceptionHandler
@@ -33,16 +32,12 @@ import javax.validation.ConstraintViolationException;
 @AllArgsConstructor
 class CommonExceptionHandler {
 
-    private MessageSource resourceBundleMessageSource;
-
-    private ErrorCode buildErrorCode(PresetErrorCode pec, Object... args) {
-        return ErrorCode.build(pec.getCode(), resourceBundleMessageSource.getMessage(pec.name(), args, Locale.SIMPLIFIED_CHINESE));
-    }
+    private ErrorCodeI18nService errorCodeI18nService;
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ErrorCode httpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         log.error("HttpRequestMethodNotSupportedException: " + e.getMessage(), e.getCause());
-        return buildErrorCode(PresetErrorCode.HTTP_METHOD_NOT_SUPPORTED, e.getMethod());
+        return errorCodeI18nService.buildErrorCode(HTTP_METHOD_NOT_SUPPORTED, e.getMethod());
     }
 
     /**
@@ -54,58 +49,58 @@ class CommonExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ErrorCode methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         log.error("MethodArgumentTypeMismatchException: " + e.getMessage(), e);
-        return buildErrorCode(PresetErrorCode.ARGUMENT_TYPE_MISMATCH);
+        return errorCodeI18nService.buildErrorCode(ARGUMENT_TYPE_MISMATCH);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ErrorCode httpMessageNotReadableException(HttpMessageNotReadableException e) {
         log.error("HttpMessageNotReadableException: " + e.getMessage(), e);
         if (e.getCause() instanceof InvalidFormatException) {
-            return buildErrorCode(PresetErrorCode.ARGUMENT_FORMAT_ERROR, ((InvalidFormatException) e.getCause()).getValue());
+            return errorCodeI18nService.buildErrorCode(ARGUMENT_FORMAT_ERROR, ((InvalidFormatException) e.getCause()).getValue());
         }
-        return buildErrorCode(PresetErrorCode.REQUEST_BODY_ERROR);
+        return errorCodeI18nService.buildErrorCode(REQUEST_BODY_ERROR);
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ErrorCode maxUploadSizeExceededException(MaxUploadSizeExceededException e) {
         log.error("MaxUploadSizeExceededException: {}", e.getMessage());
-        return buildErrorCode(PresetErrorCode.FILE_UPLOAD_OVER_MAX_SIZE);
+        return errorCodeI18nService.buildErrorCode(FILE_UPLOAD_OVER_MAX_SIZE);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorCode methodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error("MethodArgumentNotValidException: {}", e.getMessage());
-        return new ErrorResponse(buildErrorCode(PresetErrorCode.ARGUMENT_VALIDATION_FAILED), e.getBindingResult());
+        return new ErrorResponse(errorCodeI18nService.buildErrorCode(ARGUMENT_VALIDATION_FAILED), e.getBindingResult());
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ErrorCode constraintViolationException(ConstraintViolationException e) {
         log.error("ConstraintViolationException: {}", e.getMessage());
-        return new ErrorResponse(buildErrorCode(PresetErrorCode.ARGUMENT_VALIDATION_FAILED), e.getConstraintViolations());
+        return new ErrorResponse(errorCodeI18nService.buildErrorCode(ARGUMENT_VALIDATION_FAILED), e.getConstraintViolations());
     }
 
     @ExceptionHandler(BindException.class)
     public ErrorCode bindException(BindException e) {
         log.error("BindException: {}", e.getMessage());
-        return new ErrorResponse(buildErrorCode(PresetErrorCode.ARGUMENT_VALIDATION_FAILED), e.getBindingResult());
+        return new ErrorResponse(errorCodeI18nService.buildErrorCode(ARGUMENT_VALIDATION_FAILED), e.getBindingResult());
     }
 
     @ExceptionHandler(DuplicateKeyException.class)
     public ErrorCode duplicateKeyException(DuplicateKeyException e) {
         log.error("DuplicateKeyException: " + e.getMessage(), e);
-        return buildErrorCode(PresetErrorCode.DUPLICATE_KEY_EXCEPTION);
+        return errorCodeI18nService.buildErrorCode(DUPLICATE_KEY_EXCEPTION);
     }
 
     @ExceptionHandler(Exception.class)
     public ErrorCode exception(Exception e) {
         log.error("Unknown Exception", e);
-        return buildErrorCode(PresetErrorCode.ERROR);
+        return errorCodeI18nService.buildErrorCode(INTERNAL_ERROR);
     }
 
     @ExceptionHandler(ErrorCodeException.class)
     public ErrorCode errorCodeException(ErrorCodeException e) {
         log.warn("ErrorCodeException: {}", e.getMessage());
-        return e.getErrorCode();
+        return errorCodeI18nService.buildErrorCode(e.getErrorCode());
     }
 
 }

@@ -11,31 +11,28 @@ import lombok.Getter;
 @Getter
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum PresetErrorCode implements ErrorCode {
-    SUCCESS("访问成功"),
+    SUCCESS,
 
-    ERROR("系统内部异常"),
-    REQUEST_BODY_ERROR("请求内容异常"),
-    ARGUMENT_TYPE_MISMATCH("参数类型异常"),
-    ARGUMENT_FORMAT_ERROR("参数格式错误: %s"),
-    ARGUMENT_VALIDATION_FAILED("参数校验失败"),
-    HTTP_METHOD_NOT_SUPPORTED("该接口不支持%s请求"),
-    DUPLICATE_KEY_EXCEPTION("该数据已存在"),
-    FILE_UPLOAD_OVER_MAX_SIZE("文件超过指定大小"),
-    ENTITY_NOT_FOUND("查询记录不存在"),
+    INTERNAL_ERROR,
+    REQUEST_BODY_ERROR,
+    ARGUMENT_TYPE_MISMATCH,
+    ARGUMENT_FORMAT_ERROR,
+    ARGUMENT_VALIDATION_FAILED,
+    HTTP_METHOD_NOT_SUPPORTED,
+    DUPLICATE_KEY_EXCEPTION,
+    FILE_UPLOAD_OVER_MAX_SIZE,
+    ENTITY_NOT_FOUND,
 
     ;
 
     private final Integer code;
 
-    private final String message;
-
-    PresetErrorCode(String message) {
+    PresetErrorCode() {
         this.code = Index.count++;
-        this.message = message;
     }
 
-    public ErrorCode build(Object... args) {
-        return ErrorCode.build(code, String.format(message, args));
+    public String getMessage() {
+        return super.name();
     }
 
     private static class Index {

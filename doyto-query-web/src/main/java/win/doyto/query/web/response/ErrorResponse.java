@@ -1,6 +1,7 @@
 package win.doyto.query.web.response;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Delegate;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.validation.BindingResult;
@@ -18,6 +19,7 @@ import javax.validation.Path;
  */
 public class ErrorResponse implements ErrorCode {
 
+    @Setter
     @Delegate
     private ErrorCode errorCode;
     @Getter
