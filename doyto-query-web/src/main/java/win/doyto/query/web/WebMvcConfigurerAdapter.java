@@ -5,11 +5,13 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -22,6 +24,7 @@ import win.doyto.query.config.InjectionBeanPostProcessor;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * WebMvcConfigurerAdapter
@@ -99,12 +102,22 @@ public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.setBasenames("error");
         messageSource.setDefaultEncoding("UTF-8");
+        messageSource.setFallbackToSystemLocale(false);
         return messageSource;
     }
 
     @Bean
     public LocaleResolver localeResolver(){
-        CookieLocaleResolver cookieLocaleResolver = new CookieLocaleResolver();
+        CookieLocaleResolver cookieLocaleResolver = new CookieLocaleResolver() {
+            @Override
+            protected Locale determineDefaultLocale(HttpServletRequest request) {
+                String acceptLanguage = request.getHeader(HttpHeaders.ACCEPT_LANGUAGE);
+                if (StringUtils.isBlank(acceptLanguage)) {
+                    return super.determineDefaultLocale(request);
+                }
+                return request.getLocale();
+            }
+        };
         cookieLocaleResolver.setDefaultLocale(Locale.SIMPLIFIED_CHINESE);
         cookieLocaleResolver.setCookieName("locale");
         return cookieLocaleResolver;

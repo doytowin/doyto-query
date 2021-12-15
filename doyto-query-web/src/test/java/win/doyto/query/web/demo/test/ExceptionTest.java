@@ -1,6 +1,7 @@
 package win.doyto.query.web.demo.test;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockCookie;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -98,6 +99,14 @@ class ExceptionTest extends DemoApplicationTest {
         performAndExpectFail(
                 "Record not found",
                 get("/role/-1").cookie(new MockCookie("locale", "en_US"))
+        );
+    }
+
+    @Test
+    void resolveLocaleFromHeader() throws Exception {
+        performAndExpectFail(
+                "Record not found",
+                get("/role/-1").header(HttpHeaders.ACCEPT_LANGUAGE, "en_US")
         );
     }
 }
