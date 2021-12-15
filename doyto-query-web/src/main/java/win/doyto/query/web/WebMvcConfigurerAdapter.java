@@ -100,7 +100,7 @@ public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
     @Bean
     public ResourceBundleMessageSource resourceBundleMessageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasenames("error");
+        messageSource.setBasenames("business", "error");
         messageSource.setDefaultEncoding("UTF-8");
         messageSource.setFallbackToSystemLocale(false);
         return messageSource;

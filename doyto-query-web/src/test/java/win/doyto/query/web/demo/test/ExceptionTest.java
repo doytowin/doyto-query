@@ -109,4 +109,12 @@ class ExceptionTest extends DemoApplicationTest {
                 get("/role/-1").header(HttpHeaders.ACCEPT_LANGUAGE, "en_US")
         );
     }
+
+    @Test
+    void testCustomResourceBundle() throws Exception {
+        performAndExpectFail(
+                "Wrong argument type",
+                get("/role/null").header(HttpHeaders.ACCEPT_LANGUAGE, "en-US,en")
+        );
+    }
 }

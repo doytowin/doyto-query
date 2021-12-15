@@ -125,6 +125,7 @@
                     <include>**/*.sql</include>
                     <include>**/*.xml</include>
                     <include>**/*.json</include>
+                    <include>**/*.properties</include>
                 </includes>
             </testResource>
         </testResources>
