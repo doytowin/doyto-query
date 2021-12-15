@@ -106,6 +106,7 @@ public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
     public LocaleResolver localeResolver(){
         CookieLocaleResolver cookieLocaleResolver = new CookieLocaleResolver();
         cookieLocaleResolver.setDefaultLocale(Locale.SIMPLIFIED_CHINESE);
+        cookieLocaleResolver.setCookieName("locale");
         return cookieLocaleResolver;
     }
 

@@ -2,6 +2,7 @@ package win.doyto.query.web.demo.test;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockCookie;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -90,5 +91,13 @@ class ExceptionTest extends DemoApplicationTest {
                 .content("[{\"roleName\":\"role2\", \"roleCode\":\"123456\"}]")
                 .contentType(MediaType.APPLICATION_JSON);
         performAndExpectFail("该数据已存在", postRole);
+    }
+
+    @Test
+    void resolveLocaleFromCookie() throws Exception {
+        performAndExpectFail(
+                "Record not found",
+                get("/role/-1").cookie(new MockCookie("locale", "en_US"))
+        );
     }
 }
