@@ -47,8 +47,8 @@ class ExceptionTest extends DemoApplicationTest {
     void testMethodArgumentNotValidException() throws Exception {
         RequestBuilder requestBuilder = post("/role/").content("{}").contentType(MediaType.APPLICATION_JSON);
         performAndExpectFail("参数校验失败", requestBuilder)
-                .andExpect(jsonPath("$.hints[0].roleName").value("must not be null"))
-                .andExpect(jsonPath("$.hints[0].roleCode").value("must not be null"))
+                .andExpect(jsonPath("$.hints[0].roleName").value("不能为null"))
+                .andExpect(jsonPath("$.hints[0].roleCode").value("不能为null"))
         ;
     }
 
@@ -56,21 +56,21 @@ class ExceptionTest extends DemoApplicationTest {
     void testMethodArgumentNotValidExceptionWithList() throws Exception {
         RequestBuilder requestBuilder = post("/role/").content("[{\"roleName\":\"test\"},{\"roleCode\":\"123456\"}]").contentType(MediaType.APPLICATION_JSON);
         performAndExpectFail("参数校验失败", requestBuilder)
-                .andExpect(jsonPath("$.hints[0].roleCode").value("must not be null"))
-                .andExpect(jsonPath("$.hints[1].roleName").value("must not be null"))
+                .andExpect(jsonPath("$.hints[0].roleCode").value("不能为null"))
+                .andExpect(jsonPath("$.hints[1].roleName").value("不能为null"))
         ;
 
         RequestBuilder postRole = post("/role/").content("{}").contentType(MediaType.APPLICATION_JSON);
         performAndExpectFail("参数校验失败", postRole)
-                .andExpect(jsonPath("$.hints[0].roleName").value("must not be null"))
-                .andExpect(jsonPath("$.hints[0].roleCode").value("must not be null"))
+                .andExpect(jsonPath("$.hints[0].roleName").value("不能为null"))
+                .andExpect(jsonPath("$.hints[0].roleCode").value("不能为null"))
         ;
     }
 
     @Test
     void testConstraintViolationException() throws Exception {
         performAndExpectFail("参数校验失败", get("/role/roleName?roleName=sa"))
-                .andExpect(jsonPath("$.hints.roleName").value("size must be between 4 and 20"));
+                .andExpect(jsonPath("$.hints.roleName").value("个数必须在4和20之间"));
         performAndExpectSuccess(get("/role/roleName?roleName=f0rb"))
                 .andExpect(jsonPath("$.data.roleCode").doesNotExist());
     }
@@ -78,7 +78,7 @@ class ExceptionTest extends DemoApplicationTest {
     @Test
     void testBindException() throws Exception {
         performAndExpectFail("参数校验失败", get("/role/roleName"))
-                .andExpect(jsonPath("$.hints.roleName").value("must not be null"));
+                .andExpect(jsonPath("$.hints.roleName").value("不能为null"));
 
 
         performAndExpectSuccess(get("/role/roleName?roleName=test"));

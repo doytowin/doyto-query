@@ -19,10 +19,12 @@ package win.doyto.query.web.component;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.LocaleResolver;
 import win.doyto.query.web.response.ErrorCode;
 import win.doyto.query.web.response.ErrorResponse;
 
 import java.util.Locale;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * ErrorCodeI18nService
@@ -34,9 +36,12 @@ import java.util.Locale;
 public class ErrorCodeI18nService {
 
     private MessageSource resourceBundleMessageSource;
+    private LocaleResolver localeResolver;
+    private HttpServletRequest httpServletRequest;
 
     public ErrorCode buildErrorCode(ErrorCode errorCode, Object... args) {
-        String message = resourceBundleMessageSource.getMessage(errorCode.getMessage(), args, Locale.SIMPLIFIED_CHINESE);
+        Locale locale = localeResolver.resolveLocale(httpServletRequest);
+        String message = resourceBundleMessageSource.getMessage(errorCode.getMessage(), args, locale);
         ErrorCode localeErrorCode = ErrorCode.build(errorCode.getCode(), message);
         if (errorCode instanceof ErrorResponse) {
             ((ErrorResponse) errorCode).setErrorCode(localeErrorCode);
