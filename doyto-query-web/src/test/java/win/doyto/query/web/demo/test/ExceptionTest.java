@@ -1,17 +1,12 @@
 package win.doyto.query.web.demo.test;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockCookie;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.ResultActions;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * ExceptionTest
@@ -19,16 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author f0rb on 2020-04-01
  */
 class ExceptionTest extends DemoApplicationTest {
-
-
-    private ResultActions performAndExpectFail(String expectedMessage, RequestBuilder requestBuilder) throws Exception {
-        return mockMvc.perform(requestBuilder)
-                      .andDo(print())
-                      .andExpect(status().isOk())
-                      .andExpect(jsonPath("$.success").value(false))
-                      .andExpect(jsonPath("$.message").value(expectedMessage))
-                ;
-    }
 
     @Test
     void testHttpRequestMethodNotSupportedException() throws Exception {
@@ -94,27 +79,4 @@ class ExceptionTest extends DemoApplicationTest {
         performAndExpectFail("该数据已存在", postRole);
     }
 
-    @Test
-    void resolveLocaleFromCookie() throws Exception {
-        performAndExpectFail(
-                "Record not found",
-                get("/role/-1").cookie(new MockCookie("locale", "en_US"))
-        );
-    }
-
-    @Test
-    void resolveLocaleFromHeader() throws Exception {
-        performAndExpectFail(
-                "Record not found",
-                get("/role/-1").header(HttpHeaders.ACCEPT_LANGUAGE, "en_US")
-        );
-    }
-
-    @Test
-    void testCustomResourceBundle() throws Exception {
-        performAndExpectFail(
-                "Wrong argument type",
-                get("/role/null").header(HttpHeaders.ACCEPT_LANGUAGE, "en-US,en")
-        );
-    }
 }

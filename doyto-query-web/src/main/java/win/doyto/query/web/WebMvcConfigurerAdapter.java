@@ -16,9 +16,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
+import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import win.doyto.query.config.InjectionBeanPostProcessor;
 
 import java.nio.charset.StandardCharsets;
@@ -121,6 +123,16 @@ public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
         cookieLocaleResolver.setDefaultLocale(Locale.SIMPLIFIED_CHINESE);
         cookieLocaleResolver.setCookieName("locale");
         return cookieLocaleResolver;
+    }
+
+    @Bean
+    public LocaleChangeInterceptor localeChangeInterceptor() {
+        return new LocaleChangeInterceptor();
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(localeChangeInterceptor());
     }
 
 }

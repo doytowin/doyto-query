@@ -55,4 +55,12 @@ abstract class DemoApplicationTest {
         performAndExpectOk(requestBuilder).andExpect(jsonPath("$.code").value(errorCode.getCode()));
     }
 
+    protected ResultActions performAndExpectFail(String expectedMessage, RequestBuilder requestBuilder) throws Exception {
+        return mockMvc.perform(requestBuilder)
+                      .andDo(print())
+                      .andExpect(status().isOk())
+                      .andExpect(jsonPath("$.success").value(false))
+                      .andExpect(jsonPath("$.message").value(expectedMessage))
+                ;
+    }
 }
