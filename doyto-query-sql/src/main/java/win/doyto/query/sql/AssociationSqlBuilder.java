@@ -37,6 +37,8 @@ public class AssociationSqlBuilder {
     private String selectK2ColumnByK1Id;
     @Getter
     private String deleteByK1;
+    @Getter
+    private String deleteByK2;
 
     public AssociationSqlBuilder(String tableName, String k1Column, String k2Column) {
         this.tableName = tableName;
@@ -46,6 +48,7 @@ public class AssociationSqlBuilder {
         selectK1ColumnByK2Id = "SELECT " + k1Column + " FROM " + tableName + WHERE + k2Column + " = ?";
         selectK2ColumnByK1Id = "SELECT " + k2Column + " FROM " + tableName + WHERE + k1Column + " = ?";
         deleteByK1 = "DELETE FROM " + tableName + WHERE + k1Column + " = ?";
+        deleteByK2 = "DELETE FROM " + tableName + WHERE + k2Column + " = ?";
     }
 
 }

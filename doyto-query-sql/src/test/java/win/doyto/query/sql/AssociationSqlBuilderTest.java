@@ -55,4 +55,10 @@ class AssociationSqlBuilderTest {
         assertEquals("DELETE FROM t_user_and_role WHERE user_id = ?",
                      associationSqlBuilder.getDeleteByK1());
     }
+
+    @Test
+    void testDeleteByK2() {
+        assertEquals("DELETE FROM t_user_and_role WHERE role_id = ?",
+                     associationSqlBuilder.getDeleteByK2());
+    }
 }
