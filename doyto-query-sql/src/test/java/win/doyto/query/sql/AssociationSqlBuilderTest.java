@@ -49,4 +49,10 @@ class AssociationSqlBuilderTest {
         assertEquals("SELECT role_id FROM t_user_and_role WHERE user_id = ?",
                      associationSqlBuilder.getSelectK2ColumnByK1Id());
     }
+
+    @Test
+    void testDeleteByK1() {
+        assertEquals("DELETE FROM t_user_and_role WHERE user_id = ?",
+                     associationSqlBuilder.getDeleteByK1());
+    }
 }

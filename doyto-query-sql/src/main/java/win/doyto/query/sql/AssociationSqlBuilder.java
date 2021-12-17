@@ -18,6 +18,8 @@ package win.doyto.query.sql;
 
 import lombok.Getter;
 
+import static win.doyto.query.sql.Constant.WHERE;
+
 /**
  * AssociationSqlBuilder
  *
@@ -33,15 +35,17 @@ public class AssociationSqlBuilder {
     private String selectK1ColumnByK2Id;
     @Getter
     private String selectK2ColumnByK1Id;
+    @Getter
+    private String deleteByK1;
 
     public AssociationSqlBuilder(String tableName, String k1Column, String k2Column) {
         this.tableName = tableName;
         this.k1Column = k1Column;
         this.k2Column = k2Column;
 
-        selectK1ColumnByK2Id = "SELECT " + k1Column + " FROM " + tableName + " WHERE " + k2Column + " = ?";
-        selectK2ColumnByK1Id = "SELECT " + k2Column + " FROM " + tableName + " WHERE " + k1Column + " = ?";
-
+        selectK1ColumnByK2Id = "SELECT " + k1Column + " FROM " + tableName + WHERE + k2Column + " = ?";
+        selectK2ColumnByK1Id = "SELECT " + k2Column + " FROM " + tableName + WHERE + k1Column + " = ?";
+        deleteByK1 = "DELETE FROM " + tableName + WHERE + k1Column + " = ?";
     }
 
 }
