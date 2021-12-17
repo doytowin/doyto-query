@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import win.doyto.query.geo.Point;
 import win.doyto.query.geo.PointDeserializer;
 
@@ -41,8 +43,19 @@ public class BeanUtil {
                 .copy()
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-        BeanUtil.register(Point.class, new PointDeserializer());
+        register(Point.class, new PointDeserializer());
+        register("org.bson.conversions.Bson", "win.doyto.query.mongodb.entity.BsonDeserializer");
 
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> void register(String objectClassName, String serializerClassName) {
+        try {
+            Class<T> bson = (Class<T>) ClassUtils.getClass(objectClassName);
+            Class<JsonDeserializer<T>> bsonDeserializer = (Class<JsonDeserializer<T>>) ClassUtils.getClass(serializerClassName);
+            register(bson, ConstructorUtils.invokeConstructor(bsonDeserializer));
+        } catch (Exception e) {// ignore
+        }
     }
 
     public static Type[] getActualTypeArguments(Class<?> clazz) {

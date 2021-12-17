@@ -9,8 +9,6 @@ import org.bson.conversions.Bson;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.QuerySuffix;
 import win.doyto.query.entity.Persistable;
-import win.doyto.query.mongodb.entity.BsonDeserializer;
-import win.doyto.query.util.BeanUtil;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
@@ -56,8 +54,6 @@ public class MongoFilterBuilder {
         suffixFuncMap.put(Box, MongoGeoFilters::withinBox);
         suffixFuncMap.put(Py, MongoGeoFilters::polygon);
         suffixFuncMap.put(Within, MongoGeoFilters::within);
-
-        BeanUtil.register(Bson.class, new BsonDeserializer());
     }
 
     public static Bson buildFilter(Object query) {
