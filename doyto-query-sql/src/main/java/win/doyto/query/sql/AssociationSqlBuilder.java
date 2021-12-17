@@ -31,6 +31,8 @@ public class AssociationSqlBuilder {
 
     @Getter
     private String selectK1ColumnByK2Id;
+    @Getter
+    private String selectK2ColumnByK1Id;
 
     public AssociationSqlBuilder(String tableName, String k1Column, String k2Column) {
         this.tableName = tableName;
@@ -38,6 +40,8 @@ public class AssociationSqlBuilder {
         this.k2Column = k2Column;
 
         selectK1ColumnByK2Id = "SELECT " + k1Column + " FROM " + tableName + " WHERE " + k2Column + " = ?";
+        selectK2ColumnByK1Id = "SELECT " + k2Column + " FROM " + tableName + " WHERE " + k1Column + " = ?";
+
     }
 
 }

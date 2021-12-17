@@ -16,6 +16,7 @@
 
 package win.doyto.query.sql;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,14 +28,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class AssociationSqlBuilderTest {
 
-    @Test
-    void testSelectK1ColumnByK2Id() {
+    private AssociationSqlBuilder associationSqlBuilder;
+
+    @BeforeEach
+    void setUp() {
         String tableName = "t_user_and_role";
         String k1Column = "user_id";
         String k2Column = "role_id";
+        associationSqlBuilder = new AssociationSqlBuilder(tableName, k1Column, k2Column);
+    }
 
-        AssociationSqlBuilder associationSqlBuilder = new AssociationSqlBuilder(tableName, k1Column, k2Column);
+    @Test
+    void testSelectK1ColumnByK2Id() {
+        assertEquals("SELECT user_id FROM t_user_and_role WHERE role_id = ?",
+                     associationSqlBuilder.getSelectK1ColumnByK2Id());
+    }
 
-        assertEquals("SELECT user_id FROM t_user_and_role WHERE role_id = ?", associationSqlBuilder.getSelectK1ColumnByK2Id());
+    @Test
+    void testSelectK2ColumnByK1Id() {
+        assertEquals("SELECT role_id FROM t_user_and_role WHERE user_id = ?",
+                     associationSqlBuilder.getSelectK2ColumnByK1Id());
     }
 }
