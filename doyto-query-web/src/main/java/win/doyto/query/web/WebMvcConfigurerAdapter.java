@@ -21,7 +21,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import win.doyto.query.config.InjectionBeanPostProcessor;
+import win.doyto.query.web.component.InjectionBeanPostProcessor;
 
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;

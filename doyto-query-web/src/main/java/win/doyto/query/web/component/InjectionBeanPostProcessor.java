@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package win.doyto.query.config;
+package win.doyto.query.web.component;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.stereotype.Component;
+import win.doyto.query.config.InjectBean;
 import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
@@ -35,7 +35,6 @@ import java.util.Optional;
  *
  * @author f0rb on 2021-12-11
  */
-@Component
 @RequiredArgsConstructor
 public class InjectionBeanPostProcessor implements BeanPostProcessor {
 
