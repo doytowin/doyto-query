@@ -19,6 +19,8 @@ package win.doyto.query.sql;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static win.doyto.query.sql.Constant.*;
 
@@ -44,6 +46,7 @@ public class AssociationSqlBuilder {
     private String insertSql;
     private String placeHolders;
     private String deleteIn;
+    private String countIn;
 
     public AssociationSqlBuilder(String tableName, String k1Column, String k2Column) {
         this.tableName = tableName;
@@ -58,15 +61,18 @@ public class AssociationSqlBuilder {
         insertSql = "INSERT INTO " + tableName + " (" + k1Column + ", " + k2Column + ") VALUES ";
         placeHolders = "(?, ?)";
         deleteIn = DELETE_FROM + tableName + WHERE + "(" + k1Column + ", " + k2Column + ") IN ";
+        countIn = SELECT + "COUNT(*)" + FROM + tableName + WHERE + "(" + k1Column + ", " + k2Column + ") IN ";
+    }
+
+    private void buildPlaceHolders(StringBuilder sb, int size) {
+        sb.append(IntStream.range(0, size).mapToObj(i -> placeHolders).collect(Collectors.joining(SEPARATOR)));
     }
 
     public SqlAndArgs buildInsert(List<UniqueKey<?, ?>> keys) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             keys.stream().map(UniqueKey::toList).forEach(argList::addAll);
-            StringBuilder insertBuilder = new StringBuilder(insertSql).append(placeHolders);
-            for (int i = 1; i < keys.size(); i++) {
-                insertBuilder.append(SEPARATOR).append(placeHolders);
-            }
+            StringBuilder insertBuilder = new StringBuilder(insertSql);
+            buildPlaceHolders(insertBuilder, keys.size());
             return insertBuilder.toString();
         });
     }
@@ -75,11 +81,17 @@ public class AssociationSqlBuilder {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             keys.stream().map(UniqueKey::toList).forEach(argList::addAll);
             StringBuilder deleteBuilder = new StringBuilder(deleteIn).append("(");
-            deleteBuilder.append(placeHolders);
-            for (int i = 1; i < keys.size(); i++) {
-                deleteBuilder.append(SEPARATOR).append(placeHolders);
-            }
+            buildPlaceHolders(deleteBuilder, keys.size());
             return deleteBuilder.append(")").toString();
+        });
+    }
+
+    public SqlAndArgs buildCount(List<UniqueKey<?, ?>> keys) {
+        return SqlAndArgs.buildSqlWithArgs(argList -> {
+            keys.stream().map(UniqueKey::toList).forEach(argList::addAll);
+            StringBuilder stringBuilder = new StringBuilder(countIn).append("(");
+            buildPlaceHolders(stringBuilder, keys.size());
+            return stringBuilder.append(")").toString();
         });
     }
 }

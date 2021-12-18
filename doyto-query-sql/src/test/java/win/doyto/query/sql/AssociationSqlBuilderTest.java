@@ -83,4 +83,13 @@ class AssociationSqlBuilderTest {
                 .isEqualTo("DELETE FROM t_user_and_role WHERE (user_id, role_id) IN ((?, ?), (?, ?))");
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 3);
     }
+
+    @Test
+    void testCount() {
+        List<UniqueKey<?, ?>> keys = Arrays.asList(new UniqueKey<>(1, 1), new UniqueKey<>(2, 3));
+        SqlAndArgs sqlAndArgs = associationSqlBuilder.buildCount(keys);
+        assertThat(sqlAndArgs.getSql())
+                .isEqualTo("SELECT COUNT(*) FROM t_user_and_role WHERE (user_id, role_id) IN ((?, ?), (?, ?))");
+        assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 3);
+    }
 }
