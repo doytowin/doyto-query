@@ -19,6 +19,10 @@ package win.doyto.query.sql;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -60,5 +64,14 @@ class AssociationSqlBuilderTest {
     void testDeleteByK2() {
         assertEquals("DELETE FROM t_user_and_role WHERE role_id = ?",
                      associationSqlBuilder.getDeleteByK2());
+    }
+
+    @Test
+    void testInsert() {
+        List<UniqueKey<?, ?>> keys = Arrays.asList(new UniqueKey<>(1, 1), new UniqueKey<>(2, 3));
+        SqlAndArgs sqlAndArgs = associationSqlBuilder.buildInsert(keys);
+        assertThat(sqlAndArgs.getSql())
+                .isEqualTo("INSERT INTO t_user_and_role (user_id, role_id) VALUES (?, ?), (?, ?)");
+        assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 3);
     }
 }

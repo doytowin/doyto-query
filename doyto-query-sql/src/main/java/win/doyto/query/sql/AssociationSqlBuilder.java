@@ -18,6 +18,9 @@ package win.doyto.query.sql;
 
 import lombok.Getter;
 
+import java.util.List;
+
+import static win.doyto.query.sql.Constant.SEPARATOR;
 import static win.doyto.query.sql.Constant.WHERE;
 
 /**
@@ -39,6 +42,7 @@ public class AssociationSqlBuilder {
     private String deleteByK1;
     @Getter
     private String deleteByK2;
+    private String insertSql;
 
     public AssociationSqlBuilder(String tableName, String k1Column, String k2Column) {
         this.tableName = tableName;
@@ -49,6 +53,19 @@ public class AssociationSqlBuilder {
         selectK2ColumnByK1Id = "SELECT " + k2Column + " FROM " + tableName + WHERE + k1Column + " = ?";
         deleteByK1 = "DELETE FROM " + tableName + WHERE + k1Column + " = ?";
         deleteByK2 = "DELETE FROM " + tableName + WHERE + k2Column + " = ?";
+
+        insertSql = "INSERT INTO " + tableName + " (" + k1Column + ", " + k2Column + ") VALUES ";
+
     }
 
+    public SqlAndArgs buildInsert(List<UniqueKey<?, ?>> keys) {
+        return SqlAndArgs.buildSqlWithArgs(argList -> {
+            keys.stream().map(UniqueKey::toList).forEach(argList::addAll);
+            StringBuilder insertBuilder = new StringBuilder(insertSql).append("(?, ?)");
+            for (int i = 1; i < keys.size(); i++) {
+                insertBuilder.append(SEPARATOR).append("(?, ?)");
+            }
+            return insertBuilder.toString();
+        });
+    }
 }
