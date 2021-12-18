@@ -74,4 +74,13 @@ class AssociationSqlBuilderTest {
                 .isEqualTo("INSERT INTO t_user_and_role (user_id, role_id) VALUES (?, ?), (?, ?)");
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 3);
     }
+
+    @Test
+    void testDelete() {
+        List<UniqueKey<?, ?>> keys = Arrays.asList(new UniqueKey<>(1, 1), new UniqueKey<>(2, 3));
+        SqlAndArgs sqlAndArgs = associationSqlBuilder.buildDelete(keys);
+        assertThat(sqlAndArgs.getSql())
+                .isEqualTo("DELETE FROM t_user_and_role WHERE (user_id, role_id) IN ((?, ?), (?, ?))");
+        assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 3);
+    }
 }
