@@ -24,4 +24,5 @@ public class GeoQuery {
     private Bson locBsonBox;
     private List<Point> locPy;
     private Bson locBsonWithin;
+    private Bson locBsonIntX;
 }

@@ -59,4 +59,8 @@ public class MongoGeoFilters {
     public static Bson within(String column, Object value) {
         return Filters.geoWithin(column, (Bson) value);
     }
+
+    public static Bson intersects(String column, Object value) {
+        return Filters.geoIntersects(column, (Bson) value);
+    }
 }

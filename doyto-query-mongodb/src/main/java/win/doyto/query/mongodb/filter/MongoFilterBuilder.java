@@ -55,6 +55,7 @@ public class MongoFilterBuilder {
         suffixFuncMap.put(Box, MongoGeoFilters::withinBox);
         suffixFuncMap.put(Py, MongoGeoFilters::withinPolygon);
         suffixFuncMap.put(Within, MongoGeoFilters::within);
+        suffixFuncMap.put(IntX, MongoGeoFilters::intersects);
     }
 
     public static Bson buildFilter(Object query) {

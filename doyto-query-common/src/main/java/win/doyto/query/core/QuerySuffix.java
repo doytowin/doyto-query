@@ -47,6 +47,8 @@ public enum QuerySuffix {
     // short for Polygon
     Py(o -> o instanceof Collection && ((Collection<?>) o).size() >= 3),
     Within,
+    // short for Intersects
+    IntX,
 
     NONE;
 
