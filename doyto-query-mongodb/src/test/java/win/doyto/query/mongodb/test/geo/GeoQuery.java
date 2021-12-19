@@ -23,5 +23,5 @@ public class GeoQuery {
     private Box locBox;
     private Bson locBsonBox;
     private List<Point> locPy;
-    private Bson locWithin;
+    private Bson locBsonWithin;
 }

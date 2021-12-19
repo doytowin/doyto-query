@@ -35,6 +35,7 @@ import static win.doyto.query.core.QuerySuffix.*;
 public class MongoFilterBuilder {
 
     private static final Map<QuerySuffix, BiFunction<String, Object, Bson>> suffixFuncMap;
+    private static final Pattern SORT_PTN = Pattern.compile("(\\w+)(,asc|,desc)?");
 
     static {
         suffixFuncMap = new EnumMap<>(QuerySuffix.class);
@@ -52,7 +53,7 @@ public class MongoFilterBuilder {
         suffixFuncMap.put(Center, MongoGeoFilters::withinCenter);
         suffixFuncMap.put(CenterSphere, MongoGeoFilters::withinCenterSphere);
         suffixFuncMap.put(Box, MongoGeoFilters::withinBox);
-        suffixFuncMap.put(Py, MongoGeoFilters::polygon);
+        suffixFuncMap.put(Py, MongoGeoFilters::withinPolygon);
         suffixFuncMap.put(Within, MongoGeoFilters::within);
     }
 
@@ -82,6 +83,7 @@ public class MongoFilterBuilder {
                     filters.add(resolveFilter(newPrefix, value));
                 }
             } else if (value instanceof Bson) {
+                // process Bson value directly
                 String fieldName = field.getName();
                 String column = resolve(fieldName).resolveColumnName(fieldName);
                 filters.add(new Document(column, value));
@@ -92,26 +94,26 @@ public class MongoFilterBuilder {
     private static Bson resolveFilter(String fieldName, Object value) {
         QuerySuffix querySuffix = resolve(fieldName);
         String columnName = querySuffix.resolveColumnName(fieldName);
-        return suffixFuncMap
-                .getOrDefault(querySuffix, Filters::eq)
-                .apply(columnName, value);
+        return suffixFuncMap.getOrDefault(querySuffix, Filters::eq).apply(columnName, value);
     }
 
     public static Bson buildUpdates(Object target) {
-        ArrayList<Bson> updates = new ArrayList<>();
+        List<Bson> updates = new ArrayList<>();
         buildUpdates(target, "", updates);
         return Updates.combine(updates);
     }
 
-    private static void buildUpdates(Object target, String prefix, List<Bson> updates) {
+    private static void buildUpdates(Object entity, String prefix, List<Bson> updates) {
         prefix = StringUtils.isEmpty(prefix) ? "" : prefix + ".";
-        for (Field field : ColumnUtil.initFields(target.getClass())) {
-            Object value = CommonUtil.readFieldGetter(field, target);
+        Field[] fields = ColumnUtil.initFields(entity.getClass());
+        for (Field field : fields) {
+            Object value = CommonUtil.readFieldGetter(field, entity);
             if (isValidValue(value, field)) {
+                String newPrefix = prefix + field.getName();
                 if (value instanceof Persistable) {
-                    buildUpdates(value, prefix + field.getName(), updates);
+                    buildUpdates(value, newPrefix, updates);
                 } else {
-                    updates.add(Updates.set(prefix + field.getName(), value));
+                    updates.add(Updates.set(newPrefix, value));
                 }
             }
         }
@@ -119,14 +121,12 @@ public class MongoFilterBuilder {
 
     public static Bson buildSort(String sort) {
         List<Bson> sortList = new ArrayList<>();
-        Matcher matcher = Pattern.compile("(\\w+)(,asc|,desc)?").matcher(sort);
+        Matcher matcher = SORT_PTN.matcher(sort.toLowerCase());
         while (matcher.find()) {
             String filedName = matcher.group(1);
-            if (StringUtils.contains(matcher.group(2), "desc")) {
-                sortList.add(descending(filedName));
-            } else {
-                sortList.add(ascending(filedName));
-            }
+            String direction = matcher.group(2);
+            boolean isDesc = StringUtils.equals(direction, ",desc");
+            sortList.add(isDesc ? descending(filedName) : ascending(filedName));
         }
         return orderBy(sortList);
     }

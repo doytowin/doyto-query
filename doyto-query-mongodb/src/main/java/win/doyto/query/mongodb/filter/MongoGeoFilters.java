@@ -49,7 +49,7 @@ public class MongoGeoFilters {
     }
 
     @SuppressWarnings("unchecked")
-    public static Bson polygon(String column, Object value) {
+    public static Bson withinPolygon(String column, Object value) {
         List<List<Double>> points = ((List<Point>) value)
                 .stream().map(Point::toList).collect(Collectors.toList());
 
