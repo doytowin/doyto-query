@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author f0rb on 2020-04-01
  */
+@SuppressWarnings("java:S2699")
 class ExceptionTest extends DemoApplicationTest {
 
     @Test

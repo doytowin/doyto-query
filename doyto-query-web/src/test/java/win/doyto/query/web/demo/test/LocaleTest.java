@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author f0rb on 2021-12-16
  */
+@SuppressWarnings("java:S2699")
 class LocaleTest extends DemoApplicationTest {
 
     @Test
