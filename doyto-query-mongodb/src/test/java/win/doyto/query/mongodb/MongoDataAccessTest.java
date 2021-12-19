@@ -1,7 +1,7 @@
 package win.doyto.query.mongodb;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
 import org.assertj.core.groups.Tuple;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author f0rb on 2021-11-23
  */
 @ActiveProfiles("test")
-@DataMongoTest
+@DataMongoTest(properties = {"spring.mongodb.embedded.version=3.5.5"})
 @SpringBootApplication
 class MongoDataAccessTest {
     MongoDataAccess<InventoryEntity, String, InventoryQuery> mongoDataAccess;

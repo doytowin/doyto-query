@@ -59,7 +59,14 @@ public class MongoFilterBuilder {
     public static Bson buildFilter(Object query) {
         List<Bson> filters = new ArrayList<>();
         buildFilter(query, "", filters);
-        return filters.isEmpty() ? new Document() : and(filters);
+        switch (filters.size()) {
+            case 0:
+                return new Document();
+            case 1:
+                return filters.get(0);
+            default:
+                return and(filters);
+        }
     }
 
     private static void buildFilter(Object query, String prefix, List<Bson> filters) {

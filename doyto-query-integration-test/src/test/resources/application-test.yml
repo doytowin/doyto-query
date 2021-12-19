@@ -5,15 +5,18 @@ logging:
     org.springframework.test.context.transaction.TransactionContext: warn
     org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: trace
 
-spring:
-  http:
+server:
+  servlet:
     encoding:
-      enabled: true
       charset: UTF-8
       force: true
 
+spring:
   cache:
     type: simple
+  mongodb:
+    embedded:
+      version: 3.5.5
 
 doyto:
   query:
