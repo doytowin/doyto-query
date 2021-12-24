@@ -35,7 +35,9 @@ public class BuildHelper {
             Object value = readFieldGetter(field, query);
             if (isValidValue(value, field)) {
                 String and = FieldProcessor.execute(field, argList, value);
-                whereJoiner.append(and);
+                if (and != null) {
+                    whereJoiner.append(and);
+                }
             }
         }
         if (whereJoiner.isEmpty()) {

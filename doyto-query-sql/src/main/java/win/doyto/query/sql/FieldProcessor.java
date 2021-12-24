@@ -65,7 +65,7 @@ final class FieldProcessor {
                     or.append(condition);
                 }
             }
-            return CommonUtil.wrapWithParenthesis(or.toString());
+            return or.isEmpty() ? null : CommonUtil.wrapWithParenthesis(or.toString());
         };
     }
 
