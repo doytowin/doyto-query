@@ -38,6 +38,8 @@ public class TestQuery extends TestPageQuery {
     @QueryField(and = "(username = ? OR email = ? OR mobile = ?)")
     private String account;
 
+    private AccountOr account2;
+
     private String email;
 
     private String usernameOrEmailOrMobile;
