@@ -9,6 +9,7 @@ import win.doyto.query.annotation.QueryField;
 import win.doyto.query.annotation.QueryTableAlias;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Or;
+import win.doyto.query.core.QuerySuffix;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
@@ -59,8 +60,10 @@ final class FieldProcessor {
             StringJoiner or = new StringJoiner(SPACE_OR, fields.length);
             for (Field subField : fields) {
                 Object subValue = CommonUtil.readField(subField, value);
-                String condition = execute(subField, argList, subValue);
-                or.append(condition);
+                if (QuerySuffix.isValidValue(subValue, subField)) {
+                    String condition = execute(subField, argList, subValue);
+                    or.append(condition);
+                }
             }
             return CommonUtil.wrapWithParenthesis(or.toString());
         };
