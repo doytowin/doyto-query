@@ -32,7 +32,7 @@ import javax.validation.constraints.NotNull;
 @Table(name = "t_role")
 @Getter
 @Setter
-public class RoleEntity extends CommonEntity<Long, Long> {
+public class RoleEntity extends CommonEntity<Integer, Long> {
 
     @NotNull(groups = CreateGroup.class)
     private String roleName;
