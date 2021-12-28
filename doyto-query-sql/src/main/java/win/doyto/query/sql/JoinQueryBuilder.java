@@ -1,105 +1,54 @@
 package win.doyto.query.sql;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.SerializationUtils;
-import win.doyto.query.annotation.Joins;
 import win.doyto.query.core.DoytoQuery;
-import win.doyto.query.util.ColumnUtil;
-import win.doyto.query.util.CommonUtil;
-
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.persistence.Table;
 
 import static win.doyto.query.sql.BuildHelper.*;
 import static win.doyto.query.sql.Constant.*;
-import static win.doyto.query.util.CommonUtil.*;
 
 /**
  * JoinQueryBuilder
  *
  * @author f0rb on 2019-06-09
  */
+@AllArgsConstructor
 public class JoinQueryBuilder {
 
-    private static final Pattern PTN_PLACE_HOLDER = Pattern.compile("#\\{(\\w+)}");
-
-    protected final String tableName;
-    protected String[] columnsForSelect;
     private Class<?> entityClass;
-    private String joinSql;
 
-    public JoinQueryBuilder(Class<?> entityClass) {
-        this.entityClass = entityClass;
-        tableName = entityClass.getAnnotation(Table.class).name();
-        columnsForSelect = Arrays
-                .stream(entityClass.getDeclaredFields())
-                .filter(CommonUtil::fieldFilter)
-                .map(ColumnUtil::selectAs)
-                .toArray(String[]::new);
-        joinSql = buildJoinSql();
+    public SqlAndArgs buildJoinSelectAndArgs(DoytoQuery q) {
+        return buildSelectAndArgs(q, entityClass);
     }
 
-    private String buildJoinSql() {
-        if (!entityClass.isAnnotationPresent(Joins.class)) {
-            return "";
-        }
-        Joins.Join[] joins = entityClass.getAnnotation(Joins.class).value();
-        StringJoiner joiner = new StringJoiner(SPACE, joins.length);
-        Arrays.stream(joins).map(Joins.Join::value).forEachOrdered(joiner::append);
-        return joiner.toString();
+    public SqlAndArgs buildJoinCountAndArgs(DoytoQuery q) {
+        return buildCountAndArgs(q, entityClass);
     }
 
-    private static String resolveJoin(Object query, List<Object> argList, String join) {
-        Matcher matcher = PTN_PLACE_HOLDER.matcher(join);
-
-        StringBuffer sb = new StringBuffer(SPACE);
-        while (matcher.find()) {
-            String fieldName = matcher.group(1);
-            Field field = getField(query, fieldName);
-            Object value = readField(field, query);
-            argList.add(value);
-            writeField(field, query, null);
-            matcher.appendReplacement(sb, PLACE_HOLDER);
-        }
-
-        return matcher.appendTail(sb).toString();
+    public static SqlAndArgs buildSelectAndArgs(DoytoQuery q, Class<?> entityClass) {
+        return SqlAndArgs.buildSqlWithArgs(argList -> {
+            DoytoQuery query = SerializationUtils.clone(q);
+            EntityMetadata entityMetadata = EntityMetadata.build(entityClass);
+            String sql = SELECT + entityMetadata.getColumnsForSelect() +
+                    FROM + entityMetadata.getTableName() +
+                    entityMetadata.resolveJoinSql(query, argList) +
+                    buildWhere(query, argList) +
+                    entityMetadata.getGroupBySql() +
+                    buildOrderBy(query);
+            return buildPaging(sql, query);
+        });
     }
 
-    @SuppressWarnings("java:S4973")
-    private String build(DoytoQuery pageQuery, List<Object> argList, String... columns) {
-        pageQuery = SerializationUtils.clone(pageQuery);
-
-        String join = joinSql.isEmpty() ? "" : resolveJoin(pageQuery, argList, joinSql);
-        String from = tableName + join;
-        String sql = buildStart(columns, from);
-        sql += buildWhere(pageQuery, argList);
-
-        if (entityClass.isAnnotationPresent(Joins.class)) {
-            Joins joins = entityClass.getAnnotation(Joins.class);
-            if (!joins.groupBy().isEmpty()) {
-                sql += " GROUP BY " + joins.groupBy();
-            }
-            if (!joins.having().isEmpty()) {
-                sql += " HAVING " + joins.having();
-            }
-        }
-        // intentionally use ==
-        if (!(columns.length == 1 && COUNT == columns[0])) {
-            // not SELECT COUNT(*)
-            sql += buildOrderBy(pageQuery);
-            sql = buildPaging(sql, pageQuery);
-        }
-        return sql;
+    public static SqlAndArgs buildCountAndArgs(DoytoQuery q, Class<?> entityClass) {
+        return SqlAndArgs.buildSqlWithArgs((argList -> {
+            DoytoQuery query = SerializationUtils.clone(q);
+            EntityMetadata entityMetadata = EntityMetadata.build(entityClass);
+            return SELECT + COUNT +
+                    FROM + entityMetadata.getTableName() +
+                    entityMetadata.resolveJoinSql(query, argList) +
+                    buildWhere(query, argList) +
+                    entityMetadata.getGroupBySql();
+        }));
     }
 
-    public SqlAndArgs buildJoinSelectAndArgs(DoytoQuery query) {
-        return SqlAndArgs.buildSqlWithArgs(argList -> build(query, argList, columnsForSelect));
-    }
-
-    public SqlAndArgs buildJoinCountAndArgs(DoytoQuery query) {
-        return SqlAndArgs.buildSqlWithArgs((argList -> build(query, argList, COUNT)));
-    }
 }
