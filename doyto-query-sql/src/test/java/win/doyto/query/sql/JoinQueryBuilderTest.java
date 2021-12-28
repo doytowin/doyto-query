@@ -88,4 +88,16 @@ class JoinQueryBuilderTest {
         assertEquals(expected, sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).isEmpty();
     }
+
+    @Test
+    void buildCountAndArgs() {
+        TestJoinQuery testJoinQuery = TestJoinQuery.builder().pageSize(5).sort("userCount,asc").build();
+
+        String expected = "SELECT COUNT(DISTINCT(r.roleName)) " +
+                "FROM user u " +
+                "left join t_user_and_role ur on ur.userId = u.id " +
+                "inner join t_role r on r.id = ur.roleId";
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildCountAndArgs(testJoinQuery, UserCountByRoleView.class);
+        assertEquals(expected, sqlAndArgs.getSql());
+    }
 }

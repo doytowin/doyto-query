@@ -52,6 +52,7 @@ public class EntityMetadata {
     private String columnsForSelect;
     private String tableName;
     private String joinSql = "";
+    private String groupByColumns = "";
     private String groupBySql = "";
 
     public EntityMetadata(Class<?> entityClass) {
@@ -89,6 +90,7 @@ public class EntityMetadata {
         if (entityClass.isAnnotationPresent(Joins.class)) {
             Joins joins = entityClass.getAnnotation(Joins.class);
             if (!joins.groupBy().isEmpty()) {
+                groupByColumns = joins.groupBy();
                 groupBySql += " GROUP BY " + joins.groupBy();
             }
             if (!joins.having().isEmpty()) {

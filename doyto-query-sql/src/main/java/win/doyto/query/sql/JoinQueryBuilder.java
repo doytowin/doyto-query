@@ -33,11 +33,15 @@ public class JoinQueryBuilder {
         return SqlAndArgs.buildSqlWithArgs((argList -> {
             DoytoQuery query = SerializationUtils.clone(q);
             EntityMetadata entityMetadata = EntityMetadata.build(entityClass);
-            return SELECT + COUNT +
+            String count = COUNT;
+            String groupByColumns = entityMetadata.getGroupByColumns();
+            if (!groupByColumns.isEmpty()) {
+                count = "COUNT(DISTINCT(" + groupByColumns + "))";
+            }
+            return SELECT + count +
                     FROM + entityMetadata.getTableName() +
                     entityMetadata.resolveJoinSql(query, argList) +
-                    buildWhere(query, argList) +
-                    entityMetadata.getGroupBySql();
+                    buildWhere(query, argList);
         }));
     }
 

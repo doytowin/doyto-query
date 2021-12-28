@@ -38,6 +38,14 @@ class JdbcComplexDataQueryTest extends JdbcApplicationTest {
     }
 
     @Test
+    void countForGroupBy() {
+        TestJoinQuery query = TestJoinQuery.builder().sort("userCount,desc").build();
+        Long count = jdbcComplexDataQuery.count(query, UserCountByRoleView.class);
+
+        assertThat(count).isEqualTo(2);
+    }
+
+    @Test
     void pageForJoin() {
         TestJoinQuery testJoinQuery = new TestJoinQuery();
         testJoinQuery.setRoleName("高级");
