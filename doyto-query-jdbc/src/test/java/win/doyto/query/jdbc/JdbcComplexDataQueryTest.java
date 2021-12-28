@@ -1,9 +1,9 @@
 package win.doyto.query.jdbc;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
-import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.service.PageList;
 import win.doyto.query.test.join.TestJoinQuery;
 import win.doyto.query.test.join.TestJoinView;
@@ -14,35 +14,36 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * JoinTest
+ * JdbcComplexDataQueryTest
  *
  * @author f0rb on 2020-04-11
  */
-class JoinTest extends JdbcApplicationTest {
+class JdbcComplexDataQueryTest extends JdbcApplicationTest {
+    private JdbcComplexDataQuery jdbcComplexDataQuery;
 
-    @Autowired
-    private JdbcOperations jdbcOperations;
+    @BeforeEach
+    void setUp(@Autowired JdbcOperations jdbcOperations) {
+        jdbcComplexDataQuery = new JdbcComplexDataQuery(jdbcOperations);
+    }
 
     @Test
     void queryForJoin() {
-        JdbcComplexQueryService<UserCountByRoleView, DoytoQuery> jdbcComplexQueryService = new JdbcComplexQueryService<>(UserCountByRoleView.class);
-        jdbcComplexQueryService.setJdbcOperations(jdbcOperations);
-
         TestJoinQuery query = new TestJoinQuery();
         query.setSort("userCount,desc");
 
-        List<UserCountByRoleView> list = jdbcComplexQueryService.query(query);
-        assertThat(list).extracting(UserCountByRoleView::getUserCount).containsExactly(3, 2);
+        List<UserCountByRoleView> list = jdbcComplexDataQuery.query(query, UserCountByRoleView.class);
+
+        assertThat(list).extracting(UserCountByRoleView::getUserCount)
+                        .containsExactly(3, 2);
     }
 
     @Test
     void pageForJoin() {
-        JdbcComplexQueryService<TestJoinView, DoytoQuery> jdbcComplexQueryService = new JdbcComplexQueryService<>(TestJoinView.class);
-        jdbcComplexQueryService.setJdbcOperations(jdbcOperations);
-
         TestJoinQuery testJoinQuery = new TestJoinQuery();
         testJoinQuery.setRoleName("高级");
-        PageList<TestJoinView> page = jdbcComplexQueryService.page(testJoinQuery);
+
+        PageList<TestJoinView> page = jdbcComplexDataQuery.page(testJoinQuery, TestJoinView.class);
+
         assertThat(page.getTotal()).isEqualTo(2);
         assertThat(page.getList()).extracting(TestJoinView::getUsername).containsExactly("f0rb", "user4");
         assertThat(testJoinQuery.getPageNumber()).isZero();

@@ -35,15 +35,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class JoinQueryBuilderTest {
     @Test
     void supportAggregateQuery() {
-        JoinQueryBuilder joinQueryBuilder = new JoinQueryBuilder(MaxIdView.class);
-        SqlAndArgs sqlAndArgs = joinQueryBuilder.buildJoinSelectAndArgs(new TestPageQuery());
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(new TestPageQuery(), MaxIdView.class);
         assertEquals("SELECT max(id) AS maxId FROM user", sqlAndArgs.getSql());
     }
 
     @Test
     void buildJoinSelectAndArgs() {
-        JoinQueryBuilder joinQueryBuilder = new JoinQueryBuilder(TestJoinView.class);
-
         TestJoinQuery testJoinQuery = new TestJoinQuery();
         testJoinQuery.setRoleName("VIP");
         testJoinQuery.setUserLevel(TestEnum.VIP);
@@ -53,15 +50,13 @@ class JoinQueryBuilderTest {
                 "left join t_user_and_role ur on ur.userId = u.id " +
                 "inner join t_role r on r.id = ur.roleId and r.roleName = ? " +
                 "WHERE u.userLevel = ?";
-        SqlAndArgs sqlAndArgs = joinQueryBuilder.buildJoinSelectAndArgs(testJoinQuery);
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(testJoinQuery, TestJoinView.class);
         assertEquals(expected, sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly("VIP", TestEnum.VIP.ordinal());
     }
 
     @Test
     void buildJoinSelectAndArgsWithAlias() {
-        JoinQueryBuilder joinQueryBuilder = new JoinQueryBuilder(TestJoinView.class);
-
         TestJoinQuery testJoinQuery = new TestJoinQuery();
         testJoinQuery.setRoleName("VIP");
         testJoinQuery.setRoleNameLikeOrRoleCodeLike("VIP");
@@ -72,7 +67,7 @@ class JoinQueryBuilderTest {
                 "left join t_user_and_role ur on ur.userId = u.id " +
                 "inner join t_role r on r.id = ur.roleId and r.roleName = ? " +
                 "WHERE u.userLevel = ? AND (r.roleName LIKE ? OR r.roleCode LIKE ?)";
-        SqlAndArgs sqlAndArgs = joinQueryBuilder.buildJoinSelectAndArgs(testJoinQuery);
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(testJoinQuery, TestJoinView.class);
         assertEquals(expected, sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly("VIP", TestEnum.VIP.ordinal(), "%VIP%", "%VIP%");
 
@@ -80,8 +75,6 @@ class JoinQueryBuilderTest {
 
     @Test
     void buildJoinGroupBy() {
-        JoinQueryBuilder joinQueryBuilder = new JoinQueryBuilder(UserCountByRoleView.class);
-
         TestJoinQuery testJoinQuery = TestJoinQuery.builder().pageSize(5).sort("userCount,asc").build();
 
         String expected = "SELECT r.roleName AS roleName, count(u.id) AS userCount " +
@@ -91,7 +84,7 @@ class JoinQueryBuilderTest {
                 "GROUP BY r.roleName HAVING count(*) > 0 " +
                 "ORDER BY userCount asc " +
                 "LIMIT 5 OFFSET 0";
-        SqlAndArgs sqlAndArgs = joinQueryBuilder.buildJoinSelectAndArgs(testJoinQuery);
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(testJoinQuery, UserCountByRoleView.class);
         assertEquals(expected, sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).isEmpty();
     }
