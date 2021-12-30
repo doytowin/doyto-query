@@ -14,31 +14,14 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.role;
+package win.doyto.query.core;
 
-import lombok.Getter;
-import lombok.Setter;
-import win.doyto.query.entity.CommonEntity;
-import win.doyto.query.validation.CreateGroup;
-
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
- * UserEntity
+ * Or2
  *
- * @author f0rb on 2020-04-01
+ * @author f0rb on 2021-12-24
  */
-@Table(name = "t_role")
-@Getter
-@Setter
-public class RoleEntity extends CommonEntity<Integer, Long> {
-
-    @NotNull(groups = CreateGroup.class)
-    private String roleName;
-
-    @NotNull(groups = CreateGroup.class)
-    private String roleCode;
-
-    private Boolean valid;
+public interface Or extends Serializable {
 }

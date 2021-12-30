@@ -23,11 +23,11 @@ import static org.mockito.Mockito.*;
  */
 class JdbcDataAccessTest extends JdbcApplicationTest {
 
-    private JdbcDataAccess<RoleEntity, Long, RoleQuery> jdbcDataAccess;
+    private JdbcDataAccess<RoleEntity, Integer, RoleQuery> jdbcDataAccess;
     private DatabaseTemplate databaseOperations;
 
     public JdbcDataAccessTest(@Autowired JdbcOperations jdbcOperations) {
-        databaseOperations = spy(new DatabaseTemplate(jdbcOperations));
+        this.databaseOperations = spy(new DatabaseTemplate(jdbcOperations));
         this.jdbcDataAccess = new JdbcDataAccess<>(databaseOperations, RoleEntity.class, new BeanPropertyRowMapper<>(RoleEntity.class));
     }
 
@@ -43,7 +43,7 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
         jdbcDataAccess.delete(RoleQuery.builder().pageNumber(1).pageSize(2).build());
         assertThat(jdbcDataAccess.query(RoleQuery.builder().build()))
                 .extracting("id")
-                .containsExactly(1L, 2L, 5L);
+                .containsExactly(1, 2, 5);
     }
 
     @Test

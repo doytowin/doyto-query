@@ -13,10 +13,6 @@
 
     <artifactId>doyto-query-web</artifactId>
 
-    <properties>
-        <spring.boot.version>2.2.13.RELEASE</spring.boot.version>
-    </properties>
-
     <dependencies>
 
         <dependency>

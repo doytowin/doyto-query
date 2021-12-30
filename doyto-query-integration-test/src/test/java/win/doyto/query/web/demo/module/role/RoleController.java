@@ -29,5 +29,5 @@ import win.doyto.query.web.controller.AbstractEIQController;
  */
 @RestController
 @RequestMapping("role")
-public class RoleController extends AbstractEIQController<RoleEntity, Long, RoleQuery> {
+public class RoleController extends AbstractEIQController<RoleEntity, Integer, RoleQuery> {
 }

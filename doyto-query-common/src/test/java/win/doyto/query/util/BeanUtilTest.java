@@ -3,6 +3,7 @@ package win.doyto.query.util;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import win.doyto.query.core.IdWrapper;
 import win.doyto.query.test.DynamicEntity;
 import win.doyto.query.test.DynamicIdWrapper;
 import win.doyto.query.test.TestEntity;
@@ -90,12 +91,15 @@ class BeanUtilTest {
         dynamicIdWrapper.setId(1);
         dynamicIdWrapper.setUser("test");
         dynamicIdWrapper.setProject("i18n");
+
         DynamicEntity dynamicEntity = BeanUtil.convertTo(dynamicIdWrapper, new TypeReference<DynamicEntity>() {});
-        assertThat(dynamicEntity.toIdWrapper())
-                .isEqualToComparingFieldByField(dynamicIdWrapper)
+        IdWrapper<Integer> clonedIdWrapper = dynamicEntity.toIdWrapper();
+
+        assertThat(clonedIdWrapper)
                 .hasFieldOrPropertyWithValue("id", 1)
                 .hasFieldOrPropertyWithValue("user", "test")
-                .hasFieldOrPropertyWithValue("project", "i18n");
+                .hasFieldOrPropertyWithValue("project", "i18n")
+                .hasFieldOrPropertyWithValue("locale", null);
     }
 
     @Test

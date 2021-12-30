@@ -8,9 +8,13 @@ import win.doyto.query.annotation.NestedQuery;
 import win.doyto.query.annotation.QueryField;
 import win.doyto.query.annotation.QueryTableAlias;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.core.Or;
+import win.doyto.query.core.QuerySuffix;
+import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,7 +39,9 @@ final class FieldProcessor {
 
     public static void init(Field field) {
         Processor processor;
-        if (field.isAnnotationPresent(QueryTableAlias.class)) {
+        if (Or.class.isAssignableFrom(field.getType())) {
+            processor = initFieldMappedByOr(field);
+        } else if (field.isAnnotationPresent(QueryTableAlias.class)) {
             processor = initFieldAnnotatedByQueryTableAlias(field);
         } else if (field.isAnnotationPresent(QueryField.class)) {
             processor = initFieldAnnotatedByQueryField(field);
@@ -45,6 +51,22 @@ final class FieldProcessor {
             processor = initCommonField(field);
         }
         FIELD_PROCESSOR_MAP.put(field, processor);
+    }
+
+    private static Processor initFieldMappedByOr(Field field) {
+        Field[] fields = ColumnUtil.initFields(field.getType());
+        Arrays.stream(fields).forEach(FieldProcessor::init);
+        return (argList, value) -> {
+            StringJoiner or = new StringJoiner(SPACE_OR, fields.length);
+            for (Field subField : fields) {
+                Object subValue = CommonUtil.readField(subField, value);
+                if (QuerySuffix.isValidValue(subValue, subField)) {
+                    String condition = execute(subField, argList, subValue);
+                    or.append(condition);
+                }
+            }
+            return or.isEmpty() ? null : CommonUtil.wrapWithParenthesis(or.toString());
+        };
     }
 
     private static Processor initCommonField(Field field) {

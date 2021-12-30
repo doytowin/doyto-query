@@ -412,4 +412,37 @@ class QueryBuilderTest {
         assertEquals("SELECT locale_zh FROM t_dynamic_f0rb_i18n WHERE id = ?", sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly(2);
     }
+
+    @Test
+    void buildOrClause() {
+        AccountOr accountOr = AccountOr.builder().username("f0rb").email("f0rb").mobile("f0rb").build();
+        TestQuery testQuery = TestQuery.builder().account2(accountOr).build();
+
+        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
+
+        assertThat(sql).isEqualTo("SELECT * FROM user WHERE (username = ? OR email = ? OR mobile = ?)");
+        assertThat(argList).containsExactly("f0rb", "f0rb", "f0rb");
+    }
+
+    @Test
+    void buildOrClauseIgnoreNull() {
+        AccountOr accountOr = AccountOr.builder().username("f0rb").email("f0rb").build();
+        TestQuery testQuery = TestQuery.builder().account2(accountOr).build();
+
+        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
+
+        assertThat(sql).isEqualTo("SELECT * FROM user WHERE (username = ? OR email = ?)");
+        assertThat(argList).containsExactly("f0rb", "f0rb");
+    }
+
+    @Test
+    void shouldIgnoreOrFieldWhenAllValuesAreNull() {
+        AccountOr accountOr = AccountOr.builder().build();
+        TestQuery testQuery = TestQuery.builder().account2(accountOr).build();
+
+        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
+
+        assertThat(sql).isEqualTo("SELECT * FROM user");
+        assertThat(argList).containsExactly();
+    }
 }

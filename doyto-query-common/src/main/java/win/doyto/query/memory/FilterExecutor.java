@@ -31,6 +31,7 @@ import static win.doyto.query.core.QuerySuffix.*;
  *
  * @author f0rb on 2021-12-10
  */
+@SuppressWarnings("unchecked")
 @UtilityClass
 class FilterExecutor {
 

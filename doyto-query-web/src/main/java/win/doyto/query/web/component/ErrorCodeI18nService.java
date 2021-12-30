@@ -41,7 +41,7 @@ public class ErrorCodeI18nService {
 
     public ErrorCode buildErrorCode(ErrorCode errorCode, Object... args) {
         Locale locale = localeResolver.resolveLocale(httpServletRequest);
-        String message = resourceBundleMessageSource.getMessage(errorCode.getMessage(), args, locale);
+        String message = resourceBundleMessageSource.getMessage(errorCode.getMessage(), args, errorCode.getMessage(),locale);
         ErrorCode localeErrorCode = ErrorCode.build(errorCode.getCode(), message);
         if (errorCode instanceof ErrorResponse) {
             ((ErrorResponse) errorCode).setErrorCode(localeErrorCode);
