@@ -18,7 +18,9 @@ package win.doyto.query.sql;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import win.doyto.query.annotation.Aggregation;
 import win.doyto.query.annotation.Joins;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.ColumnUtil;
@@ -87,14 +89,12 @@ public class EntityMetadata {
     }
 
     private void buildGroupBySql(Class<?> entityClass) {
-        if (entityClass.isAnnotationPresent(Joins.class)) {
-            Joins joins = entityClass.getAnnotation(Joins.class);
-            if (!joins.groupBy().isEmpty()) {
-                groupByColumns = joins.groupBy();
-                groupBySql += " GROUP BY " + joins.groupBy();
-            }
-            if (!joins.having().isEmpty()) {
-                groupBySql += " HAVING " + joins.having();
+        if (entityClass.isAnnotationPresent(Aggregation.class)) {
+            Aggregation aggregation = entityClass.getAnnotation(Aggregation.class);
+            groupByColumns = StringUtils.join(aggregation.groupBy(), SEPARATOR);
+            groupBySql = " GROUP BY " + groupByColumns;
+            if (!aggregation.having().isEmpty()) {
+                groupBySql += " HAVING " + aggregation.having();
             }
         }
     }
