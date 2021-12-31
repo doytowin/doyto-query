@@ -59,4 +59,10 @@ class AssociationServiceTest extends JdbcApplicationTest{
         int ret = associationService.deleteByK1(1L);
         assertThat(ret).isEqualTo(2);
     }
+
+    @Test
+    void deleteByK2() {
+        int ret = associationService.deleteByK2(1);
+        assertThat(ret).isEqualTo(3);
+    }
 }

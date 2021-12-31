@@ -115,4 +115,11 @@ public class AssociationSqlBuilder<K1, K2> {
             return deleteByK1;
         });
     }
+
+    public SqlAndArgs buildDeleteByK2(K2 k2) {
+        return SqlAndArgs.buildSqlWithArgs(argList -> {
+            argList.add(k2);
+            return deleteByK2;
+        });
+    }
 }
