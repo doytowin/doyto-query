@@ -36,4 +36,6 @@ public interface AssociationService<K1, K2> {
     int deleteByK2(K2 k2);
 
     int reassociateForK1(K1 k1, List<K2> list);
+
+    int reassociateForK2(K2 k2, List<K1> list);
 }
