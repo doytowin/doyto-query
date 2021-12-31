@@ -19,6 +19,7 @@ package win.doyto.query.jdbc;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
+import win.doyto.query.sql.UniqueKey;
 
 import java.util.Arrays;
 import java.util.List;
@@ -94,5 +95,11 @@ class AssociationServiceTest extends JdbcApplicationTest{
         int ret = associationService.reassociateForK2(1, Arrays.asList());
         assertThat(ret).isZero();
         assertThat(associationService.queryK1ByK2(1)).isEmpty();
+    }
+
+    @Test
+    void count() {
+        long ret = associationService.count(Arrays.asList(new UniqueKey<>(1L, 2), new UniqueKey<>(1L, 3), new UniqueKey<>(1L, 4)));
+        assertThat(ret).isEqualTo(1);
     }
 }

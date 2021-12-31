@@ -100,6 +100,12 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
         return associate(list, k2);
     }
 
+    @Override
+    public long count(List<UniqueKey<K1, K2>> list) {
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildCount(list);
+        return databaseOperations.count(sqlAndArgs);
+    }
+
     private int associate(List<K1> list, K2 k2) {
         return associate(list.stream().map(k1 -> new UniqueKey<>(k1, k2)).collect(Collectors.toList()));
     }

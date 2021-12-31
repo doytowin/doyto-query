@@ -86,7 +86,7 @@ public class AssociationSqlBuilder<K1, K2> {
         });
     }
 
-    public SqlAndArgs buildCount(List<UniqueKey<?, ?>> keys) {
+    public SqlAndArgs buildCount(List<UniqueKey<K1, K2>> keys) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             keys.stream().map(UniqueKey::toList).forEach(argList::addAll);
             StringBuilder stringBuilder = new StringBuilder(countIn).append("(");
