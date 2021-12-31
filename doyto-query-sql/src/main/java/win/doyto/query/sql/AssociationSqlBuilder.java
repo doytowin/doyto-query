@@ -30,7 +30,7 @@ import static win.doyto.query.sql.Constant.*;
  * @author f0rb on 2021-12-17
  */
 @SuppressWarnings("java:S1068")
-public class AssociationSqlBuilder {
+public class AssociationSqlBuilder<K1, K2> {
     private final String tableName;
     private final String k1Column;
     private final String k2Column;
@@ -68,7 +68,7 @@ public class AssociationSqlBuilder {
         sb.append(IntStream.range(0, size).mapToObj(i -> placeHolders).collect(Collectors.joining(SEPARATOR)));
     }
 
-    public SqlAndArgs buildInsert(List<UniqueKey<?, ?>> keys) {
+    public SqlAndArgs buildInsert(List<UniqueKey<K1, K2>> keys) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             keys.stream().map(UniqueKey::toList).forEach(argList::addAll);
             StringBuilder insertBuilder = new StringBuilder(insertSql);
