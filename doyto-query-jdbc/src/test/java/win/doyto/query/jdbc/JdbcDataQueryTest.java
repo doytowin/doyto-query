@@ -14,16 +14,16 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * JdbcComplexDataQueryTest
+ * JdbcDataQueryTest
  *
  * @author f0rb on 2020-04-11
  */
-class JdbcComplexDataQueryTest extends JdbcApplicationTest {
-    private JdbcComplexDataQuery jdbcComplexDataQuery;
+class JdbcDataQueryTest extends JdbcApplicationTest {
+    private JdbcDataQuery jdbcDataQuery;
 
     @BeforeEach
     void setUp(@Autowired JdbcOperations jdbcOperations) {
-        jdbcComplexDataQuery = new JdbcComplexDataQuery(jdbcOperations);
+        jdbcDataQuery = new JdbcDataQuery(jdbcOperations);
     }
 
     @Test
@@ -31,16 +31,17 @@ class JdbcComplexDataQueryTest extends JdbcApplicationTest {
         TestJoinQuery query = new TestJoinQuery();
         query.setSort("userCount,desc");
 
-        List<UserCountByRoleView> list = jdbcComplexDataQuery.query(query, UserCountByRoleView.class);
+        List<UserCountByRoleView> list = jdbcDataQuery.query(query, UserCountByRoleView.class);
 
-        assertThat(list).extracting(UserCountByRoleView::getUserCount)
-                        .containsExactly(3, 2);
+        assertThat(list)
+                .extracting(UserCountByRoleView::getUserCount)
+                .containsExactly(3, 2);
     }
 
     @Test
     void countForGroupBy() {
         TestJoinQuery query = TestJoinQuery.builder().sort("userCount,desc").build();
-        Long count = jdbcComplexDataQuery.count(query, UserCountByRoleView.class);
+        Long count = jdbcDataQuery.count(query, UserCountByRoleView.class);
 
         assertThat(count).isEqualTo(2);
     }
@@ -50,7 +51,7 @@ class JdbcComplexDataQueryTest extends JdbcApplicationTest {
         TestJoinQuery testJoinQuery = new TestJoinQuery();
         testJoinQuery.setRoleName("高级");
 
-        PageList<TestJoinView> page = jdbcComplexDataQuery.page(testJoinQuery, TestJoinView.class);
+        PageList<TestJoinView> page = jdbcDataQuery.page(testJoinQuery, TestJoinView.class);
 
         assertThat(page.getTotal()).isEqualTo(2);
         assertThat(page.getList()).extracting(TestJoinView::getUsername).containsExactly("f0rb", "user4");

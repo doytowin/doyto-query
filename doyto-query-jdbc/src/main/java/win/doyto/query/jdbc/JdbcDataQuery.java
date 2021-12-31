@@ -17,12 +17,12 @@ import java.util.Map;
  *
  * @author f0rb on 2019-06-09
  */
-public class JdbcComplexDataQuery implements DataQuery {
+public class JdbcDataQuery implements DataQuery {
 
     private Map<Class<?>, RowMapper<?>> holder = new HashMap<>();
     private DatabaseOperations databaseOperations;
 
-    public JdbcComplexDataQuery(JdbcOperations jdbcOperations) {
+    public JdbcDataQuery(JdbcOperations jdbcOperations) {
         this.databaseOperations = new DatabaseTemplate(jdbcOperations);
     }
 
