@@ -101,4 +101,11 @@ public class AssociationSqlBuilder<K1, K2> {
             return selectK1ColumnByK2Id;
         });
     }
+
+    public SqlAndArgs buildSelectK2ColumnByK1Id(K1 k1) {
+        return SqlAndArgs.buildSqlWithArgs(argList -> {
+            argList.add(k1);
+            return selectK2ColumnByK1Id;
+        });
+    }
 }

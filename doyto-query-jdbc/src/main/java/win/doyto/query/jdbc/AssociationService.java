@@ -28,4 +28,6 @@ public interface AssociationService<K1, K2> {
     int associate(K1 k1, K2 k2);
 
     List<K1> queryK1ByK2(K2 k2);
+
+    List<K2> queryK2ByK1(K1 k1);
 }

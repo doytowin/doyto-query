@@ -47,4 +47,10 @@ class AssociationServiceTest extends JdbcApplicationTest{
         List<Long> userIds = associationService.queryK1ByK2(2);
         assertThat(userIds).containsExactly(1L, 4L);
     }
+
+    @Test
+    void queryK2ByK1() {
+        List<Integer> roleIds = associationService.queryK2ByK1(1L);
+        assertThat(roleIds).containsExactly(1, 2);
+    }
 }

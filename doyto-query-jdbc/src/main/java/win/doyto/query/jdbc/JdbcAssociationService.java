@@ -35,6 +35,7 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
     private DatabaseOperations databaseOperations;
     private AssociationSqlBuilder<K1, K2> sqlBuilder;
     private final SingleColumnRowMapper<K1> k1RowMapper = new SingleColumnRowMapper<>();
+    private final SingleColumnRowMapper<K2> k2RowMapper = new SingleColumnRowMapper<>();
 
     public JdbcAssociationService(JdbcOperations jdbcOperations, String tableName, String k1Column, String k2Column) {
         this.databaseOperations = new DatabaseTemplate(jdbcOperations);
@@ -51,6 +52,12 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
     public List<K1> queryK1ByK2(K2 k2) {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildSelectK1ColumnByK2Id(k2);
         return databaseOperations.query(sqlAndArgs, k1RowMapper);
+    }
+
+    @Override
+    public List<K2> queryK2ByK1(K1 k1) {
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildSelectK2ColumnByK1Id(k1);
+        return databaseOperations.query(sqlAndArgs, k2RowMapper);
     }
 
     private SqlAndArgs buildInsert(K1 k1, K2 k2) {
