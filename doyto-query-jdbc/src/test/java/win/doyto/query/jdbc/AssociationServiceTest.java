@@ -134,4 +134,10 @@ class AssociationServiceTest extends JdbcApplicationTest{
         Set<UniqueKey<Long, Integer>> uniqueKeys = associationService.buildUniqueKeys(1L, Arrays.asList(2, 5));
         assertThat(associationService.exists(uniqueKeys)).isTrue();
     }
+
+    @Test
+    void existsExactly() {
+        Set<UniqueKey<Long, Integer>> uniqueKeys = associationService.buildUniqueKeys(1L, Arrays.asList(2, 5));
+        assertThat(associationService.existsExactly(uniqueKeys)).isFalse();
+    }
 }

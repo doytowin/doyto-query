@@ -69,4 +69,8 @@ public interface AssociationService<K1, K2> {
     default boolean exists(Set<UniqueKey<K1, K2>> uniqueKeys) {
         return count(uniqueKeys) > 0;
     }
+
+    default boolean existsExactly(Set<UniqueKey<K1, K2>> uniqueKeys) {
+        return count(uniqueKeys) == uniqueKeys.size();
+    }
 }
