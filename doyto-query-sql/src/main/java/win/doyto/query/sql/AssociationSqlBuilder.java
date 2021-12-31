@@ -94,4 +94,11 @@ public class AssociationSqlBuilder<K1, K2> {
             return stringBuilder.append(")").toString();
         });
     }
+
+    public SqlAndArgs buildSelectK1ColumnByK2Id(K2 k2) {
+        return SqlAndArgs.buildSqlWithArgs(argList -> {
+            argList.add(k2);
+            return selectK1ColumnByK2Id;
+        });
+    }
 }

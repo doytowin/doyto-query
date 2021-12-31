@@ -16,6 +16,8 @@
 
 package win.doyto.query.jdbc;
 
+import java.util.List;
+
 /**
  * AssociationService
  *
@@ -24,4 +26,6 @@ package win.doyto.query.jdbc;
 public interface AssociationService<K1, K2> {
 
     int associate(K1 k1, K2 k2);
+
+    List<K1> queryK1ByK2(K2 k2);
 }

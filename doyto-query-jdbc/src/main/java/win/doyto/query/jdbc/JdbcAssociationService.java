@@ -17,11 +17,13 @@
 package win.doyto.query.jdbc;
 
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import win.doyto.query.sql.AssociationSqlBuilder;
 import win.doyto.query.sql.SqlAndArgs;
 import win.doyto.query.sql.UniqueKey;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * JdbcAssociationService
@@ -32,6 +34,7 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
 
     private DatabaseOperations databaseOperations;
     private AssociationSqlBuilder<K1, K2> sqlBuilder;
+    private final SingleColumnRowMapper<K1> k1RowMapper = new SingleColumnRowMapper<>();
 
     public JdbcAssociationService(JdbcOperations jdbcOperations, String tableName, String k1Column, String k2Column) {
         this.databaseOperations = new DatabaseTemplate(jdbcOperations);
@@ -42,6 +45,12 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
     public int associate(K1 k1, K2 k2) {
         SqlAndArgs sqlAndArgs = buildInsert(k1, k2);
         return databaseOperations.update(sqlAndArgs);
+    }
+
+    @Override
+    public List<K1> queryK1ByK2(K2 k2) {
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildSelectK1ColumnByK2Id(k2);
+        return databaseOperations.query(sqlAndArgs, k1RowMapper);
     }
 
     private SqlAndArgs buildInsert(K1 k1, K2 k2) {

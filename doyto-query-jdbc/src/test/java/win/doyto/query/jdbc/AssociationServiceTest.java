@@ -20,6 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -38,5 +40,11 @@ class AssociationServiceTest extends JdbcApplicationTest{
     void associate() {
         int ret = associationService.associate(1L, 20);
         assertThat(ret).isEqualTo(1);
+    }
+
+    @Test
+    void queryK1ByK2() {
+        List<Long> userIds = associationService.queryK1ByK2(2);
+        assertThat(userIds).containsExactly(1L, 4L);
     }
 }
