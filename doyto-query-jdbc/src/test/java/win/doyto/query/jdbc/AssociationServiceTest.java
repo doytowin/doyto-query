@@ -125,4 +125,13 @@ class AssociationServiceTest extends JdbcApplicationTest{
         Collection<UniqueKey<Long, Integer>> ukSet2 = associationService.buildUniqueKeys(Arrays.asList(2L, 2L, 3L, 4L), 1);
         assertThat(ukSet2).containsOnlyOnce(new UniqueKey<>(2L, 1), new UniqueKey<>(3L, 1), new UniqueKey<>(4L, 1) );
     }
+
+    @Test
+    void exists() {
+        assertThat(associationService.exists(1L, 2)).isTrue();
+        assertThat(associationService.exists(1L, 5)).isFalse();
+
+        Set<UniqueKey<Long, Integer>> uniqueKeys = associationService.buildUniqueKeys(1L, Arrays.asList(2, 5));
+        assertThat(associationService.exists(uniqueKeys)).isTrue();
+    }
 }

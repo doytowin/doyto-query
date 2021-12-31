@@ -60,5 +60,13 @@ public interface AssociationService<K1, K2> {
 
     int reassociateForK2(K2 k2, List<K1> list);
 
-    long count(Set<UniqueKey<K1, K2>> list);
+    long count(Set<UniqueKey<K1, K2>> set);
+
+    default boolean exists(K1 k1, K2 k2) {
+        return exists(Collections.singleton(new UniqueKey<>(k1, k2)));
+    }
+
+    default boolean exists(Set<UniqueKey<K1, K2>> uniqueKeys) {
+        return count(uniqueKeys) > 0;
+    }
 }
