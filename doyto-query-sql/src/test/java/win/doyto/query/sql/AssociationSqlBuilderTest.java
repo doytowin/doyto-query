@@ -32,14 +32,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class AssociationSqlBuilderTest {
 
-    private AssociationSqlBuilder associationSqlBuilder;
+    private AssociationSqlBuilder<Integer, Integer> associationSqlBuilder;
 
     @BeforeEach
     void setUp() {
         String tableName = "t_user_and_role";
         String k1Column = "user_id";
         String k2Column = "role_id";
-        associationSqlBuilder = new AssociationSqlBuilder(tableName, k1Column, k2Column);
+        associationSqlBuilder = new AssociationSqlBuilder<>(tableName, k1Column, k2Column);
     }
 
     @Test
@@ -68,7 +68,7 @@ class AssociationSqlBuilderTest {
 
     @Test
     void testInsert() {
-        List<UniqueKey<?, ?>> keys = Arrays.asList(new UniqueKey<>(1, 1), new UniqueKey<>(2, 3));
+        List<UniqueKey<Integer, Integer>> keys = Arrays.asList(new UniqueKey<>(1, 1), new UniqueKey<>(2, 3));
         SqlAndArgs sqlAndArgs = associationSqlBuilder.buildInsert(keys);
         assertThat(sqlAndArgs.getSql())
                 .isEqualTo("INSERT INTO t_user_and_role (user_id, role_id) VALUES (?, ?), (?, ?)");
@@ -77,7 +77,7 @@ class AssociationSqlBuilderTest {
 
     @Test
     void testDelete() {
-        List<UniqueKey<?, ?>> keys = Arrays.asList(new UniqueKey<>(1, 1), new UniqueKey<>(2, 3));
+        List<UniqueKey<Integer, Integer>> keys = Arrays.asList(new UniqueKey<>(1, 1), new UniqueKey<>(2, 3));
         SqlAndArgs sqlAndArgs = associationSqlBuilder.buildDelete(keys);
         assertThat(sqlAndArgs.getSql())
                 .isEqualTo("DELETE FROM t_user_and_role WHERE (user_id, role_id) IN ((?, ?), (?, ?))");
@@ -86,7 +86,7 @@ class AssociationSqlBuilderTest {
 
     @Test
     void testCount() {
-        List<UniqueKey<?, ?>> keys = Arrays.asList(new UniqueKey<>(1, 1), new UniqueKey<>(2, 3));
+        List<UniqueKey<Integer, Integer>> keys = Arrays.asList(new UniqueKey<>(1, 1), new UniqueKey<>(2, 3));
         SqlAndArgs sqlAndArgs = associationSqlBuilder.buildCount(keys);
         assertThat(sqlAndArgs.getSql())
                 .isEqualTo("SELECT COUNT(*) FROM t_user_and_role WHERE (user_id, role_id) IN ((?, ?), (?, ?))");

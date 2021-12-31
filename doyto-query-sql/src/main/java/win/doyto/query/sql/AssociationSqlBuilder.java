@@ -31,10 +31,6 @@ import static win.doyto.query.sql.Constant.*;
  */
 @SuppressWarnings("java:S1068")
 public class AssociationSqlBuilder<K1, K2> {
-    private final String tableName;
-    private final String k1Column;
-    private final String k2Column;
-
     @Getter
     private String selectK1ColumnByK2Id;
     @Getter
@@ -49,10 +45,6 @@ public class AssociationSqlBuilder<K1, K2> {
     private String countIn;
 
     public AssociationSqlBuilder(String tableName, String k1Column, String k2Column) {
-        this.tableName = tableName;
-        this.k1Column = k1Column;
-        this.k2Column = k2Column;
-
         selectK1ColumnByK2Id = SELECT + k1Column + " FROM " + tableName + WHERE + k2Column + " = ?";
         selectK2ColumnByK1Id = SELECT + k2Column + " FROM " + tableName + WHERE + k1Column + " = ?";
         deleteByK1 = DELETE_FROM + tableName + WHERE + k1Column + " = ?";
@@ -77,7 +69,7 @@ public class AssociationSqlBuilder<K1, K2> {
         });
     }
 
-    public SqlAndArgs buildDelete(List<UniqueKey<?, ?>> keys) {
+    public SqlAndArgs buildDelete(List<UniqueKey<K1, K2>> keys) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             keys.stream().map(UniqueKey::toList).forEach(argList::addAll);
             StringBuilder deleteBuilder = new StringBuilder(deleteIn).append("(");
