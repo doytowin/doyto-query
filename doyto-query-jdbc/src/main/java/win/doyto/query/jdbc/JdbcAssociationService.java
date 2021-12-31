@@ -18,9 +18,10 @@ package win.doyto.query.jdbc;
 
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
+import win.doyto.query.service.AssociationService;
+import win.doyto.query.service.UniqueKey;
 import win.doyto.query.sql.AssociationSqlBuilder;
 import win.doyto.query.sql.SqlAndArgs;
-import win.doyto.query.sql.UniqueKey;
 
 import java.util.List;
 import java.util.Set;

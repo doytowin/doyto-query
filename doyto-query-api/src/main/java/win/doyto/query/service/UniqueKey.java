@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql;
+package win.doyto.query.service;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

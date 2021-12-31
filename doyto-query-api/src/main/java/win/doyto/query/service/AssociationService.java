@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.jdbc;
-
-import win.doyto.query.sql.UniqueKey;
+package win.doyto.query.service;
 
 import java.util.Collections;
 import java.util.List;

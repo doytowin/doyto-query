@@ -19,7 +19,8 @@ package win.doyto.query.jdbc;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
-import win.doyto.query.sql.UniqueKey;
+import win.doyto.query.service.AssociationService;
+import win.doyto.query.service.UniqueKey;
 
 import java.util.*;
 
