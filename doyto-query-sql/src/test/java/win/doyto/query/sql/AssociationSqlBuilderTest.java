@@ -20,7 +20,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -66,10 +67,13 @@ class AssociationSqlBuilderTest {
                      associationSqlBuilder.getDeleteByK2());
     }
 
+    private Set<UniqueKey<Integer, Integer>> testKeys() {
+        return new LinkedHashSet<>(Arrays.asList(new UniqueKey<>(1, 1), new UniqueKey<>(2, 3)));
+    }
+
     @Test
     void testInsert() {
-        List<UniqueKey<Integer, Integer>> keys = Arrays.asList(new UniqueKey<>(1, 1), new UniqueKey<>(2, 3));
-        SqlAndArgs sqlAndArgs = associationSqlBuilder.buildInsert(keys);
+        SqlAndArgs sqlAndArgs = associationSqlBuilder.buildInsert(testKeys());
         assertThat(sqlAndArgs.getSql())
                 .isEqualTo("INSERT INTO t_user_and_role (user_id, role_id) VALUES (?, ?), (?, ?)");
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 3);
@@ -77,8 +81,7 @@ class AssociationSqlBuilderTest {
 
     @Test
     void testDelete() {
-        List<UniqueKey<Integer, Integer>> keys = Arrays.asList(new UniqueKey<>(1, 1), new UniqueKey<>(2, 3));
-        SqlAndArgs sqlAndArgs = associationSqlBuilder.buildDelete(keys);
+        SqlAndArgs sqlAndArgs = associationSqlBuilder.buildDelete(testKeys());
         assertThat(sqlAndArgs.getSql())
                 .isEqualTo("DELETE FROM t_user_and_role WHERE (user_id, role_id) IN ((?, ?), (?, ?))");
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 3);
@@ -86,8 +89,7 @@ class AssociationSqlBuilderTest {
 
     @Test
     void testCount() {
-        List<UniqueKey<Integer, Integer>> keys = Arrays.asList(new UniqueKey<>(1, 1), new UniqueKey<>(2, 3));
-        SqlAndArgs sqlAndArgs = associationSqlBuilder.buildCount(keys);
+        SqlAndArgs sqlAndArgs = associationSqlBuilder.buildCount(testKeys());
         assertThat(sqlAndArgs.getSql())
                 .isEqualTo("SELECT COUNT(*) FROM t_user_and_role WHERE (user_id, role_id) IN ((?, ?), (?, ?))");
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 3);

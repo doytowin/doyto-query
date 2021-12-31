@@ -18,7 +18,7 @@ package win.doyto.query.sql;
 
 import lombok.Getter;
 
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -60,7 +60,7 @@ public class AssociationSqlBuilder<K1, K2> {
         sb.append(IntStream.range(0, size).mapToObj(i -> placeHolders).collect(Collectors.joining(SEPARATOR)));
     }
 
-    public SqlAndArgs buildInsert(List<UniqueKey<K1, K2>> keys) {
+    public SqlAndArgs buildInsert(Set<UniqueKey<K1, K2>> keys) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             keys.stream().map(UniqueKey::toList).forEach(argList::addAll);
             StringBuilder insertBuilder = new StringBuilder(insertSql);
@@ -69,7 +69,7 @@ public class AssociationSqlBuilder<K1, K2> {
         });
     }
 
-    public SqlAndArgs buildDelete(List<UniqueKey<K1, K2>> keys) {
+    public SqlAndArgs buildDelete(Set<UniqueKey<K1, K2>> keys) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             keys.stream().map(UniqueKey::toList).forEach(argList::addAll);
             StringBuilder deleteBuilder = new StringBuilder(deleteIn).append("(");
@@ -78,7 +78,7 @@ public class AssociationSqlBuilder<K1, K2> {
         });
     }
 
-    public SqlAndArgs buildCount(List<UniqueKey<K1, K2>> keys) {
+    public SqlAndArgs buildCount(Set<UniqueKey<K1, K2>> keys) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             keys.stream().map(UniqueKey::toList).forEach(argList::addAll);
             StringBuilder stringBuilder = new StringBuilder(countIn).append("(");

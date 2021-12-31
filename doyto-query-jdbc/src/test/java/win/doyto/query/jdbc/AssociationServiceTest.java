@@ -21,8 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 import win.doyto.query.sql.UniqueKey;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -99,7 +98,12 @@ class AssociationServiceTest extends JdbcApplicationTest{
 
     @Test
     void count() {
-        long ret = associationService.count(Arrays.asList(new UniqueKey<>(1L, 2), new UniqueKey<>(1L, 3), new UniqueKey<>(1L, 4)));
+        Set<UniqueKey<Long, Integer>> ukSet = new HashSet<>();
+        ukSet.add(new UniqueKey<>(1L, 2));
+        ukSet.add(new UniqueKey<>(1L, 3));
+        ukSet.add(new UniqueKey<>(1L, 4));
+
+        long ret = associationService.count(ukSet);
         assertThat(ret).isEqualTo(1);
     }
 
@@ -110,5 +114,14 @@ class AssociationServiceTest extends JdbcApplicationTest{
 
         ret = associationService.dissociate(1L, 2);
         assertThat(ret).isZero();
+    }
+
+    @Test
+    void buildUniqueKeysAsSet() {
+        Collection<UniqueKey<Long, Integer>> ukSet = associationService.buildUniqueKeys(1L, Arrays.asList(2, 2, 3, 4));
+        assertThat(ukSet).containsExactly(new UniqueKey<>(1L, 2), new UniqueKey<>(1L, 3), new UniqueKey<>(1L, 4) );
+
+        Collection<UniqueKey<Long, Integer>> ukSet2 = associationService.buildUniqueKeys(Arrays.asList(2L, 2L, 3L, 4L), 1);
+        assertThat(ukSet2).containsOnlyOnce(new UniqueKey<>(2L, 1), new UniqueKey<>(3L, 1), new UniqueKey<>(4L, 1) );
     }
 }

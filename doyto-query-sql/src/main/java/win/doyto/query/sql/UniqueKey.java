@@ -17,6 +17,7 @@
 package win.doyto.query.sql;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -29,6 +30,7 @@ import java.util.List;
  */
 @Getter
 @AllArgsConstructor
+@EqualsAndHashCode
 public class UniqueKey<K1, K2> {
     private K1 k1;
     private K2 k2;

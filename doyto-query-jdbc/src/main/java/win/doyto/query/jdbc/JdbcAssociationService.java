@@ -23,6 +23,7 @@ import win.doyto.query.sql.SqlAndArgs;
 import win.doyto.query.sql.UniqueKey;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * JdbcAssociationService
@@ -42,13 +43,13 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
     }
 
     @Override
-    public int associate(List<UniqueKey<K1, K2>> uniqueKeys) {
+    public int associate(Set<UniqueKey<K1, K2>> uniqueKeys) {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildInsert(uniqueKeys);
         return databaseOperations.update(sqlAndArgs);
     }
 
     @Override
-    public int dissociate(List<UniqueKey<K1, K2>> uniqueKeys) {
+    public int dissociate(Set<UniqueKey<K1, K2>> uniqueKeys) {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildDelete(uniqueKeys);
         return databaseOperations.update(sqlAndArgs);
     }
@@ -104,7 +105,7 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
     }
 
     @Override
-    public long count(List<UniqueKey<K1, K2>> list) {
+    public long count(Set<UniqueKey<K1, K2>> list) {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildCount(list);
         return databaseOperations.count(sqlAndArgs);
     }
