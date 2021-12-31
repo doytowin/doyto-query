@@ -102,4 +102,13 @@ class AssociationServiceTest extends JdbcApplicationTest{
         long ret = associationService.count(Arrays.asList(new UniqueKey<>(1L, 2), new UniqueKey<>(1L, 3), new UniqueKey<>(1L, 4)));
         assertThat(ret).isEqualTo(1);
     }
+
+    @Test
+    void dissociate() {
+        long ret = associationService.dissociate(1L, 2);
+        assertThat(ret).isEqualTo(1);
+
+        ret = associationService.dissociate(1L, 2);
+        assertThat(ret).isZero();
+    }
 }

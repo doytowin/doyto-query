@@ -50,6 +50,12 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
     }
 
     @Override
+    public int dissociate(K1 k1, K2 k2) {
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildDelete(Arrays.asList(new UniqueKey<>(k1, k2)));
+        return databaseOperations.update(sqlAndArgs);
+    }
+
+    @Override
     public List<K1> queryK1ByK2(K2 k2) {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildSelectK1ColumnByK2Id(k2);
         return databaseOperations.query(sqlAndArgs, k1RowMapper);
