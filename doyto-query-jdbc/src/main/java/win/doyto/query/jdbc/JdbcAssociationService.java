@@ -94,6 +94,9 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
     @Override
     public int reassociateForK2(K2 k2, List<K1> list) {
         deleteByK2(k2);
+        if (list.isEmpty()) {
+            return 0;
+        }
         return associate(list, k2);
     }
 

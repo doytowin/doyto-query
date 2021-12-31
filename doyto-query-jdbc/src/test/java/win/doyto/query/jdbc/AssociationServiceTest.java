@@ -88,4 +88,11 @@ class AssociationServiceTest extends JdbcApplicationTest{
         assertThat(ret).isEqualTo(4);
         assertThat(associationService.queryK1ByK2(1)).hasSameElementsAs(k1List);
     }
+
+    @Test
+    void reassociateForK2WithEmptyK1() {
+        int ret = associationService.reassociateForK2(1, Arrays.asList());
+        assertThat(ret).isZero();
+        assertThat(associationService.queryK1ByK2(1)).isEmpty();
+    }
 }
