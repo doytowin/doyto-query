@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,5 +65,12 @@ class AssociationServiceTest extends JdbcApplicationTest{
     void deleteByK2() {
         int ret = associationService.deleteByK2(1);
         assertThat(ret).isEqualTo(3);
+    }
+
+    @Test
+    void reassociateForK1() {
+        int ret = associationService.reassociateForK1(1L, Arrays.asList(2, 3));
+        assertThat(ret).isEqualTo(2);
+        assertThat(associationService.queryK2ByK1(1L)).containsExactly(2, 3);
     }
 }

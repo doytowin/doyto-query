@@ -22,6 +22,7 @@ import win.doyto.query.sql.AssociationSqlBuilder;
 import win.doyto.query.sql.SqlAndArgs;
 import win.doyto.query.sql.UniqueKey;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -69,6 +70,19 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
     @Override
     public int deleteByK2(K2 k2) {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildDeleteByK2(k2);
+        return databaseOperations.update(sqlAndArgs);
+    }
+
+    @Override
+    public int reassociateForK1(K1 k1, List<K2> list) {
+        deleteByK1(k1);
+
+        List<UniqueKey<K1, K2>> ukList = new ArrayList<>(list.size());
+        for (K2 k2 : list) {
+            ukList.add(new UniqueKey<>(k1, k2));
+        }
+
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildInsert(ukList);
         return databaseOperations.update(sqlAndArgs);
     }
 
