@@ -22,9 +22,7 @@ import win.doyto.query.sql.AssociationSqlBuilder;
 import win.doyto.query.sql.SqlAndArgs;
 import win.doyto.query.sql.UniqueKey;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * JdbcAssociationService
@@ -44,14 +42,14 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
     }
 
     @Override
-    public int associate(K1 k1, K2 k2) {
-        SqlAndArgs sqlAndArgs = buildInsert(k1, k2);
+    public int associate(List<UniqueKey<K1, K2>> uniqueKeys) {
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildInsert(uniqueKeys);
         return databaseOperations.update(sqlAndArgs);
     }
 
     @Override
-    public int dissociate(K1 k1, K2 k2) {
-        SqlAndArgs sqlAndArgs = sqlBuilder.buildDelete(Arrays.asList(new UniqueKey<>(k1, k2)));
+    public int dissociate(List<UniqueKey<K1, K2>> uniqueKeys) {
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildDelete(uniqueKeys);
         return databaseOperations.update(sqlAndArgs);
     }
 
@@ -88,13 +86,8 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
         return associate(k1, list);
     }
 
-    private int associate(K1 k1, List<K2> list) {
-        return associate(list.stream().map(k2 -> new UniqueKey<>(k1, k2)).collect(Collectors.toList()));
-    }
-
-    private int associate(List<UniqueKey<K1, K2>> ukList) {
-        SqlAndArgs sqlAndArgs = sqlBuilder.buildInsert(ukList);
-        return databaseOperations.update(sqlAndArgs);
+    private int associate(K1 k1, List<K2> k2List) {
+        return associate(buildUniqueKeys(k1, k2List));
     }
 
     @Override
@@ -106,17 +99,14 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
         return associate(list, k2);
     }
 
+    private int associate(List<K1> k1List, K2 k2) {
+        return associate(buildUniqueKeys(k1List, k2));
+    }
+
     @Override
     public long count(List<UniqueKey<K1, K2>> list) {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildCount(list);
         return databaseOperations.count(sqlAndArgs);
     }
 
-    private int associate(List<K1> list, K2 k2) {
-        return associate(list.stream().map(k1 -> new UniqueKey<>(k1, k2)).collect(Collectors.toList()));
-    }
-
-    private SqlAndArgs buildInsert(K1 k1, K2 k2) {
-        return sqlBuilder.buildInsert(Arrays.asList(new UniqueKey<>(k1, k2)));
-    }
 }

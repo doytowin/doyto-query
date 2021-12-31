@@ -18,7 +18,9 @@ package win.doyto.query.jdbc;
 
 import win.doyto.query.sql.UniqueKey;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * AssociationService
@@ -27,9 +29,25 @@ import java.util.List;
  */
 public interface AssociationService<K1, K2> {
 
-    int associate(K1 k1, K2 k2);
+    default List<UniqueKey<K1, K2>> buildUniqueKeys(K1 k1, List<K2> collection) {
+        return collection.stream().map(k2 -> new UniqueKey<>(k1, k2)).collect(Collectors.toList());
+    }
 
-    int dissociate(K1 k1, K2 k2);
+    default List<UniqueKey<K1, K2>> buildUniqueKeys(List<K1> list, K2 k2) {
+        return list.stream().map(k1 -> new UniqueKey<>(k1, k2)).collect(Collectors.toList());
+    }
+
+    default int associate(K1 k1, K2 k2) {
+        return associate(Arrays.asList(new UniqueKey<>(k1, k2)));
+    }
+
+    int associate(List<UniqueKey<K1, K2>> uniqueKeys);
+
+    default int dissociate(K1 k1, K2 k2) {
+        return dissociate(Arrays.asList(new UniqueKey<>(k1, k2)));
+    }
+
+    int dissociate(List<UniqueKey<K1, K2>> uniqueKeys);
 
     List<K1> queryK1ByK2(K2 k2);
 
