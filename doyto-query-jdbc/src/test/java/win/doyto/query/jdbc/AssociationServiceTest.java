@@ -53,4 +53,10 @@ class AssociationServiceTest extends JdbcApplicationTest{
         List<Integer> roleIds = associationService.queryK2ByK1(1L);
         assertThat(roleIds).containsExactly(1, 2);
     }
+
+    @Test
+    void deleteByK1() {
+        int ret = associationService.deleteByK1(1L);
+        assertThat(ret).isEqualTo(2);
+    }
 }

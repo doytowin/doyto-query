@@ -60,6 +60,12 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
         return databaseOperations.query(sqlAndArgs, k2RowMapper);
     }
 
+    @Override
+    public int deleteByK1(K1 k1) {
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildDeleteByK1(k1);
+        return databaseOperations.update(sqlAndArgs);
+    }
+
     private SqlAndArgs buildInsert(K1 k1, K2 k2) {
         return sqlBuilder.buildInsert(Arrays.asList(new UniqueKey<>(k1, k2)));
     }
