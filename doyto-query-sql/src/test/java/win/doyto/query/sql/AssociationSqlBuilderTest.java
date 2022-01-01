@@ -95,4 +95,17 @@ class AssociationSqlBuilderTest {
                 .isEqualTo("SELECT COUNT(*) FROM t_user_and_role WHERE (user_id, role_id) IN ((?, ?), (?, ?))");
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 3);
     }
+
+    @Test
+    void testInsertWithUser() {
+        String tableName = "t_user_and_role";
+        String k1Column = "user_id";
+        String k2Column = "role_id";
+        String createUserColumn = "create_user_id";
+        associationSqlBuilder = new AssociationSqlBuilder<>(tableName, k1Column, k2Column, createUserColumn);
+        SqlAndArgs sqlAndArgs = associationSqlBuilder.buildInsert(testKeys(), 1);
+        assertThat(sqlAndArgs.getSql())
+                .isEqualTo("INSERT INTO t_user_and_role (user_id, role_id, create_user_id) VALUES (?, ?, 1), (?, ?, 1)");
+        assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 3);
+    }
 }

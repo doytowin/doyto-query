@@ -42,6 +42,7 @@ public class AssociationSqlBuilder<K1, K2> {
     private String deleteByK2;
     private String insertSql;
     private String placeHolders;
+    private String placeHolderFormat;
     private String deleteIn;
     private String countIn;
 
@@ -53,19 +54,31 @@ public class AssociationSqlBuilder<K1, K2> {
 
         insertSql = "INSERT INTO " + tableName + " (" + k1Column + ", " + k2Column + ") VALUES ";
         placeHolders = "(?, ?)";
+        placeHolderFormat = "(?, ?)";
         deleteIn = DELETE_FROM + tableName + WHERE + "(" + k1Column + ", " + k2Column + ") IN ";
         countIn = SELECT + "COUNT(*)" + FROM + tableName + WHERE + "(" + k1Column + ", " + k2Column + ") IN ";
     }
 
-    private void buildPlaceHolders(StringBuilder sb, int size) {
+    public AssociationSqlBuilder(String tableName, String k1Column, String k2Column, String createUserColumn) {
+        this(tableName, k1Column, k2Column);
+        insertSql = "INSERT INTO " + tableName + " (" + k1Column + ", " + k2Column + ", " + createUserColumn + ") VALUES ";
+        placeHolderFormat = "(?, ?, %s)";
+    }
+
+    private void buildPlaceHolders(StringBuilder sb, int size, String placeHolders) {
         sb.append(IntStream.range(0, size).mapToObj(i -> placeHolders).collect(Collectors.joining(SEPARATOR)));
     }
 
     public SqlAndArgs buildInsert(Set<UniqueKey<K1, K2>> keys) {
+        return buildInsert(keys, null);
+    }
+
+    public SqlAndArgs buildInsert(Set<UniqueKey<K1, K2>> keys, Object userId) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             keys.stream().map(UniqueKey::toList).forEach(argList::addAll);
             StringBuilder insertBuilder = new StringBuilder(insertSql);
-            buildPlaceHolders(insertBuilder, keys.size());
+            String ph = String.format(placeHolderFormat, userId);
+            buildPlaceHolders(insertBuilder, keys.size(), ph);
             return insertBuilder.toString();
         });
     }
@@ -74,7 +87,7 @@ public class AssociationSqlBuilder<K1, K2> {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             keys.stream().map(UniqueKey::toList).forEach(argList::addAll);
             StringBuilder deleteBuilder = new StringBuilder(deleteIn).append("(");
-            buildPlaceHolders(deleteBuilder, keys.size());
+            buildPlaceHolders(deleteBuilder, keys.size(), placeHolders);
             return deleteBuilder.append(")").toString();
         });
     }
@@ -82,9 +95,9 @@ public class AssociationSqlBuilder<K1, K2> {
     public SqlAndArgs buildCount(Set<UniqueKey<K1, K2>> keys) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             keys.stream().map(UniqueKey::toList).forEach(argList::addAll);
-            StringBuilder stringBuilder = new StringBuilder(countIn).append("(");
-            buildPlaceHolders(stringBuilder, keys.size());
-            return stringBuilder.append(")").toString();
+            StringBuilder countBuilder = new StringBuilder(countIn).append("(");
+            buildPlaceHolders(countBuilder, keys.size(), placeHolders);
+            return countBuilder.append(")").toString();
         });
     }
 
