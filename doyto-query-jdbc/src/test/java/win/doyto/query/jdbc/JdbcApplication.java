@@ -4,7 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import win.doyto.query.entity.UserIdProvider;
+import win.doyto.query.service.AssociationService;
 import win.doyto.query.service.AssociativeService;
+import win.doyto.query.service.TemplateAssociativeService;
 
 /**
  * JdbcApplication
@@ -20,11 +23,22 @@ public class JdbcApplication {
 
     @Bean
     public AssociativeService<Long, Integer> userAndRoleAssociativeService() {
-        return new JdbcAssociativeService<>("t_user_and_role", "userId", "roleId", "createUserId");
+        return new TemplateAssociativeService<>("t_user_and_role", "userId", "roleId", "createUserId");
     }
 
     @Bean
-    public AssociativeService<Integer, Integer> roleAndPermissionAssociativeService() {
-        return new JdbcAssociativeService<>("t_role_and_permission", "roleId", "permissionId");
+    public AssociationService<Integer, Integer> roleAndPermissionAssociativeService() {
+        return new JdbcAssociationService<>("t_role_and_permission", "roleId", "permissionId");
     }
+
+    @Bean
+    public AssociationService<Long, Integer> userAndRoleAssociationService() {
+        return new JdbcAssociationService<>("t_user_and_role", "userId", "roleId", "createUserId");
+    }
+
+    @Bean
+    public UserIdProvider<Integer> userIdProvider() {
+        return () -> 0;
+    }
+
 }

@@ -17,4 +17,5 @@ interface Constant {
     String WHERE = " WHERE ";
     String EMPTY = "";
     String SPACE_OR = " OR ";
+    String DELETE_FROM = "DELETE" + FROM;
 }
