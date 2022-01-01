@@ -1,5 +1,6 @@
 package win.doyto.query.mongodb.filter;
 
+import com.mongodb.client.model.geojson.codecs.GeoJsonCodecProvider;
 import org.bson.Document;
 import org.bson.codecs.*;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -26,7 +27,7 @@ class MongoFilterBuilderTest {
                     new StringCodec(), new IntegerCodec(), new DateCodec(),
                     new DocumentCodec(), new BsonDocumentCodec()
             ),
-            CodecRegistries.fromProviders(new IterableCodecProvider())
+            CodecRegistries.fromProviders(new IterableCodecProvider(), new GeoJsonCodecProvider())
     );
 
     @ParameterizedTest
@@ -93,8 +94,10 @@ class MongoFilterBuilderTest {
                     "| {\"locBson\": {\"$geoWithin\": {\"$box\": [[1.0, 2.0], [2.0, 1.0]]}}}",
             "{\"locPy\": [[1.0, 1.0], [1.0, 2.0], [2.0, 2.0], [2.0, 1.0]]}" +
                     "| {\"loc\": {\"$geoWithin\": {\"$polygon\": [[1.0, 1.0], [1.0, 2.0], [2.0, 2.0], [2.0, 1.0]]}}}",
-            "{\"locWithin\": {\"$box\": [[1.0, 2.0], [2.0, 1.0]]}}}" +
-                    "| {\"loc\": {\"$geoWithin\": {\"$geometry\": {\"$box\": [[1.0, 2.0], [2.0, 1.0]]}}}}",
+            "{\"locBsonWithin\": {\"$box\": [[1.0, 2.0], [2.0, 1.0]]}}}" +
+                    "| {\"locBson\": {\"$geoWithin\": {\"$geometry\": {\"$box\": [[1.0, 2.0], [2.0, 1.0]]}}}}",
+            "{\"locBsonIntX\": {\"type\": \"LineString\", \"coordinates\": [[1.0, 1.0], [2.0, 2.5]]}}" +
+                    "| {\"locBson\": {\"$geoIntersects\": {\"$geometry\": {\"type\": \"LineString\", \"coordinates\": [[1.0, 1.0], [2.0, 2.5]]}}}}",
     }, delimiter = '|')
     void testGeoQuery(String data, String expected) {
         GeoQuery query = BeanUtil.parse(data, GeoQuery.class);
