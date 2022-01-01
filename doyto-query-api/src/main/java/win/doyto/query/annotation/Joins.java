@@ -14,10 +14,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(TYPE)
 @Retention(RUNTIME)
 public @interface Joins {
-    Join[] value();
-
-    @Target({})
-    @interface Join {
-        String value();
-    }
+    String[] value();
 }

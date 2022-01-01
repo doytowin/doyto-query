@@ -81,9 +81,9 @@ public class EntityMetadata {
 
     private void buildJoinSql(Class<?> entityClass) {
         if (entityClass.isAnnotationPresent(Joins.class)) {
-            Joins.Join[] joins1 = this.entityClass.getAnnotation(Joins.class).value();
-            StringJoiner joiner = new StringJoiner(SPACE, joins1.length);
-            Arrays.stream(joins1).map(Joins.Join::value).forEachOrdered(joiner::append);
+            String[] joins = this.entityClass.getAnnotation(Joins.class).value();
+            StringJoiner joiner = new StringJoiner(SPACE, joins.length);
+            Arrays.stream(joins).forEachOrdered(joiner::append);
             joinSql = joiner.toString();
         }
     }
