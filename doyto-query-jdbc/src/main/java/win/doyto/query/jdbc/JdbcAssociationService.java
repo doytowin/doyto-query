@@ -43,6 +43,10 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
     @Autowired(required = false)
     private UserIdProvider<?> userIdProvider = () -> null;
 
+    public JdbcAssociationService(String tableName, String k1Column, String k2Columns) {
+        this.sqlBuilder = new AssociationSqlBuilder<>(tableName, k1Column, k2Columns);
+    }
+
     public JdbcAssociationService(String tableName, String k1Column, String k2Column, String createUserColumn) {
         this.sqlBuilder = new AssociationSqlBuilder<>(tableName, k1Column, k2Column, createUserColumn);
     }

@@ -9,7 +9,10 @@ import static java.util.Collections.singleton;
  * AssociativeService
  *
  * @author f0rb on 2019-05-30
+ * @deprecated use {@link AssociationService}
  */
+@SuppressWarnings("java:S1133")
+@Deprecated
 public interface AssociativeService<L, R> {
 
     List<R> getByLeftId(L leftId);
