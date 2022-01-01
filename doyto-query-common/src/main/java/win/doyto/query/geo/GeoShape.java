@@ -14,32 +14,17 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb.test.geo;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.bson.conversions.Bson;
-import win.doyto.query.geo.*;
-
-import java.util.List;
+package win.doyto.query.geo;
 
 /**
- * GeoQuery
+ * GeoShape
  *
- * @author f0rb on 2021-11-30
+ * @author f0rb on 2021-12-05
  */
-@Getter
-@Setter
-public class GeoQuery {
-    private Near locNear;
-    private Near locNearSphere;
-    private NearSphere loc2Near;
-    private Circle locCenter;
-    private Circle locCenterSphere;
-    private Box locBox;
-    private Bson locBsonBox;
-    private List<Point> locPy;
-    private Bson locBsonWithin;
-    private Bson locBsonIntX;
-    private GeoShape<?> locWithin;
+public interface GeoShape<T> {
+
+    String getType();
+
+    T getCoordinates();
+
 }

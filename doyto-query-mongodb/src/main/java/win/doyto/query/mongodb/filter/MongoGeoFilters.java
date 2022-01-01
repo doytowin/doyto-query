@@ -17,6 +17,8 @@
 package win.doyto.query.mongodb.filter;
 
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.geojson.Geometry;
+import com.mongodb.client.model.geojson.Position;
 import lombok.experimental.UtilityClass;
 import org.bson.conversions.Bson;
 import win.doyto.query.geo.*;
@@ -73,6 +75,11 @@ public class MongoGeoFilters {
     }
 
     public static Bson within(String column, Object value) {
+        if (value instanceof GeoPoint) {
+            Point point = ((GeoPoint) value).getCoordinates();
+            Geometry geometry = new com.mongodb.client.model.geojson.Point(new Position(point.toList()));
+            return Filters.geoWithin(column, geometry);
+        }
         return Filters.geoWithin(column, (Bson) value);
     }
 

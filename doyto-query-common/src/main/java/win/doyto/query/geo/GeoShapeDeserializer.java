@@ -20,35 +20,20 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import java.io.IOException;
 
 /**
- * PointDeserializer
+ * GeoShapeDeserializer
  *
- * @author f0rb on 2021-12-05
+ * @author f0rb on 2021-12-16
  */
-public class PointDeserializer extends JsonDeserializer<Point> {
+public class GeoShapeDeserializer extends JsonDeserializer<GeoShape> {
     @Override
-    public Point deserialize(JsonParser p, DeserializationContext context) throws IOException {
+    public GeoShape<?> deserialize(JsonParser p, DeserializationContext context) throws IOException {
         TreeNode treeNode = p.readValueAsTree();
-        return resolvePoint(treeNode);
-    }
-
-    static Point resolvePoint(TreeNode treeNode) {
-        double x;
-        double y;
-        if (treeNode.isArray()) {
-            ArrayNode arrayNode = ((ArrayNode) treeNode);
-            x = arrayNode.get(0).doubleValue();
-            y = arrayNode.get(1).doubleValue();
-        } else {
-            JsonNode jsonNode = ((JsonNode) treeNode);
-            x = jsonNode.get("x").doubleValue();
-            y = jsonNode.get("y").doubleValue();
-        }
-        return new Point(x, y);
+        TreeNode coordinates = treeNode.get("coordinates");
+        Point point = PointDeserializer.resolvePoint(coordinates);
+        return new GeoPoint(point);
     }
 }

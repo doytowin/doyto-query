@@ -30,6 +30,8 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
+import win.doyto.query.geo.GeoShape;
+import win.doyto.query.geo.GeoShapeDeserializer;
 import win.doyto.query.geo.Point;
 import win.doyto.query.geo.PointDeserializer;
 
@@ -63,6 +65,7 @@ public class BeanUtil {
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         register(Point.class, new PointDeserializer());
+        register(GeoShape.class, new GeoShapeDeserializer());
         register("org.bson.conversions.Bson", "win.doyto.query.mongodb.entity.BsonDeserializer");
 
     }
