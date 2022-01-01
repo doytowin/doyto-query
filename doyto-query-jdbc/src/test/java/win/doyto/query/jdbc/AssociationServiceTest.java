@@ -18,7 +18,9 @@ package win.doyto.query.jdbc;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import win.doyto.query.service.AssociationService;
 import win.doyto.query.service.UniqueKey;
 
@@ -31,70 +33,69 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author f0rb on 2021-12-31
  */
-class AssociationServiceTest extends JdbcApplicationTest{
-    private AssociationService<Long, Integer> associationService;
+class AssociationServiceTest extends JdbcApplicationTest {
 
-    public AssociationServiceTest(@Autowired JdbcOperations jdbcOperations) {
-        this.associationService = new JdbcAssociationService<>(jdbcOperations, "t_user_and_role", "userId","roleId");
-    }
+    @Autowired
+    @Qualifier("userAndRoleAssociationService")
+    private AssociationService<Long, Integer> userAndRoleAssociationService;
 
     @Test
     void associate() {
-        int ret = associationService.associate(1L, 20);
+        int ret = userAndRoleAssociationService.associate(1L, 20);
         assertThat(ret).isEqualTo(1);
     }
 
     @Test
     void queryK1ByK2() {
-        List<Long> userIds = associationService.queryK1ByK2(2);
+        List<Long> userIds = userAndRoleAssociationService.queryK1ByK2(2);
         assertThat(userIds).containsExactly(1L, 4L);
     }
 
     @Test
     void queryK2ByK1() {
-        List<Integer> roleIds = associationService.queryK2ByK1(1L);
+        List<Integer> roleIds = userAndRoleAssociationService.queryK2ByK1(1L);
         assertThat(roleIds).containsExactly(1, 2);
     }
 
     @Test
     void deleteByK1() {
-        int ret = associationService.deleteByK1(1L);
+        int ret = userAndRoleAssociationService.deleteByK1(1L);
         assertThat(ret).isEqualTo(2);
     }
 
     @Test
     void deleteByK2() {
-        int ret = associationService.deleteByK2(1);
+        int ret = userAndRoleAssociationService.deleteByK2(1);
         assertThat(ret).isEqualTo(3);
     }
 
     @Test
     void reassociateForK1() {
-        int ret = associationService.reassociateForK1(1L, Arrays.asList(2, 3));
+        int ret = userAndRoleAssociationService.reassociateForK1(1L, Arrays.asList(2, 3));
         assertThat(ret).isEqualTo(2);
-        assertThat(associationService.queryK2ByK1(1L)).containsExactly(2, 3);
+        assertThat(userAndRoleAssociationService.queryK2ByK1(1L)).containsExactly(2, 3);
     }
 
     @Test
     void reassociateForK1WithEmptyK2() {
-        int ret = associationService.reassociateForK1(1L, Arrays.asList());
+        int ret = userAndRoleAssociationService.reassociateForK1(1L, Arrays.asList());
         assertThat(ret).isZero();
-        assertThat(associationService.queryK2ByK1(1L)).isEmpty();
+        assertThat(userAndRoleAssociationService.queryK2ByK1(1L)).isEmpty();
     }
 
     @Test
     void reassociateForK2() {
         List<Long> k1List = Arrays.asList(1L, 2L, 3L, 4L);
-        int ret = associationService.reassociateForK2(1, k1List);
+        int ret = userAndRoleAssociationService.reassociateForK2(1, k1List);
         assertThat(ret).isEqualTo(4);
-        assertThat(associationService.queryK1ByK2(1)).hasSameElementsAs(k1List);
+        assertThat(userAndRoleAssociationService.queryK1ByK2(1)).hasSameElementsAs(k1List);
     }
 
     @Test
     void reassociateForK2WithEmptyK1() {
-        int ret = associationService.reassociateForK2(1, Arrays.asList());
+        int ret = userAndRoleAssociationService.reassociateForK2(1, Arrays.asList());
         assertThat(ret).isZero();
-        assertThat(associationService.queryK1ByK2(1)).isEmpty();
+        assertThat(userAndRoleAssociationService.queryK1ByK2(1)).isEmpty();
     }
 
     @Test
@@ -104,40 +105,50 @@ class AssociationServiceTest extends JdbcApplicationTest{
         ukSet.add(new UniqueKey<>(1L, 3));
         ukSet.add(new UniqueKey<>(1L, 4));
 
-        long ret = associationService.count(ukSet);
+        long ret = userAndRoleAssociationService.count(ukSet);
         assertThat(ret).isEqualTo(1);
     }
 
     @Test
     void dissociate() {
-        long ret = associationService.dissociate(1L, 2);
+        long ret = userAndRoleAssociationService.dissociate(1L, 2);
         assertThat(ret).isEqualTo(1);
 
-        ret = associationService.dissociate(1L, 2);
+        ret = userAndRoleAssociationService.dissociate(1L, 2);
         assertThat(ret).isZero();
     }
 
     @Test
     void buildUniqueKeysAsSet() {
-        Collection<UniqueKey<Long, Integer>> ukSet = associationService.buildUniqueKeys(1L, Arrays.asList(2, 2, 3, 4));
-        assertThat(ukSet).containsExactly(new UniqueKey<>(1L, 2), new UniqueKey<>(1L, 3), new UniqueKey<>(1L, 4) );
+        Collection<UniqueKey<Long, Integer>> ukSet = userAndRoleAssociationService.buildUniqueKeys(1L, Arrays.asList(2, 2, 3, 4));
+        assertThat(ukSet).containsExactly(new UniqueKey<>(1L, 2), new UniqueKey<>(1L, 3), new UniqueKey<>(1L, 4));
 
-        Collection<UniqueKey<Long, Integer>> ukSet2 = associationService.buildUniqueKeys(Arrays.asList(2L, 2L, 3L, 4L), 1);
-        assertThat(ukSet2).containsOnlyOnce(new UniqueKey<>(2L, 1), new UniqueKey<>(3L, 1), new UniqueKey<>(4L, 1) );
+        Collection<UniqueKey<Long, Integer>> ukSet2 = userAndRoleAssociationService.buildUniqueKeys(Arrays.asList(2L, 2L, 3L, 4L), 1);
+        assertThat(ukSet2).containsOnlyOnce(new UniqueKey<>(2L, 1), new UniqueKey<>(3L, 1), new UniqueKey<>(4L, 1));
     }
 
     @Test
     void exists() {
-        assertThat(associationService.exists(1L, 2)).isTrue();
-        assertThat(associationService.exists(1L, 5)).isFalse();
+        assertThat(userAndRoleAssociationService.exists(1L, 2)).isTrue();
+        assertThat(userAndRoleAssociationService.exists(1L, 5)).isFalse();
 
-        Set<UniqueKey<Long, Integer>> uniqueKeys = associationService.buildUniqueKeys(1L, Arrays.asList(2, 5));
-        assertThat(associationService.exists(uniqueKeys)).isTrue();
+        Set<UniqueKey<Long, Integer>> uniqueKeys = userAndRoleAssociationService.buildUniqueKeys(1L, Arrays.asList(2, 5));
+        assertThat(userAndRoleAssociationService.exists(uniqueKeys)).isTrue();
     }
 
     @Test
     void existsExactly() {
-        Set<UniqueKey<Long, Integer>> uniqueKeys = associationService.buildUniqueKeys(1L, Arrays.asList(2, 5));
-        assertThat(associationService.existsExactly(uniqueKeys)).isFalse();
+        Set<UniqueKey<Long, Integer>> uniqueKeys = userAndRoleAssociationService.buildUniqueKeys(1L, Arrays.asList(2, 5));
+        assertThat(userAndRoleAssociationService.existsExactly(uniqueKeys)).isFalse();
     }
+
+    @Test
+    void associateWithCreateUserId(@Autowired JdbcOperations jdbcOperations) {
+        userAndRoleAssociationService.associate(5L, 20);
+
+        String sql = "select count(*) from t_user_and_role where createUserId = 0";
+        Long ret = jdbcOperations.queryForObject(sql, new SingleColumnRowMapper<>(Long.class));
+        assertThat(ret).isEqualTo(1L);
+    }
+
 }

@@ -16,8 +16,10 @@
 
 package win.doyto.query.jdbc;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
+import win.doyto.query.entity.UserIdProvider;
 import win.doyto.query.service.AssociationService;
 import win.doyto.query.service.UniqueKey;
 import win.doyto.query.sql.AssociationSqlBuilder;
@@ -34,18 +36,25 @@ import java.util.Set;
 public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2> {
 
     private DatabaseOperations databaseOperations;
-    private AssociationSqlBuilder<K1, K2> sqlBuilder;
+    private final AssociationSqlBuilder<K1, K2> sqlBuilder;
     private final SingleColumnRowMapper<K1> k1RowMapper = new SingleColumnRowMapper<>();
     private final SingleColumnRowMapper<K2> k2RowMapper = new SingleColumnRowMapper<>();
 
-    public JdbcAssociationService(JdbcOperations jdbcOperations, String tableName, String k1Column, String k2Column) {
+    @Autowired(required = false)
+    private UserIdProvider<?> userIdProvider = () -> null;
+
+    public JdbcAssociationService(String tableName, String k1Column, String k2Column, String createUserColumn) {
+        this.sqlBuilder = new AssociationSqlBuilder<>(tableName, k1Column, k2Column, createUserColumn);
+    }
+
+    @Autowired
+    public void setJdbcOperations(JdbcOperations jdbcOperations) {
         this.databaseOperations = new DatabaseTemplate(jdbcOperations);
-        this.sqlBuilder = new AssociationSqlBuilder<>(tableName, k1Column, k2Column);
     }
 
     @Override
     public int associate(Set<UniqueKey<K1, K2>> uniqueKeys) {
-        SqlAndArgs sqlAndArgs = sqlBuilder.buildInsert(uniqueKeys);
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildInsert(uniqueKeys, userIdProvider.getUserId());
         return databaseOperations.update(sqlAndArgs);
     }
 
