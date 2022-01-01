@@ -13,7 +13,10 @@ import java.util.stream.IntStream;
  * AssociativeSqlBuilder
  *
  * @author f0rb on 2019-06-13
+ * @deprecated use {@link AssociationSqlBuilder}
  */
+@SuppressWarnings("java:S1133")
+@Deprecated
 public class AssociativeSqlBuilder {
 
     public static final String WHERE = " WHERE ";
