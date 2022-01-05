@@ -191,6 +191,13 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
                 + "(" + build(query, argList, idColumn) + ")");
     }
 
+    @Override
+    public SqlAndArgs buildPatchAndArgs(E entity, DoytoQuery query) {
+        return SqlAndArgs.buildSqlWithArgs(argList -> buildPatchAndArgs(entity, argList)
+                + WHERE + idColumn + " IN "
+                + "(" + build(query, argList, idColumn) + ")");
+    }
+
     private String buildDeleteFromTable(IdWrapper<?> idWrapper) {
         return "DELETE FROM " + resolveTableName(idWrapper);
     }

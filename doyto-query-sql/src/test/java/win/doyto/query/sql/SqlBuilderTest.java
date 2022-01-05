@@ -62,7 +62,6 @@ class SqlBuilderTest {
     @Test
     void buildPatchAndArgsWithIds() {
         DynamicEntity entity = new DynamicEntity();
-        entity.setId(1);
         entity.setUser("f0rb");
         entity.setProject("i18n");
         entity.setScore(100);
@@ -84,5 +83,25 @@ class SqlBuilderTest {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildDeleteAndArgs(dynamicQuery);
         assertEquals(expected, sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly(100);
+    }
+
+    @Test
+    void buildPatchAndArgs() {
+        DynamicEntity entity = new DynamicEntity();
+        entity.setId(1);
+        entity.setUser("f0rb");
+        entity.setProject("i18n");
+        entity.setScore(100);
+
+        DynamicQuery dynamicQuery = DynamicQuery
+                .builder().user("f0rb").project("i18n").scoreLt(90)
+                .pageNumber(2).pageSize(10).build();
+
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildPatchAndArgs(entity, dynamicQuery);
+
+        String expected = "UPDATE t_dynamic_f0rb_i18n SET user_score = ? " +
+                "WHERE id IN (SELECT id FROM t_dynamic_f0rb_i18n WHERE score < ? LIMIT 10 OFFSET 20)";
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(100, 90);
     }
 }

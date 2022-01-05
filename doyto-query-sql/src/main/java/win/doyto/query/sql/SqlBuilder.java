@@ -53,4 +53,5 @@ public interface SqlBuilder<E extends Persistable<?>> {
 
     SqlAndArgs buildDeleteAndArgs(DoytoQuery query);
 
+    SqlAndArgs buildPatchAndArgs(E entity, DoytoQuery query);
 }
