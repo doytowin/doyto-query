@@ -19,9 +19,7 @@ package win.doyto.query.jdbc;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
-import win.doyto.query.sql.SqlAndArgs;
 import win.doyto.query.test.role.RoleEntity;
 import win.doyto.query.test.role.RoleQuery;
 
@@ -30,7 +28,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
 
 /**
  * JdbcDataAccessTest
@@ -40,11 +37,9 @@ import static org.mockito.Mockito.*;
 class JdbcDataAccessTest extends JdbcApplicationTest {
 
     private JdbcDataAccess<RoleEntity, Integer, RoleQuery> jdbcDataAccess;
-    private DatabaseTemplate databaseOperations;
 
     public JdbcDataAccessTest(@Autowired JdbcOperations jdbcOperations) {
-        this.databaseOperations = spy(new DatabaseTemplate(jdbcOperations));
-        this.jdbcDataAccess = new JdbcDataAccess<>(databaseOperations, RoleEntity.class, new BeanPropertyRowMapper<>(RoleEntity.class));
+        this.jdbcDataAccess = new JdbcDataAccess<>(jdbcOperations, RoleEntity.class);
     }
 
     @Test
@@ -85,8 +80,7 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
         RoleEntity patch = new RoleEntity();
         patch.setValid(false);
 
-        jdbcDataAccess.patch(patch, RoleQuery.builder().roleNameLike("noop").build());
-
-        verify(databaseOperations, times(0)).update(any(SqlAndArgs.class));
+        int ret = jdbcDataAccess.patch(patch, RoleQuery.builder().roleNameLike("noop").build());
+        assertThat(ret).isZero();
     }
 }

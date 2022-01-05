@@ -122,7 +122,8 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
 
     @Override
     public int delete(IdWrapper<I> w) {
-        return databaseOperations.update(sqlBuilder.buildDeleteById(w));
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildDeleteById(w);
+        return databaseOperations.update(sqlAndArgs);
     }
 
     @Override
@@ -142,26 +143,25 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
         if (!entities.iterator().hasNext()) {
             return 0;
         }
-        return databaseOperations.update(sqlBuilder.buildCreateAndArgs(entities, columns));
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildCreateAndArgs(entities, columns);
+        return databaseOperations.update(sqlAndArgs);
     }
 
     @Override
     public final int update(E e) {
-        return databaseOperations.update(sqlBuilder.buildUpdateAndArgs(e));
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildUpdateAndArgs(e);
+        return databaseOperations.update(sqlAndArgs);
     }
 
     @Override
     public final int patch(E e) {
-        return databaseOperations.update(sqlBuilder.buildPatchAndArgsWithId(e));
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildPatchAndArgsWithId(e);
+        return databaseOperations.update(sqlAndArgs);
     }
 
     @Override
     public final int patch(E e, Q q) {
-        List<I> ids = queryIds(q);
-        if (ids.isEmpty()) {
-            return 0;
-        }
-        SqlAndArgs sqlAndArgs = sqlBuilder.buildPatchAndArgsWithIds(e, ids);
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildPatchAndArgs(e, q);
         return databaseOperations.update(sqlAndArgs);
     }
 
