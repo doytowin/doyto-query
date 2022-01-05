@@ -17,6 +17,7 @@
 package win.doyto.query.sql;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.test.TestEnum;
 import win.doyto.query.test.TestPageQuery;
 import win.doyto.query.test.join.MaxIdView;
@@ -26,12 +27,14 @@ import win.doyto.query.test.join.UserCountByRoleView;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * JoinQueryBuilderTest
  *
  * @author f0rb on 2021-12-11
  */
+@ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
 class JoinQueryBuilderTest {
     @Test
     void supportAggregateQuery() {

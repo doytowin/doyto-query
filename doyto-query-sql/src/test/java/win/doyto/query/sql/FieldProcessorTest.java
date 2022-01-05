@@ -19,7 +19,7 @@ package win.doyto.query.sql;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import win.doyto.query.config.GlobalConfiguration;
+import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.test.PermissionQuery;
 import win.doyto.query.test.UserLevel;
 import win.doyto.query.test.UserQuery;
@@ -30,19 +30,20 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * FieldProcessorTest
  *
  * @author f0rb on 2019-06-04
  */
+@ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
 class FieldProcessorTest {
 
     private List<Object> argList;
 
     @BeforeEach
     void setUp() {
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
         argList = new ArrayList<>();
     }
 
