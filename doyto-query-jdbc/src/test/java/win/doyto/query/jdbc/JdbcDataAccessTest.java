@@ -64,8 +64,8 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
 
     @Test
     void shouldNotDeleteWhenNothingFound() {
-        jdbcDataAccess.delete(RoleQuery.builder().roleNameLike("noop").build());
-        verify(databaseOperations, times(0)).update(any(SqlAndArgs.class));
+        int ret = jdbcDataAccess.delete(RoleQuery.builder().roleNameLike("noop").build());
+        assertThat(ret).isZero();
     }
 
     @Test

@@ -109,11 +109,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
 
     @Override
     public final int delete(Q q) {
-        List<I> ids = queryIds(q);
-        if (ids.isEmpty()) {
-            return 0;
-        }
-        SqlAndArgs sqlAndArgs = sqlBuilder.buildDeleteByIdIn(q.toIdWrapper(), ids);
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildDeleteAndArgs(q);
         return databaseOperations.update(sqlAndArgs);
     }
 
