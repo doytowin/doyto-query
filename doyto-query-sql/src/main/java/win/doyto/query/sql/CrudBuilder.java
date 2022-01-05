@@ -19,6 +19,7 @@ package win.doyto.query.sql;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.ColumnUtil;
@@ -181,6 +182,13 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
     public SqlAndArgs buildPatchAndArgsWithIds(E entity, List<?> ids) {
         return SqlAndArgs.buildSqlWithArgs(argList -> buildPatchAndArgs(entity, argList)
                 + WHERE + SqlQuerySuffix.In.buildColumnCondition(idColumn, argList, ids));
+    }
+
+    @Override
+    public SqlAndArgs buildDeleteAndArgs(DoytoQuery query) {
+        return SqlAndArgs.buildSqlWithArgs(argList -> buildDeleteFromTable(query.toIdWrapper())
+                + WHERE + idColumn + " IN "
+                + "(" + build(query, argList, idColumn) + ")");
     }
 
     private String buildDeleteFromTable(IdWrapper<?> idWrapper) {

@@ -72,7 +72,7 @@ public class QueryBuilder {
     }
 
     @SuppressWarnings("java:S4973")
-    private String build(DoytoQuery query, List<Object> argList, String... columns) {
+    protected String build(DoytoQuery query, List<Object> argList, String... columns) {
         String sql = BuildHelper.buildStart(columns, resolveTableName(query.toIdWrapper()));
         sql = replaceHolderInString(query, sql);
         sql += BuildHelper.buildWhere(query, argList);
