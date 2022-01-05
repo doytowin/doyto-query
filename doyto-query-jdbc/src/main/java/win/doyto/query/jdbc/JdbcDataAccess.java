@@ -57,6 +57,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     private final String[] columnsForSelect;
     private final boolean isGeneratedId;
     private final BiConsumer<E, Number> setIdFunc;
+    private final SingleColumnRowMapper<I> idRowMapper = new SingleColumnRowMapper<>();
 
     public JdbcDataAccess(JdbcOperations jdbcOperations, Class<E> entityClass) {
         this(new DatabaseTemplate(jdbcOperations), entityClass, new BeanPropertyRowMapper<>(entityClass));
@@ -168,7 +169,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     @Override
     public List<I> queryIds(Q query) {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildSelectIdAndArgs(query);
-        return databaseOperations.query(sqlAndArgs, new SingleColumnRowMapper<>());
+        return databaseOperations.query(sqlAndArgs, idRowMapper);
     }
 
 }
