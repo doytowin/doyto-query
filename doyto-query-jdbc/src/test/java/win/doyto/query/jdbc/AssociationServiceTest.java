@@ -151,4 +151,11 @@ class AssociationServiceTest extends JdbcApplicationTest {
         assertThat(ret).isEqualTo(1L);
     }
 
+    @Test
+    void associateWithExistedId() {
+        Set<UniqueKey<Long, Integer>> uniqueKeys = userAndRoleAssociationService.buildUniqueKeys(1L, Arrays.asList(1, 2, 3));
+        int ret = userAndRoleAssociationService.associate(uniqueKeys);
+        assertThat(ret).isEqualTo(1);
+    }
+
 }

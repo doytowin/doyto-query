@@ -36,4 +36,8 @@ public interface Dialect {
     default String wrapLabel(String fieldName) {
         return fieldName;
     }
+
+    default String buildInsertIgnore(StringBuilder insertBuilder) {
+        return insertBuilder.insert(insertBuilder.indexOf("INTO"), "IGNORE ").toString();
+    }
 }
