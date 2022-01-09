@@ -29,9 +29,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * JoinQueryService
+ * JdbcDataQuery
  *
- * @author f0rb on 2019-06-09
+ * @author f0rb on 2021-12-28
  */
 public class JdbcDataQuery implements DataQuery {
 
@@ -44,15 +44,15 @@ public class JdbcDataQuery implements DataQuery {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <E, Q extends DoytoQuery> List<E> query(Q query, Class<E> entityClass) {
-        RowMapper<E> rowMapper = (RowMapper<E>) holder.computeIfAbsent(entityClass, BeanPropertyRowMapper::new);
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(query, entityClass);
+    public <V, Q extends DoytoQuery> List<V> query(Q query, Class<V> viewClass) {
+        RowMapper<V> rowMapper = (RowMapper<V>) holder.computeIfAbsent(viewClass, BeanPropertyRowMapper::new);
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(query, viewClass);
         return databaseOperations.query(sqlAndArgs, rowMapper);
     }
 
     @Override
-    public <E, Q extends DoytoQuery> Long count(Q query, Class<E> entityClass) {
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildCountAndArgs(query, entityClass);
+    public <V, Q extends DoytoQuery> Long count(Q query, Class<V> viewClass) {
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildCountAndArgs(query, viewClass);
         return databaseOperations.count(sqlAndArgs);
     }
 
