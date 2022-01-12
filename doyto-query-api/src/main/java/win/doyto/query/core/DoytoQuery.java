@@ -40,8 +40,6 @@ public interface DoytoQuery extends Serializable {
 
     String getSort();
 
-    int calcOffset();
-
     @SuppressWarnings("java:S3740")
     default IdWrapper toIdWrapper() {
         return IdWrapper.build(null);

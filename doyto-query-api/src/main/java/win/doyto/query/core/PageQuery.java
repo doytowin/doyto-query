@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.validation.PageGroup;
 
 import java.util.regex.Pattern;
@@ -70,11 +69,6 @@ public class PageQuery implements DoytoQuery {
             return 10;
         }
         return pageSize;
-    }
-
-    @Override
-    public int calcOffset() {
-        return GlobalConfiguration.adjustStartPageNumber(getPageNumber()) * getPageSize();
     }
 
     @Override

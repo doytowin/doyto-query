@@ -76,7 +76,7 @@ class SqlBuilderTest {
     void buildDeleteAndArgsForDynamicTable() {
         DynamicQuery dynamicQuery = DynamicQuery
                 .builder().user("f0rb").project("i18n").scoreLt(100)
-                .pageNumber(2).pageSize(10).build();
+                .pageNumber(3).pageSize(10).build();
 
         String expected = "DELETE FROM t_dynamic_f0rb_i18n " +
                 "WHERE id IN (SELECT id FROM t_dynamic_f0rb_i18n WHERE score < ? LIMIT 10 OFFSET 20)";
@@ -95,7 +95,7 @@ class SqlBuilderTest {
 
         DynamicQuery dynamicQuery = DynamicQuery
                 .builder().user("f0rb").project("i18n").scoreLt(90)
-                .pageNumber(2).pageSize(10).build();
+                .pageNumber(3).pageSize(10).build();
 
         SqlAndArgs sqlAndArgs = sqlBuilder.buildPatchAndArgs(entity, dynamicQuery);
 

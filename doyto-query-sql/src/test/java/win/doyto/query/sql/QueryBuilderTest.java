@@ -67,7 +67,7 @@ class QueryBuilderTest {
 
     @Test
     void buildSelectWithWhereAndPage() {
-        TestQuery testQuery = TestQuery.builder().username("test").pageNumber(3).pageSize(10).build();
+        TestQuery testQuery = TestQuery.builder().username("test").pageNumber(4).pageSize(10).build();
         assertEquals("SELECT * FROM user WHERE username = ? LIMIT 10 OFFSET 30",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
     }
@@ -99,7 +99,7 @@ class QueryBuilderTest {
 
     @Test
     void buildCountAndArgsWithWhere() {
-        TestQuery testQuery = TestQuery.builder().username("test").pageNumber(2).pageSize(10).sort("createTime,asc").build();
+        TestQuery testQuery = TestQuery.builder().username("test").pageNumber(3).pageSize(10).sort("createTime,asc").build();
 
         assertEquals("SELECT * FROM user WHERE username = ? ORDER BY createTime asc LIMIT 10 OFFSET 20",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
@@ -209,7 +209,7 @@ class QueryBuilderTest {
     @Test
     void supportSort() {
         TestQuery testQuery = TestQuery.builder().usernameLike("test")
-                                       .pageNumber(5).pageSize(10)
+                                       .pageNumber(6).pageSize(10)
                                        .sort("id,desc;createTime,asc").build();
         assertEquals("SELECT * FROM user WHERE username LIKE ? ORDER BY id desc, createTime asc LIMIT 10 OFFSET 50",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
@@ -330,7 +330,7 @@ class QueryBuilderTest {
         globalConfiguration.setDialect(
             (sql, limit, offset) -> String.format("SELECT LIMIT %d %d %s", offset, offset + limit, sql.substring("SELECT ".length())));
 
-        TestQuery testQuery = TestQuery.builder().pageNumber(2).pageSize(10).build();
+        TestQuery testQuery = TestQuery.builder().pageNumber(3).pageSize(10).build();
         assertEquals("SELECT LIMIT 20 30 * FROM user",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
 

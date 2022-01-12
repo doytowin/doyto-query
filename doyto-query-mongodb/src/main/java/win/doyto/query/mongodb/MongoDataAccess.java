@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
@@ -100,7 +101,8 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
             findIterable.sort(MongoFilterBuilder.buildSort(query.getSort()));
         }
         if (query.needPaging()) {
-            findIterable.skip(query.calcOffset()).limit(query.getPageSize());
+            int offset = GlobalConfiguration.calcOffset(query);
+            findIterable.skip(offset).limit(query.getPageSize());
         }
         return findIterable
                 .map(document -> convert(document, columns, clazz))

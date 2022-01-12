@@ -71,7 +71,9 @@ public class BuildHelper {
 
     static String buildPaging(String sql, DoytoQuery pageQuery) {
         if (pageQuery.needPaging()) {
-            sql = GlobalConfiguration.dialect().buildPageSql(sql, pageQuery.getPageSize(), pageQuery.calcOffset());
+            int pageSize = pageQuery.getPageSize();
+            int offset = GlobalConfiguration.calcOffset(pageQuery);
+            sql = GlobalConfiguration.dialect().buildPageSql(sql, pageSize, offset);
         }
         return sql;
     }

@@ -68,10 +68,6 @@ public class TestPageQuery implements DoytoQuery {
         return pageSize;
     }
 
-    public int calcOffset() {
-        return getPageNumber() * getPageSize();
-    }
-
     public boolean needPaging() {
         return pageNumber != null || pageSize != null;
     }
