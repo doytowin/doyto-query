@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.PageQuery;
 
 /**
  * TestQuery
@@ -33,7 +34,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuppressWarnings("unused")
-public class UserQuery extends TestPageQuery {
+public class UserQuery extends PageQuery {
     private String username;
 
     private String usernameOrEmailOrMobile;

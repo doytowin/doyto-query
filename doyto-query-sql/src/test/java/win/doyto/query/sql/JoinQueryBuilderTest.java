@@ -18,8 +18,8 @@ package win.doyto.query.sql;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
+import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.TestEnum;
-import win.doyto.query.test.TestPageQuery;
 import win.doyto.query.test.join.MaxIdView;
 import win.doyto.query.test.join.TestJoinQuery;
 import win.doyto.query.test.join.TestJoinView;
@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 class JoinQueryBuilderTest {
     @Test
     void supportAggregateQuery() {
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(new TestPageQuery(), MaxIdView.class);
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(new PageQuery(), MaxIdView.class);
         assertEquals("SELECT max(id) AS maxId FROM user", sqlAndArgs.getSql());
     }
 

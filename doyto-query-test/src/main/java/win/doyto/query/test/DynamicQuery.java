@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.PageQuery;
 
 import javax.persistence.Transient;
 
@@ -34,7 +35,7 @@ import javax.persistence.Transient;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DynamicQuery extends TestPageQuery {
+public class DynamicQuery extends PageQuery {
 
     @Transient
     private String user;

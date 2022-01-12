@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.test.TestPageQuery;
+import win.doyto.query.core.PageQuery;
 
 /**
  * UserQuery
@@ -33,7 +33,7 @@ import win.doyto.query.test.TestPageQuery;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class RoleQuery extends TestPageQuery {
+public class RoleQuery extends PageQuery {
     private String roleName;
     private String roleNameLike;
     private Boolean valid;
