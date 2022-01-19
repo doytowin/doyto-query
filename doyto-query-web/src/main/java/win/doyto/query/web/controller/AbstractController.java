@@ -66,6 +66,9 @@ abstract class AbstractController<
         this.service = service;
         this.typeReference = typeReference;
         Type[] types = BeanUtil.getActualTypeArguments(getClass());
+        if (!(types[0] instanceof Class)) {
+            throw new ControllerDefinitionException("Miss type parameters.");
+        }
         this.entityClass = (Class<E>) types[0];
 
         req2eTransfer = r -> (E) r;
