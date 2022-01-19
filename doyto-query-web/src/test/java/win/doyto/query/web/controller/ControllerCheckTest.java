@@ -36,4 +36,14 @@ class ControllerCheckTest {
             assertEquals("Miss type parameters.", e.getMessage());
         }
     }
+
+    @Test
+    void shouldThrowExceptionWhenControllerIsNotAnnotatedByRequestMapping() {
+        try {
+            new NoRequestMappingController();
+            fail();
+        } catch (ControllerDefinitionException e) {
+            assertEquals("Miss @RequestMapping annotation.", e.getMessage());
+        }
+    }
 }
