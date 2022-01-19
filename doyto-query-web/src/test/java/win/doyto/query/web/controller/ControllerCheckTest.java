@@ -56,4 +56,14 @@ class ControllerCheckTest {
             assertEquals("@RequestMapping has no values.", e.getMessage());
         }
     }
+
+    @Test
+    void shouldThrowExceptionWhenControllerIsNotAnnotatedByRequestController() {
+        try {
+            new NoRequestControllerController();
+            fail();
+        } catch (ControllerDefinitionException e) {
+            assertEquals("Miss @RestController annotation.", e.getMessage());
+        }
+    }
 }

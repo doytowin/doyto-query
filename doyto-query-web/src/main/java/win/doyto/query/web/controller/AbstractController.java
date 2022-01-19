@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.entity.Persistable;
@@ -77,6 +78,10 @@ abstract class AbstractController<
             throw new ControllerDefinitionException("Miss @RequestMapping annotation.");
         } else if (clazz.getAnnotation(RequestMapping.class).value().length == 0) {
             throw new ControllerDefinitionException("@RequestMapping has no values.");
+        }
+
+        if (!clazz.isAnnotationPresent(RestController.class)) {
+            throw new ControllerDefinitionException("Miss @RestController annotation.");
         }
 
         req2eTransfer = r -> (E) r;
