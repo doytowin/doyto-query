@@ -67,22 +67,13 @@ abstract class AbstractController<
     protected AbstractController(C service, TypeReference<W> typeReference) {
         this.service = service;
         this.typeReference = typeReference;
-        Class<? extends AbstractController> clazz = getClass();
-        Type[] types = BeanUtil.getActualTypeArguments(clazz);
+        Type[] types = BeanUtil.getActualTypeArguments(getClass());
         if (!(types[0] instanceof Class)) {
             throw new ControllerDefinitionException("Miss type parameters.");
         }
         this.entityClass = (Class<E>) types[0];
 
-        if (!clazz.isAnnotationPresent(RequestMapping.class)) {
-            throw new ControllerDefinitionException("Miss @RequestMapping annotation.");
-        } else if (clazz.getAnnotation(RequestMapping.class).value().length == 0) {
-            throw new ControllerDefinitionException("@RequestMapping has no values.");
-        }
-
-        if (!clazz.isAnnotationPresent(RestController.class)) {
-            throw new ControllerDefinitionException("Miss @RestController annotation.");
-        }
+        checkController();
 
         req2eTransfer = r -> (E) r;
         e2rspTransfer = e -> (S) e;
@@ -94,6 +85,20 @@ abstract class AbstractController<
                 Class<S> responseClass = (Class<S>) types[4];
                 e2rspTransfer = e -> BeanUtil.convertTo(e, responseClass);
             }
+        }
+    }
+
+    private void checkController() {
+        Class<? extends AbstractController> clazz = getClass();
+
+        if (!clazz.isAnnotationPresent(RequestMapping.class)) {
+            throw new ControllerDefinitionException("Miss @RequestMapping annotation.");
+        } else if (clazz.getAnnotation(RequestMapping.class).value().length == 0) {
+            throw new ControllerDefinitionException("@RequestMapping has no values.");
+        }
+
+        if (!clazz.isAnnotationPresent(RestController.class)) {
+            throw new ControllerDefinitionException("Miss @RestController annotation.");
         }
     }
 
