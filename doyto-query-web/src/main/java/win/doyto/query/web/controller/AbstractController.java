@@ -66,14 +66,17 @@ abstract class AbstractController<
     protected AbstractController(C service, TypeReference<W> typeReference) {
         this.service = service;
         this.typeReference = typeReference;
-        Type[] types = BeanUtil.getActualTypeArguments(getClass());
+        Class<? extends AbstractController> clazz = getClass();
+        Type[] types = BeanUtil.getActualTypeArguments(clazz);
         if (!(types[0] instanceof Class)) {
             throw new ControllerDefinitionException("Miss type parameters.");
         }
         this.entityClass = (Class<E>) types[0];
 
-        if (!getClass().isAnnotationPresent(RequestMapping.class)) {
+        if (!clazz.isAnnotationPresent(RequestMapping.class)) {
             throw new ControllerDefinitionException("Miss @RequestMapping annotation.");
+        } else if (clazz.getAnnotation(RequestMapping.class).value().length == 0) {
+            throw new ControllerDefinitionException("@RequestMapping has no values.");
         }
 
         req2eTransfer = r -> (E) r;
