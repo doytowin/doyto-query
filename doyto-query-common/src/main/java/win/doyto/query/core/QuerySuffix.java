@@ -26,7 +26,6 @@ import win.doyto.query.geo.Near;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -68,13 +67,11 @@ public enum QuerySuffix {
 
     NONE;
 
-    private static final Pattern SUFFIX_PTN;
-
-    static {
-        List<String> suffixList = Arrays.stream(values()).filter(querySuffix -> querySuffix != NONE).map(Enum::name).collect(Collectors.toList());
-        String suffixPtn = StringUtils.join(suffixList, "|");
-        SUFFIX_PTN = Pattern.compile("(" + suffixPtn + ")$");
-    }
+    private static final Pattern SUFFIX_PTN = Pattern.compile(
+            Arrays.stream(values())
+                  .filter(querySuffix -> querySuffix != NONE)
+                  .map(Enum::name)
+                  .collect(Collectors.joining("|", "(", ")$")));
 
     QuerySuffix() {
         this(c -> true);
