@@ -19,7 +19,6 @@ package win.doyto.query.mongodb;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.context.ActiveProfiles;
+import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.mongodb.test.inventory.InventoryEntity;
 import win.doyto.query.util.BeanUtil;
 
 import java.io.IOException;
@@ -46,10 +47,11 @@ abstract class MongoApplicationTest {
 
     @BeforeEach
     void setUp(@Autowired MongoClient mongoClient) throws IOException {
-        MongoDatabase database = mongoClient.getDatabase("doyto");
-        collection = database.getCollection("c_inventory");
-        List<? extends Document> data = BeanUtil.loadJsonData("test/inventory/inventory.json", new TypeReference<List<? extends Document>>() {});
-        collection.insertMany(data);
+        MongoDataAccess<InventoryEntity, String, DoytoQuery> dataAccess = new MongoDataAccess<>(mongoClient, InventoryEntity.class);
+        collection = dataAccess.getCollection();
+
+        List<InventoryEntity> data = BeanUtil.loadJsonData("test/inventory/inventory.json", new TypeReference<List<InventoryEntity>>() {});
+        dataAccess.batchInsert(data);
     }
 
     @AfterEach

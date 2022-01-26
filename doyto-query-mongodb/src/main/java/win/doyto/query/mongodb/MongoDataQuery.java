@@ -19,13 +19,13 @@ package win.doyto.query.mongodb;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.BsonField;
 import org.bson.Document;
 import win.doyto.query.core.DataQuery;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.entity.MongoEntity;
+import win.doyto.query.mongodb.filter.MongoGroupBuilder;
 import win.doyto.query.util.BeanUtil;
 import win.doyto.query.util.ColumnUtil;
 
@@ -33,6 +33,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * MongoDataQuery
@@ -54,22 +55,9 @@ public class MongoDataQuery implements DataQuery {
         MongoCollection<Document> collection = database.getCollection(table.collection());
 
         Field[] fields = ColumnUtil.initFields(viewClass);
-        List<BsonField> list = new ArrayList<>();
-
-        for (Field field : fields) {
-            String viewFieldName = field.getName();
-            if (viewFieldName.startsWith("sum")) {
-                int startIndex = "sum".length();
-                String fieldName = "$" + viewFieldName.substring(startIndex, startIndex + 1).toLowerCase() + viewFieldName.substring(startIndex + 1);
-                BsonField sum = Accumulators.sum(viewFieldName, fieldName);
-                list.add(sum);
-            } else if (viewFieldName.startsWith("max")) {
-                int startIndex = "max".length();
-                String fieldName = "$" + viewFieldName.substring(startIndex, startIndex + 1).toLowerCase() + viewFieldName.substring(startIndex + 1);
-                BsonField max = Accumulators.max(viewFieldName, fieldName);
-                list.add(max);
-            }
-        }
+        List<BsonField> list = Arrays.stream(fields)
+                                     .map(field -> MongoGroupBuilder.getBsonField(field.getName()))
+                                     .collect(Collectors.toList());
 
         return collection.aggregate(Arrays.asList(Aggregates.group(null, list)))
                          .map(document -> BeanUtil.parse(document.toJson(), viewClass))

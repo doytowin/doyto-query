@@ -16,12 +16,9 @@
 
 package win.doyto.query.mongodb;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.mongodb.client.MongoClient;
 import org.assertj.core.groups.Tuple;
 import org.bson.types.ObjectId;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -31,9 +28,7 @@ import win.doyto.query.mongodb.test.inventory.InventoryEntity;
 import win.doyto.query.mongodb.test.inventory.InventoryQuery;
 import win.doyto.query.mongodb.test.inventory.InventorySize;
 import win.doyto.query.mongodb.test.inventory.SizeQuery;
-import win.doyto.query.util.BeanUtil;
 
-import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,22 +41,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 @DataMongoTest(properties = {"spring.mongodb.embedded.version=3.5.5"})
 @SpringBootApplication
-class MongoDataAccessTest {
+class MongoDataAccessTest extends MongoApplicationTest {
     MongoDataAccess<InventoryEntity, String, InventoryQuery> mongoDataAccess;
 
     public MongoDataAccessTest(@Autowired MongoClient mongoClient) {
         this.mongoDataAccess = new MongoDataAccess<>(mongoClient, InventoryEntity.class);
-    }
-
-    @BeforeEach
-    void setUp() throws IOException {
-        List<InventoryEntity> data = BeanUtil.loadJsonData("test/inventory/inventory.json", new TypeReference<List<InventoryEntity>>() {});
-        mongoDataAccess.batchInsert(data);
-    }
-
-    @AfterEach
-    void tearDown() {
-        mongoDataAccess.getCollection().drop();
     }
 
     @Test

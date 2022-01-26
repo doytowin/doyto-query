@@ -16,6 +16,8 @@
 
 package win.doyto.query.mongodb;
 
+import win.doyto.query.util.CommonUtil;
+
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,9 +42,13 @@ public enum AggregationPrefix {
 
     );
 
-    static AggregationPrefix resolveField(String fieldName) {
+    public static AggregationPrefix resolveField(String fieldName) {
         Matcher matcher = SUFFIX_PTN.matcher(fieldName);
         return matcher.find() ? valueOf(matcher.group().toUpperCase()) : NONE;
+    }
+
+    public String resolveColumnName(String viewFieldName) {
+        return CommonUtil.camelize(viewFieldName.substring(name().length()));
     }
 
 }
