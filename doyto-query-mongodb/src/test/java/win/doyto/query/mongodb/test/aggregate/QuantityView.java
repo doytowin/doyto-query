@@ -32,4 +32,5 @@ public class QuantityView {
     private Integer sumQty;
     private Integer maxQty;
     private Integer minQty;
+    private Double avgQty;
 }

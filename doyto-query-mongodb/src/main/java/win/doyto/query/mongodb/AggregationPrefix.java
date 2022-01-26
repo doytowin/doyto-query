@@ -32,6 +32,7 @@ public enum AggregationPrefix {
     SUM,
     MAX,
     MIN,
+    AVG,
 
     NONE;
 
