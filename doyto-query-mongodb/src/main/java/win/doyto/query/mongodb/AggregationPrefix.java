@@ -34,6 +34,7 @@ public enum AggregationPrefix {
     MIN,
     AVG,
     FIRST,
+    LAST,
 
     NONE;
 
