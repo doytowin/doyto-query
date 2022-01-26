@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 public enum AggregationPrefix {
     SUM,
     MAX,
+    MIN,
 
     NONE;
 

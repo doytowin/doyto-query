@@ -25,8 +25,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-import static win.doyto.query.mongodb.AggregationPrefix.MAX;
-import static win.doyto.query.mongodb.AggregationPrefix.SUM;
+import static win.doyto.query.mongodb.AggregationPrefix.*;
 
 /**
  * MongoGroupBuilder
@@ -43,6 +42,7 @@ public class MongoGroupBuilder {
         prefixFuncMap = new EnumMap<>(AggregationPrefix.class);
         prefixFuncMap.put(SUM, Accumulators::sum);
         prefixFuncMap.put(MAX, Accumulators::max);
+        prefixFuncMap.put(MIN, Accumulators::min);
     }
 
     public static BsonField getBsonField(String viewFieldName) {

@@ -31,4 +31,5 @@ import win.doyto.query.entity.MongoEntity;
 public class QuantityView {
     private Integer sumQty;
     private Integer maxQty;
+    private Integer minQty;
 }
