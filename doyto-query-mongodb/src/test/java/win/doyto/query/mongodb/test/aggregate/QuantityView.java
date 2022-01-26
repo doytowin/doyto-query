@@ -30,4 +30,5 @@ import win.doyto.query.entity.MongoEntity;
 @MongoEntity(database = "doyto", collection = "c_inventory")
 public class QuantityView {
     private Integer sumQty;
+    private Integer maxQty;
 }

@@ -63,6 +63,11 @@ public class MongoDataQuery implements DataQuery {
                 String fieldName = "$" + viewFieldName.substring(startIndex, startIndex + 1).toLowerCase() + viewFieldName.substring(startIndex + 1);
                 BsonField sum = Accumulators.sum(viewFieldName, fieldName);
                 list.add(sum);
+            } else if (viewFieldName.startsWith("max")) {
+                int startIndex = "max".length();
+                String fieldName = "$" + viewFieldName.substring(startIndex, startIndex + 1).toLowerCase() + viewFieldName.substring(startIndex + 1);
+                BsonField max = Accumulators.max(viewFieldName, fieldName);
+                list.add(max);
             }
         }
 

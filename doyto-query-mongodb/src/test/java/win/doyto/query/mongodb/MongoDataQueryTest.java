@@ -44,7 +44,8 @@ class MongoDataQueryTest extends MongoApplicationTest {
         List<QuantityView> views = mongoDataQuery.query(new InventoryQuery(), QuantityView.class);
         assertThat(views).hasSize(1)
                          .first()
-                         .hasFieldOrPropertyWithValue("sumQty", 295);
+                         .hasFieldOrPropertyWithValue("sumQty", 295)
+                         .hasFieldOrPropertyWithValue("maxQty", 100);
     }
 
 }
