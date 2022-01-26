@@ -44,6 +44,7 @@ public class MongoGroupBuilder {
         prefixFuncMap.put(MAX, Accumulators::max);
         prefixFuncMap.put(MIN, Accumulators::min);
         prefixFuncMap.put(AVG, Accumulators::avg);
+        prefixFuncMap.put(FIRST, Accumulators::first);
     }
 
     public static BsonField getBsonField(String viewFieldName) {

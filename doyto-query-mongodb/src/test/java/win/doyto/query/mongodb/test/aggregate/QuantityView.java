@@ -33,4 +33,5 @@ public class QuantityView {
     private Integer maxQty;
     private Integer minQty;
     private Double avgQty;
+    private Integer firstQty;
 }
