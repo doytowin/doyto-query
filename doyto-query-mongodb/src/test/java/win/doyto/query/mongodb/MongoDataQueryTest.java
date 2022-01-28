@@ -19,6 +19,7 @@ package win.doyto.query.mongodb;
 import com.mongodb.client.MongoClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import win.doyto.query.mongodb.test.aggregate.QuantityByStatusView;
 import win.doyto.query.mongodb.test.aggregate.QuantityView;
 import win.doyto.query.mongodb.test.inventory.InventoryQuery;
 
@@ -50,6 +51,17 @@ class MongoDataQueryTest extends MongoApplicationTest {
                          .hasFieldOrPropertyWithValue("avgQty", 59.0)
                          .hasFieldOrPropertyWithValue("firstQty", 25)
                          .hasFieldOrPropertyWithValue("lastQty", 45)
+        ;
+    }
+
+    @Test
+    void groupQuery() {
+        InventoryQuery query = new InventoryQuery();
+        List<QuantityByStatusView> views = mongoDataQuery.query(query, QuantityByStatusView.class);
+        assertThat(views).hasSize(2)
+                         .first()
+                         .extracting("sumQty", "status")
+                         .containsExactly(120, "A")
         ;
     }
 

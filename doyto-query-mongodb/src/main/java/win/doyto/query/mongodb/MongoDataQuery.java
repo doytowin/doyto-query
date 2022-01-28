@@ -17,51 +17,35 @@
 package win.doyto.query.mongodb;
 
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.BsonField;
+import lombok.AllArgsConstructor;
 import org.bson.Document;
 import win.doyto.query.core.DataQuery;
 import win.doyto.query.core.DoytoQuery;
-import win.doyto.query.entity.MongoEntity;
-import win.doyto.query.mongodb.filter.MongoGroupBuilder;
 import win.doyto.query.util.BeanUtil;
-import win.doyto.query.util.ColumnUtil;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * MongoDataQuery
  *
  * @author f0rb on 2022-01-25
  */
+@AllArgsConstructor
 public class MongoDataQuery implements DataQuery {
+
+    private static final Document SORT_BY_ID = new Document("_id", 1);
 
     private MongoClient mongoClient;
 
-    public MongoDataQuery(MongoClient mongoClient) {
-        this.mongoClient = mongoClient;
-    }
-
     @Override
     public <V, Q extends DoytoQuery> List<V> query(Q query, Class<V> viewClass) {
-        MongoEntity table = viewClass.getAnnotation(MongoEntity.class);
-        MongoDatabase database = mongoClient.getDatabase(table.database());
-        MongoCollection<Document> collection = database.getCollection(table.collection());
-
-        Field[] fields = ColumnUtil.initFields(viewClass);
-        List<BsonField> list = Arrays.stream(fields)
-                                     .map(field -> MongoGroupBuilder.getBsonField(field.getName()))
-                                     .collect(Collectors.toList());
-
-        return collection.aggregate(Arrays.asList(Aggregates.group(null, list)))
-                         .map(document -> BeanUtil.parse(document.toJson(), viewClass))
-                         .into(new ArrayList<>());
+        AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
+        return md.getCollection().aggregate(Arrays.asList(md.getGroupBy(), md.getProject(), Aggregates.sort(SORT_BY_ID)))
+                 .map(document -> BeanUtil.parse(document.toJson(), viewClass))
+                 .into(new ArrayList<>());
     }
 
     @Override

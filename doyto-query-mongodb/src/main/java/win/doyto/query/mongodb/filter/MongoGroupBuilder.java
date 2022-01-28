@@ -55,6 +55,7 @@ public class MongoGroupBuilder {
     }
 
     private BsonField build(String viewFieldName, AggregationPrefix aggregationPrefix, String fieldName) {
-        return prefixFuncMap.get(aggregationPrefix).apply(viewFieldName, fieldName);
+        return prefixFuncMap.getOrDefault(aggregationPrefix, (v, t) -> null)
+                            .apply(viewFieldName, fieldName);
     }
 }
