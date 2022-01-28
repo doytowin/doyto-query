@@ -20,8 +20,10 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.model.Aggregates;
 import lombok.AllArgsConstructor;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import win.doyto.query.core.DataQuery;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.mongodb.filter.MongoFilterBuilder;
 import win.doyto.query.util.BeanUtil;
 
 import java.util.ArrayList;
@@ -43,9 +45,17 @@ public class MongoDataQuery implements DataQuery {
     @Override
     public <V, Q extends DoytoQuery> List<V> query(Q query, Class<V> viewClass) {
         AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
-        return md.getCollection().aggregate(Arrays.asList(md.getGroupBy(), md.getProject(), Aggregates.sort(SORT_BY_ID)))
+        return md.getCollection().aggregate(Arrays.asList(md.getGroupBy(), md.getProject(), buildSort(query)))
                  .map(document -> BeanUtil.parse(document.toJson(), viewClass))
                  .into(new ArrayList<>());
+    }
+
+    private <Q extends DoytoQuery> Bson buildSort(Q query) {
+        Bson sort = SORT_BY_ID;
+        if (query.getSort() != null) {
+            sort = MongoFilterBuilder.buildSort(query.getSort());
+        }
+        return Aggregates.sort(sort);
     }
 
     @Override

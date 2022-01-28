@@ -65,4 +65,15 @@ class MongoDataQueryTest extends MongoApplicationTest {
         ;
     }
 
+    @Test
+    void groupQueryWithSort() {
+        InventoryQuery query = InventoryQuery.builder().sort("status,desc").build();
+        List<QuantityByStatusView> views = mongoDataQuery.query(query, QuantityByStatusView.class);
+        assertThat(views).hasSize(2)
+                         .first()
+                         .extracting("sumQty", "status")
+                         .containsExactly(175, "D")
+        ;
+    }
+
 }
