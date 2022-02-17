@@ -48,6 +48,7 @@
         <module>doyto-query-test</module>
         <module>doyto-query-api</module>
         <module>doyto-query-common</module>
+        <module>doyto-query-memory</module>
         <module>doyto-query-sql</module>
         <module>doyto-query-web</module>
         <module>doyto-query-jdbc</module>

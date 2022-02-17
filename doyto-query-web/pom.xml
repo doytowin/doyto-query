@@ -33,7 +33,7 @@
 
         <dependency>
             <groupId>win.doyto</groupId>
-            <artifactId>doyto-query-common</artifactId>
+            <artifactId>doyto-query-memory</artifactId>
             <version>${revision}</version>
         </dependency>
 
