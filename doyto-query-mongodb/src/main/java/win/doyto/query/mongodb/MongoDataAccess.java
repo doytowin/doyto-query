@@ -60,9 +60,9 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
     @Getter
     private final MongoCollection<Document> collection;
 
-    public MongoDataAccess(MongoClient mongoClient, Class<E> testEntityClass) {
-        this.entityClass = testEntityClass;
-        MongoEntity table = testEntityClass.getAnnotation(MongoEntity.class);
+    public MongoDataAccess(MongoClient mongoClient, Class<E> entityClass) {
+        this.entityClass = entityClass;
+        MongoEntity table = entityClass.getAnnotation(MongoEntity.class);
         MongoDatabase database = mongoClient.getDatabase(table.database());
         this.collection = database.getCollection(table.collection());
     }
