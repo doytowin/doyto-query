@@ -16,26 +16,22 @@
 
 package win.doyto.query.mongodb.test.inventory;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.PageQuery;
+import lombok.*;
+import win.doyto.query.core.Or;
+
+import java.util.List;
 
 /**
- * InventoryQuery
+ * ConditionOr
  *
- * @author f0rb on 2021-11-23
+ * @author f0rb on 2022-02-19
  */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-public class InventoryQuery extends PageQuery {
-    private String itemContain;
-    private String status;
-    private SizeQuery size;
-    private ConditionOr condition;
+@Builder
+public class ConditionOr implements Or {
+    private List<String> statusIn;
+    private Integer qtyGt;
 }

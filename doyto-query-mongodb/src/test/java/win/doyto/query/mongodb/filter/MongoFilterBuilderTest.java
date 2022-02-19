@@ -81,6 +81,17 @@ class MongoFilterBuilderTest {
 
     @ParameterizedTest
     @CsvSource(value = {
+            "{\"condition\":{\"statusIn\":[\"A\",\"D\"],\"qtyGt\":15}}" +
+                    "| {\"$or\": [{\"status\": {\"$in\": [\"A\", \"D\"]}}, {\"qty\": {\"$gt\": 15}}]}",
+    }, delimiter = '|')
+    void testOrFilter(String data, String expected) {
+        InventoryQuery query = BeanUtil.parse(data, InventoryQuery.class);
+        Bson filters = MongoFilterBuilder.buildFilter(query);
+        assertEquals(expected, filters.toBsonDocument(Document.class, codecRegistry).toJson());
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {
             "item,desc | {\"item\": -1}",
             "item,asc | {\"item\": 1}",
             "item | {\"item\": 1}",

@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.core.Or;
 import win.doyto.query.core.QuerySuffix;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.ColumnUtil;
@@ -37,8 +38,7 @@ import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.regex;
+import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Sorts.*;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static win.doyto.query.core.QuerySuffix.*;
@@ -97,6 +97,8 @@ public class MongoFilterBuilder {
                 String newPrefix = prefix + field.getName();
                 if (value instanceof DoytoQuery) {
                     buildFilter(value, newPrefix, filters);
+                } else if (value instanceof Or) {
+                    buildOrFilter(value, filters);
                 } else {
                     filters.add(resolveFilter(newPrefix, value));
                 }
@@ -107,6 +109,12 @@ public class MongoFilterBuilder {
                 filters.add(new Document(column, value));
             }
         }
+    }
+
+    private static void buildOrFilter(Object value, List<Bson> rootFilters) {
+        List<Bson> filters = new ArrayList<>();
+        buildFilter(value, EMPTY, filters);
+        rootFilters.add(or(filters));
     }
 
     private static Bson resolveFilter(String fieldName, Object value) {
