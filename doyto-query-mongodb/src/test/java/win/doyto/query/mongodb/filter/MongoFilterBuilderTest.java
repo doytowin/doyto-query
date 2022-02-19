@@ -83,6 +83,12 @@ class MongoFilterBuilderTest {
     @CsvSource(value = {
             "{\"condition\":{\"statusIn\":[\"A\",\"D\"],\"qtyGt\":15}}" +
                     "| {\"$or\": [{\"status\": {\"$in\": [\"A\", \"D\"]}}, {\"qty\": {\"$gt\": 15}}]}",
+            "{\"condition\":{\"statusIn\":[\"A\",\"D\"],\"qtyGt\":15},\"itemContain\":\"test\"}" +
+                    "| {\"$and\": [{\"item\": {\"$regularExpression\": {\"pattern\": \"test\", \"options\": \"\"}}}, " +
+                    "{\"$or\": [{\"status\": {\"$in\": [\"A\", \"D\"]}}, {\"qty\": {\"$gt\": 15}}]}]}",
+            "{\"condition\":{\"statusIn\":[\"A\",\"D\"]},\"itemContain\":\"test\"}" +
+                    "| {\"$and\": [{\"item\": {\"$regularExpression\": {\"pattern\": \"test\", \"options\": \"\"}}}, " +
+                    "{\"status\": {\"$in\": [\"A\", \"D\"]}}]}",
     }, delimiter = '|')
     void testOrFilter(String data, String expected) {
         InventoryQuery query = BeanUtil.parse(data, InventoryQuery.class);

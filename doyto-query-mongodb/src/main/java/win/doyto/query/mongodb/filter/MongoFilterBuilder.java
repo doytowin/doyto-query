@@ -114,7 +114,11 @@ public class MongoFilterBuilder {
     private static void buildOrFilter(Object value, List<Bson> rootFilters) {
         List<Bson> filters = new ArrayList<>();
         buildFilter(value, EMPTY, filters);
-        rootFilters.add(or(filters));
+        if (filters.size() == 1) {
+            rootFilters.add(filters.get(0));
+        } else {
+            rootFilters.add(or(filters));
+        }
     }
 
     private static Bson resolveFilter(String fieldName, Object value) {
