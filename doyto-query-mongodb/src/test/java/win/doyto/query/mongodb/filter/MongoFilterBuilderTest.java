@@ -89,6 +89,8 @@ class MongoFilterBuilderTest {
             "{\"condition\":{\"statusIn\":[\"A\",\"D\"]},\"itemContain\":\"test\"}" +
                     "| {\"$and\": [{\"item\": {\"$regularExpression\": {\"pattern\": \"test\", \"options\": \"\"}}}, " +
                     "{\"status\": {\"$in\": [\"A\", \"D\"]}}]}",
+            "{\"condition\":{},\"itemContain\":\"test\"}" +
+                    "| {\"item\": {\"$regularExpression\": {\"pattern\": \"test\", \"options\": \"\"}}}",
     }, delimiter = '|')
     void testOrFilter(String data, String expected) {
         InventoryQuery query = BeanUtil.parse(data, InventoryQuery.class);

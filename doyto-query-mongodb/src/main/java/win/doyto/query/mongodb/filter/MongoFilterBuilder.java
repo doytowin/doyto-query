@@ -114,10 +114,14 @@ public class MongoFilterBuilder {
     private static void buildOrFilter(Object value, List<Bson> rootFilters) {
         List<Bson> filters = new ArrayList<>();
         buildFilter(value, EMPTY, filters);
-        if (filters.size() == 1) {
-            rootFilters.add(filters.get(0));
-        } else {
-            rootFilters.add(or(filters));
+        switch (filters.size()) {
+            case 0:
+                break;
+            case 1:
+                rootFilters.add(filters.get(0));
+                break;
+            default:
+                rootFilters.add(or(filters));
         }
     }
 
