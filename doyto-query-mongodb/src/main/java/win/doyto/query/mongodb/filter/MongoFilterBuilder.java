@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.regex;
 import static com.mongodb.client.model.Sorts.*;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static win.doyto.query.core.QuerySuffix.*;
 
 /**
@@ -61,8 +62,8 @@ public class MongoFilterBuilder {
         suffixFuncMap.put(Le, Filters::lte);
         suffixFuncMap.put(Gt, Filters::gt);
         suffixFuncMap.put(Ge, Filters::gte);
-        suffixFuncMap.put(In, Filters::in);
-        suffixFuncMap.put(NotIn, Filters::nin);
+        suffixFuncMap.put(In, (fieldName, values) -> Filters.in(fieldName, (Iterable<?>) values));
+        suffixFuncMap.put(NotIn, (fieldName, values) -> Filters.nin(fieldName, (Iterable<?>) values));
         suffixFuncMap.put(Not, Filters::ne);
         suffixFuncMap.put(Near, MongoGeoFilters::near);
         suffixFuncMap.put(NearSphere, MongoGeoFilters::nearSphere);
@@ -76,7 +77,7 @@ public class MongoFilterBuilder {
 
     public static Bson buildFilter(Object query) {
         List<Bson> filters = new ArrayList<>();
-        buildFilter(query, "", filters);
+        buildFilter(query, EMPTY, filters);
         switch (filters.size()) {
             case 0:
                 return new Document();
@@ -88,7 +89,7 @@ public class MongoFilterBuilder {
     }
 
     private static void buildFilter(Object query, String prefix, List<Bson> filters) {
-        prefix = StringUtils.isEmpty(prefix) ? "" : prefix + ".";
+        prefix = StringUtils.isEmpty(prefix) ? EMPTY : prefix + ".";
         Field[] fields = ColumnUtil.initFields(query.getClass());
         for (Field field : fields) {
             Object value = CommonUtil.readFieldGetter(field, query);
@@ -116,12 +117,12 @@ public class MongoFilterBuilder {
 
     public static Bson buildUpdates(Object target) {
         List<Bson> updates = new ArrayList<>();
-        buildUpdates(target, "", updates);
+        buildUpdates(target, EMPTY, updates);
         return Updates.combine(updates);
     }
 
     private static void buildUpdates(Object entity, String prefix, List<Bson> updates) {
-        prefix = StringUtils.isEmpty(prefix) ? "" : prefix + ".";
+        prefix = StringUtils.isEmpty(prefix) ? EMPTY : prefix + ".";
         Field[] fields = ColumnUtil.initFields(entity.getClass());
         for (Field field : fields) {
             Object value = CommonUtil.readFieldGetter(field, entity);

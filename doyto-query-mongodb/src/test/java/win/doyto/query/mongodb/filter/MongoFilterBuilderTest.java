@@ -56,8 +56,8 @@ class MongoFilterBuilderTest {
             "{\"createTimeLt\": \"2021-11-24\"}, {\"createTime\": {\"$lt\": {\"$date\": \"2021-11-24T00:00:00Z\"}}}",
             "{\"createTimeGt\": \"2021-11-24\"}, {\"createTime\": {\"$gt\": {\"$date\": \"2021-11-24T00:00:00Z\"}}}",
             "{\"createTimeGe\": \"2021-11-24\"}, {\"createTime\": {\"$gte\": {\"$date\": \"2021-11-24T00:00:00Z\"}}}",
-            "'{\"idIn\": [1,2,3]}', '{\"id\": {\"$in\": [[1, 2, 3]]}}'",
-            "'{\"idNotIn\": [1,2,3]}', '{\"id\": {\"$nin\": [[1, 2, 3]]}}'",
+            "'{\"idIn\": [1,2,3]}', '{\"id\": {\"$in\": [1, 2, 3]}}'",
+            "'{\"idNotIn\": [1,2,3]}', '{\"id\": {\"$nin\": [1, 2, 3]}}'",
             "{\"userLevel\": \"VIP\"}, {\"userLevel\": 0}",
             "{\"userLevelNot\": \"VIP\"}, {\"userLevel\": {\"$ne\": 0}}",
     })
