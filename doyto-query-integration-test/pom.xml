@@ -27,6 +27,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>doyto-query-integration-test</artifactId>
+    <name>doyto-query-integration-test</name>
 
     <properties>
         <skipDeploy>true</skipDeploy>
@@ -52,7 +53,7 @@
         <dependency>
             <groupId>win.doyto</groupId>
             <artifactId>doyto-query-mongodb</artifactId>
-            <version>${revision}</version>
+            <version>${revision}-ALPHA</version>
         </dependency>
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>

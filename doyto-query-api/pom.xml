@@ -27,6 +27,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>doyto-query-api</artifactId>
+    <name>doyto-query-api</name>
 
     <dependencies>
         <dependency>
