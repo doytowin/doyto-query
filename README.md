@@ -23,19 +23,20 @@ DoytoQuery - A Java implementation of the 2nd generation ORM Framework
 
 ## Architecture for 0.3.x
 
-![architecture-0.3.x](docs/images/architecture-0.3.x.2.png)
+<img alt="architecture-0.3.x" src="docs/images/architecture-0.3.x.2.png" width="50%">
 
 ## Versions
 
 | Module | Snapshot | Release |
 | --- | --- | --- |
-| doyto-query-api | ![Snapshots](https://img.shields.io/nexus/s/win.doyto/doyto-query-api?color=blue&server=https%3A%2F%2Foss.sonatype.org) | ![](https://img.shields.io/maven-central/v/win.doyto/doyto-query-api?color=brightgreen) |
-| doyto-query-common | ![Snapshots](https://img.shields.io/nexus/s/win.doyto/doyto-query-common?color=blue&server=https%3A%2F%2Foss.sonatype.org) | ![](https://img.shields.io/maven-central/v/win.doyto/doyto-query-common?color=brightgreen) |
-| doyto-query-sql | ![Snapshots](https://img.shields.io/nexus/s/win.doyto/doyto-query-sql?color=blue&server=https%3A%2F%2Foss.sonatype.org) | ![](https://img.shields.io/maven-central/v/win.doyto/doyto-query-sql?color=brightgreen) |
-| doyto-query-jdbc | ![Snapshots](https://img.shields.io/nexus/s/win.doyto/doyto-query-jdbc?color=blue&server=https%3A%2F%2Foss.sonatype.org) | ![](https://img.shields.io/maven-central/v/win.doyto/doyto-query-jdbc?color=brightgreen) |
-| doyto-query-mongodb | ![Snapshots](https://img.shields.io/nexus/s/win.doyto/doyto-query-mongodb?color=blue&server=https%3A%2F%2Foss.sonatype.org) | ![](https://img.shields.io/maven-central/v/win.doyto/doyto-query-mongodb?color=brightgreen) |
-| doyto-query-web | ![Snapshots](https://img.shields.io/nexus/s/win.doyto/doyto-query-web?color=blue&server=https%3A%2F%2Foss.sonatype.org) | ![](https://img.shields.io/maven-central/v/win.doyto/doyto-query-web?color=brightgreen) |
-| doyto-query-dialect | ![Snapshots](https://img.shields.io/nexus/s/win.doyto/doyto-query-dialect?color=blue&server=https%3A%2F%2Foss.sonatype.org) | ![](https://img.shields.io/maven-central/v/win.doyto/doyto-query-dialect?color=brightgreen) |
+| doyto-query-api | [![api-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-api/) | [![api-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-api/) |
+| doyto-query-common | [![common-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-common/) | [![common-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-common/) |
+| doyto-query-memory | [![memory-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-memory/) | [![memory-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-memory/) |
+| doyto-query-sql | [![sql-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-sql/) | [![sql-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-sql/) |
+| doyto-query-jdbc | [![jdbc-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-jdbc/) | [![jdbc-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-jdbc/) |
+| doyto-query-mongodb | [![mongodb-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-mongodb/) | [![mongodb-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-mongodb/) |
+| doyto-query-web | [![web-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-web/) | [![web-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-web/) |
+| doyto-query-dialect | [![dialect-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-dialect/) | [![dialect-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-dialect/) |
 
 ## Related resources
 
@@ -56,3 +57,20 @@ DoytoQuery - A Java implementation of the 2nd generation ORM Framework
 License
 -------
 This project is under the [Apache Licence v2](https://www.apache.org/licenses/LICENSE-2.0).
+
+[api-snapshots-img]: https://img.shields.io/nexus/s/win.doyto/doyto-query-api?color=blue&server=https%3A%2F%2Foss.sonatype.org
+[api-release-img]: https://img.shields.io/maven-central/v/win.doyto/doyto-query-api?color=brightgreen
+[common-snapshots-img]: https://img.shields.io/nexus/s/win.doyto/doyto-query-common?color=blue&server=https%3A%2F%2Foss.sonatype.org
+[common-release-img]: https://img.shields.io/maven-central/v/win.doyto/doyto-query-common?color=brightgreen
+[memory-snapshots-img]: https://img.shields.io/nexus/s/win.doyto/doyto-query-memory?color=blue&server=https%3A%2F%2Foss.sonatype.org
+[memory-release-img]: https://img.shields.io/maven-central/v/win.doyto/doyto-query-memory?color=brightgreen
+[sql-snapshots-img]: https://img.shields.io/nexus/s/win.doyto/doyto-query-sql?color=blue&server=https%3A%2F%2Foss.sonatype.org
+[sql-release-img]: https://img.shields.io/maven-central/v/win.doyto/doyto-query-sql?color=brightgreen
+[jdbc-snapshots-img]: https://img.shields.io/nexus/s/win.doyto/doyto-query-jdbc?color=blue&server=https%3A%2F%2Foss.sonatype.org
+[jdbc-release-img]: https://img.shields.io/maven-central/v/win.doyto/doyto-query-jdbc?color=brightgreen
+[mongodb-snapshots-img]: https://img.shields.io/nexus/s/win.doyto/doyto-query-mongodb?color=blue&server=https%3A%2F%2Foss.sonatype.org
+[mongodb-release-img]: https://img.shields.io/maven-central/v/win.doyto/doyto-query-mongodb?color=brightgreen
+[web-snapshots-img]: https://img.shields.io/nexus/s/win.doyto/doyto-query-web?color=blue&server=https%3A%2F%2Foss.sonatype.org
+[web-release-img]: https://img.shields.io/maven-central/v/win.doyto/doyto-query-web?color=brightgreen
+[dialect-snapshots-img]: https://img.shields.io/nexus/s/win.doyto/doyto-query-dialect?color=blue&server=https%3A%2F%2Foss.sonatype.org
+[dialect-release-img]: https://img.shields.io/maven-central/v/win.doyto/doyto-query-dialect?color=brightgreen
