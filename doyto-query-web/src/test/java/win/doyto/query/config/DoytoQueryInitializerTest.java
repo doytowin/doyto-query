@@ -19,12 +19,14 @@ package win.doyto.query.config;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.mock.env.MockEnvironment;
 import win.doyto.query.core.Dialect;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * DoytoQueryInitializerTest
@@ -45,6 +47,7 @@ class DoytoQueryInitializerTest {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
     }
 
+    @ResourceLock(value = "ignoreCacheException", mode = READ)
     @Test
     void initialize() {
         GlobalConfiguration globalConfiguration = GlobalConfiguration.instance();

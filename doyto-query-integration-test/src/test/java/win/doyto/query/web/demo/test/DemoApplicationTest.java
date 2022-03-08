@@ -30,7 +30,6 @@ import win.doyto.query.web.response.ErrorCode;
 
 import javax.annotation.Resource;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -55,7 +54,7 @@ abstract class DemoApplicationTest {
 
     protected ResultActions performAndExpectOk(RequestBuilder requestBuilder) throws Exception {
         return mockMvc.perform(requestBuilder)
-                      .andDo(print())
+                      //.andDo(print())
                       .andExpect(status().isOk());
     }
 

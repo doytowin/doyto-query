@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import win.doyto.query.core.Dialect;
+import win.doyto.query.core.DoytoQuery;
 
 import java.util.function.Function;
 
@@ -62,6 +63,10 @@ public class GlobalConfiguration {
 
     public void setStartPageNumberFromOne(boolean startPageNumberFromOne) {
         instance().setStartPageNumberAdjuster(page -> startPageNumberFromOne ? Math.max(page - 1, 0) : page);
+    }
+
+    public static int calcOffset(DoytoQuery query) {
+        return GlobalConfiguration.adjustStartPageNumber(query.getPageNumber()) * query.getPageSize();
     }
 
 }

@@ -22,8 +22,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import win.doyto.query.entity.UserIdProvider;
 import win.doyto.query.service.AssociationService;
-import win.doyto.query.service.AssociativeService;
-import win.doyto.query.service.TemplateAssociativeService;
 
 /**
  * JdbcApplication
@@ -35,11 +33,6 @@ import win.doyto.query.service.TemplateAssociativeService;
 public class JdbcApplication {
     public static void main(String[] args) {
         SpringApplication.run(JdbcApplication.class);
-    }
-
-    @Bean
-    public AssociativeService<Long, Integer> userAndRoleAssociativeService() {
-        return new TemplateAssociativeService<>("t_user_and_role", "userId", "roleId", "createUserId");
     }
 
     @Bean

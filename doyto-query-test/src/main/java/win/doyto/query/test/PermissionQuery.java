@@ -23,6 +23,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.NestedQueries;
 import win.doyto.query.annotation.NestedQuery;
+import win.doyto.query.core.PageQuery;
 
 import java.util.List;
 
@@ -36,7 +37,7 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PermissionQuery extends TestPageQuery {
+public class PermissionQuery extends PageQuery {
 
     @NestedQueries({
             @NestedQuery(select = "permId", from = "t_role_and_perm"),

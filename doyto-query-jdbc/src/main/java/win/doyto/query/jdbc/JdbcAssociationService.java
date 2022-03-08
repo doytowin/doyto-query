@@ -19,6 +19,7 @@ package win.doyto.query.jdbc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
+import org.springframework.transaction.annotation.Transactional;
 import win.doyto.query.entity.UserIdProvider;
 import win.doyto.query.service.AssociationService;
 import win.doyto.query.service.UniqueKey;
@@ -93,6 +94,7 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
     }
 
     @Override
+    @Transactional
     public int reassociateForK1(K1 k1, List<K2> list) {
         deleteByK1(k1);
         if (list.isEmpty()) {
@@ -106,6 +108,7 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
     }
 
     @Override
+    @Transactional
     public int reassociateForK2(K2 k2, List<K1> list) {
         deleteByK2(k2);
         if (list.isEmpty()) {

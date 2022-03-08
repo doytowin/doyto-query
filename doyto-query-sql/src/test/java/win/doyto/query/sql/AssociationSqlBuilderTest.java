@@ -76,7 +76,7 @@ class AssociationSqlBuilderTest {
     void testInsert() {
         SqlAndArgs sqlAndArgs = associationSqlBuilder.buildInsert(testKeys());
         assertThat(sqlAndArgs.getSql())
-                .isEqualTo("INSERT INTO t_user_and_role (user_id, role_id) VALUES (?, ?), (?, ?)");
+                .isEqualTo("INSERT IGNORE INTO t_user_and_role (user_id, role_id) VALUES (?, ?), (?, ?)");
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 3);
     }
 
@@ -105,7 +105,7 @@ class AssociationSqlBuilderTest {
         associationSqlBuilder = new AssociationSqlBuilder<>(tableName, k1Column, k2Column, createUserColumn);
         SqlAndArgs sqlAndArgs = associationSqlBuilder.buildInsert(testKeys(), 1);
         assertThat(sqlAndArgs.getSql())
-                .isEqualTo("INSERT INTO t_user_and_role (user_id, role_id, create_user_id) VALUES (?, ?, 1), (?, ?, 1)");
+                .isEqualTo("INSERT IGNORE INTO t_user_and_role (user_id, role_id, create_user_id) VALUES (?, ?, 1), (?, ?, 1)");
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 3);
     }
 }

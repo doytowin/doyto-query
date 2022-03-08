@@ -19,6 +19,7 @@ package win.doyto.query.sql;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.test.DynamicEntity;
 import win.doyto.query.test.DynamicIdWrapper;
+import win.doyto.query.test.DynamicQuery;
 
 import java.util.Arrays;
 
@@ -61,7 +62,6 @@ class SqlBuilderTest {
     @Test
     void buildPatchAndArgsWithIds() {
         DynamicEntity entity = new DynamicEntity();
-        entity.setId(1);
         entity.setUser("f0rb");
         entity.setProject("i18n");
         entity.setScore(100);
@@ -70,5 +70,38 @@ class SqlBuilderTest {
 
         assertEquals("UPDATE t_dynamic_f0rb_i18n SET user_score = ? WHERE id IN (?, ?, ?)", sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly(100, 1, 2, 3);
+    }
+
+    @Test
+    void buildDeleteAndArgsForDynamicTable() {
+        DynamicQuery dynamicQuery = DynamicQuery
+                .builder().user("f0rb").project("i18n").scoreLt(100)
+                .pageNumber(3).pageSize(10).build();
+
+        String expected = "DELETE FROM t_dynamic_f0rb_i18n " +
+                "WHERE id IN (SELECT id FROM t_dynamic_f0rb_i18n WHERE score < ? LIMIT 10 OFFSET 20)";
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildDeleteAndArgs(dynamicQuery);
+        assertEquals(expected, sqlAndArgs.getSql());
+        assertThat(sqlAndArgs.getArgs()).containsExactly(100);
+    }
+
+    @Test
+    void buildPatchAndArgs() {
+        DynamicEntity entity = new DynamicEntity();
+        entity.setId(1);
+        entity.setUser("f0rb");
+        entity.setProject("i18n");
+        entity.setScore(100);
+
+        DynamicQuery dynamicQuery = DynamicQuery
+                .builder().user("f0rb").project("i18n").scoreLt(90)
+                .pageNumber(3).pageSize(10).build();
+
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildPatchAndArgs(entity, dynamicQuery);
+
+        String expected = "UPDATE t_dynamic_f0rb_i18n SET user_score = ? " +
+                "WHERE id IN (SELECT id FROM t_dynamic_f0rb_i18n WHERE score < ? LIMIT 10 OFFSET 20)";
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(100, 90);
     }
 }

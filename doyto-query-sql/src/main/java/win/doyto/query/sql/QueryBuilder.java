@@ -72,7 +72,7 @@ public class QueryBuilder {
     }
 
     @SuppressWarnings("java:S4973")
-    private String build(DoytoQuery query, List<Object> argList, String... columns) {
+    protected String build(DoytoQuery query, List<Object> argList, String... columns) {
         String sql = BuildHelper.buildStart(columns, resolveTableName(query.toIdWrapper()));
         sql = replaceHolderInString(query, sql);
         sql += BuildHelper.buildWhere(query, argList);
@@ -107,13 +107,7 @@ public class QueryBuilder {
     }
 
     private String buildColumnStr(IdWrapper<?> idWrapper, String[] columns) {
-        String columnStr;
-        if (columns.length == 0) {
-            columnStr = "*";
-        } else {
-            columnStr = replaceHolderInString(idWrapper, StringUtils.join(columns, SEPARATOR));
-        }
-        return columnStr;
+        return replaceHolderInString(idWrapper, StringUtils.join(columns, SEPARATOR));
     }
 
     public SqlAndArgs buildSelectIdAndArgs(DoytoQuery query) {

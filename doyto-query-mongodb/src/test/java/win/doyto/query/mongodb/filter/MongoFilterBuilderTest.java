@@ -56,8 +56,8 @@ class MongoFilterBuilderTest {
             "{\"createTimeLt\": \"2021-11-24\"}, {\"createTime\": {\"$lt\": {\"$date\": \"2021-11-24T00:00:00Z\"}}}",
             "{\"createTimeGt\": \"2021-11-24\"}, {\"createTime\": {\"$gt\": {\"$date\": \"2021-11-24T00:00:00Z\"}}}",
             "{\"createTimeGe\": \"2021-11-24\"}, {\"createTime\": {\"$gte\": {\"$date\": \"2021-11-24T00:00:00Z\"}}}",
-            "'{\"idIn\": [1,2,3]}', '{\"id\": {\"$in\": [[1, 2, 3]]}}'",
-            "'{\"idNotIn\": [1,2,3]}', '{\"id\": {\"$nin\": [[1, 2, 3]]}}'",
+            "'{\"idIn\": [1,2,3]}', '{\"id\": {\"$in\": [1, 2, 3]}}'",
+            "'{\"idNotIn\": [1,2,3]}', '{\"id\": {\"$nin\": [1, 2, 3]}}'",
             "{\"userLevel\": \"VIP\"}, {\"userLevel\": 0}",
             "{\"userLevelNot\": \"VIP\"}, {\"userLevel\": {\"$ne\": 0}}",
     })
@@ -74,6 +74,25 @@ class MongoFilterBuilderTest {
                     "| {\"$and\": [{\"size.h\": {\"$lt\": 15}}, {\"size.unit.name\": \"inch\"}]}",
     }, delimiter = '|')
     void testNestedFilter(String data, String expected) {
+        InventoryQuery query = BeanUtil.parse(data, InventoryQuery.class);
+        Bson filters = MongoFilterBuilder.buildFilter(query);
+        assertEquals(expected, filters.toBsonDocument(Document.class, codecRegistry).toJson());
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {
+            "{\"condition\":{\"statusIn\":[\"A\",\"D\"],\"qtyGt\":15}}" +
+                    "| {\"$or\": [{\"status\": {\"$in\": [\"A\", \"D\"]}}, {\"qty\": {\"$gt\": 15}}]}",
+            "{\"condition\":{\"statusIn\":[\"A\",\"D\"],\"qtyGt\":15},\"itemContain\":\"test\"}" +
+                    "| {\"$and\": [{\"item\": {\"$regularExpression\": {\"pattern\": \"test\", \"options\": \"\"}}}, " +
+                    "{\"$or\": [{\"status\": {\"$in\": [\"A\", \"D\"]}}, {\"qty\": {\"$gt\": 15}}]}]}",
+            "{\"condition\":{\"statusIn\":[\"A\",\"D\"]},\"itemContain\":\"test\"}" +
+                    "| {\"$and\": [{\"item\": {\"$regularExpression\": {\"pattern\": \"test\", \"options\": \"\"}}}, " +
+                    "{\"status\": {\"$in\": [\"A\", \"D\"]}}]}",
+            "{\"condition\":{},\"itemContain\":\"test\"}" +
+                    "| {\"item\": {\"$regularExpression\": {\"pattern\": \"test\", \"options\": \"\"}}}",
+    }, delimiter = '|')
+    void testOrFilter(String data, String expected) {
         InventoryQuery query = BeanUtil.parse(data, InventoryQuery.class);
         Bson filters = MongoFilterBuilder.buildFilter(query);
         assertEquals(expected, filters.toBsonDocument(Document.class, codecRegistry).toJson());

@@ -23,6 +23,7 @@ import win.doyto.query.annotation.Enumerated;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
+import javax.persistence.EnumType;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -31,7 +32,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.persistence.EnumType;
 
 import static win.doyto.query.sql.Constant.SEPARATOR;
 import static win.doyto.query.sql.Constant.SPACE;
@@ -71,13 +71,11 @@ enum SqlQuerySuffix {
     Eq("="),
     NONE("=");
 
-    private static final Pattern SUFFIX_PTN;
-
-    static {
-        List<String> suffixList = Arrays.stream(values()).filter(querySuffix -> querySuffix != NONE).map(Enum::name).collect(Collectors.toList());
-        String suffixPtn = StringUtils.join(suffixList, "|");
-        SUFFIX_PTN = Pattern.compile("(" + suffixPtn + ")$");
-    }
+    private static final Pattern SUFFIX_PTN = Pattern.compile(
+            Arrays.stream(values())
+                  .filter(querySuffix -> querySuffix != NONE)
+                  .map(Enum::name)
+                  .collect(Collectors.joining("|", "(", ")$")));
 
     private final String op;
     private final ValueProcessor valueProcessor;

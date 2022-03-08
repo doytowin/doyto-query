@@ -18,6 +18,7 @@ package win.doyto.query.sql;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.Dialect;
 import win.doyto.query.test.*;
@@ -29,12 +30,15 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
 
 /**
  * QueryBuilderTest
  *
  * @author f0rb 2019-05-12
  */
+@ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
 class QueryBuilderTest {
 
     private QueryBuilder testQueryBuilder = new QueryBuilder(TestEntity.class);
@@ -45,7 +49,6 @@ class QueryBuilderTest {
 
     @BeforeEach
     void setUp() {
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
         GlobalConfiguration.instance().setDialect(new SimpleDialect());
         argList = new ArrayList<>();
     }
@@ -64,7 +67,7 @@ class QueryBuilderTest {
 
     @Test
     void buildSelectWithWhereAndPage() {
-        TestQuery testQuery = TestQuery.builder().username("test").pageNumber(3).pageSize(10).build();
+        TestQuery testQuery = TestQuery.builder().username("test").pageNumber(4).pageSize(10).build();
         assertEquals("SELECT * FROM user WHERE username = ? LIMIT 10 OFFSET 30",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
     }
@@ -96,7 +99,7 @@ class QueryBuilderTest {
 
     @Test
     void buildCountAndArgsWithWhere() {
-        TestQuery testQuery = TestQuery.builder().username("test").pageNumber(2).pageSize(10).sort("createTime,asc").build();
+        TestQuery testQuery = TestQuery.builder().username("test").pageNumber(3).pageSize(10).sort("createTime,asc").build();
 
         assertEquals("SELECT * FROM user WHERE username = ? ORDER BY createTime asc LIMIT 10 OFFSET 20",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
@@ -206,12 +209,13 @@ class QueryBuilderTest {
     @Test
     void supportSort() {
         TestQuery testQuery = TestQuery.builder().usernameLike("test")
-                                       .pageNumber(5).pageSize(10)
+                                       .pageNumber(6).pageSize(10)
                                        .sort("id,desc;createTime,asc").build();
         assertEquals("SELECT * FROM user WHERE username LIKE ? ORDER BY id desc, createTime asc LIMIT 10 OFFSET 50",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
     }
 
+    @ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ_WRITE)
     @Test
     void supportMapFieldToUnderscore() {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
@@ -222,10 +226,12 @@ class QueryBuilderTest {
         assertEquals("SELECT * FROM user WHERE (user_name = ? OR user_code LIKE ?) AND create_time < ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test", "%test%", date);
+
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
     }
 
     @Test
-    void buildSubquery() {
+    void buildSubQuery() {
         TestQuery testQuery = TestQuery.builder().roleId(1).build();
 
         assertEquals("SELECT * FROM user WHERE id IN (SELECT userId FROM t_user_and_role WHERE roleId = ?)",
@@ -324,7 +330,7 @@ class QueryBuilderTest {
         globalConfiguration.setDialect(
             (sql, limit, offset) -> String.format("SELECT LIMIT %d %d %s", offset, offset + limit, sql.substring("SELECT ".length())));
 
-        TestQuery testQuery = TestQuery.builder().pageNumber(2).pageSize(10).build();
+        TestQuery testQuery = TestQuery.builder().pageNumber(3).pageSize(10).build();
         assertEquals("SELECT LIMIT 20 30 * FROM user",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
 
@@ -353,10 +359,8 @@ class QueryBuilderTest {
 
     @Test
     void buildSubQueryWithNullCollection() {
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
-
         PermissionQuery nullQuery = PermissionQuery.builder().roleIdIn(Arrays.asList()).build();
-        assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE role_id IN (null))",
+        assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN (null))",
                      permQueryBuilder.buildSelectAndArgs(nullQuery, argList));
         assertThat(argList).isEmpty();
     }

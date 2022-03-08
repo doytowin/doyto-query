@@ -47,7 +47,7 @@ class RoleControllerTest {
 
     @Test
     void page() {
-        PageList<RoleEntity> roleEntities = roleController.page(RoleQuery.builder().pageNumber(1).pageSize(2).build());
+        PageList<RoleEntity> roleEntities = roleController.page(RoleQuery.builder().pageNumber(2).pageSize(2).build());
         assertEquals(1, roleEntities.getList().size());
         assertEquals(3, roleEntities.getTotal());
     }

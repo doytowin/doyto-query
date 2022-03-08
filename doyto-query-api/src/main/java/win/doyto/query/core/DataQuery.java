@@ -27,11 +27,11 @@ import java.util.List;
  */
 public interface DataQuery {
 
-    <E, Q extends DoytoQuery> List<E> query(Q query, Class<E> entityClass);
+    <V, Q extends DoytoQuery> List<V> query(Q query, Class<V> viewClass);
 
-    <E, Q extends DoytoQuery> Long count(Q query, Class<E> entityClass);
+    <V, Q extends DoytoQuery> Long count(Q query, Class<V> viewClass);
 
-    default <E, Q extends DoytoQuery> PageList<E> page(Q q, Class<E> clazz) {
-        return new PageList<>(query(q, clazz), count(q, clazz));
+    default <V, Q extends DoytoQuery> PageList<V> page(Q query, Class<V> viewClass) {
+        return new PageList<>(query(query, viewClass), count(query, viewClass));
     }
 }

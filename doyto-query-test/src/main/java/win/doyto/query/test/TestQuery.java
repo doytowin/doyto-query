@@ -24,6 +24,7 @@ import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.NestedQueries;
 import win.doyto.query.annotation.NestedQuery;
 import win.doyto.query.annotation.QueryField;
+import win.doyto.query.core.PageQuery;
 
 import java.util.Date;
 import java.util.List;
@@ -38,7 +39,7 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TestQuery extends TestPageQuery {
+public class TestQuery extends PageQuery {
     private List<Integer> idIn;
     private List<Integer> idNotIn;
     private Integer idLt;

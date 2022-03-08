@@ -19,6 +19,8 @@ package win.doyto.query.web.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.entity.Persistable;
@@ -66,7 +68,12 @@ abstract class AbstractController<
         this.service = service;
         this.typeReference = typeReference;
         Type[] types = BeanUtil.getActualTypeArguments(getClass());
+        if (!(types[0] instanceof Class)) {
+            throw new ControllerDefinitionException("Miss type parameters.");
+        }
         this.entityClass = (Class<E>) types[0];
+
+        checkController();
 
         req2eTransfer = r -> (E) r;
         e2rspTransfer = e -> (S) e;
@@ -78,6 +85,20 @@ abstract class AbstractController<
                 Class<S> responseClass = (Class<S>) types[4];
                 e2rspTransfer = e -> BeanUtil.convertTo(e, responseClass);
             }
+        }
+    }
+
+    private void checkController() {
+        Class<? extends AbstractController> clazz = getClass();
+
+        if (!clazz.isAnnotationPresent(RequestMapping.class)) {
+            throw new ControllerDefinitionException("Miss @RequestMapping annotation.");
+        } else if (clazz.getAnnotation(RequestMapping.class).value().length == 0) {
+            throw new ControllerDefinitionException("@RequestMapping has no values.");
+        }
+
+        if (!clazz.isAnnotationPresent(RestController.class)) {
+            throw new ControllerDefinitionException("Miss @RestController annotation.");
         }
     }
 

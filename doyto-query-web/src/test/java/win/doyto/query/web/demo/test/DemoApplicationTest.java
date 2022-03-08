@@ -53,7 +53,7 @@ abstract class DemoApplicationTest {
 
     protected ResultActions performAndExpectOk(RequestBuilder requestBuilder) throws Exception {
         return mockMvc.perform(requestBuilder)
-                      .andDo(print())
+                      //.andDo(print())
                       .andExpect(status().isOk());
     }
 

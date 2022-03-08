@@ -36,7 +36,4 @@ public interface DatabaseOperations {
 
     int update(SqlAndArgs sqlAndArgs);
 
-    default int update(String sql, Object... args) {
-        return update(new SqlAndArgs(sql, args));
-    }
 }

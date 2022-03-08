@@ -16,6 +16,9 @@
 
 package win.doyto.query.core;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 /**
  * Dialect
  *
@@ -35,5 +38,17 @@ public interface Dialect {
 
     default String wrapLabel(String fieldName) {
         return fieldName;
+    }
+
+    default String buildInsertIgnore(StringBuilder insertBuilder) {
+        return insertBuilder.insert(insertBuilder.indexOf("INTO"), "IGNORE ").toString();
+    }
+
+    default void buildInsertUpdate(StringBuilder insertSqlBuilder, String[] toUpdateColumns) {
+        insertSqlBuilder.append(" ON DUPLICATE KEY UPDATE ");
+        String update = Arrays.stream(toUpdateColumns)
+                              .map(column -> column + " = VALUES (" + column + ")")
+                              .collect(Collectors.joining(", "));
+        insertSqlBuilder.append(update);
     }
 }

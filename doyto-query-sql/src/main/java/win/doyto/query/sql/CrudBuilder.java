@@ -19,6 +19,8 @@ package win.doyto.query.sql;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.ColumnUtil;
@@ -124,12 +126,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
                 insertSqlBuilder.append(SEPARATOR).append(wildInsertValue);
             }
             if (columns.length > 0) {
-                insertSqlBuilder.append(" ON DUPLICATE KEY UPDATE ");
-                StringJoiner stringJoiner = new StringJoiner(SEPARATOR, columns.length);
-                for (String column : columns) {
-                    stringJoiner.append(column + EQUAL + "VALUES (" + column + ")");
-                }
-                insertSqlBuilder.append(stringJoiner);
+                GlobalConfiguration.dialect().buildInsertUpdate(insertSqlBuilder, columns);
             }
 
             return replaceHolderInString(next, insertSqlBuilder.toString());
@@ -181,6 +178,20 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
     public SqlAndArgs buildPatchAndArgsWithIds(E entity, List<?> ids) {
         return SqlAndArgs.buildSqlWithArgs(argList -> buildPatchAndArgs(entity, argList)
                 + WHERE + SqlQuerySuffix.In.buildColumnCondition(idColumn, argList, ids));
+    }
+
+    @Override
+    public SqlAndArgs buildDeleteAndArgs(DoytoQuery query) {
+        return SqlAndArgs.buildSqlWithArgs(argList -> buildDeleteFromTable(query.toIdWrapper())
+                + WHERE + idColumn + " IN "
+                + "(" + build(query, argList, idColumn) + ")");
+    }
+
+    @Override
+    public SqlAndArgs buildPatchAndArgs(E entity, DoytoQuery query) {
+        return SqlAndArgs.buildSqlWithArgs(argList -> buildPatchAndArgs(entity, argList)
+                + WHERE + idColumn + " IN "
+                + "(" + build(query, argList, idColumn) + ")");
     }
 
     private String buildDeleteFromTable(IdWrapper<?> idWrapper) {

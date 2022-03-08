@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.NestedQueries;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
@@ -215,7 +216,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     }
 
     private List<E> truncateByPaging(List<E> queryList, Q query) {
-        int from = query.calcOffset();
+        int from = GlobalConfiguration.calcOffset(query);
         int end = Math.min(queryList.size(), from + query.getPageSize());
         if (from <= end) {
             queryList = queryList.subList(from, end);

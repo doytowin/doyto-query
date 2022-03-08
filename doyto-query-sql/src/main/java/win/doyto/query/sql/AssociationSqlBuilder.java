@@ -17,6 +17,7 @@
 package win.doyto.query.sql;
 
 import lombok.Getter;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.service.UniqueKey;
 
 import java.util.Set;
@@ -79,7 +80,7 @@ public class AssociationSqlBuilder<K1, K2> {
             StringBuilder insertBuilder = new StringBuilder(insertSql);
             String ph = String.format(placeHolderFormat, userId);
             buildPlaceHolders(insertBuilder, keys.size(), ph);
-            return insertBuilder.toString();
+            return GlobalConfiguration.dialect().buildInsertIgnore(insertBuilder);
         });
     }
 
