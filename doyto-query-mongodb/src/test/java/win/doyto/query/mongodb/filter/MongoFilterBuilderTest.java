@@ -135,6 +135,9 @@ class MongoFilterBuilderTest {
                     "| {\"locBson\": {\"$geoIntersects\": {\"$geometry\": {\"type\": \"LineString\", \"coordinates\": [[1.0, 1.0], [2.0, 2.5]]}}}}",
             "{\"locWithin\": {\"type\": \"Point\", \"coordinates\": [1.0, 2.5]}}}" +
                     "| {\"loc\": {\"$geoWithin\": {\"$geometry\": {\"type\": \"Point\", \"coordinates\": [1.0, 2.5]}}}}",
+
+            "{\"locWithin\": {\"type\": \"Line\", \"coordinates\": [[1.0, 2.5], [3.2, 1.5]]}}}" +
+                    "| {\"loc\": {\"$geoWithin\": {\"$geometry\": {\"type\": \"LineString\", \"coordinates\": [[1.0, 2.5], [3.2, 1.5]]}}}}",
     }, delimiter = '|')
     void testGeoQuery(String data, String expected) {
         GeoQuery query = BeanUtil.parse(data, GeoQuery.class);

@@ -18,22 +18,23 @@ package win.doyto.query.geo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
+import java.util.List;
 
 /**
- * GeoPoint
+ * GeoLine
  *
- * @author f0rb on 2021-12-05
+ * @author f0rb on 2022-03-08
  */
-@Getter
-@Setter
 @AllArgsConstructor
-public class GeoPoint implements GeoShape<Point> {
-    private Point coordinates;
+public class GeoLine implements GeoShape<List<Point>> {
+
+    @Getter
+    private List<Point> coordinates;
 
     @Override
     public String getType() {
-        return GeoType.POINT;
+        return GeoType.LINE;
     }
+
 }

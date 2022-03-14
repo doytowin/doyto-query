@@ -17,23 +17,48 @@
 package win.doyto.query.geo;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * GeoShapeDeserializer
  *
  * @author f0rb on 2021-12-16
  */
-public class GeoShapeDeserializer extends JsonDeserializer<GeoShape> {
+public class GeoShapeDeserializer extends JsonDeserializer<GeoShape<?>> {
+
+    private final Map<String, Function<JsonNode, GeoShape<?>>> transformMap;
+
+    public GeoShapeDeserializer() {
+        transformMap = new HashMap<>();
+        transformMap.put(GeoType.LINE, GeoShapeDeserializer::resolveGeoLine);
+        transformMap.put(GeoType.POINT, GeoShapeDeserializer::resolveGeoPoint);
+    }
+
     @Override
     public GeoShape<?> deserialize(JsonParser p, DeserializationContext context) throws IOException {
-        TreeNode treeNode = p.readValueAsTree();
-        TreeNode coordinates = treeNode.get("coordinates");
-        Point point = PointDeserializer.resolvePoint(coordinates);
-        return new GeoPoint(point);
+        JsonNode treeNode = p.readValueAsTree();
+        JsonNode coordinates = treeNode.get("coordinates");
+        String type = treeNode.get("type").asText().toUpperCase();
+        return transformMap.get(type).apply(coordinates);
     }
+
+    private static GeoPoint resolveGeoPoint(JsonNode coordinates) {
+        return new GeoPoint(PointDeserializer.resolvePoint(coordinates));
+    }
+
+    private static GeoLine resolveGeoLine(JsonNode coordinates) {
+        List<Point> line = new ArrayList<>();
+        coordinates.forEach(jsonNode -> line.add(PointDeserializer.resolvePoint(jsonNode)));
+        return new GeoLine(line);
+    }
+
 }

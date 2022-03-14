@@ -148,7 +148,7 @@ public class BeanUtil {
         return (Class<I>) propertyDescriptor.getPropertyType();
     }
 
-    public static <T> void register(Class<T> clazz, JsonDeserializer<T> jsonDeserializer) {
+    public static <T> void register(Class<T> clazz, JsonDeserializer<? extends T> jsonDeserializer) {
         SimpleModule mod = new SimpleModule(clazz.getName(), new Version(1, 0, 0, "", "win.doyto", "doyto-query-code"));
         mod.addDeserializer(clazz, jsonDeserializer);
         objectMapper.registerModule(mod);

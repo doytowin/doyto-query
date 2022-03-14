@@ -16,24 +16,15 @@
 
 package win.doyto.query.geo;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.experimental.UtilityClass;
 
 /**
- * GeoPoint
+ * GeoType
  *
- * @author f0rb on 2021-12-05
+ * @author f0rb on 2022-03-09
  */
-@Getter
-@Setter
-@AllArgsConstructor
-public class GeoPoint implements GeoShape<Point> {
-    private Point coordinates;
-
-    @Override
-    public String getType() {
-        return GeoType.POINT;
-    }
+@UtilityClass
+public final class GeoType {
+    String LINE = "LINE";
+    String POINT = "POINT";
 }
