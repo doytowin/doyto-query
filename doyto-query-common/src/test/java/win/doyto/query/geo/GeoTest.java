@@ -72,13 +72,25 @@ class GeoTest {
 
     @Test
     void deserializeGeoMultiPoint() {
-        String polygonJson = "{\"type\":\"MultiPoint\",\"coordinates\":[[0,0],[3,6],[6,1]]}";
-        GeoMultiPoint geoMultiPoint = (GeoMultiPoint) BeanUtil.parse(polygonJson, GeoShape.class);
+        String multiPointJson = "{\"type\":\"MultiPoint\",\"coordinates\":[[0,0],[3,6],[6,1]]}";
+        GeoMultiPoint geoMultiPoint = (GeoMultiPoint) BeanUtil.parse(multiPointJson, GeoShape.class);
 
         assertThat(geoMultiPoint.getType()).isEqualTo("MultiPoint");
         assertThat(geoMultiPoint.getCoordinates())
                 .hasSize(3)
                 .flatExtracting("x", "y")
                 .containsExactly(0., 0., 3., 6., 6., 1.);
+    }
+
+    @Test
+    void deserializeGeoMultiLine() {
+        String multiLineJson = "{type:\"MultiLine\",coordinates:[[[-73.96943,40.78519],[-73.96082,40.78095]],[[-73.96415,40.79229],[-73.95544,40.78854]],[[-73.97162,40.78205],[-73.96374,40.77715]]]}";
+        GeoMultiLine geoMultiLine = (GeoMultiLine) BeanUtil.parse(multiLineJson, GeoShape.class);
+
+        assertThat(geoMultiLine.getType()).isEqualTo("MultiLine");
+        assertThat(geoMultiLine.getCoordinates()).hasSize(3);
+        assertThat(geoMultiLine.getCoordinates().get(0))
+                .flatExtracting("x", "y")
+                .containsExactly(-73.96943, 40.78519, -73.96082, 40.78095);
     }
 }

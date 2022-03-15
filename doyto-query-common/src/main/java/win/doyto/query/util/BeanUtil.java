@@ -17,6 +17,7 @@
 package win.doyto.query.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -55,6 +56,7 @@ public class BeanUtil {
     static {
         objectMapper = JsonMapper
                 .builder()
+                .enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES)
                 .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
                 .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
