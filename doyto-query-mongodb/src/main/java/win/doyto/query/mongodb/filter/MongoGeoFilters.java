@@ -77,8 +77,11 @@ public class MongoGeoFilters {
     static Bson withIn(String column, Object value) {
         if (GeoTransformer.support(value)) {
             return geoWithin(column, GeoTransformer.transform(value));
+        } else if (value instanceof Bson) {
+            return geoWithin(column, (Bson) value);
+        } else {
+            throw new UnsupportedGeoTypeException(value.getClass().getName());
         }
-        return geoWithin(column, (Bson) value);
     }
 
     public static Bson intersects(String column, Object value) {

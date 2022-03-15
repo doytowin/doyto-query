@@ -16,8 +16,7 @@
 
 package win.doyto.query.mongodb.test.geo;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.bson.conversions.Bson;
 import win.doyto.query.geo.*;
 
@@ -30,6 +29,9 @@ import java.util.List;
  */
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class GeoQuery {
     private Near locNear;
     private Near locNearSphere;
@@ -42,4 +44,7 @@ public class GeoQuery {
     private Bson locBsonWithin;
     private Bson locBsonIntX;
     private GeoShape<?> locWithin;
+
+    // error cases
+    private String errorTypeWithin;
 }
