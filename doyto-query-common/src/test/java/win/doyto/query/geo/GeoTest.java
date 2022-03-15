@@ -93,4 +93,24 @@ class GeoTest {
                 .flatExtracting("x", "y")
                 .containsExactly(-73.96943, 40.78519, -73.96082, 40.78095);
     }
+
+    @Test
+    void deserializeMultiPolygon() {
+        String multiLineJson = "{type:\"MultiPolygon\",coordinates:[" +
+                "[[[-73.958,40.8003],[-73.9498,40.7968],[-73.9737,40.7648],[-73.9814,40.7681],[-73.958,40.8003]]," +
+                "[[-73.9737,40.7648],[-73.9814,40.7681],[-73.958,40.8003]]]," +
+                "[[[-73.958,40.8003],[-73.9498,40.7968],[-73.9737,40.7648],[-73.958,40.8003]]]" +
+                "]}";
+        GeoMultiPolygon multiPolygon = (GeoMultiPolygon) BeanUtil.parse(multiLineJson, GeoShape.class);
+
+        assertThat(multiPolygon.getType()).isEqualTo("MultiPolygon");
+        assertThat(multiPolygon.getCoordinates()).hasSize(2);
+        assertThat(multiPolygon.getCoordinates().get(0)).hasSize(2);
+        assertThat(multiPolygon.getCoordinates().get(0).get(0))
+                .flatExtracting("x", "y")
+                .containsExactly(-73.958, 40.8003, -73.9498, 40.7968, -73.9737, 40.7648, -73.9814, 40.7681, -73.958, 40.8003);
+        assertThat(multiPolygon.getCoordinates().get(0).get(1))
+                .flatExtracting("x", "y")
+                .containsExactly(-73.9737, 40.7648, -73.9814, 40.7681, -73.958, 40.8003);
+    }
 }
