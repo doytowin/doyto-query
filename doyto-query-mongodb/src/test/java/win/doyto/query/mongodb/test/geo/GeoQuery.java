@@ -44,7 +44,6 @@ public class GeoQuery {
     private Bson locBsonWithin;
     private Bson locBsonIntX;
     private GeoShape<?> locWithin;
+    private GeoShape<?> locIntX;
 
-    // error cases
-    private String errorTypeWithin;
 }

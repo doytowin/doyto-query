@@ -24,6 +24,7 @@ import win.doyto.query.geo.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.mongodb.client.model.Filters.geoIntersects;
 import static com.mongodb.client.model.Filters.geoWithin;
 
 /**
@@ -85,6 +86,9 @@ public class MongoGeoFilters {
     }
 
     public static Bson intersects(String column, Object value) {
+        if (GeoTransformer.support(value)) {
+            return geoIntersects(column, GeoTransformer.transform(value));
+        }
         return Filters.geoIntersects(column, (Bson) value);
     }
 }
