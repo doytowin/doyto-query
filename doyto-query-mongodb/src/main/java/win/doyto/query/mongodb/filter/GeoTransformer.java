@@ -44,6 +44,7 @@ public class GeoTransformer {
         transFuncMap.put(GeoPolygon.class, geo -> transform((GeoPolygon) geo));
         transFuncMap.put(GeoMultiPoint.class, geo -> transform((GeoMultiPoint) geo));
         transFuncMap.put(GeoMultiLine.class, geo -> transform((GeoMultiLine) geo));
+        transFuncMap.put(GeoMultiPolygon.class, geo -> transform((GeoMultiPolygon) geo));
     }
 
     private static Geometry transform(GeoPoint geo) {
@@ -76,12 +77,25 @@ public class GeoTransformer {
 
     private static Geometry transform(GeoPolygon geo) {
         List<List<Point>> coordinates = geo.getCoordinates();
+        return new Polygon(buildPolygonCoordinates(coordinates));
+    }
+
+    private static PolygonCoordinates buildPolygonCoordinates(List<List<Point>> coordinates) {
         List<List<Position>> holes = new LinkedList<>();
         coordinates.forEach(polygon -> {
             preProcess(polygon);
             holes.add(buildPositions(polygon));
         });
-        return new Polygon(holes.remove(0), holes);
+        return new PolygonCoordinates(holes.remove(0), holes);
+    }
+
+    private static Geometry transform(GeoMultiPolygon geo) {
+        List<List<List<Point>>> coordinates = geo.getCoordinates();
+        List<PolygonCoordinates> polygons =
+                coordinates.stream()
+                           .map(GeoTransformer::buildPolygonCoordinates)
+                           .collect(Collectors.toList());
+        return new MultiPolygon(polygons);
     }
 
     private static void preProcess(List<Point> polygon) {
