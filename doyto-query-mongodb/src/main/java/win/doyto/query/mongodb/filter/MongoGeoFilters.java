@@ -24,9 +24,6 @@ import win.doyto.query.geo.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.mongodb.client.model.Filters.geoIntersects;
-import static com.mongodb.client.model.Filters.geoWithin;
-
 /**
  * MongoQuerySuffix
  *
@@ -77,9 +74,9 @@ public class MongoGeoFilters {
 
     static Bson withIn(String column, Object value) {
         if (GeoTransformer.support(value)) {
-            return geoWithin(column, GeoTransformer.transform(value));
+            return Filters.geoWithin(column, GeoTransformer.transform(value));
         } else if (value instanceof Bson) {
-            return geoWithin(column, (Bson) value);
+            return Filters.geoWithin(column, (Bson) value);
         } else {
             throw new UnsupportedGeoTypeException(value.getClass().getName());
         }
@@ -87,8 +84,11 @@ public class MongoGeoFilters {
 
     public static Bson intersects(String column, Object value) {
         if (GeoTransformer.support(value)) {
-            return geoIntersects(column, GeoTransformer.transform(value));
+            return Filters.geoIntersects(column, GeoTransformer.transform(value));
+        } else if (value instanceof Bson) {
+            return Filters.geoIntersects(column, (Bson) value);
+        } else {
+            throw new UnsupportedGeoTypeException(value.getClass().getName());
         }
-        return Filters.geoIntersects(column, (Bson) value);
     }
 }

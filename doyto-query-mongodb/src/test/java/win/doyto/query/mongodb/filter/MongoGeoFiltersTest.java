@@ -36,4 +36,14 @@ class MongoGeoFiltersTest {
             assertEquals("Type of Within field should only be GeoShape or BSON. Unsupported type: java.lang.String", e.getMessage());
         }
     }
+
+    @Test
+    void checkTypeForIntXField() {
+        try {
+            MongoGeoFilters.intersects("loc", 2);
+            fail();
+        } catch (UnsupportedGeoTypeException e) {
+            assertEquals("Type of Within field should only be GeoShape or BSON. Unsupported type: java.lang.Integer", e.getMessage());
+        }
+    }
 }
