@@ -69,4 +69,16 @@ class GeoTest {
         assertThat(geoMultiPoint.getCoordinates()).hasSize(3);
         assertThat(geoMultiPoint.getCoordinates()).containsAll(points);
     }
+
+    @Test
+    void deserializeGeoMultiPoint() {
+        String polygonJson = "{\"type\":\"MultiPoint\",\"coordinates\":[[0,0],[3,6],[6,1]]}";
+        GeoMultiPoint geoMultiPoint = (GeoMultiPoint) BeanUtil.parse(polygonJson, GeoShape.class);
+
+        assertThat(geoMultiPoint.getType()).isEqualTo("MultiPoint");
+        assertThat(geoMultiPoint.getCoordinates())
+                .hasSize(3)
+                .flatExtracting("x", "y")
+                .containsExactly(0., 0., 3., 6., 6., 1.);
+    }
 }
