@@ -58,4 +58,15 @@ class GeoTest {
                 .flatExtracting("x", "y")
                 .containsExactly(2., 2., 3., 3., 4., 2., 2., 2.);
     }
+
+    @Test
+    void defineGeoMultiPoint() {
+        //[[[0,0], [3,6], [6,1], [0,0]]]
+        List<Point> points = Arrays.asList(new Point(0, 0), new Point(3, 6), new Point(6, 1));
+        GeoMultiPoint geoMultiPoint = new GeoMultiPoint(points);
+
+        assertThat(geoMultiPoint.getType()).isEqualTo("MultiPoint");
+        assertThat(geoMultiPoint.getCoordinates()).hasSize(3);
+        assertThat(geoMultiPoint.getCoordinates()).containsAll(points);
+    }
 }
