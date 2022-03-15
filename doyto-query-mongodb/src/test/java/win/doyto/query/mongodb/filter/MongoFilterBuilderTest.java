@@ -148,6 +148,8 @@ class MongoFilterBuilderTest {
                     "| {\"loc\": {\"$geoWithin\": {\"$geometry\": {\"type\": \"LineString\", \"coordinates\": [[1.0, 2.5], [3.2, 1.5]]}}}}",
             "{\"locWithin\": {\"type\": \"Polygon\", \"coordinates\": [[[0.0, 0.0], [3.0, 6.0], [6.0, 1.0]]]}}}" +
                     "| {\"loc\": {\"$geoWithin\": {\"$geometry\": {\"type\": \"Polygon\", \"coordinates\": [[[0.0, 0.0], [3.0, 6.0], [6.0, 1.0], [0.0, 0.0]]]}}}}",
+            "{\"locWithin\": {\"type\": \"MultiPoint\", \"coordinates\": [[1.0, 2.5], [3.2, 1.5]]}}}" +
+                    "| {\"loc\": {\"$geoWithin\": {\"$geometry\": {\"type\": \"MultiPoint\", \"coordinates\": [[1.0, 2.5], [3.2, 1.5]]}}}}",
     }, delimiter = '|')
     void testGeoQuery(String data, String expected) {
         GeoQuery query = BeanUtil.parse(data, GeoQuery.class);

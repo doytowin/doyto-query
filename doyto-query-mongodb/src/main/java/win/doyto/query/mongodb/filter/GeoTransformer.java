@@ -16,15 +16,10 @@
 
 package win.doyto.query.mongodb.filter;
 
-import com.mongodb.client.model.geojson.Geometry;
-import com.mongodb.client.model.geojson.LineString;
-import com.mongodb.client.model.geojson.Polygon;
-import com.mongodb.client.model.geojson.Position;
+import com.mongodb.client.model.geojson.*;
 import lombok.experimental.UtilityClass;
-import win.doyto.query.geo.GeoLine;
-import win.doyto.query.geo.GeoPoint;
-import win.doyto.query.geo.GeoPolygon;
 import win.doyto.query.geo.Point;
+import win.doyto.query.geo.*;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -47,11 +42,17 @@ public class GeoTransformer {
         transFuncMap.put(GeoPoint.class, geo -> transform((GeoPoint) geo));
         transFuncMap.put(GeoLine.class, geo -> transform((GeoLine) geo));
         transFuncMap.put(GeoPolygon.class, geo -> transform((GeoPolygon) geo));
+        transFuncMap.put(GeoMultiPoint.class, geo -> transform((GeoMultiPoint) geo));
     }
 
     private static Geometry transform(GeoPoint geo) {
         Position coordinate = new Position(geo.getCoordinates().toList());
         return new com.mongodb.client.model.geojson.Point(coordinate);
+    }
+
+    private static Geometry transform(GeoMultiPoint geo) {
+        List<Position> coordinates = buildPositions(geo.getCoordinates());
+        return new MultiPoint(coordinates);
     }
 
     private static Geometry transform(GeoLine geo) {
