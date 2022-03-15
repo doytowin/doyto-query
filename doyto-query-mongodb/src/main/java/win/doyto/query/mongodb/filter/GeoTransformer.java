@@ -43,6 +43,7 @@ public class GeoTransformer {
         transFuncMap.put(GeoLine.class, geo -> transform((GeoLine) geo));
         transFuncMap.put(GeoPolygon.class, geo -> transform((GeoPolygon) geo));
         transFuncMap.put(GeoMultiPoint.class, geo -> transform((GeoMultiPoint) geo));
+        transFuncMap.put(GeoMultiLine.class, geo -> transform((GeoMultiLine) geo));
     }
 
     private static Geometry transform(GeoPoint geo) {
@@ -58,6 +59,13 @@ public class GeoTransformer {
     private static Geometry transform(GeoLine geo) {
         List<Position> coordinates = buildPositions(geo.getCoordinates());
         return new LineString(coordinates);
+    }
+
+    private static Geometry transform(GeoMultiLine geo) {
+        List<List<Point>> coordinates = geo.getCoordinates();
+        List<List<Position>> lines = new LinkedList<>();
+        coordinates.forEach(polygon -> lines.add(buildPositions(polygon)));
+        return new MultiLineString(lines);
     }
 
     private static List<Position> buildPositions(List<Point> coordinates) {
