@@ -17,6 +17,7 @@
 package win.doyto.query.geo;
 
 import org.junit.jupiter.api.Test;
+import win.doyto.query.util.BeanUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,5 +42,20 @@ class GeoTest {
         assertThat(geoPolygon.getCoordinates().get(0))
                 .hasSize(3)
                 .containsAll(exterior);
+    }
+
+    @Test
+    void deserializeGeoPolygon() {
+        String polygonJson = "{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[3,6],[6,1],[0,0]],[[2,2],[3,3],[4,2],[2,2]]]}";
+        GeoPolygon geoPolygon = (GeoPolygon) BeanUtil.parse(polygonJson, GeoShape.class);
+
+        assertThat(geoPolygon.getType()).isEqualTo("POLYGON");
+        assertThat(geoPolygon.getCoordinates()).hasSize(2);
+        assertThat(geoPolygon.getCoordinates().get(0))
+                .flatExtracting("x", "y")
+                .containsExactly(0., 0., 3., 6., 6., 1., 0., 0.);
+        assertThat(geoPolygon.getCoordinates().get(1))
+                .flatExtracting("x", "y")
+                .containsExactly(2., 2., 3., 3., 4., 2., 2., 2.);
     }
 }

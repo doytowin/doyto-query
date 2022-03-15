@@ -41,6 +41,7 @@ public class GeoShapeDeserializer extends JsonDeserializer<GeoShape<?>> {
         transformMap = new HashMap<>();
         transformMap.put(GeoType.LINE, GeoShapeDeserializer::resolveGeoLine);
         transformMap.put(GeoType.POINT, GeoShapeDeserializer::resolveGeoPoint);
+        transformMap.put(GeoType.POLYGON, GeoShapeDeserializer::resolveGeoPolygon);
     }
 
     @Override
@@ -56,9 +57,21 @@ public class GeoShapeDeserializer extends JsonDeserializer<GeoShape<?>> {
     }
 
     private static GeoLine resolveGeoLine(JsonNode coordinates) {
+        return new GeoLine(transform(coordinates));
+    }
+
+    private static List<Point> transform(JsonNode coordinates) {
         List<Point> line = new ArrayList<>();
         coordinates.forEach(jsonNode -> line.add(PointDeserializer.resolvePoint(jsonNode)));
-        return new GeoLine(line);
+        return line;
+    }
+
+    private static GeoPolygon resolveGeoPolygon(JsonNode coordinates) {
+        List<List<Point>> polygons = new ArrayList<>(coordinates.size());
+        for (JsonNode polygon: coordinates) {
+            polygons.add(transform(polygon));
+        }
+        return new GeoPolygon(polygons);
     }
 
 }
