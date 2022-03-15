@@ -18,12 +18,16 @@ package win.doyto.query.mongodb.filter;
 
 import com.mongodb.client.model.geojson.Geometry;
 import com.mongodb.client.model.geojson.LineString;
+import com.mongodb.client.model.geojson.Polygon;
 import com.mongodb.client.model.geojson.Position;
 import lombok.experimental.UtilityClass;
 import win.doyto.query.geo.GeoLine;
 import win.doyto.query.geo.GeoPoint;
+import win.doyto.query.geo.GeoPolygon;
+import win.doyto.query.geo.Point;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -42,6 +46,7 @@ public class GeoTransformer {
     static {
         transFuncMap.put(GeoPoint.class, geo -> transform((GeoPoint) geo));
         transFuncMap.put(GeoLine.class, geo -> transform((GeoLine) geo));
+        transFuncMap.put(GeoPolygon.class, geo -> transform((GeoPolygon) geo));
     }
 
     private static Geometry transform(GeoPoint geo) {
@@ -50,9 +55,30 @@ public class GeoTransformer {
     }
 
     private static Geometry transform(GeoLine geo) {
-        List<Position> coordinates =
-                geo.getCoordinates().stream().map(point -> new Position(point.toList())).collect(Collectors.toList());
+        List<Position> coordinates = buildPositions(geo.getCoordinates());
         return new LineString(coordinates);
+    }
+
+    private static List<Position> buildPositions(List<Point> coordinates) {
+        return coordinates.stream()
+                          .map(point -> new Position(point.toList()))
+                          .collect(Collectors.toList());
+    }
+
+    private static Geometry transform(GeoPolygon geo) {
+        List<List<Point>> coordinates = geo.getCoordinates();
+        List<List<Position>> holes = new LinkedList<>();
+        coordinates.forEach(polygon -> {
+            preProcess(polygon);
+            holes.add(buildPositions(polygon));
+        });
+        return new Polygon(holes.remove(0), holes);
+    }
+
+    private static void preProcess(List<Point> polygon) {
+        if (!polygon.get(polygon.size() - 1).equals(polygon.get(0))) {
+            polygon.add(polygon.get(0));
+        }
     }
 
     static boolean support(Object value) {

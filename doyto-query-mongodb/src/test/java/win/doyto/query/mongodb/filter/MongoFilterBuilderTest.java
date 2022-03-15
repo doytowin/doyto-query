@@ -17,18 +17,26 @@
 package win.doyto.query.mongodb.filter;
 
 import com.mongodb.client.model.geojson.codecs.GeoJsonCodecProvider;
+import org.assertj.core.util.Lists;
 import org.bson.Document;
 import org.bson.codecs.*;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import win.doyto.query.geo.GeoPolygon;
+import win.doyto.query.geo.Point;
 import win.doyto.query.mongodb.test.geo.GeoQuery;
 import win.doyto.query.mongodb.test.inventory.InventoryQuery;
 import win.doyto.query.test.TestQuery;
 import win.doyto.query.util.BeanUtil;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -138,6 +146,8 @@ class MongoFilterBuilderTest {
 
             "{\"locWithin\": {\"type\": \"Line\", \"coordinates\": [[1.0, 2.5], [3.2, 1.5]]}}}" +
                     "| {\"loc\": {\"$geoWithin\": {\"$geometry\": {\"type\": \"LineString\", \"coordinates\": [[1.0, 2.5], [3.2, 1.5]]}}}}",
+            "{\"locWithin\": {\"type\": \"Polygon\", \"coordinates\": [[[0.0, 0.0], [3.0, 6.0], [6.0, 1.0]]]}}}" +
+                    "| {\"loc\": {\"$geoWithin\": {\"$geometry\": {\"type\": \"Polygon\", \"coordinates\": [[[0.0, 0.0], [3.0, 6.0], [6.0, 1.0], [0.0, 0.0]]]}}}}",
     }, delimiter = '|')
     void testGeoQuery(String data, String expected) {
         GeoQuery query = BeanUtil.parse(data, GeoQuery.class);
@@ -153,5 +163,17 @@ class MongoFilterBuilderTest {
         GeoQuery query = BeanUtil.parse(data, GeoQuery.class);
         Bson filters = MongoFilterBuilder.buildFilter(query);
         assertEquals("{}", filters.toBsonDocument(Document.class, codecRegistry).toJson(), message);
+    }
+
+    @Test
+    void withInGeoPoly() {
+        List<Point> exterior = Lists.newArrayList(new Point(0, 0), new Point(3, 6), new Point(6, 1));
+        GeoPolygon geoPolygon = new GeoPolygon(Arrays.asList(exterior));
+
+        Bson filters = MongoGeoFilters.withIn("loc", geoPolygon);
+
+        String expected = "{\"loc\": {\"$geoWithin\": {\"$geometry\": {\"type\": \"Polygon\", \"coordinates\": " +
+                "[[[0.0, 0.0], [3.0, 6.0], [6.0, 1.0], [0.0, 0.0]]]}}}}";
+        assertThat(filters.toBsonDocument(Document.class, codecRegistry).toJson()).isEqualTo(expected);
     }
 }
