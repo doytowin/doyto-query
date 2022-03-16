@@ -19,6 +19,7 @@ package win.doyto.query.web.demo.module.building;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.entity.MongoEntity;
+import win.doyto.query.geo.Point;
 import win.doyto.query.mongodb.entity.MongoPersistable;
 
 /**
@@ -31,4 +32,5 @@ import win.doyto.query.mongodb.entity.MongoPersistable;
 @MongoEntity(database = "doyto", collection = "building")
 public class BuildingEntity extends MongoPersistable<String> {
     private String name;
+    private Point loc;
 }
