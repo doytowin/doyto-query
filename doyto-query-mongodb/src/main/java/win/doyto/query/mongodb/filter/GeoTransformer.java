@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
  * @author f0rb on 2022-03-09
  */
 @UtilityClass
+@SuppressWarnings("java:S1905")
 public class GeoTransformer {
 
     private static final Map<Class<?>, Function<Object, Geometry>> transFuncMap = new HashMap<>();
