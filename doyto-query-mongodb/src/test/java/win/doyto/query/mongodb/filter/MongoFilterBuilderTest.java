@@ -152,7 +152,7 @@ class MongoFilterBuilderTest {
                     "| {\"loc\": {\"$geoWithin\": {\"$geometry\": {\"type\": \"MultiPoint\", \"coordinates\": [[1.0, 2.5], [3.2, 1.5]]}}}}",
             "{\"locWithin\": {\"type\": \"MultiLine\", \"coordinates\": [[[0.0, 0.0], [3.0, 6.0], [6.0, 1.0]], [[1.0, 2.0], [3.0, 3.0]]]}}}" +
                     "| {\"loc\": {\"$geoWithin\": {\"$geometry\": {\"type\": \"MultiLineString\", \"coordinates\": [[[0.0, 0.0], [3.0, 6.0], [6.0, 1.0]], [[1.0, 2.0], [3.0, 3.0]]]}}}}",
-            "{\"locWithin\": {\"type\": \"MultiPolygon\", \"coordinates\": [[[[0.0, 0.0], [3.0, 6.0], [6.0, 1.0]], [[1.0, 2.0], [3.0, 3.0], [5.0, 2.0]]]]}}}" +
+            "{\"locWithin\": {\"type\": \"MultiPolygon\", \"coordinates\": [[[[0.0, 0.0], [3.0, 6.0], [6.0, 1.0], [0.0, 0.0]], [[1.0, 2.0], [3.0, 3.0], [5.0, 2.0]]]]}}}" +
                     "| {\"loc\": {\"$geoWithin\": {\"$geometry\": {\"type\": \"MultiPolygon\", \"coordinates\": [[[[0.0, 0.0], [3.0, 6.0], [6.0, 1.0], [0.0, 0.0]], [[1.0, 2.0], [3.0, 3.0], [5.0, 2.0], [1.0, 2.0]]]]}}}}",
             "{\"locIntX\": {\"type\": \"MultiLine\", \"coordinates\": [[[0.0, 0.0], [3.0, 6.0], [6.0, 1.0]], [[1.0, 2.0], [3.0, 3.0]]]}}}" +
                     "| {\"loc\": {\"$geoIntersects\": {\"$geometry\": {\"type\": \"MultiLineString\", \"coordinates\": [[[0.0, 0.0], [3.0, 6.0], [6.0, 1.0]], [[1.0, 2.0], [3.0, 3.0]]]}}}}",

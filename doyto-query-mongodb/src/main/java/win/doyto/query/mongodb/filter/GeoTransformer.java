@@ -84,10 +84,16 @@ public class GeoTransformer {
     private static PolygonCoordinates buildPolygonCoordinates(List<List<Point>> coordinates) {
         List<List<Position>> holes = new LinkedList<>();
         coordinates.forEach(polygon -> {
-            preProcess(polygon);
+            connectToRing(polygon);
             holes.add(buildPositions(polygon));
         });
         return new PolygonCoordinates(holes.remove(0), holes);
+    }
+
+    private static void connectToRing(List<Point> polygon) {
+        if (!polygon.get(polygon.size() - 1).equals(polygon.get(0))) {
+            polygon.add(polygon.get(0));
+        }
     }
 
     private static Geometry transform(GeoMultiPolygon geo) {
@@ -97,12 +103,6 @@ public class GeoTransformer {
                            .map(GeoTransformer::buildPolygonCoordinates)
                            .collect(Collectors.toList());
         return new MultiPolygon(polygons);
-    }
-
-    private static void preProcess(List<Point> polygon) {
-        if (!polygon.get(polygon.size() - 1).equals(polygon.get(0))) {
-            polygon.add(polygon.get(0));
-        }
     }
 
     private static Geometry transform(GeoCollection geo) {
