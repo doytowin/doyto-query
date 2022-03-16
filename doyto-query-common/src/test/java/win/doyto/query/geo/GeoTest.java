@@ -34,6 +34,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GeoTest {
 
     @Test
+    void defineGeoPoint() {
+        GeoPoint geoPoint = new GeoPoint(new Point(3, 6));
+
+        assertThat(geoPoint.getType()).isEqualTo("POINT");
+        assertThat(geoPoint.getCoordinates().toList()).containsExactly(3.0, 6.0);
+    }
+
+    @Test
+    void defineGeoLine() {
+        List<Point> line = Arrays.asList(new Point(0, 0), new Point(3, 6), new Point(6, 1));
+        GeoLine geoLine = new GeoLine(line);
+
+        assertThat(geoLine.getType()).isEqualTo("LINE");
+        assertThat(geoLine.getCoordinates()).contains(line.toArray(new Point[0]));
+    }
+
+    @Test
     void defineGeoPolygon() {
         //[[[0,0], [3,6], [6,1], [0,0]]]
         List<Point> exterior = Arrays.asList(new Point(0, 0), new Point(3, 6), new Point(6, 1));
