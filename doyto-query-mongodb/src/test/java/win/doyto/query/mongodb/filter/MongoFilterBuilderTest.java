@@ -141,9 +141,9 @@ class MongoFilterBuilderTest {
                     "| {\"locBson\": {\"$geoWithin\": {\"$geometry\": {\"$box\": [[1.0, 2.0], [2.0, 1.0]]}}}}",
             "{\"locBsonIntX\": {\"type\": \"LineString\", \"coordinates\": [[1.0, 1.0], [2.0, 2.5]]}}" +
                     "| {\"locBson\": {\"$geoIntersects\": {\"$geometry\": {\"type\": \"LineString\", \"coordinates\": [[1.0, 1.0], [2.0, 2.5]]}}}}",
+       
             "{\"locWithin\": {\"type\": \"Point\", \"coordinates\": [1.0, 2.5]}}}" +
                     "| {\"loc\": {\"$geoWithin\": {\"$geometry\": {\"type\": \"Point\", \"coordinates\": [1.0, 2.5]}}}}",
-
             "{\"locWithin\": {\"type\": \"Line\", \"coordinates\": [[1.0, 2.5], [3.2, 1.5]]}}}" +
                     "| {\"loc\": {\"$geoWithin\": {\"$geometry\": {\"type\": \"LineString\", \"coordinates\": [[1.0, 2.5], [3.2, 1.5]]}}}}",
             "{\"locWithin\": {\"type\": \"Polygon\", \"coordinates\": [[[0.0, 0.0], [3.0, 6.0], [6.0, 1.0]]]}}}" +
@@ -156,6 +156,8 @@ class MongoFilterBuilderTest {
                     "| {\"loc\": {\"$geoWithin\": {\"$geometry\": {\"type\": \"MultiPolygon\", \"coordinates\": [[[[0.0, 0.0], [3.0, 6.0], [6.0, 1.0], [0.0, 0.0]], [[1.0, 2.0], [3.0, 3.0], [5.0, 2.0], [1.0, 2.0]]]]}}}}",
             "{\"locIntX\": {\"type\": \"MultiLine\", \"coordinates\": [[[0.0, 0.0], [3.0, 6.0], [6.0, 1.0]], [[1.0, 2.0], [3.0, 3.0]]]}}}" +
                     "| {\"loc\": {\"$geoIntersects\": {\"$geometry\": {\"type\": \"MultiLineString\", \"coordinates\": [[[0.0, 0.0], [3.0, 6.0], [6.0, 1.0]], [[1.0, 2.0], [3.0, 3.0]]]}}}}",
+            "{\"locIntX\": {\"type\": \"GeometryCollection\", \"geometries\": [{\"type\": \"MultiPoint\", \"coordinates\": [[-73.9580, 40.8003], [-73.9498, 40.7968], [-73.9737, 40.7648], [-73.9814, 40.7681]]}, {\"type\": \"MultiLineString\", \"coordinates\": [[[-73.96943, 40.78519], [-73.96082, 40.78095]], [[-73.96415, 40.79229], [-73.95544, 40.78854]], [[-73.97162, 40.78205], [-73.96374, 40.77715]], [[-73.97880, 40.77247], [-73.97036, 40.76811]]]}]}}" +
+                    "| {\"loc\": {\"$geoIntersects\": {\"$geometry\": {\"type\": \"GeometryCollection\", \"geometries\": [{\"type\": \"MultiPoint\", \"coordinates\": [[-73.958, 40.8003], [-73.9498, 40.7968], [-73.9737, 40.7648], [-73.9814, 40.7681]]}, {\"type\": \"MultiLineString\", \"coordinates\": [[[-73.96943, 40.78519], [-73.96082, 40.78095]], [[-73.96415, 40.79229], [-73.95544, 40.78854]], [[-73.97162, 40.78205], [-73.96374, 40.77715]], [[-73.9788, 40.77247], [-73.97036, 40.76811]]]}]}}}}",
     }, delimiter = '|')
     void testGeoQuery(String data, String expected) {
         GeoQuery query = BeanUtil.parse(data, GeoQuery.class);
@@ -165,7 +167,7 @@ class MongoFilterBuilderTest {
 
     @ParameterizedTest
     @CsvSource(value = {
-             "{\"locPolygon\": [[1.0, 1.0], [1.0, 2.0]]}  | Polygon query should provide at lease 3 points.",
+            "{\"locPolygon\": [[1.0, 1.0], [1.0, 2.0]]}  | Polygon query should provide at lease 3 points.",
     }, delimiter = '|')
     void failureCaseForGeoQuery(String data, String message) {
         GeoQuery query = BeanUtil.parse(data, GeoQuery.class);

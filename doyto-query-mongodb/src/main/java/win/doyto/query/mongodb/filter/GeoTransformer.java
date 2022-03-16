@@ -45,6 +45,7 @@ public class GeoTransformer {
         transFuncMap.put(GeoMultiPoint.class, geo -> transform((GeoMultiPoint) geo));
         transFuncMap.put(GeoMultiLine.class, geo -> transform((GeoMultiLine) geo));
         transFuncMap.put(GeoMultiPolygon.class, geo -> transform((GeoMultiPolygon) geo));
+        transFuncMap.put(GeoCollection.class, geo -> transform((GeoCollection) geo));
     }
 
     private static Geometry transform(GeoPoint geo) {
@@ -102,6 +103,12 @@ public class GeoTransformer {
         if (!polygon.get(polygon.size() - 1).equals(polygon.get(0))) {
             polygon.add(polygon.get(0));
         }
+    }
+
+    private static Geometry transform(GeoCollection geo) {
+        List<GeoShape<?>> geoShapes = geo.getCoordinates();
+        List<Geometry> geometries = geoShapes.stream().map(GeoTransformer::transform).collect(Collectors.toList());
+        return new GeometryCollection(geometries);
     }
 
     static boolean support(Object value) {
