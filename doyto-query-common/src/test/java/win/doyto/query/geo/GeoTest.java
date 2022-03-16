@@ -16,9 +16,11 @@
 
 package win.doyto.query.geo;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.util.BeanUtil;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -113,4 +115,16 @@ class GeoTest {
                 .flatExtracting("x", "y")
                 .containsExactly(-73.9737, 40.7648, -73.9814, 40.7681, -73.958, 40.8003);
     }
+
+    @Test
+    void deserializeGeoCollection() throws IOException {
+        GeoCollection geoCollection = (GeoCollection) BeanUtil.loadJsonData("GeometryCollection.json", new TypeReference<GeoShape>() {});
+
+        assertThat(geoCollection.getType()).isEqualTo("GeometryCollection");
+        assertThat(geoCollection.getCoordinates())
+                .hasSize(2)
+                .extracting("type")
+                .containsExactly("MultiPoint", "MultiLine");
+    }
+
 }

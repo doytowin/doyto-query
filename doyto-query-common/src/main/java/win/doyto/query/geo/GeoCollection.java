@@ -16,20 +16,28 @@
 
 package win.doyto.query.geo;
 
-import lombok.experimental.UtilityClass;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
 
 /**
- * GeoType
+ * GeoCollection
  *
- * @author f0rb on 2022-03-09
+ * @author f0rb on 2022-03-15
  */
-@UtilityClass
-public final class GeoType {
-    String LINE = "LINE";
-    String POINT = "POINT";
-    String POLYGON = "POLYGON";
-    String MULTI_POINT = "MultiPoint";
-    String MULTI_LINE = "MultiLine";
-    String MULTI_POLYGON = "MultiPolygon";
-    String GEOMETRY_COLLECTION = "GeometryCollection";
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class GeoCollection implements GeoShape<List<GeoShape<?>>> {
+    private List<GeoShape<?>> coordinates;
+
+    @Override
+    public String getType() {
+        return GeoType.GEOMETRY_COLLECTION;
+    }
+
 }

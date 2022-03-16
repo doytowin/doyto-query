@@ -35,22 +35,32 @@ import java.util.function.Function;
  */
 public class GeoShapeDeserializer extends JsonDeserializer<GeoShape<?>> {
 
-    private final Map<String, Function<JsonNode, GeoShape<?>>> transformMap;
+    private static final Map<String, Function<JsonNode, GeoShape<?>>> transformMap;
 
-    public GeoShapeDeserializer() {
+    static  {
         transformMap = new HashMap<>();
-        transformMap.put(GeoType.LINE, GeoShapeDeserializer::resolveGeoLine);
         transformMap.put(GeoType.POINT, GeoShapeDeserializer::resolveGeoPoint);
+        transformMap.put(GeoType.LINE, GeoShapeDeserializer::resolveGeoLine);
+        transformMap.put("LINESTRING", GeoShapeDeserializer::resolveGeoMultiLine);
         transformMap.put(GeoType.POLYGON, GeoShapeDeserializer::resolveGeoPolygon);
         transformMap.put(GeoType.MULTI_POINT.toUpperCase(), GeoShapeDeserializer::resolveGeoMultiPoint);
         transformMap.put(GeoType.MULTI_LINE.toUpperCase(), GeoShapeDeserializer::resolveGeoMultiLine);
+        transformMap.put("MULTILINESTRING", GeoShapeDeserializer::resolveGeoMultiLine);
         transformMap.put(GeoType.MULTI_POLYGON.toUpperCase(), GeoShapeDeserializer::resolveGeoMultiPolygon);
+        transformMap.put(GeoType.GEOMETRY_COLLECTION.toUpperCase(), GeoShapeDeserializer::resolveGeoCollection);
     }
 
     @Override
     public GeoShape<?> deserialize(JsonParser p, DeserializationContext context) throws IOException {
         JsonNode treeNode = p.readValueAsTree();
-        JsonNode coordinates = treeNode.get("coordinates");
+        return resolveGeoShape(treeNode);
+    }
+
+    private static GeoShape<?> resolveGeoShape(JsonNode treeNode) {
+        JsonNode coordinates = treeNode.get("geometries");
+        if (coordinates == null) {
+            coordinates = treeNode.get("coordinates");
+        }
         String type = treeNode.get("type").asText().toUpperCase();
         return transformMap.get(type).apply(coordinates);
     }
@@ -99,6 +109,14 @@ public class GeoShapeDeserializer extends JsonDeserializer<GeoShape<?>> {
             multiPolygon.add(polygons);
         }
         return new GeoMultiPolygon(multiPolygon);
+    }
+
+    private static GeoShape<?> resolveGeoCollection(JsonNode jsonNode) {
+        List<GeoShape<?>> geoShapes = new ArrayList<>();
+        for (JsonNode geoNode : jsonNode) {
+            geoShapes.add(resolveGeoShape(geoNode));
+        }
+        return new GeoCollection(geoShapes);
     }
 
 }
