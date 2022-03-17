@@ -26,28 +26,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>doyto-query-api</artifactId>
+    <artifactId>doyto-query-geo</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>javax.persistence-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>win.doyto</groupId>
-            <artifactId>doyto-query-geo</artifactId>
-            <version>${revision}</version>
-        </dependency>
-
-        <!-- OPTIONAL -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
     </dependencies>
+
 </project>

@@ -18,7 +18,6 @@ package win.doyto.query.core;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.geo.Box;
 import win.doyto.query.geo.Circle;
 import win.doyto.query.geo.Near;
@@ -122,7 +121,7 @@ public enum QuerySuffix {
     private interface Constants {
         Predicate<Object> LIKE_PREDICATE = value -> {
             if (value instanceof String) {
-                return !StringUtils.isBlank((String) value);
+                return !((String) value).trim().isEmpty();
             }
             log.warn("Type of field which ends with Like should be String.");
             return false;

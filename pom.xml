@@ -46,6 +46,7 @@
 
     <modules>
         <module>doyto-query-test</module>
+        <module>doyto-query-geo</module>
         <module>doyto-query-api</module>
         <module>doyto-query-common</module>
         <module>doyto-query-memory</module>
