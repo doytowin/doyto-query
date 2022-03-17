@@ -16,12 +16,8 @@
 
 package win.doyto.query.web.demo.module.building;
 
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import win.doyto.query.geo.GeoShape;
-import win.doyto.query.web.component.GeoShapeEditor;
 import win.doyto.query.web.controller.AbstractEIQController;
 
 /**
@@ -33,8 +29,4 @@ import win.doyto.query.web.controller.AbstractEIQController;
 @RequestMapping("building")
 public class BuildingController extends AbstractEIQController<BuildingEntity, String, BuildingQuery> {
 
-    @InitBinder
-    public void initBinder(WebDataBinder dataBinder) {
-        dataBinder.registerCustomEditor(GeoShape.class, new GeoShapeEditor());
-    }
 }

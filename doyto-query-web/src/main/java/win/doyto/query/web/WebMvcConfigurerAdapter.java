@@ -29,10 +29,13 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.validation.Validator;
+import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -43,6 +46,7 @@ import win.doyto.query.geo.GeoShape;
 import win.doyto.query.geo.GeoShapeDeserializer;
 import win.doyto.query.geo.Point;
 import win.doyto.query.geo.PointDeserializer;
+import win.doyto.query.web.component.GeoShapeEditor;
 import win.doyto.query.web.component.InjectionBeanPostProcessor;
 
 import java.nio.charset.StandardCharsets;
@@ -164,6 +168,15 @@ public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
+    }
+
+    @Bean
+    public ConfigurableWebBindingInitializer configurableWebBindingInitializer(FormattingConversionService conversionService, Validator validator) {
+        ConfigurableWebBindingInitializer initializer = new ConfigurableWebBindingInitializer();
+        initializer.setConversionService(conversionService);
+        initializer.setValidator(validator);
+        initializer.setPropertyEditorRegistrar(r -> r.registerCustomEditor(GeoShape.class, new GeoShapeEditor()));
+        return initializer;
     }
 
 }
