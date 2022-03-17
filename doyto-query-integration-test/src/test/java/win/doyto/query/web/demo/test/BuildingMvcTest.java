@@ -32,16 +32,21 @@ class BuildingMvcTest extends DemoApplicationTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        String data = "[{\"name\": \"Times Building\"}]";
+        String data = "[{\"name\": \"Times Building\", \"loc\": [1, 2]}, {\"name\": \"Times Station\", \"loc\": [3, 2]}]";
         performAndExpectSuccess(buildJson(post("/building/"), data));
     }
 
     @Test
     void getBuilding() throws Exception {
         performAndExpectSuccess(get("/building/"))
-                .andExpect(jsonPath("$.data.total").value(1))
+                .andExpect(jsonPath("$.data.total").value(2))
                 .andExpect(jsonPath("$.data.list[0].id").exists())
                 .andExpect(jsonPath("$.data.list[0].name").value("Times Building"))
+        ;
+
+        String json = "{\"coordinates\":[[1,2],[2,2]],\"type\":\"line\"}";
+        performAndExpectSuccess(get("/building/").param("locIntX",json))
+                .andExpect(jsonPath("$.data.total").value(1))
         ;
     }
 }

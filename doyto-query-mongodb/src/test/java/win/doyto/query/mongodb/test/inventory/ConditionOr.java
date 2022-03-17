@@ -14,29 +14,24 @@
  * limitations under the License.
  */
 
-package win.doyto.query.web.demo.module.building;
+package win.doyto.query.mongodb.test.inventory;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.PageQuery;
-import win.doyto.query.geo.GeoShape;
+import lombok.*;
+import win.doyto.query.core.Or;
 
-import java.math.BigInteger;
+import java.util.List;
 
 /**
- * BuildingQuery
+ * ConditionOr
  *
- * @author f0rb on 2021-12-06
+ * @author f0rb on 2022-02-19
  */
 @Getter
 @Setter
-@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BuildingQuery extends PageQuery {
-    private BigInteger id;
-    private GeoShape<?> locIntX;
+@Builder
+public class ConditionOr implements Or {
+    private List<String> statusIn;
+    private Integer qtyGt;
 }

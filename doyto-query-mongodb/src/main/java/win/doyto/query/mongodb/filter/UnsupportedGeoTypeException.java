@@ -14,29 +14,15 @@
  * limitations under the License.
  */
 
-package win.doyto.query.web.demo.module.building;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.PageQuery;
-import win.doyto.query.geo.GeoShape;
-
-import java.math.BigInteger;
+package win.doyto.query.mongodb.filter;
 
 /**
- * BuildingQuery
+ * UnsupportedGeoTypeException
  *
- * @author f0rb on 2021-12-06
+ * @author f0rb on 2022-03-15
  */
-@Getter
-@Setter
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class BuildingQuery extends PageQuery {
-    private BigInteger id;
-    private GeoShape<?> locIntX;
+public class UnsupportedGeoTypeException extends RuntimeException {
+    public UnsupportedGeoTypeException(String errorType) {
+        super("Type of Within field should only be GeoShape or BSON. Unsupported type: " + errorType);
+    }
 }

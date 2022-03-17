@@ -16,7 +16,7 @@ spring:
     type: simple
   mongodb:
     embedded:
-      version: 3.5.5
+      version: 4.0.21
 
 doyto:
   query:

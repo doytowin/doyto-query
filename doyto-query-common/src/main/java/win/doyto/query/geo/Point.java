@@ -16,10 +16,7 @@
 
 package win.doyto.query.geo;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,6 +31,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class Point {
     private double x;
     private double y;

@@ -72,11 +72,23 @@ public class MongoGeoFilters {
         return Filters.geoWithinPolygon(column, points);
     }
 
-    public static Bson within(String column, Object value) {
-        return Filters.geoWithin(column, (Bson) value);
+    static Bson withIn(String column, Object value) {
+        if (GeoTransformer.support(value)) {
+            return Filters.geoWithin(column, GeoTransformer.transform(value));
+        } else if (value instanceof Bson) {
+            return Filters.geoWithin(column, (Bson) value);
+        } else {
+            throw new UnsupportedGeoTypeException(value.getClass().getName());
+        }
     }
 
     public static Bson intersects(String column, Object value) {
-        return Filters.geoIntersects(column, (Bson) value);
+        if (GeoTransformer.support(value)) {
+            return Filters.geoIntersects(column, GeoTransformer.transform(value));
+        } else if (value instanceof Bson) {
+            return Filters.geoIntersects(column, (Bson) value);
+        } else {
+            throw new UnsupportedGeoTypeException(value.getClass().getName());
+        }
     }
 }
