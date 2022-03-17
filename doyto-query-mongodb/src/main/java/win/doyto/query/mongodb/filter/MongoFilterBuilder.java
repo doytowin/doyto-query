@@ -71,7 +71,7 @@ public class MongoFilterBuilder {
         suffixFuncMap.put(CenterSphere, MongoGeoFilters::withinCenterSphere);
         suffixFuncMap.put(Box, MongoGeoFilters::withinBox);
         suffixFuncMap.put(Py, MongoGeoFilters::withinPolygon);
-        suffixFuncMap.put(Within, MongoGeoFilters::within);
+        suffixFuncMap.put(Within, MongoGeoFilters::withIn);
         suffixFuncMap.put(IntX, MongoGeoFilters::intersects);
     }
 

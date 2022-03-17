@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-package win.doyto.query.web.demo.module.building;
+package win.doyto.query.geo;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.PageQuery;
-import win.doyto.query.geo.GeoShape;
-
-import java.math.BigInteger;
+import lombok.experimental.UtilityClass;
 
 /**
- * BuildingQuery
+ * GeoType
  *
- * @author f0rb on 2021-12-06
+ * @author f0rb on 2022-03-09
  */
-@Getter
-@Setter
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class BuildingQuery extends PageQuery {
-    private BigInteger id;
-    private GeoShape<?> locIntX;
+@UtilityClass
+public final class GeoType {
+    String LINE = "LINE";
+    String POINT = "POINT";
+    String POLYGON = "POLYGON";
+    String MULTI_POINT = "MultiPoint";
+    String MULTI_LINE = "MultiLine";
+    String MULTI_POLYGON = "MultiPolygon";
+    String GEOMETRY_COLLECTION = "GeometryCollection";
 }

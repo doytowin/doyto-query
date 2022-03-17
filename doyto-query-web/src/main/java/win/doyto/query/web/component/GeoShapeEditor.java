@@ -14,29 +14,24 @@
  * limitations under the License.
  */
 
-package win.doyto.query.web.demo.module.building;
+package win.doyto.query.web.component;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.PageQuery;
 import win.doyto.query.geo.GeoShape;
+import win.doyto.query.util.BeanUtil;
 
-import java.math.BigInteger;
+import java.beans.PropertyEditorSupport;
 
 /**
- * BuildingQuery
+ * GeoShapeEditor
  *
- * @author f0rb on 2021-12-06
+ * @author f0rb on 2022-03-15
  */
-@Getter
-@Setter
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class BuildingQuery extends PageQuery {
-    private BigInteger id;
-    private GeoShape<?> locIntX;
+public class GeoShapeEditor extends PropertyEditorSupport {
+
+    @Override
+    public void setAsText(String text) throws IllegalArgumentException {
+        GeoShape<?> geoShape = BeanUtil.parse(text, GeoShape.class);
+        super.setValue(geoShape);
+    }
+
 }

@@ -17,6 +17,7 @@
 package win.doyto.query.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -30,6 +31,8 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
+import win.doyto.query.geo.GeoShape;
+import win.doyto.query.geo.GeoShapeDeserializer;
 import win.doyto.query.geo.Point;
 import win.doyto.query.geo.PointDeserializer;
 
@@ -53,6 +56,7 @@ public class BeanUtil {
     static {
         objectMapper = JsonMapper
                 .builder()
+                .enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES)
                 .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
                 .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
@@ -63,6 +67,7 @@ public class BeanUtil {
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         register(Point.class, new PointDeserializer());
+        register(GeoShape.class, new GeoShapeDeserializer());
         register("org.bson.conversions.Bson", "win.doyto.query.mongodb.entity.BsonDeserializer");
 
     }
@@ -145,7 +150,7 @@ public class BeanUtil {
         return (Class<I>) propertyDescriptor.getPropertyType();
     }
 
-    public static <T> void register(Class<T> clazz, JsonDeserializer<T> jsonDeserializer) {
+    public static <T> void register(Class<T> clazz, JsonDeserializer<? extends T> jsonDeserializer) {
         SimpleModule mod = new SimpleModule(clazz.getName(), new Version(1, 0, 0, "", "win.doyto", "doyto-query-code"));
         mod.addDeserializer(clazz, jsonDeserializer);
         objectMapper.registerModule(mod);
