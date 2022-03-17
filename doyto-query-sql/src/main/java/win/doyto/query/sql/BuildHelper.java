@@ -25,6 +25,7 @@ import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.regex.Pattern;
 
 import static win.doyto.query.core.QuerySuffix.isValidValue;
@@ -46,17 +47,17 @@ public class BuildHelper {
 
     public static String buildWhere(DoytoQuery query, List<Object> argList) {
         Field[] fields = ColumnUtil.initFields(query.getClass(), FieldProcessor::init);
-        StringJoiner whereJoiner = new StringJoiner(" AND ", fields.length);
+        StringJoiner whereJoiner = new StringJoiner(" AND ");
         for (Field field : fields) {
             Object value = readFieldGetter(field, query);
             if (isValidValue(value, field)) {
                 String and = FieldProcessor.execute(field, argList, value);
                 if (and != null) {
-                    whereJoiner.append(and);
+                    whereJoiner.add(and);
                 }
             }
         }
-        if (whereJoiner.isEmpty()) {
+        if (whereJoiner.length() == 0) {
             return "";
         }
         return WHERE + whereJoiner;

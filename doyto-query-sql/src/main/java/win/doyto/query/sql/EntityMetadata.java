@@ -27,7 +27,6 @@ import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,9 +81,7 @@ public class EntityMetadata {
     private void buildJoinSql(Class<?> entityClass) {
         if (entityClass.isAnnotationPresent(Joins.class)) {
             String[] joins = this.entityClass.getAnnotation(Joins.class).value();
-            StringJoiner joiner = new StringJoiner(SPACE, joins.length);
-            Arrays.stream(joins).forEachOrdered(joiner::append);
-            joinSql = joiner.toString();
+            joinSql = String.join(SPACE, joins);
         }
     }
 

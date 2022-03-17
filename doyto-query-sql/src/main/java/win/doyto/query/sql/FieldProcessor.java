@@ -33,6 +33,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
 
@@ -73,15 +74,15 @@ final class FieldProcessor {
         Field[] fields = ColumnUtil.initFields(field.getType());
         Arrays.stream(fields).forEach(FieldProcessor::init);
         return (argList, value) -> {
-            StringJoiner or = new StringJoiner(SPACE_OR, fields.length);
+            StringJoiner or = new StringJoiner(SPACE_OR);
             for (Field subField : fields) {
                 Object subValue = CommonUtil.readField(subField, value);
                 if (QuerySuffix.isValidValue(subValue, subField)) {
                     String condition = execute(subField, argList, subValue);
-                    or.append(condition);
+                    or.add(condition);
                 }
             }
-            return or.isEmpty() ? null : CommonUtil.wrapWithParenthesis(or.toString());
+            return or.length() == 0 ? null : CommonUtil.wrapWithParenthesis(or.toString());
         };
     }
 
