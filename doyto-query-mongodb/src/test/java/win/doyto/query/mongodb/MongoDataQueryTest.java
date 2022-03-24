@@ -18,6 +18,7 @@ package win.doyto.query.mongodb;
 
 import com.mongodb.client.MongoClient;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import win.doyto.query.mongodb.test.aggregate.QuantityByStatusView;
 import win.doyto.query.mongodb.test.aggregate.QuantityView;
@@ -27,12 +28,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
 
 /**
  * MongoDataQueryTest
  *
  * @author f0rb on 2022-01-25
  */
+@ResourceLock(value = "inventory", mode = READ_WRITE)
 class MongoDataQueryTest extends MongoApplicationTest {
 
     MongoDataQuery mongoDataQuery;

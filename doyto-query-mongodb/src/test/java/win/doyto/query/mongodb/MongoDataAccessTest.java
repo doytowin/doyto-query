@@ -20,6 +20,7 @@ import com.mongodb.client.MongoClient;
 import org.assertj.core.groups.Tuple;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import win.doyto.query.mongodb.test.inventory.InventoryEntity;
 import win.doyto.query.mongodb.test.inventory.InventoryQuery;
@@ -29,12 +30,14 @@ import win.doyto.query.mongodb.test.inventory.SizeQuery;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
 
 /**
  * MongoDataAccessTest
  *
  * @author f0rb on 2021-11-23
  */
+@ResourceLock(value = "inventory", mode = READ_WRITE)
 class MongoDataAccessTest extends MongoApplicationTest {
     MongoDataAccess<InventoryEntity, String, InventoryQuery> mongoDataAccess;
 
