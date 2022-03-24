@@ -21,9 +21,6 @@ import org.assertj.core.groups.Tuple;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.test.context.ActiveProfiles;
 import win.doyto.query.mongodb.test.inventory.InventoryEntity;
 import win.doyto.query.mongodb.test.inventory.InventoryQuery;
 import win.doyto.query.mongodb.test.inventory.InventorySize;
@@ -38,9 +35,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author f0rb on 2021-11-23
  */
-@ActiveProfiles("test")
-@DataMongoTest(properties = {"spring.mongodb.embedded.version=3.5.5"})
-@SpringBootApplication
 class MongoDataAccessTest extends MongoApplicationTest {
     MongoDataAccess<InventoryEntity, String, InventoryQuery> mongoDataAccess;
 

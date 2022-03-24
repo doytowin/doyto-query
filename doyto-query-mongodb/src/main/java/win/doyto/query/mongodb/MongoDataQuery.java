@@ -45,7 +45,7 @@ public class MongoDataQuery implements DataQuery {
     @Override
     public <V, Q extends DoytoQuery> List<V> query(Q query, Class<V> viewClass) {
         AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
-        return md.getCollection().aggregate(Arrays.asList(md.getGroupBy(), md.getProject(), buildSort(query)))
+        return md.getCollection().aggregate(Arrays.asList(md.getGroupBy(), buildSort(query), md.getProject()))
                  .map(document -> BeanUtil.parse(document.toJson(), viewClass))
                  .into(new ArrayList<>());
     }

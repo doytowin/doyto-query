@@ -93,7 +93,7 @@ public class AggregationMetadata {
 
     private <V> Bson buildProject(Class<V> viewClass) {
         Field[] fields = ColumnUtil.initFields(viewClass);
-        Document columns = new Document("_id", 0);
+        Document columns = new Document("_id", 0); // don't want to show _id
         for (Field field : fields) {
             String column = field.getName();
             columns.append(column, "$" + column);
@@ -101,7 +101,7 @@ public class AggregationMetadata {
         Aggregation aggregation = viewClass.getAnnotation(Aggregation.class);
         if (aggregation != null) {
             for (String field : aggregation.groupBy()) {
-                columns.append(field, "$_id." + field);
+                columns.append(field, "$_id." + field); //grouped fields are in _id
             }
         }
 

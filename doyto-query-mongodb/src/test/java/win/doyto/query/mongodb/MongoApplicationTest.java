@@ -23,7 +23,6 @@ import org.bson.Document;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.context.ActiveProfiles;
 import win.doyto.query.core.DoytoQuery;
@@ -39,8 +38,7 @@ import java.util.List;
  * @author f0rb on 2022-01-25
  */
 @ActiveProfiles("test")
-@DataMongoTest(properties = {"spring.mongodb.embedded.version=3.5.5"})
-@SpringBootApplication
+@DataMongoTest(properties = {"spring.mongodb.embedded.version=4.0.21"})
 abstract class MongoApplicationTest {
 
     private MongoCollection<Document> collection;
