@@ -33,4 +33,10 @@ class AggregationPrefixTest {
         assertThat(prefix).isEqualTo(AggregationPrefix.MAX);
     }
 
+    @Test
+    void fixWhenLengthOfFieldNameIsLessThanFour() {
+        String fieldName = AggregationPrefix.resolveField("qty").resolveColumnName("qty");
+        assertThat(fieldName).isEqualTo("qty");
+    }
+
 }

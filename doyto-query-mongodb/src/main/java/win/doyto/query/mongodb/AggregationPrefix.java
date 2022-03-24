@@ -36,7 +36,7 @@ public enum AggregationPrefix {
     FIRST,
     LAST,
 
-    NONE;
+    NONE(0);
 
     private static final Pattern SUFFIX_PTN = Pattern.compile(
             Arrays.stream(values())
@@ -46,13 +46,23 @@ public enum AggregationPrefix {
 
     );
 
+    private final int prefixLength;
+
+    AggregationPrefix() {
+        this.prefixLength = name().length();
+    }
+
+    AggregationPrefix(int prefixLength) {
+        this.prefixLength = prefixLength;
+    }
+
     public static AggregationPrefix resolveField(String fieldName) {
         Matcher matcher = SUFFIX_PTN.matcher(fieldName);
         return matcher.find() ? valueOf(matcher.group().toUpperCase()) : NONE;
     }
 
     public String resolveColumnName(String viewFieldName) {
-        return CommonUtil.camelize(viewFieldName.substring(name().length()));
+        return CommonUtil.camelize(viewFieldName.substring(prefixLength));
     }
 
 }
