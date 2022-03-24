@@ -35,8 +35,15 @@ class AggregationPrefixTest {
 
     @Test
     void fixWhenLengthOfFieldNameIsLessThanFour() {
-        String fieldName = AggregationPrefix.resolveField("qty").resolveColumnName("qty");
-        assertThat(fieldName).isEqualTo("qty");
+        String fieldName = "qty";
+        String resolved = AggregationPrefix.resolveField(fieldName).resolveColumnName(fieldName);
+        assertThat(resolved).isEqualTo(fieldName);
+    }
+
+    @Test
+    void shouldOnlyMatchPrefixWithTrailingCapitalLetter() {
+        AggregationPrefix prefix = AggregationPrefix.resolveField("minute");
+        assertThat(prefix).isEqualTo(AggregationPrefix.NONE);
     }
 
 }

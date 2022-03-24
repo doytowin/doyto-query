@@ -44,9 +44,7 @@ public enum AggregationPrefix {
     private static final Pattern SUFFIX_PTN = Pattern.compile(
             Arrays.stream(values())
                   .map(Enum::name)
-                  .collect(Collectors.joining("|", "^(", ")")),
-            Pattern.CASE_INSENSITIVE
-
+                  .collect(Collectors.joining("|", "^\\b(", ")(?=[A-Z])"))
     );
 
     private final int prefixLength;
