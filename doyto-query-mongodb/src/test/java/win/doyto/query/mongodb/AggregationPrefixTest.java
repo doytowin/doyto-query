@@ -30,7 +30,7 @@ class AggregationPrefixTest {
     @Test
     void resolveField() {
         AggregationPrefix prefix = AggregationPrefix.resolveField("maxQty");
-        assertThat(prefix).isEqualTo(AggregationPrefix.MAX);
+        assertThat(prefix).isEqualTo(AggregationPrefix.max);
     }
 
     @Test

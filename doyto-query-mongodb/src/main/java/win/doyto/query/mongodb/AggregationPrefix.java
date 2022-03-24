@@ -28,13 +28,15 @@ import java.util.stream.Collectors;
  *
  * @author f0rb on 2022-01-26
  */
+@SuppressWarnings("java:S115")
 public enum AggregationPrefix {
-    SUM,
-    MAX,
-    MIN,
-    AVG,
-    FIRST,
-    LAST,
+    sum,
+    max,
+    min,
+    avg,
+    first,
+    last,
+    stdDevPop,
 
     NONE(0);
 
@@ -58,7 +60,7 @@ public enum AggregationPrefix {
 
     public static AggregationPrefix resolveField(String fieldName) {
         Matcher matcher = SUFFIX_PTN.matcher(fieldName);
-        return matcher.find() ? valueOf(matcher.group().toUpperCase()) : NONE;
+        return matcher.find() ? valueOf(matcher.group()) : NONE;
     }
 
     public String resolveColumnName(String viewFieldName) {

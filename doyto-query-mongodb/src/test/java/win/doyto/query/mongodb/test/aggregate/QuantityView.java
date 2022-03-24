@@ -35,4 +35,5 @@ public class QuantityView {
     private Double avgQty;
     private Integer firstQty;
     private Integer lastQty;
+    private Integer stdDevPopQty;
 }

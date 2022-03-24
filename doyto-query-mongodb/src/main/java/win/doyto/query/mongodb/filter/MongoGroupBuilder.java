@@ -40,12 +40,13 @@ public class MongoGroupBuilder {
 
     static {
         prefixFuncMap = new EnumMap<>(AggregationPrefix.class);
-        prefixFuncMap.put(SUM, Accumulators::sum);
-        prefixFuncMap.put(MAX, Accumulators::max);
-        prefixFuncMap.put(MIN, Accumulators::min);
-        prefixFuncMap.put(AVG, Accumulators::avg);
-        prefixFuncMap.put(FIRST, Accumulators::first);
-        prefixFuncMap.put(LAST, Accumulators::last);
+        prefixFuncMap.put(sum, Accumulators::sum);
+        prefixFuncMap.put(max, Accumulators::max);
+        prefixFuncMap.put(min, Accumulators::min);
+        prefixFuncMap.put(avg, Accumulators::avg);
+        prefixFuncMap.put(first, Accumulators::first);
+        prefixFuncMap.put(last, Accumulators::last);
+        prefixFuncMap.put(stdDevPop, Accumulators::stdDevPop);
     }
 
     public static BsonField getBsonField(String viewFieldName) {
