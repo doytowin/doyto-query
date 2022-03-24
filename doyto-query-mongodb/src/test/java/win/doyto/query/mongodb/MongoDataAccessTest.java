@@ -63,7 +63,9 @@ class MongoDataAccessTest extends MongoApplicationTest {
 
         String id = list.get(0).getId();
         InventoryEntity inventoryEntity = mongoDataAccess.get(id);
-        assertThat(inventoryEntity).isEqualToIgnoringGivenFields(list.get(0), "size");
+        assertThat(inventoryEntity)
+                .usingRecursiveComparison()
+                .isEqualTo(list.get(0));
     }
 
     @Test
@@ -152,8 +154,9 @@ class MongoDataAccessTest extends MongoApplicationTest {
         mongoDataAccess.create(origin);
 
         InventoryEntity fromDB = mongoDataAccess.get(origin.getId());
-        assertThat(fromDB).isEqualToIgnoringGivenFields(fromDB, "size");
-
+        assertThat(fromDB)
+                .usingRecursiveComparison()
+                .isEqualTo(origin);
     }
 
     @Test
