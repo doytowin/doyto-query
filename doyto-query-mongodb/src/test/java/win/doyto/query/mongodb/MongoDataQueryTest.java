@@ -65,6 +65,12 @@ class MongoDataQueryTest extends MongoApplicationTest {
                          .extracting("sumQty", "status")
                          .containsExactly(120, "A")
         ;
+        assertThat(views.get(0).getPushItemStatuses())
+                .hasSize(3)
+                .first()
+                .extracting("item", "qty")
+                .containsExactly("journal", 25)
+        ;
     }
 
     @Test

@@ -72,7 +72,7 @@ public class AggregationMetadata {
         Field[] fields = ColumnUtil.initFields(viewClass);
         List<BsonField> list = new ArrayList<>();
         for (Field field : fields) {
-            BsonField bsonField = MongoGroupBuilder.getBsonField(field.getName());
+            BsonField bsonField = MongoGroupBuilder.getBsonField(field);
             if (bsonField != null) {
                 list.add(bsonField);
             }

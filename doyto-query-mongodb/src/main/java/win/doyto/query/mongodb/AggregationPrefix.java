@@ -38,6 +38,7 @@ public enum AggregationPrefix {
     last,
     stdDevPop,
     stdDevSamp,
+    push,
 
     NONE(0);
 

@@ -19,8 +19,12 @@ package win.doyto.query.mongodb.filter;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.BsonField;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.bson.Document;
 import win.doyto.query.mongodb.AggregationPrefix;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -50,10 +54,24 @@ public class MongoGroupBuilder {
         prefixFuncMap.put(stdDevSamp, Accumulators::stdDevSamp);
     }
 
-    public static BsonField getBsonField(String viewFieldName) {
+    public static BsonField getBsonField(Field field) {
+        String viewFieldName = field.getName();
         AggregationPrefix aggregationPrefix = AggregationPrefix.resolveField(viewFieldName);
+        if (aggregationPrefix == push) {
+            return buildPushField(field);
+        }
         String fieldName = "$" + aggregationPrefix.resolveColumnName(viewFieldName);
         return build(viewFieldName, aggregationPrefix, fieldName);
+    }
+
+    private static BsonField buildPushField(Field field) {
+        Document expression = new Document();
+        ParameterizedType type = (ParameterizedType) field.getGenericType();
+        for (Field subField : FieldUtils.getAllFields((Class<?>) type.getActualTypeArguments()[0])) {
+            String subFieldName = subField.getName();
+            expression.put(subFieldName, "$" + subFieldName);
+        }
+        return Accumulators.push(field.getName(), expression);
     }
 
     private BsonField build(String viewFieldName, AggregationPrefix aggregationPrefix, String fieldName) {

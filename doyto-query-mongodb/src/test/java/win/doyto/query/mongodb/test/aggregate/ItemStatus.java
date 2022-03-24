@@ -16,28 +16,21 @@
 
 package win.doyto.query.mongodb.test.aggregate;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import win.doyto.query.annotation.Aggregation;
-import win.doyto.query.entity.MongoEntity;
-
-import java.util.List;
 
 /**
- * QuantityView
+ * ItemStatus
  *
- * @author f0rb on 2022-01-25
+ * @author f0rb on 2022-03-24
  */
 @Getter
 @Setter
-@MongoEntity(database = "doyto", collection = "c_inventory")
-@Aggregation(groupBy = "status")
-public class QuantityByStatusView {
-
-    private Integer sumQty;
-
-    private String status;
-
-    private List<ItemStatus> pushItemStatuses;
-
+@NoArgsConstructor
+@AllArgsConstructor
+public class ItemStatus {
+    String item;
+    Integer qty;
 }
