@@ -52,6 +52,7 @@ public class MongoGroupBuilder {
         prefixFuncMap.put(last, Accumulators::last);
         prefixFuncMap.put(stdDevPop, Accumulators::stdDevPop);
         prefixFuncMap.put(stdDevSamp, Accumulators::stdDevSamp);
+        prefixFuncMap.put(addToSet, Accumulators::addToSet);
     }
 
     public static BsonField getBsonField(Field field) {

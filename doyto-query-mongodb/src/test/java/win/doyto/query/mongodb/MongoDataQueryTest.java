@@ -23,6 +23,7 @@ import win.doyto.query.mongodb.test.aggregate.QuantityByStatusView;
 import win.doyto.query.mongodb.test.aggregate.QuantityView;
 import win.doyto.query.mongodb.test.inventory.InventoryQuery;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,8 +63,8 @@ class MongoDataQueryTest extends MongoApplicationTest {
         List<QuantityByStatusView> views = mongoDataQuery.query(query, QuantityByStatusView.class);
         assertThat(views).hasSize(2)
                          .first()
-                         .extracting("sumQty", "status")
-                         .containsExactly(120, "A")
+                         .extracting("sumQty", "status", "addToSetItem")
+                         .containsExactly(120, "A", Arrays.asList("notebook", "postcard", "journal"))
         ;
         assertThat(views.get(0).getPushItemStatuses())
                 .hasSize(3)

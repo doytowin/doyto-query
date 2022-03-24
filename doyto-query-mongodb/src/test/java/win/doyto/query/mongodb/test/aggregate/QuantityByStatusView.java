@@ -40,4 +40,6 @@ public class QuantityByStatusView {
 
     private List<ItemStatus> pushItemStatuses;
 
+    private List<String> addToSetItem;
+
 }
