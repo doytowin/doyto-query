@@ -36,4 +36,5 @@ public class QuantityView {
     private Integer firstQty;
     private Integer lastQty;
     private Integer stdDevPopQty;
+    private Integer stdDevSampQty;
 }
