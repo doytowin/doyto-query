@@ -24,10 +24,11 @@ import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.ColumnUtil;
-import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.persistence.Id;
@@ -55,10 +56,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
         idField = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0];
 
         // init fields
-        Field[] allFields = FieldUtils.getAllFields(entityClass);
-        List<Field> tempFields = new ArrayList<>(allFields.length);
-        Arrays.stream(allFields).filter(CommonUtil::fieldFilter).forEachOrdered(tempFields::add);
-        fields = Collections.unmodifiableList(tempFields);
+        fields = ColumnUtil.getColumnFieldsFrom(entityClass);
         fieldsSize = fields.size();
 
         wildInsertValue = wrapWithParenthesis(StringUtils.join(IntStream.range(0, fieldsSize).mapToObj(i -> PLACE_HOLDER).collect(Collectors.toList()), SEPARATOR));

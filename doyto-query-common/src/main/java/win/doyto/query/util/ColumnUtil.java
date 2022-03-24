@@ -24,10 +24,14 @@ import win.doyto.query.core.Dialect;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.persistence.Column;
 import javax.persistence.Transient;
 
@@ -48,12 +52,27 @@ public class ColumnUtil {
 
     public static Field[] initFields(Class<?> queryClass, Consumer<Field> fieldConsumer) {
         classFieldsMap.computeIfAbsent(queryClass, c -> {
-            Field[] fields = FieldUtils.getAllFieldsList(c).stream()
-                                       .filter(CommonUtil::fieldFilter).toArray(Field[]::new);
+            Field[] fields = filterFields(c).toArray(Field[]::new);
             Arrays.stream(fields).forEach(fieldConsumer);
             return fields;
         });
         return classFieldsMap.get(queryClass);
+    }
+
+    public static Stream<Field> filterFields(Class<?> clazz) {
+        return FieldUtils.getAllFieldsList(clazz).stream()
+                         .filter(CommonUtil::fieldFilter);
+    }
+
+    /**
+     * Filter fields in an entity class
+     *
+     * @param entityClass the entityClass
+     * @return unmodifiable fields without id and @Transient field
+     */
+    public static List<Field> getColumnFieldsFrom(Class<?> entityClass) {
+        List<Field> fields = filterFields(entityClass).collect(Collectors.toList());
+        return Collections.unmodifiableList(fields);
     }
 
     public static String convertColumn(String columnName) {
@@ -79,11 +98,11 @@ public class ColumnUtil {
     }
 
     public static String[] resolveSelectColumns(Class<?> entityClass) {
-        return Arrays
-                .stream(FieldUtils.getAllFields(entityClass))
-                .filter(ColumnUtil::shouldRetain)
-                .map(ColumnUtil::selectAs)
-                .toArray(String[]::new);
+        return FieldUtils.getAllFieldsList(entityClass)
+                         .stream()
+                         .filter(ColumnUtil::shouldRetain)
+                         .map(ColumnUtil::selectAs)
+                         .toArray(String[]::new);
     }
 
     private static boolean shouldRetain(Field field) {

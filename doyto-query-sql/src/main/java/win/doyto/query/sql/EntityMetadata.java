@@ -19,12 +19,10 @@ package win.doyto.query.sql;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.Aggregation;
 import win.doyto.query.annotation.Joins;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.ColumnUtil;
-import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -70,12 +68,9 @@ public class EntityMetadata {
     }
 
     private void buildSelectColumns(Class<?> entityClass) {
-        columnsForSelect = FieldUtils
-                .getAllFieldsList(entityClass)
-                .stream()
-                .filter(CommonUtil::fieldFilter)
-                .map(ColumnUtil::selectAs)
-                .collect(Collectors.joining(SEPARATOR));
+        columnsForSelect = ColumnUtil.filterFields(entityClass)
+                                     .map(ColumnUtil::selectAs)
+                                     .collect(Collectors.joining(SEPARATOR));
     }
 
     private void buildJoinSql(Class<?> entityClass) {

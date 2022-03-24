@@ -28,11 +28,13 @@ import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.QuerySuffix;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.BeanUtil;
-import win.doyto.query.util.CommonUtil;
+import win.doyto.query.util.ColumnUtil;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -63,10 +65,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         tableMap.put(entityClass, entitiesMap);
 
         // init fields
-        Field[] allFields = FieldUtils.getAllFields(entityClass);
-        List<Field> tempFields = new ArrayList<>(allFields.length);
-        Arrays.stream(allFields).filter(CommonUtil::fieldFilter).forEachOrdered(tempFields::add);
-        fields = Collections.unmodifiableList(tempFields);
+        fields = ColumnUtil.getColumnFieldsFrom(entityClass);
         Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
         idClass = BeanUtil.getIdClass(entityClass);
         if (idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class)) {
@@ -74,7 +73,6 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         } else {
             idField = null;
         }
-
     }
 
     protected void generateNewId(E entity) {
