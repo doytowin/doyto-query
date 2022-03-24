@@ -51,8 +51,8 @@ class MongoDataQueryTest extends MongoApplicationTest {
                          .hasFieldOrPropertyWithValue("avgQty", 59.0)
                          .hasFieldOrPropertyWithValue("firstQty", 25)
                          .hasFieldOrPropertyWithValue("lastQty", 45)
-                         .hasFieldOrPropertyWithValue("stdDevPopQty", 25)
-                         .hasFieldOrPropertyWithValue("stdDevSampQty", 29)
+                         .hasFieldOrPropertyWithValue("stdDevPopQty", 25.96150997149434)
+                         .hasFieldOrPropertyWithValue("stdDevSampQty", 29.025850547399987)
         ;
     }
 
