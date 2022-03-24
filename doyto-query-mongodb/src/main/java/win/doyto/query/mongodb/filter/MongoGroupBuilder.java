@@ -19,9 +19,9 @@ package win.doyto.query.mongodb.filter;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.BsonField;
 import lombok.experimental.UtilityClass;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.bson.Document;
 import win.doyto.query.mongodb.AggregationPrefix;
+import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -68,7 +68,7 @@ public class MongoGroupBuilder {
     private static BsonField buildPushField(Field field) {
         Document expression = new Document();
         ParameterizedType type = (ParameterizedType) field.getGenericType();
-        for (Field subField : FieldUtils.getAllFields((Class<?>) type.getActualTypeArguments()[0])) {
+        for (Field subField : ColumnUtil.initFields((Class<?>) type.getActualTypeArguments()[0])) {
             String subFieldName = subField.getName();
             expression.put(subFieldName, "$" + subFieldName);
         }
