@@ -14,29 +14,30 @@
  * limitations under the License.
  */
 
-package win.doyto.query.web.demo.test.role;
+package win.doyto.query.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.entity.AbstractCommonEntity;
-import win.doyto.query.validation.CreateGroup;
 
-import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
- * UserEntity
+ * CommonEntity
  *
- * @author f0rb on 2020-04-01
+ * @param <I> the type of entity id
+ * @param <U> the type of user id
+ * @author f0rb
  */
 @Getter
 @Setter
-public class RoleEntity extends AbstractCommonEntity<Long, Long> {
+public abstract class AbstractCommonEntity<I extends Serializable, U extends Serializable>
+        extends AbstractEntity<I, U, LocalDateTime> {
 
-    @NotNull(groups = CreateGroup.class)
-    private String roleName;
+    private static final long serialVersionUID = 1;
 
-    @NotNull(groups = CreateGroup.class)
-    private String roleCode;
-
-    private Boolean valid;
+    @Override
+    protected LocalDateTime current() {
+        return LocalDateTime.now();
+    }
 }
