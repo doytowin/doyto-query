@@ -142,10 +142,9 @@ enum SqlQuerySuffix {
         return columnName + SPACE + getOp() + placeHolderEx;
     }
 
-    @SuppressWarnings("unchecked")
     private static void appendArg(List<Object> argList, Object value, String placeHolderEx) {
         if (value instanceof Collection) {
-            appendCollectionArg(argList, (Collection<Object>) value);
+            appendCollectionArg(argList, (Collection<?>) value);
         } else if (placeHolderEx.contains(Constant.PLACE_HOLDER)) {
             appendSingleArg(argList, value);
         }
@@ -155,7 +154,7 @@ enum SqlQuerySuffix {
         argList.add(value);
     }
 
-    private static void appendCollectionArg(List<Object> argList, Collection<Object> collection) {
+    private static void appendCollectionArg(List<Object> argList, Collection<?> collection) {
         if (collection.isEmpty()) {
             return;
         }
@@ -167,14 +166,14 @@ enum SqlQuerySuffix {
         }
     }
 
-    private static void appendEnumCollectionArg(List<Object> argList, Collection<Object> collection, Object instance) {
+    private static void appendEnumCollectionArg(List<Object> argList, Collection<?> collection, Object instance) {
         Enumerated enumerated = instance.getClass().getAnnotation(Enumerated.class);
         boolean enumToString = enumerated != null && enumerated.value() == EnumType.STRING;
         Function<Enum<?>, ?> enumMapper = enumToString ? Enum::toString : Enum::ordinal;
         collection.stream().map(element -> enumMapper.apply((Enum<?>) element)).forEach(argList::add);
     }
 
-    private static void appendCommonCollectionArg(List<Object> argList, Collection<Object> collection) {
+    private static void appendCommonCollectionArg(List<Object> argList, Collection<?> collection) {
         argList.addAll(collection);
     }
 
