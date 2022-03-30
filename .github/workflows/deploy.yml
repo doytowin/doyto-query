@@ -16,7 +16,7 @@ jobs:
           git config user.name "GitHub Actions"
 
       - name: Cache Maven packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.1
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
