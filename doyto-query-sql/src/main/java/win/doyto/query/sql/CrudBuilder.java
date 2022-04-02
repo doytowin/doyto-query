@@ -63,7 +63,15 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
 
     }
 
-    private static String buildInsertSql(String table, String columns, String fields) {
+    /**
+     * Build insert statements with table name, columns and fields' placeholders
+     * <p>
+     * Note: Make this method package private for DoytoQL project.
+     * </p>
+     *
+     * @return insert statement with placeholders
+     */
+    static String buildInsertSql(String table, String columns, String fields) {
         StringJoiner insertSql = new StringJoiner(SPACE);
         insertSql.add("INSERT INTO");
         insertSql.add(table);
@@ -73,7 +81,15 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
         return insertSql.toString();
     }
 
-    private static String buildUpdateSql(String tableName, String setClauses) {
+    /**
+     * Build update statements with table name, columns and fields' placeholders
+     * <p>
+     * Note: Make this method package private for DoytoQL project.
+     * </p>
+     *
+     * @return update statement with placeholders
+     */
+    static String buildUpdateSql(String tableName, String setClauses) {
         StringJoiner updateSql = new StringJoiner(SPACE);
         updateSql.add("UPDATE");
         updateSql.add(tableName);
