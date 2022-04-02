@@ -63,14 +63,14 @@ public class BuildHelper {
         return WHERE + whereJoiner;
     }
 
-    static String buildOrderBy(DoytoQuery pageQuery) {
+    public static String buildOrderBy(DoytoQuery pageQuery) {
         if (pageQuery.getSort() == null) {
             return "";
         }
         return " ORDER BY " + PTN_SORT.matcher(pageQuery.getSort()).replaceAll(" $1").replace(";", SEPARATOR);
     }
 
-    static String buildPaging(String sql, DoytoQuery pageQuery) {
+    public static String buildPaging(String sql, DoytoQuery pageQuery) {
         if (pageQuery.needPaging()) {
             int pageSize = pageQuery.getPageSize();
             int offset = GlobalConfiguration.calcOffset(pageQuery);
