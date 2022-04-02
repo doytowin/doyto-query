@@ -17,7 +17,6 @@
 package win.doyto.query.sql;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
@@ -30,7 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javax.persistence.Id;
 
 import static win.doyto.query.sql.Constant.*;
@@ -46,7 +44,6 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
 
     private final Field idField;
     private final List<Field> fields;
-    private final int fieldsSize;
     private final String wildInsertValue;   // ?, ?, ?
     private final String insertColumns;
     private final String wildSetClause;     // column1 = ?, column2 = ?
@@ -57,13 +54,12 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
 
         // init fields
         fields = ColumnUtil.getColumnFieldsFrom(entityClass);
-        fieldsSize = fields.size();
 
-        wildInsertValue = wrapWithParenthesis(StringUtils.join(IntStream.range(0, fieldsSize).mapToObj(i -> PLACE_HOLDER).collect(Collectors.toList()), SEPARATOR));
+        wildInsertValue = fields.stream().map(f -> PLACE_HOLDER).collect(CLT_COMMA_WITH_PAREN);
 
         List<String> columnList = fields.stream().map(ColumnUtil::resolveColumn).collect(Collectors.toList());
-        insertColumns = wrapWithParenthesis(StringUtils.join(columnList, SEPARATOR));
-        wildSetClause = StringUtils.join(columnList.stream().map(c -> c + EQUALS_PLACE_HOLDER).collect(Collectors.toList()), SEPARATOR);
+        insertColumns = columnList.stream().collect(CLT_COMMA_WITH_PAREN);
+        wildSetClause = columnList.stream().map(c -> c + EQUALS_PLACE_HOLDER).collect(Collectors.joining(SEPARATOR));
 
     }
 
