@@ -24,16 +24,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Transient;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Transient;
 
 /**
  * CommonUtil
@@ -148,7 +148,7 @@ public class CommonUtil {
         return like.replaceAll("[%|_]", "\\\\$0");
     }
 
-    static String camelize(String or) {
+    public static String camelize(String or) {
         return or.substring(0, 1).toLowerCase() + or.substring(1);
     }
 
