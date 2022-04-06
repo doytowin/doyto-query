@@ -27,18 +27,13 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>doyto-query-web</artifactId>
+    <artifactId>doyto-query-web-common</artifactId>
 
     <dependencies>
 
         <dependency>
             <groupId>win.doyto</groupId>
             <artifactId>doyto-query-memory</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>win.doyto</groupId>
-            <artifactId>doyto-query-web-common</artifactId>
             <version>${revision}</version>
         </dependency>
 
@@ -53,7 +48,11 @@
 
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -93,11 +92,6 @@
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hsqldb</groupId>
-            <artifactId>hsqldb</artifactId>
             <scope>test</scope>
         </dependency>
 
