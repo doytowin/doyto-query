@@ -35,7 +35,7 @@
     <properties>
         <revision>0.3.1-SNAPSHOT</revision>
 
-        <spring-boot.version>2.6.1</spring-boot.version>
+        <spring-boot.version>2.6.6</spring-boot.version>
 
         <sourceDirectory>src/main/java</sourceDirectory>
         <skipDeploy>false</skipDeploy>
