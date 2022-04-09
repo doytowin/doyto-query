@@ -20,10 +20,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.TestEnum;
-import win.doyto.query.test.join.MaxIdView;
-import win.doyto.query.test.join.TestJoinQuery;
-import win.doyto.query.test.join.TestJoinView;
-import win.doyto.query.test.join.UserCountByRoleView;
+import win.doyto.query.test.join.*;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -101,6 +101,19 @@ class JoinQueryBuilderTest {
                 "left join j_user_and_role ur on ur.user_id = u.id " +
                 "inner join t_role r on r.id = ur.role_id";
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildCountAndArgs(testJoinQuery, UserCountByRoleView.class);
+        assertEquals(expected, sqlAndArgs.getSql());
+    }
+
+    @Test
+    void buildSqlAndArgsForSubDomain() throws NoSuchFieldException {
+        Field field = UserView.class.getDeclaredField("perms");
+        String expected = "SELECT j0ur.user_id AS PK_FOR_JOIN, p.id, p.permName, p.valid" +
+                "\n FROM j_user_and_role j0ur" +
+                "\n INNER JOIN j_role_and_perm j1rp ON j0ur.role_id = j1rp.role_id" +
+                "\n INNER JOIN t_perm p ON j1rp.perm_id = p.id" +
+                "\n WHERE j0ur.user_id IN (1, 2, 3)";
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+                field, Arrays.asList(1, 2, 3), PermView.class);
         assertEquals(expected, sqlAndArgs.getSql());
     }
 }

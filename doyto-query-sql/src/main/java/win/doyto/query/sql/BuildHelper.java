@@ -47,7 +47,7 @@ public class BuildHelper {
 
     public static String buildWhere(DoytoQuery query, List<Object> argList) {
         Field[] fields = ColumnUtil.initFields(query.getClass(), FieldProcessor::init);
-        StringJoiner whereJoiner = new StringJoiner(" AND ");
+        StringJoiner whereJoiner = new StringJoiner(AND);
         for (Field field : fields) {
             Object value = readFieldGetter(field, query);
             if (isValidValue(value, field)) {

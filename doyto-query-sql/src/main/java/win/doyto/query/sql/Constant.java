@@ -34,4 +34,11 @@ interface Constant {
     String EMPTY = "";
     String SPACE_OR = " OR ";
     String DELETE_FROM = "DELETE" + FROM;
+    String AND = " AND ";
+    String IN = " IN ";
+    String ON = " ON ";
+    String AS = " AS ";
+    String CONN = ".";
+    String INNER_JOIN = " INNER JOIN ";
+    String LF = "\n";
 }
