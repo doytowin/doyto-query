@@ -21,7 +21,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 import win.doyto.query.service.PageList;
+import win.doyto.query.test.PermissionQuery;
 import win.doyto.query.test.join.*;
+import win.doyto.query.test.role.RoleQuery;
 
 import java.util.List;
 
@@ -75,7 +77,7 @@ class JdbcDataQueryTest extends JdbcApplicationTest {
 
     @Test
     void queryUserWithRoles() {
-        UserJoinQuery userJoinQuery = UserJoinQuery.builder().build();
+        UserJoinQuery userJoinQuery = UserJoinQuery.builder().rolesQuery(new RoleQuery()).permsQuery(new PermissionQuery()).build();
 
         List<UserView> users = jdbcDataQuery.joinQuery(userJoinQuery);
 
@@ -91,4 +93,11 @@ class JdbcDataQueryTest extends JdbcApplicationTest {
                          .containsExactly(3, 0, 2, 3);
     }
 
+    @Test
+    void shouldNotQuerySubDomainWhenItsQueryFieldIsNull() {
+        List<UserView> users = jdbcDataQuery.joinQuery(UserJoinQuery.builder().build());
+        assertThat(users).hasSize(4);
+        assertThat(users).extracting("roles").containsOnlyNulls();
+        assertThat(users).extracting("perms").containsOnlyNulls();
+    }
 }

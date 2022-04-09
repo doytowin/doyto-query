@@ -72,12 +72,12 @@ public class JdbcDataQuery implements DataQuery {
     List<V> joinQuery(Q query) {
         Class<V> viewClass = query.getDomainClass();
         List<V> mainEntities = this.query(query, viewClass);
-        querySubEntities(viewClass, mainEntities);
+        querySubEntities(viewClass, mainEntities, query);
         return mainEntities;
     }
 
-    private <V extends Persistable<I>, I extends Serializable>
-    void querySubEntities(Class<V> viewClass, List<V> mainEntities) {
+    private <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    void querySubEntities(Class<V> viewClass, List<V> mainEntities, Q query) {
         if (mainEntities.isEmpty()) {
             return;
         }
@@ -87,7 +87,15 @@ public class JdbcDataQuery implements DataQuery {
 
         for (Field joinField : FieldUtils.getAllFieldsList(viewClass)) {
             if (List.class.isAssignableFrom(joinField.getType()) && joinField.isAnnotationPresent(DomainPath.class)) {
-                queryEntityForJoinField(joinField, mainEntities, mainIds, mainIdClass);
+                // The name of query field for subdomain should follow this format `<joinFieldName>Query`
+                String queryFieldName = joinField.getName() + "Query";
+                Field queryField = CommonUtil.getField(query, queryFieldName);
+                if (queryField != null) {
+                    Object subQuery = CommonUtil.readField(queryField, query);
+                    if (subQuery != null) {
+                        queryEntityForJoinField(joinField, mainEntities, mainIds, mainIdClass);
+                    }
+                }
             }
         }
     }
