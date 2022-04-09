@@ -26,7 +26,6 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,8 +33,6 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Transient;
 
 /**
  * CommonUtil
@@ -126,14 +123,6 @@ public class CommonUtil {
     @SneakyThrows
     public static void writeField(Field field, Object target, Object value) {
         FieldUtils.writeField(field, target, value, true);
-    }
-
-    public static boolean fieldFilter(Field field) {
-        return !(field.getName().startsWith("$")                // $jacocoData
-            || Modifier.isStatic(field.getModifiers())          // static field
-            || field.isAnnotationPresent(GeneratedValue.class)  // id
-            || field.isAnnotationPresent(Transient.class)       // Transient field
-        );
     }
 
     public static String escapeLike(String like) {

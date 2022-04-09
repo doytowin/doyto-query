@@ -177,7 +177,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     }
 
     private boolean supportFilter(Field field) {
-        return fieldFilter(field) && !field.isAnnotationPresent(NestedQueries.class);
+        return ColumnUtil.filterForEntity(field) && !field.isAnnotationPresent(NestedQueries.class);
     }
 
     protected boolean shouldDiscard(E entity, String queryFieldName, Object queryFieldValue) {
