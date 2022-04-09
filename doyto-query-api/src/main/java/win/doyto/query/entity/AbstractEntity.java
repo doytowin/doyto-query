@@ -20,28 +20,48 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
- * CommonEntity
+ * AbstractCommonEntity
  *
  * @param <I> the type of entity id
  * @param <U> the type of user id
- * @author f0rb
- * @deprecated due to {@link java.util.Date}. Switch to
- * {@link AbstractEntity} or {@link AbstractCommonEntity}
+ * @author f0rb on 2022-03-27
  */
 @Getter
 @Setter
-@Deprecated
-@SuppressWarnings("java:S1133")
-public abstract class CommonEntity<I extends Serializable, U extends Serializable>
-        extends AbstractEntity<I, U, Date> {
+public abstract class AbstractEntity<I extends Serializable, U extends Serializable, D extends Serializable>
+        extends AbstractPersistable<I> implements Serializable, CreateUserAware<U>, UpdateUserAware<U> {
 
     private static final long serialVersionUID = 1;
 
-    @Override
-    protected Date current() {
-        return new Date();
+    /**
+     * 创建者
+     */
+    private U createUserId;
+    /**
+     * 创建时间
+     */
+    private D createTime;
+    /**
+     * 更新者
+     */
+    private U updateUserId;
+    /**
+     * 更新时间
+     */
+    private D updateTime;
+
+    public void setCreateUserId(U createUserId) {
+        this.createUserId = createUserId;
+        this.setCreateTime(current());
     }
+
+    public void setUpdateUserId(U updateUserId) {
+        this.updateUserId = updateUserId;
+        this.setUpdateTime(current());
+    }
+
+    protected abstract D current();
+
 }

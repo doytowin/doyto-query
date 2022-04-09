@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -62,14 +63,14 @@ public class BeanUtil {
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .build();
 
-        objectMapper2 = objectMapper
-                .copy()
-                .setSerializationInclusion(JsonInclude.Include.NON_NULL);
-
+        objectMapper.registerModule(new JavaTimeModule());
         register(Point.class, new PointDeserializer());
         register(GeoShape.class, new GeoShapeDeserializer());
         register("org.bson.conversions.Bson", "win.doyto.query.mongodb.entity.BsonDeserializer");
 
+        objectMapper2 = objectMapper
+                .copy()
+                .setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     @SuppressWarnings("unchecked")
@@ -154,6 +155,5 @@ public class BeanUtil {
         SimpleModule mod = new SimpleModule(clazz.getName(), new Version(1, 0, 0, "", "win.doyto", "doyto-query-code"));
         mod.addDeserializer(clazz, jsonDeserializer);
         objectMapper.registerModule(mod);
-        objectMapper2.registerModule(mod);
     }
 }

@@ -14,34 +14,26 @@
  * limitations under the License.
  */
 
-package win.doyto.query.entity;
+package win.doyto.query.web.role;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.io.Serializable;
-import java.util.Date;
+import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.PageQuery;
 
 /**
- * CommonEntity
+ * UserQuery
  *
- * @param <I> the type of entity id
- * @param <U> the type of user id
- * @author f0rb
- * @deprecated due to {@link java.util.Date}. Switch to
- * {@link AbstractEntity} or {@link AbstractCommonEntity}
+ * @author f0rb on 2020-04-01
  */
 @Getter
 @Setter
-@Deprecated
-@SuppressWarnings("java:S1133")
-public abstract class CommonEntity<I extends Serializable, U extends Serializable>
-        extends AbstractEntity<I, U, Date> {
-
-    private static final long serialVersionUID = 1;
-
-    @Override
-    protected Date current() {
-        return new Date();
-    }
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
+public class RoleQuery extends PageQuery {
+    private String roleName;
+    private String roleNameLike;
 }

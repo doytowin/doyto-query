@@ -14,31 +14,28 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.role;
+package win.doyto.query.web.config;
 
-import lombok.Getter;
-import lombok.Setter;
-import win.doyto.query.entity.AbstractCommonEntity;
-import win.doyto.query.validation.CreateGroup;
+import org.junit.jupiter.api.Test;
+import win.doyto.query.util.CommonUtil;
+import win.doyto.query.web.DemoApplicationTest;
+import win.doyto.query.web.role.RoleController;
 
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- * UserEntity
+ * AssociativeServiceBeanFactoryTest
  *
- * @author f0rb on 2020-04-01
+ * @author f0rb on 2021-12-11
  */
-@Table(name = "t_role")
-@Getter
-@Setter
-public class RoleEntity extends AbstractCommonEntity<Integer, Long> {
+class InjectionBeanPostProcessorTest extends DemoApplicationTest {
 
-    @NotNull(groups = CreateGroup.class)
-    private String roleName;
+    @InjectBean
+    RoleController roleController = new RoleController();
 
-    @NotNull(groups = CreateGroup.class)
-    private String roleCode;
+    @Test
+    void testInjection() {
+        assertNotNull(CommonUtil.readField(roleController, "listValidator"));
+    }
 
-    private Boolean valid;
 }

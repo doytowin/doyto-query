@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-package win.doyto.query.web.demo.module.user;
+package win.doyto.query.web.role;
 
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.entity.AbstractCommonEntity;
 import win.doyto.query.validation.CreateGroup;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -31,21 +28,15 @@ import javax.validation.constraints.NotNull;
  *
  * @author f0rb on 2020-04-01
  */
-@Table(name = "t_user")
 @Getter
 @Setter
-public class UserEntity extends AbstractCommonEntity<Long, Long> {
+public class RoleEntity extends AbstractCommonEntity<Long, Long> {
 
     @NotNull(groups = CreateGroup.class)
-    private String username;
-    private String email;
-    private String mobile;
+    private String roleName;
 
     @NotNull(groups = CreateGroup.class)
-    private String password;
-    private String nickname;
+    private String roleCode;
+
     private Boolean valid;
-    private String memo;
-    @Enumerated(EnumType.STRING)
-    private UserLevel userLevel;
 }

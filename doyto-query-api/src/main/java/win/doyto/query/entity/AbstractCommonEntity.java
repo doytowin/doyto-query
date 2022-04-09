@@ -20,7 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * CommonEntity
@@ -28,20 +28,16 @@ import java.util.Date;
  * @param <I> the type of entity id
  * @param <U> the type of user id
  * @author f0rb
- * @deprecated due to {@link java.util.Date}. Switch to
- * {@link AbstractEntity} or {@link AbstractCommonEntity}
  */
 @Getter
 @Setter
-@Deprecated
-@SuppressWarnings("java:S1133")
-public abstract class CommonEntity<I extends Serializable, U extends Serializable>
-        extends AbstractEntity<I, U, Date> {
+public abstract class AbstractCommonEntity<I extends Serializable, U extends Serializable>
+        extends AbstractEntity<I, U, LocalDateTime> {
 
     private static final long serialVersionUID = 1;
 
     @Override
-    protected Date current() {
-        return new Date();
+    protected LocalDateTime current() {
+        return LocalDateTime.now();
     }
 }

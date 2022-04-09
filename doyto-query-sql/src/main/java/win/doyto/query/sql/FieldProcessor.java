@@ -74,7 +74,7 @@ final class FieldProcessor {
         Field[] fields = ColumnUtil.initFields(field.getType());
         Arrays.stream(fields).forEach(FieldProcessor::init);
         return (argList, value) -> {
-            StringJoiner or = new StringJoiner(SPACE_OR);
+            StringJoiner or = new StringJoiner(SPACE_OR, "(", ")");
             for (Field subField : fields) {
                 Object subValue = CommonUtil.readField(subField, value);
                 if (QuerySuffix.isValidValue(subValue, subField)) {
@@ -82,7 +82,7 @@ final class FieldProcessor {
                     or.add(condition);
                 }
             }
-            return or.length() == 0 ? null : CommonUtil.wrapWithParenthesis(or.toString());
+            return or.length() == "()".length() ? null : or.toString();
         };
     }
 

@@ -24,18 +24,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.format.support.FormattingConversionService;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.validation.Validator;
-import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -46,8 +40,7 @@ import win.doyto.query.geo.GeoShape;
 import win.doyto.query.geo.GeoShapeDeserializer;
 import win.doyto.query.geo.Point;
 import win.doyto.query.geo.PointDeserializer;
-import win.doyto.query.web.component.GeoShapeEditor;
-import win.doyto.query.web.component.InjectionBeanPostProcessor;
+import win.doyto.query.web.config.WebComponentsConfiguration;
 
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -59,7 +52,7 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author f0rb
  */
-@ComponentScan("win.doyto.query.web.component")
+@Import(WebComponentsConfiguration.class)
 public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
 
     @Override
@@ -130,20 +123,6 @@ public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
     }
 
     @Bean
-    public BeanPostProcessor injectionBeanPostProcessor(AutowireCapableBeanFactory beanFactory) {
-        return new InjectionBeanPostProcessor(beanFactory);
-    }
-
-    @Bean
-    public ResourceBundleMessageSource resourceBundleMessageSource() {
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasenames("business", "error");
-        messageSource.setDefaultEncoding("UTF-8");
-        messageSource.setFallbackToSystemLocale(false);
-        return messageSource;
-    }
-
-    @Bean
     public LocaleResolver localeResolver(){
         CookieLocaleResolver cookieLocaleResolver = new CookieLocaleResolver() {
             @Override
@@ -168,15 +147,6 @@ public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
-    }
-
-    @Bean
-    public ConfigurableWebBindingInitializer configurableWebBindingInitializer(FormattingConversionService conversionService, Validator validator) {
-        ConfigurableWebBindingInitializer initializer = new ConfigurableWebBindingInitializer();
-        initializer.setConversionService(conversionService);
-        initializer.setValidator(validator);
-        initializer.setPropertyEditorRegistrar(r -> r.registerCustomEditor(GeoShape.class, new GeoShapeEditor()));
-        return initializer;
     }
 
 }

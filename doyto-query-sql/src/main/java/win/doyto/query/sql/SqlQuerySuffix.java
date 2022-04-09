@@ -23,7 +23,6 @@ import win.doyto.query.annotation.Enumerated;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
-import javax.persistence.EnumType;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -32,8 +31,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javax.persistence.EnumType;
 
-import static win.doyto.query.sql.Constant.SEPARATOR;
 import static win.doyto.query.sql.Constant.SPACE;
 
 /**
@@ -103,10 +102,9 @@ enum SqlQuerySuffix {
         } else {
             alias = "";
         }
-        String andSql = Arrays.stream(CommonUtil.splitByOr(fieldNameWithOr))
-                              .map(fieldName -> buildConditionForField(alias + fieldName, argList, value))
-                              .collect(Collectors.joining(Constant.SPACE_OR));
-        return CommonUtil.wrapWithParenthesis(andSql);
+        return Arrays.stream(CommonUtil.splitByOr(fieldNameWithOr))
+                     .map(fieldName -> buildConditionForField(alias + fieldName, argList, value))
+                     .collect(Collectors.joining(Constant.SPACE_OR, "(", ")"));
     }
 
     static String buildConditionForField(String fieldName, List<Object> argList, Object value) {
@@ -142,10 +140,9 @@ enum SqlQuerySuffix {
         return columnName + SPACE + getOp() + placeHolderEx;
     }
 
-    @SuppressWarnings("unchecked")
     private static void appendArg(List<Object> argList, Object value, String placeHolderEx) {
         if (value instanceof Collection) {
-            appendCollectionArg(argList, (Collection<Object>) value);
+            appendCollectionArg(argList, (Collection<?>) value);
         } else if (placeHolderEx.contains(Constant.PLACE_HOLDER)) {
             appendSingleArg(argList, value);
         }
@@ -155,7 +152,7 @@ enum SqlQuerySuffix {
         argList.add(value);
     }
 
-    private static void appendCollectionArg(List<Object> argList, Collection<Object> collection) {
+    private static void appendCollectionArg(List<Object> argList, Collection<?> collection) {
         if (collection.isEmpty()) {
             return;
         }
@@ -167,14 +164,14 @@ enum SqlQuerySuffix {
         }
     }
 
-    private static void appendEnumCollectionArg(List<Object> argList, Collection<Object> collection, Object instance) {
+    private static void appendEnumCollectionArg(List<Object> argList, Collection<?> collection, Object instance) {
         Enumerated enumerated = instance.getClass().getAnnotation(Enumerated.class);
         boolean enumToString = enumerated != null && enumerated.value() == EnumType.STRING;
         Function<Enum<?>, ?> enumMapper = enumToString ? Enum::toString : Enum::ordinal;
         collection.stream().map(element -> enumMapper.apply((Enum<?>) element)).forEach(argList::add);
     }
 
-    private static void appendCommonCollectionArg(List<Object> argList, Collection<Object> collection) {
+    private static void appendCommonCollectionArg(List<Object> argList, Collection<?> collection) {
         argList.addAll(collection);
     }
 
@@ -211,8 +208,9 @@ enum SqlQuerySuffix {
         @Override
         public String getPlaceHolderEx(Object value) {
             int size = ((Collection<?>) value).size();
-            String placeHolders = IntStream.range(0, size).mapToObj(i -> Constant.PLACE_HOLDER).collect(Collectors.joining(SEPARATOR));
-            return CommonUtil.wrapWithParenthesis(StringUtils.trimToNull(placeHolders));
+            return size == 0 ? "(null)" :
+                    IntStream.range(0, size).mapToObj(i -> Constant.PLACE_HOLDER)
+                             .collect(CommonUtil.CLT_COMMA_WITH_PAREN);
         }
     }
 

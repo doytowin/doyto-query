@@ -14,31 +14,24 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.role;
+package win.doyto.query.web.config;
 
-import lombok.Getter;
-import lombok.Setter;
-import win.doyto.query.entity.AbstractCommonEntity;
-import win.doyto.query.validation.CreateGroup;
+import win.doyto.query.geo.GeoShape;
+import win.doyto.query.util.BeanUtil;
 
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import java.beans.PropertyEditorSupport;
 
 /**
- * UserEntity
+ * GeoShapeEditor
  *
- * @author f0rb on 2020-04-01
+ * @author f0rb on 2022-03-15
  */
-@Table(name = "t_role")
-@Getter
-@Setter
-public class RoleEntity extends AbstractCommonEntity<Integer, Long> {
+class GeoShapeEditor extends PropertyEditorSupport {
 
-    @NotNull(groups = CreateGroup.class)
-    private String roleName;
+    @Override
+    public void setAsText(String text) throws IllegalArgumentException {
+        GeoShape<?> geoShape = BeanUtil.parse(text, GeoShape.class);
+        super.setValue(geoShape);
+    }
 
-    @NotNull(groups = CreateGroup.class)
-    private String roleCode;
-
-    private Boolean valid;
 }
