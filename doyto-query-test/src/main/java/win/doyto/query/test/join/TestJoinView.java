@@ -30,10 +30,10 @@ import javax.persistence.Table;
  */
 @Getter
 @Setter
-@Table(name = "user u")
+@Table(name = "t_user u")
 @Joins({
-        "left join t_user_and_role ur on ur.userId = u.id",
-        "inner join t_role r on r.id = ur.roleId and r.roleName = #{roleName}"
+        "left join j_user_and_role ur on ur.user_id = u.id",
+        "inner join t_role r on r.id = ur.role_id and r.roleName = #{roleName}"
 })
 public class TestJoinView {
 
