@@ -148,7 +148,7 @@ public class CommonUtil {
         return like.replaceAll("[%|_]", "\\\\$0");
     }
 
-    static String camelize(String or) {
+    public static String camelize(String or) {
         return or.substring(0, 1).toLowerCase() + or.substring(1);
     }
 
