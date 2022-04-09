@@ -16,17 +16,28 @@
 
 package win.doyto.query.jdbc;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
+import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.DataQuery;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.core.JoinQuery;
+import win.doyto.query.entity.Persistable;
 import win.doyto.query.sql.JoinQueryBuilder;
 import win.doyto.query.sql.SqlAndArgs;
+import win.doyto.query.util.CommonUtil;
 
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * JdbcDataQuery
@@ -56,4 +67,60 @@ public class JdbcDataQuery implements DataQuery {
         return databaseOperations.count(sqlAndArgs);
     }
 
+    @Override
+    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    List<V> joinQuery(Q query) {
+        Class<V> viewClass = query.getDomainClass();
+        List<V> mainEntities = this.query(query, viewClass);
+        querySubEntities(viewClass, mainEntities);
+        return mainEntities;
+    }
+
+    private <V extends Persistable<I>, I extends Serializable>
+    void querySubEntities(Class<V> viewClass, List<V> mainEntities) {
+        if (mainEntities.isEmpty()) {
+            return;
+        }
+        // used for every subdomain query
+        Class<I> mainIdClass = resolveKeyClass(mainEntities.get(0));
+        List<I> mainIds = mainEntities.stream().map(Persistable::getId).collect(Collectors.toList());
+
+        for (Field joinField : FieldUtils.getAllFieldsList(viewClass)) {
+            if (List.class.isAssignableFrom(joinField.getType()) && joinField.isAnnotationPresent(DomainPath.class)) {
+                queryEntityForJoinField(joinField, mainEntities, mainIds, mainIdClass);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <E extends Persistable<I>, I extends Serializable> Class<I> resolveKeyClass(E e) {
+        return (Class<I>) e.getId().getClass();
+    }
+
+    private <E extends Persistable<I>, I extends Serializable, R>
+    void queryEntityForJoinField(Field joinField, List<E> mainEntities, List<I> mainIds, Class<I> keyClass) {
+        Class<R> joinEntityClass = resolveActualReturnClass(joinField);
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(joinField, mainIds, joinEntityClass);
+        Map<I, List<R>> subDomainMap = queryIntoMainEntity(keyClass, joinEntityClass, sqlAndArgs);
+        mainEntities.forEach(e -> writeResultToMainDomain(joinField, subDomainMap, e));
+    }
+
+    @SuppressWarnings("unchecked")
+    private <R> Class<R> resolveActualReturnClass(Field field) {
+        ParameterizedType genericType = (ParameterizedType) field.getGenericType();
+        Type[] actualTypeArguments = genericType.getActualTypeArguments();
+        return (Class<R>) actualTypeArguments[0];
+    }
+
+    @SuppressWarnings("unchecked")
+    private <I, R> Map<I, List<R>> queryIntoMainEntity(Class<I> keyClass, Class<R> joinEntityClass, SqlAndArgs sqlAndArgs) {
+        RowMapper<R> joinRowMapper = (RowMapper<R>) holder.computeIfAbsent(joinEntityClass, BeanPropertyRowMapper::new);
+        return databaseOperations.query(sqlAndArgs, new JoinRowMapperResultSetExtractor<>(keyClass, joinRowMapper));
+    }
+
+    private <E extends Persistable<I>, I extends Serializable, R>
+    void writeResultToMainDomain(Field joinField, Map<I, List<R>> map, E e) {
+        Object list = map.getOrDefault(e.getId(), new ArrayList<>());
+        CommonUtil.writeField(joinField, e, list);
+    }
 }

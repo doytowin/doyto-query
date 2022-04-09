@@ -14,29 +14,17 @@
  * limitations under the License.
  */
 
-package win.doyto.query.jdbc;
+package win.doyto.query.core;
 
-import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowMapper;
-import win.doyto.query.sql.SqlAndArgs;
+import win.doyto.query.entity.Persistable;
 
-import java.util.List;
-import java.util.Map;
+import java.io.Serializable;
 
 /**
- * DbOperations
+ * JoinQuery
  *
- * @author f0rb on 2021-08-29
+ * @author f0rb on 2022-03-26
  */
-public interface DatabaseOperations {
-
-    <V> List<V> query(SqlAndArgs sqlAndArgs, RowMapper<V> rowMapper);
-
-    long count(SqlAndArgs sqlAndArgs);
-
-    Number insert(SqlAndArgs sqlAndArgs);
-
-    int update(SqlAndArgs sqlAndArgs);
-
-    <I, R> Map<I, List<R>> query(SqlAndArgs sqlAndArgs, ResultSetExtractor<Map<I, List<R>>> resultSetExtractor);
+public interface JoinQuery<V extends Persistable<I>, I extends Serializable> extends DoytoQuery {
+    Class<V> getDomainClass();
 }

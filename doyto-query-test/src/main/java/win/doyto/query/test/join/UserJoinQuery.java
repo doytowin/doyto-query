@@ -16,32 +16,38 @@
 
 package win.doyto.query.test.join;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.entity.Persistable;
+import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.JoinQuery;
+import win.doyto.query.core.PageQuery;
+import win.doyto.query.test.PermissionQuery;
+import win.doyto.query.test.role.RoleQuery;
 
-import java.util.List;
-import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
- * UserCountByRoleView
+ * UserJoinQuery
  *
- * @author f0rb on 2019-06-15
+ * @author f0rb on 2022-03-26
  */
 @Getter
 @Setter
-@Table(name = "t_user")
-public class UserView implements Persistable<Long> {
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserJoinQuery extends PageQuery implements JoinQuery<UserView, Long> {
 
-    private Long id;
-    private String username;
-    private String email;
+    @Transient
+    private RoleQuery rolesQuery;
 
-    @DomainPath({"user", "role"})
-    private List<RoleView> roles;
+    @Transient
+    private PermissionQuery permsQuery;
 
-    @DomainPath({"user", "role", "perm"})
-    private List<PermView> perms;
-
+    @Override
+    public Class<UserView> getDomainClass() {
+        return UserView.class;
+    }
 }

@@ -21,9 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 import win.doyto.query.service.PageList;
-import win.doyto.query.test.join.TestJoinQuery;
-import win.doyto.query.test.join.TestJoinView;
-import win.doyto.query.test.join.UserCountByRoleView;
+import win.doyto.query.test.join.*;
 
 import java.util.List;
 
@@ -73,6 +71,24 @@ class JdbcDataQueryTest extends JdbcApplicationTest {
         assertThat(page.getList()).extracting(TestJoinView::getUsername).containsExactly("f0rb", "user4");
         assertThat(testJoinQuery.getPageNumber()).isZero();
         assertThat(testJoinQuery.getPageSize()).isEqualTo(10);
+    }
+
+    @Test
+    void queryUserWithRoles() {
+        UserJoinQuery userJoinQuery = UserJoinQuery.builder().build();
+
+        List<UserView> users = jdbcDataQuery.joinQuery(userJoinQuery);
+
+        assertThat(users).extracting("roles")
+                         .extractingResultOf("size", Integer.class)
+                         .containsExactly(2, 0, 1, 2);
+        assertThat(users.get(0).getRoles())
+                .hasSize(2)
+                .flatExtracting("id", "roleName", "roleCode")
+                .containsExactly(1, "测试", "TEST", 2, "高级", "VIP");
+        assertThat(users).extracting("perms")
+                         .extractingResultOf("size", Integer.class)
+                         .containsExactly(3, 0, 2, 3);
     }
 
 }

@@ -14,29 +14,32 @@
  * limitations under the License.
  */
 
-package win.doyto.query.jdbc;
+package win.doyto.query.test.join;
 
-import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowMapper;
-import win.doyto.query.sql.SqlAndArgs;
+import lombok.Getter;
+import lombok.Setter;
+import win.doyto.query.entity.Persistable;
 
-import java.util.List;
-import java.util.Map;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
- * DbOperations
+ * UserEntity
  *
- * @author f0rb on 2021-08-29
+ * @author f0rb on 2020-04-01
  */
-public interface DatabaseOperations {
+@Getter
+@Setter
+@Table(name = "t_role")
+public class RoleView implements Persistable<Integer> {
 
-    <V> List<V> query(SqlAndArgs sqlAndArgs, RowMapper<V> rowMapper);
+    @Id
+    private Integer id;
 
-    long count(SqlAndArgs sqlAndArgs);
+    private String roleName;
 
-    Number insert(SqlAndArgs sqlAndArgs);
+    private String roleCode;
 
-    int update(SqlAndArgs sqlAndArgs);
+    private Boolean valid;
 
-    <I, R> Map<I, List<R>> query(SqlAndArgs sqlAndArgs, ResultSetExtractor<Map<I, List<R>>> resultSetExtractor);
 }
