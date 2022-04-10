@@ -118,7 +118,8 @@ public class ColumnUtil {
     public static boolean shouldRetain(Field field) {
         return !field.getName().startsWith("$")                  // $jacocoData
                 && !Modifier.isStatic(field.getModifiers())      // static field
-                && !field.isAnnotationPresent(Transient.class)   // Transient field
+                // Transient field, won't be used in where condition
+                && !field.isAnnotationPresent(Transient.class)
                 ;
     }
 

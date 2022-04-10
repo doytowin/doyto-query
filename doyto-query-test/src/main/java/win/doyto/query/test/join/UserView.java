@@ -22,6 +22,7 @@ import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.entity.Persistable;
 
 import java.util.List;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
@@ -34,6 +35,7 @@ import javax.persistence.Table;
 @Table(name = "t_user")
 public class UserView implements Persistable<Long> {
 
+    @Id
     private Long id;
     private String username;
     private String email;

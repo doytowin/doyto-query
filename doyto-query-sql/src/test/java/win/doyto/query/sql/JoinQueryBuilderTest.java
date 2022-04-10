@@ -107,13 +107,28 @@ class JoinQueryBuilderTest {
     @Test
     void buildSqlAndArgsForSubDomain() throws NoSuchFieldException {
         Field field = UserView.class.getDeclaredField("perms");
+
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+                field, Arrays.asList(1, 2, 3), PermView.class);
+
         String expected = "SELECT j0ur.user_id AS PK_FOR_JOIN, p.id, p.permName, p.valid" +
                 "\n FROM j_user_and_role j0ur" +
                 "\n INNER JOIN j_role_and_perm j1rp ON j0ur.role_id = j1rp.role_id" +
                 "\n INNER JOIN t_perm p ON j1rp.perm_id = p.id" +
                 "\n WHERE j0ur.user_id IN (1, 2, 3)";
+        assertEquals(expected, sqlAndArgs.getSql());
+    }
+
+    @Test
+    void buildJoinSqlForReversePath() throws NoSuchFieldException {
+        Field field = RoleView.class.getDeclaredField("users");
+
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
-                field, Arrays.asList(1, 2, 3), PermView.class);
+                field, Arrays.asList(1, 2, 3), UserView.class);
+
+        String expected = "SELECT j0ur.role_id AS PK_FOR_JOIN, u.id, u.username, u.email" +
+                "\n FROM t_user u" +
+                "\n INNER JOIN j_user_and_role j0ur ON u.id = j0ur.user_id AND j0ur.role_id IN (1, 2, 3)";
         assertEquals(expected, sqlAndArgs.getSql());
     }
 }

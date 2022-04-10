@@ -18,8 +18,10 @@ package win.doyto.query.test.join;
 
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.entity.Persistable;
 
+import java.util.List;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -41,5 +43,8 @@ public class RoleView implements Persistable<Integer> {
     private String roleCode;
 
     private Boolean valid;
+
+    @DomainPath({"user", "role"})
+    private List<UserView> users;
 
 }
