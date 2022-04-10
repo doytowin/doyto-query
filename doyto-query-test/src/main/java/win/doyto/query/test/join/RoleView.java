@@ -47,4 +47,7 @@ public class RoleView implements Persistable<Integer> {
     @DomainPath({"user", "role"})
     private List<UserView> users;
 
+    @DomainPath({"role", "perm"})
+    private List<PermView> perms;
+
 }

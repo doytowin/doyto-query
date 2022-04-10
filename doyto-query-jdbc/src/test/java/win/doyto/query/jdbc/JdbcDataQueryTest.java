@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 import win.doyto.query.service.PageList;
 import win.doyto.query.test.PermissionQuery;
+import win.doyto.query.test.UserQuery;
 import win.doyto.query.test.join.*;
 import win.doyto.query.test.role.RoleQuery;
 
@@ -99,5 +100,22 @@ class JdbcDataQueryTest extends JdbcApplicationTest {
         assertThat(users).hasSize(4);
         assertThat(users).extracting("roles").containsOnlyNulls();
         assertThat(users).extracting("perms").containsOnlyNulls();
+    }
+
+    @Test
+    void queryRoleWithUsersAndPerms() {
+        RoleQuery roleQuery = RoleQuery.builder().usersQuery(new UserQuery())
+                                       .permsQuery(new PermissionQuery()).build();
+
+        List<RoleView> roles = jdbcDataQuery.joinQuery(roleQuery);
+
+        assertThat(roles)
+                .extracting("perms")
+                .extractingResultOf("size", Integer.class)
+                .containsExactly(2, 1, 0, 0, 2);
+        assertThat(roles)
+                .extracting("users")
+                .extractingResultOf("size", Integer.class)
+                .containsExactly(3, 2, 0, 0, 0);
     }
 }
