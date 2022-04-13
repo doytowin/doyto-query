@@ -37,6 +37,8 @@ public class MenuView implements Persistable<Long> {
 
     @Id
     private Long id;
+    private String menuName;
+    private String platform;
 
     @DomainPath({"user", "role", "perm", "menu"})
     private List<UserView> users;

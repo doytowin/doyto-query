@@ -46,4 +46,7 @@ public class UserView implements Persistable<Long> {
     @DomainPath({"user", "role", "perm"})
     private List<PermView> perms;
 
+    @DomainPath({"user", "role", "perm", "menu"})
+    private List<MenuView> menus;
+
 }

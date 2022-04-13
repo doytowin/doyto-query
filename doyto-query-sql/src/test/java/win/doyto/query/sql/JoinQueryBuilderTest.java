@@ -120,6 +120,22 @@ class JoinQueryBuilderTest {
     }
 
     @Test
+    void buildSqlAndArgsForSubDomain_FourDomains() throws NoSuchFieldException {
+        Field field = UserView.class.getDeclaredField("menus");
+
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+                field, Arrays.asList(1, 2, 3), PermView.class);
+
+        String expected = "SELECT j0ur.user_id AS PK_FOR_JOIN, m.id, m.permName, m.valid" +
+                "\n FROM j_user_and_role j0ur" +
+                "\n INNER JOIN j_role_and_perm j1rp ON j0ur.role_id = j1rp.role_id" +
+                "\n INNER JOIN j_perm_and_menu j2pm ON j1rp.perm_id = j2pm.perm_id" +
+                "\n INNER JOIN t_menu m ON j2pm.menu_id = m.id" +
+                "\n WHERE j0ur.user_id IN (1, 2, 3)";
+        assertEquals(expected, sqlAndArgs.getSql());
+    }
+
+    @Test
     void buildJoinSqlForReversePath_TwoDomains() throws NoSuchFieldException {
         Field field = RoleView.class.getDeclaredField("users");
 
