@@ -141,8 +141,16 @@ public class JoinQueryBuilder {
         String sql = SELECT + joinAliases[n] + CONN + joinIds[n]
                 + AS + KEY_COLUMN + SEPARATOR + columns + LF
                 + FROM + joinTables[0] + SPACE + joinAliases[0] + LF
-                + INNER_JOIN + joinTables[n] + SPACE + joinAliases[n]
-                + ON + joinAliases[0] + CONN + subDomainId + EQUAL + joinAliases[n] + CONN + joinIds[0]
+                + INNER_JOIN + joinTables[1] + SPACE + joinAliases[1]
+                + ON + joinAliases[0] + CONN + subDomainId;
+        StringBuilder innerJoinSB = new StringBuilder();
+
+        for (int i = 1; i < n; i++) {
+            innerJoinSB.append(EQUAL).append(joinAliases[i]).append(CONN).append(joinIds[i - 1]).append(LF)
+                       .append(INNER_JOIN).append(joinTables[i + 1]).append(SPACE).append(joinAliases[i + 1])
+                       .append(ON).append(joinAliases[i]).append(CONN).append(joinIds[i]);
+        }
+        sql += innerJoinSB + EQUAL + joinAliases[n] + CONN + joinIds[n - 1]
                 + AND + joinAliases[n] + CONN + joinIds[n] + IN + mainIdsArg;
         return new SqlAndArgs(sql);
     }

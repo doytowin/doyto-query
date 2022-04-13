@@ -18,8 +18,10 @@ package win.doyto.query.test.join;
 
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.entity.Persistable;
 
+import java.util.List;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -37,5 +39,8 @@ public class PermView implements Persistable<Long> {
     private Long id;
     private String permName;
     private Boolean valid;
+
+    @DomainPath({"user", "role", "perm"})
+    private List<UserView> users;
 
 }
