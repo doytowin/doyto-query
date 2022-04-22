@@ -17,12 +17,12 @@
 package win.doyto.query.sql;
 
 import win.doyto.query.core.DomainRoute;
+import win.doyto.query.util.CommonUtil;
 
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static win.doyto.query.sql.Constant.FROM;
-import static win.doyto.query.sql.Constant.WHERE;
+import static win.doyto.query.sql.Constant.*;
 
 /**
  * DomainRouteProcessor
@@ -36,7 +36,7 @@ public class DomainRouteProcessor implements FieldProcessor.Processor {
         List<String> domains = domainRoute.getPath();
         String[] domainIds = prepareDomainIds(domains);
         String[] joinTables = prepareJoinTables(domains);
-        return buildClause(domainIds, joinTables);
+        return buildClause(domainIds, joinTables, argList, domainRoute);
     }
 
     private String[] prepareDomainIds(List<String> domains) {
@@ -49,7 +49,7 @@ public class DomainRouteProcessor implements FieldProcessor.Processor {
                         .toArray(String[]::new);
     }
 
-    private String buildClause(String[] domainIds, String[] joinTables) {
+    private String buildClause(String[] domainIds, String[] joinTables, List<Object> argList, DomainRoute domainRoute) {
         int joinCount = joinTables.length;
         StringBuilder subQueryBuilder = new StringBuilder("id");
         for (int i = joinCount; i > 0; i--) {
@@ -61,6 +61,13 @@ public class DomainRouteProcessor implements FieldProcessor.Processor {
                 subQueryBuilder.append(WHERE).append(domainIds[i - 1]);
             }
         }
+
+        Object value = CommonUtil.readField(domainRoute, domainIds[0]);
+        if (value != null) {
+            subQueryBuilder.append(WHERE).append(domainIds[0]).append(EQUAL_HOLDER);
+            argList.add(value);
+        }
+
         for (int i = 0; i < joinCount; i++) {
             subQueryBuilder.append(")");
         }

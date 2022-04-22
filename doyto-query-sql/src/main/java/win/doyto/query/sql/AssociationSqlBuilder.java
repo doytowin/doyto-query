@@ -48,10 +48,10 @@ public class AssociationSqlBuilder<K1, K2> {
     private String countIn;
 
     public AssociationSqlBuilder(String tableName, String k1Column, String k2Column) {
-        selectK1ColumnByK2Id = SELECT + k1Column + " FROM " + tableName + WHERE + k2Column + " = ?";
-        selectK2ColumnByK1Id = SELECT + k2Column + " FROM " + tableName + WHERE + k1Column + " = ?";
-        deleteByK1 = DELETE_FROM + tableName + WHERE + k1Column + " = ?";
-        deleteByK2 = DELETE_FROM + tableName + WHERE + k2Column + " = ?";
+        selectK1ColumnByK2Id = SELECT + k1Column + " FROM " + tableName + WHERE + k2Column + EQUAL_HOLDER;
+        selectK2ColumnByK1Id = SELECT + k2Column + " FROM " + tableName + WHERE + k1Column + EQUAL_HOLDER;
+        deleteByK1 = DELETE_FROM + tableName + WHERE + k1Column + EQUAL_HOLDER;
+        deleteByK2 = DELETE_FROM + tableName + WHERE + k2Column + EQUAL_HOLDER;
 
         insertSql = "INSERT INTO " + tableName + " (" + k1Column + ", " + k2Column + ") VALUES ";
         placeHolders = "(?, ?)";

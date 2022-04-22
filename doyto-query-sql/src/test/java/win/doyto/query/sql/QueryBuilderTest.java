@@ -242,7 +242,8 @@ class QueryBuilderTest {
 
     @Test
     void buildNestedQuery() {
-        PermissionQuery permissionQuery = PermissionQuery.builder().userId(1).build();
+        DoytoDomainRoute domainRoute = DoytoDomainRoute.builder().path(Arrays.asList("user", "role", "perm")).userId(1).build();
+        PermissionQuery permissionQuery = PermissionQuery.builder().domainRoute(domainRoute).build();
 
         assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN " +
                          "(SELECT roleId FROM t_user_and_role WHERE userId = ?))",
@@ -468,7 +469,7 @@ class QueryBuilderTest {
 
     @Test
     void buildRelativeQuery() {
-        DoytoDomainRoute domainRoute = new DoytoDomainRoute(Arrays.asList("user", "role", "perm"));
+        DoytoDomainRoute domainRoute =  DoytoDomainRoute.builder().path(Arrays.asList("user", "role", "perm")).build();
         PermissionQuery permissionQuery = PermissionQuery.builder().domainRoute(domainRoute).build();
 
         String sql = permQueryBuilder.buildSelectAndArgs(permissionQuery, argList);

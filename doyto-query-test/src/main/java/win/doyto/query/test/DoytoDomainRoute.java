@@ -16,9 +16,7 @@
 
 package win.doyto.query.test;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import win.doyto.query.core.DomainRoute;
 
 import java.util.List;
@@ -30,7 +28,10 @@ import java.util.List;
  */
 @Setter
 @Getter
-@RequiredArgsConstructor
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DoytoDomainRoute implements DomainRoute {
     private List<String> path;
+    private Integer userId;
 }

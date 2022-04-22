@@ -27,6 +27,7 @@ interface Constant {
     String PLACE_HOLDER = "?";
     String SPACE = " ";
     String EQUAL = " = ";
+    String EQUAL_HOLDER = " = ?";
     String SELECT = "SELECT ";
     String COUNT = "count(*)";
     String FROM = " FROM ";
