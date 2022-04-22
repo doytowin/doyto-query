@@ -109,7 +109,11 @@ public class CommonUtil {
     }
 
     public static Object readField(Object target, String fieldName) {
-        return readField(getField(target, fieldName), target);
+        Field field = getField(target, fieldName);
+        if (field == null) {
+            return null;
+        }
+        return readField(field, target);
     }
 
     public static Field getField(Object target, String fieldName) {

@@ -70,4 +70,10 @@ class CommonUtilTest {
             return "test2";
         }
     }
+
+    @Test
+    void fixNPEInReadField() {
+        Object noop = readField(new PlaceHolderObject("test1"), "noop");
+        assertNull(noop);
+    }
 }
