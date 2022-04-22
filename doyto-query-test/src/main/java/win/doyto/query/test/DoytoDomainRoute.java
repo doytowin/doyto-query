@@ -20,6 +20,7 @@ import lombok.*;
 import win.doyto.query.core.DomainRoute;
 
 import java.util.List;
+import javax.persistence.Transient;
 
 /**
  * DoytoDomainRoute
@@ -32,6 +33,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DoytoDomainRoute implements DomainRoute {
+    @Transient
     private List<String> path;
     private Integer userId;
+    private List<Integer> roleIdIn;
 }

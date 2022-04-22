@@ -17,12 +17,15 @@
 package win.doyto.query.sql;
 
 import win.doyto.query.core.DomainRoute;
+import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static win.doyto.query.sql.Constant.*;
+import static win.doyto.query.sql.Constant.FROM;
+import static win.doyto.query.sql.Constant.WHERE;
 
 /**
  * DomainRouteProcessor
@@ -62,10 +65,16 @@ public class DomainRouteProcessor implements FieldProcessor.Processor {
             }
         }
 
-        Object value = CommonUtil.readField(domainRoute, domainIds[0]);
-        if (value != null) {
-            subQueryBuilder.append(WHERE).append(domainIds[0]).append(EQUAL_HOLDER);
-            argList.add(value);
+        Field[] fields = ColumnUtil.initFields(domainRoute.getClass(), FieldProcessor::init);
+        for (Field field : fields) {
+            if (field.getName().startsWith(domainIds[0])) {
+                Object value = CommonUtil.readField(field, domainRoute);
+                if (value != null) {
+                    String clause = FieldProcessor.execute(field, argList, value);
+                    subQueryBuilder.append(WHERE).append(clause);
+                }
+                break;
+            }
         }
 
         for (int i = 0; i < joinCount; i++) {

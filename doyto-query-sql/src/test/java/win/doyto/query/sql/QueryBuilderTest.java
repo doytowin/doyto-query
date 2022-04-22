@@ -352,7 +352,9 @@ class QueryBuilderTest {
 
     @Test
     void buildSubQueryWithCollection() {
-        PermissionQuery permissionQuery = PermissionQuery.builder().roleIdIn(Arrays.asList(1, 2, 3)).build();
+        DoytoDomainRoute domainRoute =  DoytoDomainRoute.builder().path(Arrays.asList("role", "perm")).roleIdIn(Arrays.asList(1, 2, 3)).build();
+        PermissionQuery permissionQuery = PermissionQuery.builder().domainRoute(domainRoute).build();
+
         assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN (?, ?, ?))",
                      permQueryBuilder.buildSelectAndArgs(permissionQuery, argList));
         assertThat(argList).containsExactly(1, 2, 3);
@@ -360,7 +362,8 @@ class QueryBuilderTest {
 
     @Test
     void buildSubQueryWithNullCollection() {
-        PermissionQuery nullQuery = PermissionQuery.builder().roleIdIn(Arrays.asList()).build();
+        DoytoDomainRoute domainRoute =  DoytoDomainRoute.builder().path(Arrays.asList("role", "perm")).roleIdIn(Arrays.asList()).build();
+        PermissionQuery nullQuery = PermissionQuery.builder().domainRoute(domainRoute).build();
         assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN (null))",
                      permQueryBuilder.buildSelectAndArgs(nullQuery, argList));
         assertThat(argList).isEmpty();

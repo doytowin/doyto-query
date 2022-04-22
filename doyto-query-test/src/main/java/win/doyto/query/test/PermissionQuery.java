@@ -25,8 +25,6 @@ import win.doyto.query.annotation.NestedQueries;
 import win.doyto.query.annotation.NestedQuery;
 import win.doyto.query.core.PageQuery;
 
-import java.util.List;
-
 /**
  * PermissionQuery
  *
@@ -54,9 +52,6 @@ public class PermissionQuery extends PageQuery {
             )
     }, appendWhere = false)
     private Boolean validUser;
-
-    @NestedQueries(@NestedQuery(select = "permId", from = "t_role_and_perm"))
-    private List<Integer> roleIdIn;
 
     @NestedQueries(value = {
             @NestedQuery(select = "permId", from = "t_role_and_perm"),
