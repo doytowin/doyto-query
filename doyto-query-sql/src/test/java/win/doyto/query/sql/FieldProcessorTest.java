@@ -71,10 +71,12 @@ class FieldProcessorTest {
 
     @Test
     void testCustomWhereColumnForNextNestedQuery() {
-        Field field = initField("user");
+        Field field = initField("domainRoute");
 
         UserQuery userQuery = UserQuery.builder().usernameLike("test").userLevel(UserLevel.普通).build();
-        String sql = FieldProcessor.execute(field, argList, userQuery);
+        DoytoDomainRoute domainRoute = DoytoDomainRoute.builder().path(Arrays.asList("user", "role", "perm")).userQuery(userQuery).build();
+
+        String sql = FieldProcessor.execute(field, argList, domainRoute);
 
         String expected = "id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN " +
                 "(SELECT roleId FROM t_user_and_role WHERE userId IN " +

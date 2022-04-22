@@ -37,4 +37,5 @@ public class DoytoDomainRoute implements DomainRoute {
     private List<String> path;
     private Integer userId;
     private List<Integer> roleIdIn;
+    private UserQuery userQuery;
 }

@@ -48,13 +48,6 @@ public class PermissionQuery extends PageQuery {
     private Boolean validUser;
 
     @NestedQueries(value = {
-            @NestedQuery(select = "permId", from = "t_role_and_perm"),
-            @NestedQuery(select = "roleId", from = "t_user_and_role", where = "userId"),
-            @NestedQuery(select = "id", from = "t_user")
-    })
-    private UserQuery user;
-
-    @NestedQueries(value = {
             @NestedQuery(select = "permId", from = "t_role_and_perm", where = "roleId"),
             @NestedQuery(select = "id", from = "t_role")
     })
