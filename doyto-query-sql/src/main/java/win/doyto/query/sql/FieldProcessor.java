@@ -23,6 +23,7 @@ import win.doyto.query.annotation.NestedQueries;
 import win.doyto.query.annotation.NestedQuery;
 import win.doyto.query.annotation.QueryField;
 import win.doyto.query.annotation.QueryTableAlias;
+import win.doyto.query.core.DomainRoute;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Or;
 import win.doyto.query.core.QuerySuffix;
@@ -56,7 +57,9 @@ final class FieldProcessor {
 
     public static void init(Field field) {
         Processor processor;
-        if (Or.class.isAssignableFrom(field.getType())) {
+        if (DomainRoute.class.isAssignableFrom(field.getType())) {
+            processor = new DomainRouteProcessor();
+        } else if (Or.class.isAssignableFrom(field.getType())) {
             processor = initFieldMappedByOr(field);
         } else if (field.isAnnotationPresent(QueryTableAlias.class)) {
             processor = initFieldAnnotatedByQueryTableAlias(field);

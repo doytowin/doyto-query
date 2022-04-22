@@ -465,4 +465,19 @@ class QueryBuilderTest {
         assertThat(sql).isEqualTo("SELECT * FROM user");
         assertThat(argList).containsExactly();
     }
+
+    @Test
+    void buildRelativeQuery() {
+        DoytoDomainRoute domainRoute = new DoytoDomainRoute(Arrays.asList("user", "role", "perm"));
+        PermissionQuery permissionQuery = PermissionQuery.builder().domainRoute(domainRoute).build();
+
+        String sql = permQueryBuilder.buildSelectAndArgs(permissionQuery, argList);
+
+        String expected = "SELECT * FROM permission WHERE id IN (" +
+                "SELECT permId FROM t_role_and_perm WHERE roleId IN (" +
+                "SELECT roleId FROM t_user_and_role" +
+                "))";
+        assertThat(sql).isEqualTo(expected);
+        assertThat(argList).isEmpty();
+    }
 }

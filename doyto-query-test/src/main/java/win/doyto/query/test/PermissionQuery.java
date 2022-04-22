@@ -39,6 +39,8 @@ import java.util.List;
 @AllArgsConstructor
 public class PermissionQuery extends PageQuery {
 
+    private DoytoDomainRoute domainRoute;
+
     @NestedQueries({
             @NestedQuery(select = "permId", from = "t_role_and_perm"),
             @NestedQuery(select = "roleId", from = "t_user_and_role"),
