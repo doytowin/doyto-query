@@ -47,10 +47,4 @@ public class PermissionQuery extends PageQuery {
     }, appendWhere = false)
     private Boolean validUser;
 
-    @NestedQueries(value = {
-            @NestedQuery(select = "permId", from = "t_role_and_perm", where = "roleId"),
-            @NestedQuery(select = "id", from = "t_role")
-    })
-    private String roleCodeLikeOrRoleNameLike;
-
 }

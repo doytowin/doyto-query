@@ -18,6 +18,7 @@ package win.doyto.query.test;
 
 import lombok.*;
 import win.doyto.query.core.DomainRoute;
+import win.doyto.query.test.role.RoleQuery;
 
 import java.util.List;
 import javax.persistence.Transient;
@@ -38,4 +39,5 @@ public class DoytoDomainRoute implements DomainRoute {
     private Integer userId;
     private List<Integer> roleIdIn;
     private UserQuery userQuery;
+    private RoleQuery roleQuery;
 }

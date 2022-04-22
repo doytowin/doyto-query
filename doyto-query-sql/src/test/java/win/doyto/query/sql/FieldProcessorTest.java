@@ -24,6 +24,7 @@ import win.doyto.query.test.DoytoDomainRoute;
 import win.doyto.query.test.PermissionQuery;
 import win.doyto.query.test.UserLevel;
 import win.doyto.query.test.UserQuery;
+import win.doyto.query.test.role.RoleQuery;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -43,23 +44,18 @@ import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 class FieldProcessorTest {
 
     private List<Object> argList;
+    private Field field;
 
+    @SneakyThrows
     @BeforeEach
     void setUp() {
         argList = new ArrayList<>();
-    }
-
-    @SneakyThrows
-    private Field initField(String fieldName) {
-        Field field = PermissionQuery.class.getDeclaredField(fieldName);
+        field = PermissionQuery.class.getDeclaredField("domainRoute");
         FieldProcessor.init(field);
-        return field;
     }
 
     @Test
     void testResolveNestedQueries() {
-        Field field = initField("domainRoute");
-
         DoytoDomainRoute domainRoute = DoytoDomainRoute.builder().path(Arrays.asList("user", "role", "perm")).userId(2).build();
         String sql = FieldProcessor.execute(field, argList, domainRoute);
 
@@ -71,8 +67,6 @@ class FieldProcessorTest {
 
     @Test
     void testCustomWhereColumnForNextNestedQuery() {
-        Field field = initField("domainRoute");
-
         UserQuery userQuery = UserQuery.builder().usernameLike("test").userLevel(UserLevel.普通).build();
         DoytoDomainRoute domainRoute = DoytoDomainRoute.builder().path(Arrays.asList("user", "role", "perm")).userQuery(userQuery).build();
 
@@ -87,9 +81,10 @@ class FieldProcessorTest {
 
     @Test
     void testNestedQueryOnFieldWithOr() {
-        Field field = initField("roleCodeLikeOrRoleNameLike");
+        RoleQuery roleQuery = RoleQuery.builder().roleCodeLikeOrRoleNameLike("test").build();
+        DoytoDomainRoute domainRoute = DoytoDomainRoute.builder().path(Arrays.asList("role", "perm")).roleQuery(roleQuery).build();
 
-        String sql = FieldProcessor.execute(field, argList, "test");
+        String sql = FieldProcessor.execute(field, argList, domainRoute);
 
         String expected = "id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN " +
                 "(SELECT id FROM t_role WHERE (roleCode LIKE ? OR roleName LIKE ?)))";
