@@ -341,16 +341,6 @@ class QueryBuilderTest {
     }
 
     @Test
-    void buildNestedQueryIgnoreWhere() {
-        PermissionQuery permissionQuery = PermissionQuery.builder().validUser(true).build();
-
-        assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN " +
-                         "(SELECT roleId FROM t_user_and_role ur inner join user u on u.id = ur.userId and u.valid = ?))",
-                     permQueryBuilder.buildSelectAndArgs(permissionQuery, argList));
-        assertThat(argList).containsExactly(true);
-    }
-
-    @Test
     void buildSubQueryWithCollection() {
         DoytoDomainRoute domainRoute =  DoytoDomainRoute.builder().path(Arrays.asList("role", "perm")).roleIdIn(Arrays.asList(1, 2, 3)).build();
         PermissionQuery permissionQuery = PermissionQuery.builder().domainRoute(domainRoute).build();
