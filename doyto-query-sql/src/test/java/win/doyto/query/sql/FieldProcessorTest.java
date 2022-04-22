@@ -20,12 +20,14 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
+import win.doyto.query.test.DoytoDomainRoute;
 import win.doyto.query.test.PermissionQuery;
 import win.doyto.query.test.UserLevel;
 import win.doyto.query.test.UserQuery;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,9 +58,10 @@ class FieldProcessorTest {
 
     @Test
     void testResolveNestedQueries() {
-        Field field = initField("userId");
+        Field field = initField("domainRoute");
 
-        String sql = FieldProcessor.execute(field, argList, 2);
+        DoytoDomainRoute domainRoute = DoytoDomainRoute.builder().path(Arrays.asList("user", "role", "perm")).userId(2).build();
+        String sql = FieldProcessor.execute(field, argList, domainRoute);
 
         String expected = "id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN " +
                 "(SELECT roleId FROM t_user_and_role WHERE userId = ?))";
