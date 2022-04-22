@@ -49,7 +49,8 @@ import static win.doyto.query.sql.Constant.*;
 final class FieldProcessor {
 
     private static final Map<Field, Processor> FIELD_PROCESSOR_MAP = new ConcurrentHashMap<>();
-    public static final Processor EMPTY_PROCESSOR = ((argList, value) -> EMPTY);
+    private static final Processor EMPTY_PROCESSOR = ((argList, value) -> EMPTY);
+    private static final DomainRouteProcessor DOMAIN_ROUTE_PROCESSOR = new DomainRouteProcessor();
 
     public static String execute(Field field, List<Object> argList, Object value) {
         return FIELD_PROCESSOR_MAP.get(field).process(argList, value);
@@ -58,7 +59,7 @@ final class FieldProcessor {
     public static void init(Field field) {
         Processor processor;
         if (DomainRoute.class.isAssignableFrom(field.getType())) {
-            processor = new DomainRouteProcessor();
+            processor = DOMAIN_ROUTE_PROCESSOR;
         } else if (Or.class.isAssignableFrom(field.getType())) {
             processor = initFieldMappedByOr(field);
         } else if (field.isAnnotationPresent(QueryTableAlias.class)) {

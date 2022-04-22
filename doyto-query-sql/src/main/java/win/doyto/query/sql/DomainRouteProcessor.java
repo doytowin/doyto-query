@@ -32,7 +32,7 @@ import static win.doyto.query.sql.Constant.*;
  *
  * @author f0rb on 2022-04-22
  */
-public class DomainRouteProcessor implements FieldProcessor.Processor {
+class DomainRouteProcessor implements FieldProcessor.Processor {
 
     private static final String TABLE_FORMAT = "t_%s";
     private static final String JOIN_TABLE_FORMAT = "t_%s_and_%s";
