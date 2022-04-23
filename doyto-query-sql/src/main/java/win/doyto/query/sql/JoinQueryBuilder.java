@@ -44,6 +44,7 @@ public class JoinQueryBuilder {
 
     public static final String KEY_COLUMN = "PK_FOR_JOIN";
     public static final String FMT_ID = "%s_id";
+    public static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
     public static final String JOIN_TABLE_FORMAT = GlobalConfiguration.instance().getJoinTableFormat();
 
     public static SqlAndArgs buildSelectAndArgs(DoytoQuery q, Class<?> entityClass) {
@@ -97,7 +98,7 @@ public class JoinQueryBuilder {
             joinAliases[i] = String.format("j%d%c%c", i, domains[i].charAt(0), domains[i + 1].charAt(0));
         }
         String target = domains[n];
-        joinTables[n] = String.format("t_%s", target);
+        joinTables[n] = String.format(TABLE_FORMAT, target);
         joinAliases[n] = firstLetter(target).toString();
         joinIds[n] = String.format(FMT_ID, target);
 
@@ -130,7 +131,7 @@ public class JoinQueryBuilder {
         String[] joinAliases = new String[size];
         String[] joinIds = new String[size];
         String target = domains[0];
-        joinTables[0] = String.format("t_%s", target);
+        joinTables[0] = String.format(TABLE_FORMAT, target);
         joinAliases[0] = firstLetter(target).toString();
         joinIds[0] = String.format(FMT_ID, target);
         for (int i = 1; i < size; i++) {

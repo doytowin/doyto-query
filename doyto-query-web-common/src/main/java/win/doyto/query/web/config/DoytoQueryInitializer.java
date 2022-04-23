@@ -41,6 +41,12 @@ public class DoytoQueryInitializer implements ApplicationContextInitializer<Conf
         configDialect(globalConfiguration, environment);
         configStartPageNumber(globalConfiguration, environment);
         configJoinTableFormat(globalConfiguration, environment);
+        configTableFormat(globalConfiguration, environment);
+    }
+
+    private void configTableFormat(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {
+        String defaultValue = globalConfiguration.getTableFormat();
+        globalConfiguration.setTableFormat(environment.getProperty(key("table-format"), String.class, defaultValue));
     }
 
     private void configJoinTableFormat(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {

@@ -21,6 +21,11 @@
       "description": "Set start page number to 1. Default: true. Since 0.3.0."
     },
     {
+      "name": "doyto.query.config.table-format",
+      "type": "java.lang.String",
+      "description": "Table format for domain. Default: t_%s. Since 0.3.1."
+    },
+    {
       "name": "doyto.query.config.join-table-format",
       "type": "java.lang.String",
       "description": "Join table format for multiple tables query. Default: j_%s_and_%s. Since 0.3.1."

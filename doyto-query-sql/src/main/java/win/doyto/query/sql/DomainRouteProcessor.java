@@ -38,7 +38,7 @@ import static win.doyto.query.util.CommonUtil.firstLetter;
  */
 class DomainRouteProcessor implements FieldProcessor.Processor {
 
-    private static final String TABLE_FORMAT = "t_%s";
+    private final String tableFormat = GlobalConfiguration.instance().getTableFormat();
     private final String joinTableFormat = GlobalConfiguration.instance().getJoinTableFormat();
 
     @Override
@@ -99,7 +99,7 @@ class DomainRouteProcessor implements FieldProcessor.Processor {
         Character domainAlias = firstLetter(domainIds[current]);
         String condition = BuildHelper.buildWhere(domainAlias + ".", (DoytoQuery) domainQuery, argList);
         String joinTableAlias = "" + firstLetter(domains.get(current)) + firstLetter(domains.get(current + 1));
-        String table = String.format(TABLE_FORMAT, domains.get(current));
+        String table = String.format(tableFormat, domains.get(current));
         subQueryBuilder.append(SPACE).append(joinTableAlias)
                        .append(INNER_JOIN).append(table).append(SPACE).append(domainAlias)
                        .append(ON).append(domainAlias).append(CONN).append(ID)
@@ -130,7 +130,7 @@ class DomainRouteProcessor implements FieldProcessor.Processor {
     }
 
     private void buildSubQueryForLastDomain(StringBuilder subQueryBuilder, String lastDomain, String[] domainIds, List<Object> argList, DomainRoute domainRoute, DoytoQuery value) {
-        String table = String.format(TABLE_FORMAT, lastDomain);
+        String table = String.format(tableFormat, lastDomain);
         String where = BuildHelper.buildWhere(value, argList);
         if (domainIds.length > 1) {
             subQueryBuilder.append(WHERE).append(domainIds[0]);
