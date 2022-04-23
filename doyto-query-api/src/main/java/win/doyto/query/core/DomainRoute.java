@@ -26,4 +26,6 @@ import java.util.List;
  */
 public interface DomainRoute extends Serializable {
     List<String> getPath();
+
+    boolean isReverse();
 }

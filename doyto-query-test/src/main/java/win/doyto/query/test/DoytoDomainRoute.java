@@ -36,7 +36,12 @@ import javax.persistence.Transient;
 public class DoytoDomainRoute implements DomainRoute {
     @Transient
     private List<String> path;
+    @Builder.Default
+    @Transient
+    private boolean reverse = true;
+
     private Integer userId;
+    private Integer roleId;
     private List<Integer> roleIdIn;
     private UserQuery userQuery;
     private RoleQuery roleQuery;

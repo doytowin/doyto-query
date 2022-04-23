@@ -231,14 +231,14 @@ class QueryBuilderTest {
     }
 
     @Test
-    void buildSubQuery() {
-        TestQuery testQuery = TestQuery.builder().roleId(1).build();
+    void buildNestedQueryWithTwoDomains() {
+        DoytoDomainRoute domainRoute = DoytoDomainRoute.builder().path(Arrays.asList("user", "role")).reverse(false).roleId(1).build();
+        TestQuery testQuery = TestQuery.builder().domainRoute(domainRoute).build();
 
-        assertEquals("SELECT * FROM user WHERE id IN (SELECT userId FROM t_user_and_role WHERE roleId = ?)",
-                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
+        assertThat(sql).isEqualTo("SELECT * FROM user WHERE id IN (SELECT userId FROM t_user_and_role WHERE roleId = ?)");
         assertThat(argList).containsExactly(1);
     }
-
 
     @Test
     void buildNestedQuery() {

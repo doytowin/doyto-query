@@ -40,6 +40,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TestQuery extends PageQuery {
+    private DoytoDomainRoute domainRoute;
     private List<Integer> idIn;
     private List<Integer> idNotIn;
     private Integer idLt;

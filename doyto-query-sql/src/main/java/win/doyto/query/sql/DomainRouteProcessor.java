@@ -16,6 +16,7 @@
 
 package win.doyto.query.sql;
 
+import org.apache.commons.lang3.ArrayUtils;
 import win.doyto.query.core.DomainRoute;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.ColumnUtil;
@@ -43,7 +44,14 @@ class DomainRouteProcessor implements FieldProcessor.Processor {
         List<String> domains = domainRoute.getPath();
         String[] domainIds = prepareDomainIds(domains);
         String[] joinTables = prepareJoinTables(domains);
-        return buildClause(domains.get(0), domainIds, joinTables, argList, domainRoute);
+        String lastDomain;
+        if (domainRoute.isReverse()) {
+            lastDomain = domains.get(0);
+        } else {
+            ArrayUtils.reverse(domainIds);
+            lastDomain = domains.get(domains.size() - 1);
+        }
+        return buildClause(lastDomain, domainIds, joinTables, argList, domainRoute);
     }
 
     private String[] prepareDomainIds(List<String> domains) {
