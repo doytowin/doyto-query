@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import static win.doyto.query.sql.BuildHelper.*;
 import static win.doyto.query.sql.Constant.*;
 import static win.doyto.query.util.CommonUtil.CLT_COMMA_WITH_PAREN;
+import static win.doyto.query.util.CommonUtil.firstLetter;
 
 /**
  * JoinQueryBuilder
@@ -95,7 +96,7 @@ public class JoinQueryBuilder {
         }
         String target = domains[n];
         joinTables[n] = String.format("t_%s", target);
-        joinAliases[n] = target.substring(0, 1);
+        joinAliases[n] = firstLetter(target).toString();
         joinIds[n] = String.format(FMT_ID, target);
 
         String columns = buildSubDomainColumns(joinEntityClass, joinAliases[n]);
@@ -128,7 +129,7 @@ public class JoinQueryBuilder {
         String[] joinIds = new String[size];
         String target = domains[0];
         joinTables[0] = String.format("t_%s", target);
-        joinAliases[0] = target.substring(0, 1);
+        joinAliases[0] = firstLetter(target).toString();
         joinIds[0] = String.format(FMT_ID, target);
         for (int i = 1; i < size; i++) {
             joinIds[i] = String.format(FMT_ID, domains[i]);

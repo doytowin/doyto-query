@@ -23,7 +23,6 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.NestedQueries;
 import win.doyto.query.annotation.NestedQuery;
-import win.doyto.query.core.PageQuery;
 
 /**
  * MenuQuery
@@ -35,14 +34,7 @@ import win.doyto.query.core.PageQuery;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MenuQuery extends PageQuery {
-
-    @NestedQueries({
-            @NestedQuery(select = "menuId", from = "t_perm_and_menu pm", extra = "inner join t_perm p on p.id = pm.perm_id and p.valid = true"),
-            @NestedQuery(select = "permId", from = "t_role_and_perm rp", extra = "inner join t_role r on r.id = rp.role_id and r.valid = true"),
-            @NestedQuery(select = "roleId", from = "t_user_and_role"),
-    })
-    private Integer userId;
+public class MenuQuery extends DoytoDomainQuery {
 
     @NestedQueries({
             @NestedQuery(select = "parent_id", from = "menu")

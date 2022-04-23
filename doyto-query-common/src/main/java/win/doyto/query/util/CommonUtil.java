@@ -141,8 +141,10 @@ public class CommonUtil {
         return like.replaceAll("[%|_]", "\\\\$0");
     }
 
-    public static String camelize(String or) {
-        return or.substring(0, 1).toLowerCase() + or.substring(1);
+    public static String camelize(String input) {
+        char[] chars = input.toCharArray();
+        chars[0] = Character.toLowerCase(chars[0]);
+        return new String(chars);
     }
 
     public static String[] splitByOr(String columnName) {
@@ -163,4 +165,7 @@ public class CommonUtil {
         return result.toString();
     }
 
+    public static Character firstLetter(String str) {
+        return str.charAt(0);
+    }
 }

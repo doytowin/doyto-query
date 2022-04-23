@@ -231,18 +231,6 @@ class QueryBuilderTest {
     }
 
     @Test
-    void buildNestedQuery2() {
-        MenuQuery menuQuery = MenuQuery.builder().userId(1).build();
-
-        String expected = "SELECT * FROM menu WHERE id IN (" +
-            "SELECT menuId FROM t_perm_and_menu pm inner join t_perm p on p.id = pm.perm_id and p.valid = true WHERE permId IN (" +
-            "SELECT permId FROM t_role_and_perm rp inner join t_role r on r.id = rp.role_id and r.valid = true WHERE roleId IN (" +
-            "SELECT roleId FROM t_user_and_role WHERE userId = ?)))";
-        assertEquals(expected, menuQueryBuilder.buildSelectAndArgs(menuQuery, argList));
-        assertThat(argList).containsExactly(1);
-    }
-
-    @Test
     void build_boolean_field() {
         MenuQuery menuQuery = MenuQuery.builder().onlyParent(true).build();
 

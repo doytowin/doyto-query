@@ -19,10 +19,8 @@ package win.doyto.query.sql;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
-import win.doyto.query.test.DoytoDomainQuery;
-import win.doyto.query.test.DoytoDomainRoute;
-import win.doyto.query.test.UserLevel;
-import win.doyto.query.test.UserQuery;
+import win.doyto.query.test.*;
+import win.doyto.query.test.role.RoleQuery;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -140,6 +138,24 @@ class FieldProcessorTest {
                 "(SELECT id FROM t_user WHERE username LIKE ? AND userLevel = ?)))";
         assertThat(sql).isEqualTo(expected);
         assertThat(argList).containsExactly("%test%", UserLevel.普通.ordinal());
+    }
+
+    @Test
+    void supportReverseNestedQueryWithFourDomainsAndQueryForEachDomain() {
+        DoytoDomainRoute domainRoute = DoytoDomainRoute
+                .builder().path(Arrays.asList("user", "role", "perm", "menu")).reverse(true)
+                .permQuery(PermissionQuery.builder().valid(true).build())
+                .roleQuery(RoleQuery.builder().roleNameLike("vip").valid(true).build())
+                .userId(1).build();
+
+        String sql = FieldProcessor.execute(field, argList, domainRoute);
+
+        String expected = "id IN (" +
+                "SELECT menuId FROM t_perm_and_menu pm INNER JOIN t_perm p ON p.id = pm.permId AND p.valid = ? WHERE permId IN (" +
+                "SELECT permId FROM t_role_and_perm rp INNER JOIN t_role r ON r.id = rp.roleId AND r.roleName LIKE ? AND r.valid = ? WHERE roleId IN (" +
+                "SELECT roleId FROM t_user_and_role WHERE userId = ?)))";
+        assertThat(sql).isEqualTo(expected);
+        assertThat(argList).containsExactly(true, "%vip%", true, 1);
     }
 
 }

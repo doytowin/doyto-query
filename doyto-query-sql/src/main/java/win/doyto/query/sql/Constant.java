@@ -42,4 +42,5 @@ interface Constant {
     String CONN = ".";
     String INNER_JOIN = " INNER JOIN ";
     String LF = "\n";
+    String ID = "id";
 }

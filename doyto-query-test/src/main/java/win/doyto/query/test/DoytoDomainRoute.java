@@ -42,4 +42,5 @@ public class DoytoDomainRoute extends AbstractDomainRoute {
     private List<Integer> roleIdIn;
     private UserQuery userQuery;
     private RoleQuery roleQuery;
+    private PermissionQuery permQuery;
 }

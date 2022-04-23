@@ -17,6 +17,7 @@
 package win.doyto.query.sql;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.core.DomainRoute;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.ColumnUtil;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static win.doyto.query.sql.Constant.*;
+import static win.doyto.query.util.CommonUtil.firstLetter;
 
 /**
  * DomainRouteProcessor
@@ -51,7 +53,7 @@ class DomainRouteProcessor implements FieldProcessor.Processor {
             ArrayUtils.reverse(domainIds);
             lastDomain = domains.get(domains.size() - 1);
         }
-        return buildClause(lastDomain, domainIds, joinTables, argList, domainRoute);
+        return buildClause(lastDomain, domains, domainIds, joinTables, argList, domainRoute);
     }
 
     private String[] prepareDomainIds(List<String> domains) {
@@ -64,19 +66,28 @@ class DomainRouteProcessor implements FieldProcessor.Processor {
                         .toArray(String[]::new);
     }
 
-    private String buildClause(String lastDomain, String[] domainIds, String[] joinTables, List<Object> argList, DomainRoute domainRoute) {
-        int joinCount = joinTables.length;
-        StringBuilder subQueryBuilder = new StringBuilder("id");
-        for (int i = joinCount; i > 0; i--) {
-            subQueryBuilder.append(" IN (SELECT ")
-                           .append(domainIds[i])
-                           .append(FROM)
-                           .append(joinTables[i - 1]);
-            if (i > 1) {
-                subQueryBuilder.append(WHERE).append(domainIds[i - 1]);
+    private String buildClause(String lastDomain, List<String> domains, String[] domainIds, String[] joinTables, List<Object> argList, DomainRoute domainRoute) {
+        StringBuilder subQueryBuilder = new StringBuilder(ID);
+        for (int i = joinTables.length - 1; i >= 0; i--) {
+            appendClauseForDomain(subQueryBuilder, domainIds[i + 1], joinTables[i]);
+            if (i > 0) {
+                buildInnerJoinQuery(subQueryBuilder, i, domains, domainIds, argList, domainRoute);
+                buildNextWhere(subQueryBuilder, domainIds[i]);
             }
         }
+        buildQueryForLastDomain(subQueryBuilder, lastDomain, domainIds, argList, domainRoute);
+        appendTailParenthesis(subQueryBuilder, joinTables.length);
+        return subQueryBuilder.toString();
+    }
 
+    private void appendClauseForDomain(StringBuilder subQueryBuilder, String domainId, String joinTable) {
+        subQueryBuilder.append(IN).append("(").append(SELECT)
+                       .append(domainId)
+                       .append(FROM)
+                       .append(joinTable);
+    }
+
+    private void buildQueryForLastDomain(StringBuilder subQueryBuilder, String lastDomain, String[] domainIds, List<Object> argList, DomainRoute domainRoute) {
         Field[] fields = ColumnUtil.initFields(domainRoute.getClass(), FieldProcessor::init);
         for (Field field : fields) {
             if (field.getName().startsWith(lastDomain)) {
@@ -87,7 +98,7 @@ class DomainRouteProcessor implements FieldProcessor.Processor {
                         String where = BuildHelper.buildWhere((DoytoQuery) value, argList);
                         subQueryBuilder.append(WHERE)
                                        .append(domainIds[0]).append(IN).append("(")
-                                       .append(SELECT).append("id").append(FROM).append(table).append(where)
+                                       .append(SELECT).append(ID).append(FROM).append(table).append(where)
                                        .append(")");
                     } else {
                         String clause = FieldProcessor.execute(field, argList, value);
@@ -97,10 +108,33 @@ class DomainRouteProcessor implements FieldProcessor.Processor {
                 }
             }
         }
+    }
 
-        for (int i = 0; i < joinCount; i++) {
-            subQueryBuilder.append(")");
+    private void buildInnerJoinQuery(
+            StringBuilder subQueryBuilder, int current, List<String> domains, String[] domainIds,
+            List<Object> argList, DomainRoute domainRoute
+    ) {
+        Object domainQuery = CommonUtil.readField(domainRoute, domains.get(current) + "Query");
+        if (!(domainQuery instanceof DoytoQuery)) {
+            return;
         }
-        return subQueryBuilder.toString();
+        Character domainAlias = firstLetter(domainIds[current]);
+        String condition = BuildHelper.buildWhere(domainAlias + ".", (DoytoQuery) domainQuery, argList);
+        String joinTableAlias = "" + firstLetter(domains.get(current)) + firstLetter(domains.get(current + 1));
+        String table = String.format(TABLE_FORMAT, domains.get(current));
+        subQueryBuilder.append(SPACE).append(joinTableAlias)
+                       .append(INNER_JOIN).append(table).append(SPACE).append(domainAlias)
+                       .append(ON).append(domainAlias).append(CONN).append(ID)
+                       .append(EQUAL).append(joinTableAlias).append(CONN).append(domainIds[current])
+                       .append(AND)
+                       .append(condition);
+    }
+
+    private StringBuilder buildNextWhere(StringBuilder subQueryBuilder, String domainId) {
+        return subQueryBuilder.append(WHERE).append(domainId);
+    }
+    
+    private void appendTailParenthesis(StringBuilder subQueryBuilder, int count) {
+        subQueryBuilder.append(StringUtils.repeat(')', count));
     }
 }

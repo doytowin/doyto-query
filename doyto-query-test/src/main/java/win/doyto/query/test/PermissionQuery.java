@@ -16,11 +16,22 @@
 
 package win.doyto.query.test;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+
 /**
  * PermissionQuery
  *
  * @author f0rb on 2019-05-28
  */
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PermissionQuery extends DoytoDomainQuery {
-
+    private Boolean valid;
 }
