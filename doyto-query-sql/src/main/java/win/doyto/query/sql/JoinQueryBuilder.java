@@ -20,6 +20,7 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.ColumnUtil;
 
@@ -43,6 +44,7 @@ public class JoinQueryBuilder {
 
     public static final String KEY_COLUMN = "PK_FOR_JOIN";
     public static final String FMT_ID = "%s_id";
+    public static final String JOIN_TABLE_FORMAT = GlobalConfiguration.instance().getJoinTableFormat();
 
     public static SqlAndArgs buildSelectAndArgs(DoytoQuery q, Class<?> entityClass) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
@@ -91,7 +93,7 @@ public class JoinQueryBuilder {
         String[] joinIds = new String[size];
         for (int i = 0; i < n; i++) {
             joinIds[i] = String.format(FMT_ID, domains[i]);
-            joinTables[i] = String.format("j_%s_and_%s", domains[i], domains[i + 1]);
+            joinTables[i] = String.format(JOIN_TABLE_FORMAT, domains[i], domains[i + 1]);
             joinAliases[i] = String.format("j%d%c%c", i, domains[i].charAt(0), domains[i + 1].charAt(0));
         }
         String target = domains[n];
@@ -133,7 +135,7 @@ public class JoinQueryBuilder {
         joinIds[0] = String.format(FMT_ID, target);
         for (int i = 1; i < size; i++) {
             joinIds[i] = String.format(FMT_ID, domains[i]);
-            joinTables[i] = String.format("j_%s_and_%s", domains[i - 1], domains[i]);
+            joinTables[i] = String.format(JOIN_TABLE_FORMAT, domains[i - 1], domains[i]);
             joinAliases[i] = String.format("j%d%c%c", i - 1, domains[i - 1].charAt(0), domains[i].charAt(0));
         }
 

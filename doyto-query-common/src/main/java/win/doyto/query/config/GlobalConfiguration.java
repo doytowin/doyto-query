@@ -37,6 +37,7 @@ public class GlobalConfiguration {
 
     private boolean mapCamelCaseToUnderscore;
     private boolean ignoreCacheException = true;
+    private String joinTableFormat = "j_%s_and_%s";
     private Dialect dialect = (sql, limit, offset) ->  sql + " LIMIT " + limit + " OFFSET " + offset;
     private Function<Integer, Integer> startPageNumberAdjuster;
 

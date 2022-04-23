@@ -18,6 +18,7 @@ package win.doyto.query.sql;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DomainRoute;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.ColumnUtil;
@@ -38,7 +39,7 @@ import static win.doyto.query.util.CommonUtil.firstLetter;
 class DomainRouteProcessor implements FieldProcessor.Processor {
 
     private static final String TABLE_FORMAT = "t_%s";
-    private static final String JOIN_TABLE_FORMAT = "t_%s_and_%s";
+    private final String joinTableFormat = GlobalConfiguration.instance().getJoinTableFormat();
 
     @Override
     public String process(List<Object> argList, Object value) {
@@ -62,7 +63,7 @@ class DomainRouteProcessor implements FieldProcessor.Processor {
 
     private String[] prepareJoinTables(List<String> domains) {
         return IntStream.range(0, domains.size() - 1)
-                        .mapToObj(i -> String.format(JOIN_TABLE_FORMAT, domains.get(i), domains.get(i + 1)))
+                        .mapToObj(i -> String.format(joinTableFormat, domains.get(i), domains.get(i + 1)))
                         .toArray(String[]::new);
     }
 
