@@ -42,7 +42,6 @@ import javax.persistence.Transient;
 public class RoleQuery extends PageQuery implements JoinQuery<RoleView, Integer> {
     private String roleName;
     private String roleNameLike;
-    private String roleCodeLikeOrRoleNameLike;
     private Boolean valid;
 
     @Transient

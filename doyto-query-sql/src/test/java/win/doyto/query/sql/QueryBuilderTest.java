@@ -231,27 +231,6 @@ class QueryBuilderTest {
     }
 
     @Test
-    void buildNestedQueryWithTwoDomains() {
-        DoytoDomainRoute domainRoute = DoytoDomainRoute.builder().path(Arrays.asList("user", "role")).reverse(false).roleId(1).build();
-        TestQuery testQuery = TestQuery.builder().domainRoute(domainRoute).build();
-
-        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
-        assertThat(sql).isEqualTo("SELECT * FROM user WHERE id IN (SELECT userId FROM t_user_and_role WHERE roleId = ?)");
-        assertThat(argList).containsExactly(1);
-    }
-
-    @Test
-    void buildNestedQuery() {
-        DoytoDomainRoute domainRoute = DoytoDomainRoute.builder().path(Arrays.asList("user", "role", "perm")).userId(1).build();
-        PermissionQuery permissionQuery = PermissionQuery.builder().domainRoute(domainRoute).build();
-
-        assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN " +
-                         "(SELECT roleId FROM t_user_and_role WHERE userId = ?))",
-                     permQueryBuilder.buildSelectAndArgs(permissionQuery, argList));
-        assertThat(argList).containsExactly(1);
-    }
-
-    @Test
     void buildNestedQuery2() {
         MenuQuery menuQuery = MenuQuery.builder().userId(1).build();
 
@@ -338,25 +317,6 @@ class QueryBuilderTest {
         // reset
         globalConfiguration.setDialect(origin);
 
-    }
-
-    @Test
-    void buildSubQueryWithCollection() {
-        DoytoDomainRoute domainRoute =  DoytoDomainRoute.builder().path(Arrays.asList("role", "perm")).roleIdIn(Arrays.asList(1, 2, 3)).build();
-        PermissionQuery permissionQuery = PermissionQuery.builder().domainRoute(domainRoute).build();
-
-        assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN (?, ?, ?))",
-                     permQueryBuilder.buildSelectAndArgs(permissionQuery, argList));
-        assertThat(argList).containsExactly(1, 2, 3);
-    }
-
-    @Test
-    void buildSubQueryWithNullCollection() {
-        DoytoDomainRoute domainRoute =  DoytoDomainRoute.builder().path(Arrays.asList("role", "perm")).roleIdIn(Arrays.asList()).build();
-        PermissionQuery nullQuery = PermissionQuery.builder().domainRoute(domainRoute).build();
-        assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN (null))",
-                     permQueryBuilder.buildSelectAndArgs(nullQuery, argList));
-        assertThat(argList).isEmpty();
     }
 
     @Test
@@ -460,18 +420,4 @@ class QueryBuilderTest {
         assertThat(argList).containsExactly();
     }
 
-    @Test
-    void buildRelativeQuery() {
-        DoytoDomainRoute domainRoute =  DoytoDomainRoute.builder().path(Arrays.asList("user", "role", "perm")).build();
-        PermissionQuery permissionQuery = PermissionQuery.builder().domainRoute(domainRoute).build();
-
-        String sql = permQueryBuilder.buildSelectAndArgs(permissionQuery, argList);
-
-        String expected = "SELECT * FROM permission WHERE id IN (" +
-                "SELECT permId FROM t_role_and_perm WHERE roleId IN (" +
-                "SELECT roleId FROM t_user_and_role" +
-                "))";
-        assertThat(sql).isEqualTo(expected);
-        assertThat(argList).isEmpty();
-    }
 }

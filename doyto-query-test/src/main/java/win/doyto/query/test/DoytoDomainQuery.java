@@ -14,30 +14,27 @@
  * limitations under the License.
  */
 
-package win.doyto.query.core;
+package win.doyto.query.test;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-
-import java.util.List;
-import javax.persistence.Transient;
+import win.doyto.query.core.PageQuery;
 
 /**
- * AbstractDomainRoute
+ * PermissionQuery
  *
- * @author f0rb on 2022-04-23
+ * @author f0rb on 2019-05-28
  */
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AbstractDomainRoute implements DomainRoute {
-    @Transient
-    private List<String> path;
-    @Transient
-    private boolean reverse;
+public class DoytoDomainQuery extends PageQuery {
+
+    private DoytoDomainRoute domainRoute;
+
 }
