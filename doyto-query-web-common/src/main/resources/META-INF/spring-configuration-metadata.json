@@ -31,6 +31,11 @@
       "description": "Join table format for multiple tables query. Default: j_%s_and_%s. Since 0.3.1."
     },
     {
+      "name": "doyto.query.config.join-id-format",
+      "type": "java.lang.String",
+      "description": "Join id format in join tables. Default: %s_id. Since 0.3.1."
+    },
+    {
       "name": "doyto.query.caches",
       "type": "java.util.List<String>",
       "description": "Entity cache list."

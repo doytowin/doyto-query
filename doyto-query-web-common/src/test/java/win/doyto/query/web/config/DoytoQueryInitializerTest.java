@@ -46,7 +46,8 @@ class DoytoQueryInitializerTest {
             protected ConfigurableEnvironment createEnvironment() {
                 return new MockEnvironment()
                         .withProperty(key("table-format"), "sys_%s")
-                        .withProperty(key("join-table-format"), "t_%s_and_%s");
+                        .withProperty(key("join-table-format"), "t_%s_and_%s")
+                        .withProperty(key("join-id-format"), "%sId");
             }
         };
         doytoQueryInitializer.initialize(context);
@@ -66,6 +67,7 @@ class DoytoQueryInitializerTest {
         assertTrue(globalConfiguration.getDialect() instanceof Dialect);
         assertEquals("sys_%s", globalConfiguration.getTableFormat());
         assertEquals("t_%s_and_%s", globalConfiguration.getJoinTableFormat());
+        assertEquals("%sId", globalConfiguration.getJoinIdFormat());
     }
 
     @Test

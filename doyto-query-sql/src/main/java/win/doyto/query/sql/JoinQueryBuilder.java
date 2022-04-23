@@ -43,7 +43,7 @@ import static win.doyto.query.util.CommonUtil.firstLetter;
 public class JoinQueryBuilder {
 
     public static final String KEY_COLUMN = "PK_FOR_JOIN";
-    public static final String FMT_ID = "%s_id";
+    public static final String JOIN_ID_FORMAT = GlobalConfiguration.instance().getJoinIdFormat();
     public static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
     public static final String JOIN_TABLE_FORMAT = GlobalConfiguration.instance().getJoinTableFormat();
 
@@ -93,14 +93,14 @@ public class JoinQueryBuilder {
         String[] joinAliases = new String[size];
         String[] joinIds = new String[size];
         for (int i = 0; i < n; i++) {
-            joinIds[i] = String.format(FMT_ID, domains[i]);
+            joinIds[i] = String.format(JOIN_ID_FORMAT, domains[i]);
             joinTables[i] = String.format(JOIN_TABLE_FORMAT, domains[i], domains[i + 1]);
             joinAliases[i] = String.format("j%d%c%c", i, domains[i].charAt(0), domains[i + 1].charAt(0));
         }
         String target = domains[n];
         joinTables[n] = String.format(TABLE_FORMAT, target);
         joinAliases[n] = firstLetter(target).toString();
-        joinIds[n] = String.format(FMT_ID, target);
+        joinIds[n] = String.format(JOIN_ID_FORMAT, target);
 
         String columns = buildSubDomainColumns(joinEntityClass, joinAliases[n]);
         String subDomainId = ColumnUtil.resolveIdColumn(joinEntityClass);
@@ -133,9 +133,9 @@ public class JoinQueryBuilder {
         String target = domains[0];
         joinTables[0] = String.format(TABLE_FORMAT, target);
         joinAliases[0] = firstLetter(target).toString();
-        joinIds[0] = String.format(FMT_ID, target);
+        joinIds[0] = String.format(JOIN_ID_FORMAT, target);
         for (int i = 1; i < size; i++) {
-            joinIds[i] = String.format(FMT_ID, domains[i]);
+            joinIds[i] = String.format(JOIN_ID_FORMAT, domains[i]);
             joinTables[i] = String.format(JOIN_TABLE_FORMAT, domains[i - 1], domains[i]);
             joinAliases[i] = String.format("j%d%c%c", i - 1, domains[i - 1].charAt(0), domains[i].charAt(0));
         }

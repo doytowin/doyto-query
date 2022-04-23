@@ -16,8 +16,11 @@
 
 package win.doyto.query.sql;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.test.*;
 import win.doyto.query.test.role.RoleQuery;
 
@@ -26,18 +29,27 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * DomainRouteProcessorTest
  *
  * @author f0rb on 2022-04-23
  */
-@ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
+@ResourceLock(value = "mapCamelCaseToUnderscore")
 class DomainRouteProcessorTest {
 
     DomainRouteProcessor domainRouteProcessor = new DomainRouteProcessor();
     List<Object> argList = new ArrayList<>();
+
+    @BeforeEach
+    void setUp() {
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
+    }
+
+    @AfterEach
+    void tearDown() {
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
+    }
 
     @Test
     void supportNestedQueryWithTwoDomains() {
@@ -45,7 +57,7 @@ class DomainRouteProcessorTest {
 
         String sql = domainRouteProcessor.process(argList, domainRoute);;
 
-        assertThat(sql).isEqualTo("id IN (SELECT userId FROM j_user_and_role WHERE roleId = ?)");
+        assertThat(sql).isEqualTo("id IN (SELECT user_id FROM j_user_and_role WHERE role_id = ?)");
         assertThat(argList).containsExactly(1);
     }
 
@@ -56,7 +68,7 @@ class DomainRouteProcessorTest {
 
         String sql = domainRouteProcessor.process(argList, domainRoute);;
 
-        String expected = "id IN (SELECT permId FROM j_role_and_perm)";
+        String expected = "id IN (SELECT perm_id FROM j_role_and_perm)";
         assertThat(sql).isEqualTo(expected);
         assertThat(argList).isEmpty();
     }
@@ -69,7 +81,7 @@ class DomainRouteProcessorTest {
 
         String sql = domainRouteProcessor.process(argList, domainRoute);;
 
-        String expected = "id IN (SELECT permId FROM j_role_and_perm WHERE roleId IN (?, ?, ?))";
+        String expected = "id IN (SELECT perm_id FROM j_role_and_perm WHERE role_id IN (?, ?, ?))";
         assertThat(sql).isEqualTo(expected);
         assertThat(argList).containsExactly(1, 2, 3);
     }
@@ -82,7 +94,7 @@ class DomainRouteProcessorTest {
 
         String sql = domainRouteProcessor.process(argList, domainRoute);;
 
-        String expected = "id IN (SELECT permId FROM j_role_and_perm WHERE roleId IN (null))";
+        String expected = "id IN (SELECT perm_id FROM j_role_and_perm WHERE role_id IN (null))";
         assertThat(sql).isEqualTo(expected);
         assertThat(argList).isEmpty();
     }
@@ -95,8 +107,8 @@ class DomainRouteProcessorTest {
         String sql = domainRouteProcessor.process(argList, domainRoute);;
 
         String expected = "id IN (" +
-                "SELECT permId FROM j_role_and_perm WHERE roleId IN (" +
-                "SELECT roleId FROM j_user_and_role" +
+                "SELECT perm_id FROM j_role_and_perm WHERE role_id IN (" +
+                "SELECT role_id FROM j_user_and_role" +
                 "))";
         assertThat(sql).isEqualTo(expected);
         assertThat(argList).isEmpty();
@@ -110,8 +122,8 @@ class DomainRouteProcessorTest {
 
         String sql = domainRouteProcessor.process(argList, domainRoute);;
 
-        String expected = "id IN (SELECT permId FROM j_role_and_perm WHERE roleId IN " +
-                "(SELECT roleId FROM j_user_and_role WHERE userId = ?))";
+        String expected = "id IN (SELECT perm_id FROM j_role_and_perm WHERE role_id IN " +
+                "(SELECT role_id FROM j_user_and_role WHERE user_id = ?))";
         assertThat(sql).isEqualTo(expected);
         assertThat(argList).containsExactly(2);
     }
@@ -125,9 +137,9 @@ class DomainRouteProcessorTest {
 
         String sql = domainRouteProcessor.process(argList, domainRoute);;
 
-        String expected = "id IN (SELECT permId FROM j_role_and_perm WHERE roleId IN " +
-                "(SELECT roleId FROM j_user_and_role WHERE userId IN " +
-                "(SELECT id FROM t_user WHERE username LIKE ? AND userLevel = ?)))";
+        String expected = "id IN (SELECT perm_id FROM j_role_and_perm WHERE role_id IN " +
+                "(SELECT role_id FROM j_user_and_role WHERE user_id IN " +
+                "(SELECT id FROM t_user WHERE username LIKE ? AND user_level = ?)))";
         assertThat(sql).isEqualTo(expected);
         assertThat(argList).containsExactly("%test%", UserLevel.普通.ordinal());
     }
@@ -143,9 +155,9 @@ class DomainRouteProcessorTest {
         String sql = domainRouteProcessor.process(argList, domainRoute);;
 
         String expected = "id IN (" +
-                "SELECT menuId FROM j_perm_and_menu pm INNER JOIN t_perm p ON p.id = pm.permId AND p.valid = ? WHERE permId IN (" +
-                "SELECT permId FROM j_role_and_perm rp INNER JOIN t_role r ON r.id = rp.roleId AND r.roleName LIKE ? AND r.valid = ? WHERE roleId IN (" +
-                "SELECT roleId FROM j_user_and_role WHERE userId = ?)))";
+                "SELECT menu_id FROM j_perm_and_menu pm INNER JOIN t_perm p ON p.id = pm.perm_id AND p.valid = ? WHERE perm_id IN (" +
+                "SELECT perm_id FROM j_role_and_perm rp INNER JOIN t_role r ON r.id = rp.role_id AND r.role_name LIKE ? AND r.valid = ? WHERE role_id IN (" +
+                "SELECT role_id FROM j_user_and_role WHERE user_id = ?)))";
         assertThat(sql).isEqualTo(expected);
         assertThat(argList).containsExactly(true, "%vip%", true, 1);
     }
