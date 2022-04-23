@@ -22,7 +22,10 @@ import java.lang.annotation.Target;
  * SubQuery
  *
  * @author f0rb on 2019-05-28
+ * @deprecated use {@link win.doyto.query.core.DomainRoute} for nested query
  */
+@SuppressWarnings("java:S1133")
+@Deprecated
 @Target({})
 public @interface NestedQuery {
 

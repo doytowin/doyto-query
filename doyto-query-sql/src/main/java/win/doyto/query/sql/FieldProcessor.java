@@ -45,6 +45,7 @@ import static win.doyto.query.sql.Constant.*;
  *
  * @author f0rb on 2019-06-04
  */
+@SuppressWarnings("java:S1133")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class FieldProcessor {
 
