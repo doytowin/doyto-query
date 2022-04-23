@@ -14,32 +14,28 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test;
+package win.doyto.query.core;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.AbstractDomainRoute;
-import win.doyto.query.test.role.RoleQuery;
 
 import java.util.List;
+import javax.persistence.Transient;
 
 /**
- * DoytoDomainRoute
+ * AbstractDomainRoute
  *
- * @author f0rb on 2022-04-22
+ * @author f0rb on 2022-04-23
  */
-@Setter
 @Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DoytoDomainRoute extends AbstractDomainRoute {
-    private Integer userId;
-    private Integer roleId;
-    private List<Integer> roleIdIn;
-    private UserQuery userQuery;
-    private RoleQuery roleQuery;
+public class AbstractDomainRoute implements DomainRoute {
+    @Transient
+    private List<String> path;
+    @Builder.Default
+    @Transient
+    private boolean reverse = true;
 }
