@@ -158,4 +158,19 @@ class FieldProcessorTest {
         assertThat(argList).containsExactly(true, "%vip%", true, 1);
     }
 
+    @Test
+    void supportSelfOneToManyQuery() {
+        MenuQuery parentQuery = MenuQuery.builder().nameLike("test").valid(true).build();
+        DoytoDomainRoute domainRoute = DoytoDomainRoute
+                .builder().path(Arrays.asList("menu")).lastDomainIdColumn("parent_id")
+                .menuQuery(parentQuery)
+                .build();
+
+        String sql = FieldProcessor.execute(field, argList, domainRoute);
+
+        String expected = "id IN (SELECT parent_id FROM t_menu WHERE name LIKE ? AND valid = ?)";
+        assertThat(sql).isEqualTo(expected);
+        assertThat(argList).containsExactly("%test%", true);
+    }
+
 }

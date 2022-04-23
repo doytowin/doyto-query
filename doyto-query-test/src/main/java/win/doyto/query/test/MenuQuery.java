@@ -21,8 +21,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.NestedQueries;
-import win.doyto.query.annotation.NestedQuery;
 
 /**
  * MenuQuery
@@ -36,19 +34,8 @@ import win.doyto.query.annotation.NestedQuery;
 @AllArgsConstructor
 public class MenuQuery extends DoytoDomainQuery {
 
-    @NestedQueries({
-            @NestedQuery(select = "parent_id", from = "menu")
-    })
-    private boolean onlyParent;
-
-    @NestedQueries({
-            @NestedQuery(select = "parent_id", from = "menu")
-    })
-    private MenuQuery parent;
-
     private String nameLike;
 
     private Boolean valid;
 
-    private boolean parentIdNull;
 }

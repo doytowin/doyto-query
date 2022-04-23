@@ -87,29 +87,6 @@ class DomainRouteProcessor implements FieldProcessor.Processor {
                        .append(joinTable);
     }
 
-    private void buildQueryForLastDomain(StringBuilder subQueryBuilder, String lastDomain, String[] domainIds, List<Object> argList, DomainRoute domainRoute) {
-        Field[] fields = ColumnUtil.initFields(domainRoute.getClass(), FieldProcessor::init);
-        for (Field field : fields) {
-            if (field.getName().startsWith(lastDomain)) {
-                Object value = CommonUtil.readField(field, domainRoute);
-                if (value != null) {
-                    if (value instanceof DoytoQuery) {
-                        String table = String.format(TABLE_FORMAT, lastDomain);
-                        String where = BuildHelper.buildWhere((DoytoQuery) value, argList);
-                        subQueryBuilder.append(WHERE)
-                                       .append(domainIds[0]).append(IN).append("(")
-                                       .append(SELECT).append(ID).append(FROM).append(table).append(where)
-                                       .append(")");
-                    } else {
-                        String clause = FieldProcessor.execute(field, argList, value);
-                        subQueryBuilder.append(WHERE).append(clause);
-                    }
-                    break;
-                }
-            }
-        }
-    }
-
     private void buildInnerJoinQuery(
             StringBuilder subQueryBuilder, int current, List<String> domains, String[] domainIds,
             List<Object> argList, DomainRoute domainRoute
@@ -133,7 +110,40 @@ class DomainRouteProcessor implements FieldProcessor.Processor {
     private StringBuilder buildNextWhere(StringBuilder subQueryBuilder, String domainId) {
         return subQueryBuilder.append(WHERE).append(domainId);
     }
-    
+
+    private void buildQueryForLastDomain(StringBuilder subQueryBuilder, String lastDomain, String[] domainIds, List<Object> argList, DomainRoute domainRoute) {
+        Field[] fields = ColumnUtil.initFields(domainRoute.getClass(), FieldProcessor::init);
+        for (Field field : fields) {
+            if (field.getName().startsWith(lastDomain)) {
+                Object value = CommonUtil.readField(field, domainRoute);
+                if (value != null) {
+                    if (value instanceof DoytoQuery) {
+                        buildSubQueryForLastDomain(subQueryBuilder, lastDomain, domainIds, argList, domainRoute, (DoytoQuery) value);
+                    } else {
+                        buildWhereForLastDomain(subQueryBuilder, argList, field, value);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    private void buildSubQueryForLastDomain(StringBuilder subQueryBuilder, String lastDomain, String[] domainIds, List<Object> argList, DomainRoute domainRoute, DoytoQuery value) {
+        String table = String.format(TABLE_FORMAT, lastDomain);
+        String where = BuildHelper.buildWhere(value, argList);
+        if (domainIds.length > 1) {
+            subQueryBuilder.append(WHERE).append(domainIds[0]);
+        }
+        subQueryBuilder.append(IN).append("(")
+                       .append(SELECT).append(domainRoute.getLastDomainIdColumn()).append(FROM).append(table).append(where)
+                       .append(")");
+    }
+
+    private void buildWhereForLastDomain(StringBuilder subQueryBuilder, List<Object> argList, Field field, Object value) {
+        String clause = FieldProcessor.execute(field, argList, value);
+        subQueryBuilder.append(WHERE).append(clause);
+    }
+
     private void appendTailParenthesis(StringBuilder subQueryBuilder, int count) {
         subQueryBuilder.append(StringUtils.repeat(')', count));
     }

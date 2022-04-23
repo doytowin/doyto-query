@@ -42,8 +42,6 @@ import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
 class QueryBuilderTest {
 
     private QueryBuilder testQueryBuilder = new QueryBuilder(TestEntity.class);
-    private QueryBuilder menuQueryBuilder = new QueryBuilder("menu", "id");
-    private QueryBuilder permQueryBuilder = new QueryBuilder("permission", "id");
     private QueryBuilder dynamicQueryBuilder = new QueryBuilder(DynamicEntity.class);
     private List<Object> argList;
 
@@ -231,30 +229,6 @@ class QueryBuilderTest {
     }
 
     @Test
-    void build_boolean_field() {
-        MenuQuery menuQuery = MenuQuery.builder().onlyParent(true).build();
-
-        String expected = "SELECT * FROM menu WHERE id IN (SELECT parent_id FROM menu)";
-        assertEquals(expected, menuQueryBuilder.buildSelectAndArgs(menuQuery, argList));
-        assertThat(argList).isEmpty();
-    }
-
-    /**
-     * 感觉这个测试用例对TDD本身也是一个挑战,
-     * 随着设计的不断抽象, 小步迭代式开发也不那么直观了
-     * 必须要熟悉源码才能准确找到修改哪里
-     */
-    @Test
-    void buildSubQueryWithQueryObject() {
-        MenuQuery parentQuery = MenuQuery.builder().nameLike("test").valid(true).build();
-        MenuQuery menuQuery = MenuQuery.builder().parent(parentQuery).build();
-
-        String expected = "SELECT * FROM menu WHERE id IN (SELECT parent_id FROM menu WHERE name LIKE ? AND valid = ?)";
-        assertEquals(expected, menuQueryBuilder.buildSelectAndArgs(menuQuery, argList));
-        assertThat(argList).containsExactly("%test%", true);
-    }
-
-    @Test
     void buildSelectIdWithArgs() {
         TestQuery testQuery = TestQuery.builder().username("test").build();
 
@@ -284,10 +258,11 @@ class QueryBuilderTest {
 
     @Test
     void supportIsNull() {
-        MenuQuery byNoParent = MenuQuery.builder().parentIdNull(true).build();
+        TestQuery testQuery = TestQuery.builder().memoNull(true).build();
 
-        assertEquals("SELECT * FROM menu WHERE parentId IS NULL",
-                     menuQueryBuilder.buildSelectAndArgs(byNoParent, argList));
+        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
+
+        assertThat(sql).isEqualTo("SELECT * FROM user WHERE memo IS NULL");
         assertThat(argList).isEmpty();
     }
 

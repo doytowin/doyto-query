@@ -25,7 +25,11 @@ import java.util.List;
  * @author f0rb on 2022-04-22
  */
 public interface DomainRoute extends Serializable {
+
     List<String> getPath();
 
     boolean isReverse();
+
+    String getLastDomainIdColumn();
+
 }

@@ -16,10 +16,7 @@
 
 package win.doyto.query.core;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
@@ -40,4 +37,8 @@ public class AbstractDomainRoute implements DomainRoute {
     private List<String> path;
     @Transient
     private boolean reverse;
+    @NonNull
+    @Builder.Default
+    @Transient
+    private String lastDomainIdColumn = "id";
 }
