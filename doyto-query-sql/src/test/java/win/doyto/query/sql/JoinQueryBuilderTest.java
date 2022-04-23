@@ -20,10 +20,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.TestEnum;
-import win.doyto.query.test.join.MaxIdView;
-import win.doyto.query.test.join.TestJoinQuery;
-import win.doyto.query.test.join.TestJoinView;
-import win.doyto.query.test.join.UserCountByRoleView;
+import win.doyto.query.test.join.*;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -49,9 +49,9 @@ class JoinQueryBuilderTest {
         testJoinQuery.setUserLevel(TestEnum.VIP);
 
         String expected = "SELECT username, r.roleName AS roleName " +
-                "FROM user u " +
-                "left join t_user_and_role ur on ur.userId = u.id " +
-                "inner join t_role r on r.id = ur.roleId and r.roleName = ? " +
+                "FROM t_user u " +
+                "left join j_user_and_role ur on ur.user_id = u.id " +
+                "inner join t_role r on r.id = ur.role_id and r.roleName = ? " +
                 "WHERE u.userLevel = ?";
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(testJoinQuery, TestJoinView.class);
         assertEquals(expected, sqlAndArgs.getSql());
@@ -66,9 +66,9 @@ class JoinQueryBuilderTest {
         testJoinQuery.setUserLevel(TestEnum.VIP);
 
         String expected = "SELECT username, r.roleName AS roleName " +
-                "FROM user u " +
-                "left join t_user_and_role ur on ur.userId = u.id " +
-                "inner join t_role r on r.id = ur.roleId and r.roleName = ? " +
+                "FROM t_user u " +
+                "left join j_user_and_role ur on ur.user_id = u.id " +
+                "inner join t_role r on r.id = ur.role_id and r.roleName = ? " +
                 "WHERE u.userLevel = ? AND (r.roleName LIKE ? OR r.roleCode LIKE ?)";
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(testJoinQuery, TestJoinView.class);
         assertEquals(expected, sqlAndArgs.getSql());
@@ -81,9 +81,9 @@ class JoinQueryBuilderTest {
         TestJoinQuery testJoinQuery = TestJoinQuery.builder().pageSize(5).sort("userCount,asc").build();
 
         String expected = "SELECT r.roleName AS roleName, count(u.id) AS userCount " +
-                "FROM user u " +
-                "left join t_user_and_role ur on ur.userId = u.id " +
-                "inner join t_role r on r.id = ur.roleId " +
+                "FROM t_user u " +
+                "left join j_user_and_role ur on ur.user_id = u.id " +
+                "inner join t_role r on r.id = ur.role_id " +
                 "GROUP BY r.roleName HAVING count(*) > 0 " +
                 "ORDER BY userCount asc " +
                 "LIMIT 5 OFFSET 0";
@@ -97,10 +97,83 @@ class JoinQueryBuilderTest {
         TestJoinQuery testJoinQuery = TestJoinQuery.builder().pageSize(5).sort("userCount,asc").build();
 
         String expected = "SELECT COUNT(DISTINCT(r.roleName)) " +
-                "FROM user u " +
-                "left join t_user_and_role ur on ur.userId = u.id " +
-                "inner join t_role r on r.id = ur.roleId";
+                "FROM t_user u " +
+                "left join j_user_and_role ur on ur.user_id = u.id " +
+                "inner join t_role r on r.id = ur.role_id";
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildCountAndArgs(testJoinQuery, UserCountByRoleView.class);
+        assertEquals(expected, sqlAndArgs.getSql());
+    }
+
+    @Test
+    void buildSqlAndArgsForSubDomain() throws NoSuchFieldException {
+        Field field = UserView.class.getDeclaredField("perms");
+
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+                field, Arrays.asList(1, 2, 3), PermView.class);
+
+        String expected = "SELECT j0ur.user_id AS PK_FOR_JOIN, p.id, p.permName, p.valid" +
+                "\n FROM j_user_and_role j0ur" +
+                "\n INNER JOIN j_role_and_perm j1rp ON j0ur.role_id = j1rp.role_id" +
+                "\n INNER JOIN t_perm p ON j1rp.perm_id = p.id" +
+                "\n WHERE j0ur.user_id IN (1, 2, 3)";
+        assertEquals(expected, sqlAndArgs.getSql());
+    }
+
+    @Test
+    void buildSqlAndArgsForSubDomain_FourDomains() throws NoSuchFieldException {
+        Field field = UserView.class.getDeclaredField("menus");
+
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+                field, Arrays.asList(1, 2, 3), PermView.class);
+
+        String expected = "SELECT j0ur.user_id AS PK_FOR_JOIN, m.id, m.permName, m.valid" +
+                "\n FROM j_user_and_role j0ur" +
+                "\n INNER JOIN j_role_and_perm j1rp ON j0ur.role_id = j1rp.role_id" +
+                "\n INNER JOIN j_perm_and_menu j2pm ON j1rp.perm_id = j2pm.perm_id" +
+                "\n INNER JOIN t_menu m ON j2pm.menu_id = m.id" +
+                "\n WHERE j0ur.user_id IN (1, 2, 3)";
+        assertEquals(expected, sqlAndArgs.getSql());
+    }
+
+    @Test
+    void buildJoinSqlForReversePath_TwoDomains() throws NoSuchFieldException {
+        Field field = RoleView.class.getDeclaredField("users");
+
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+                field, Arrays.asList(1, 2, 3), UserView.class);
+
+        String expected = "SELECT j0ur.role_id AS PK_FOR_JOIN, u.id, u.username, u.email" +
+                "\n FROM t_user u" +
+                "\n INNER JOIN j_user_and_role j0ur ON u.id = j0ur.user_id AND j0ur.role_id IN (1, 2, 3)";
+        assertEquals(expected, sqlAndArgs.getSql());
+    }
+
+    @Test
+    void buildJoinSqlForReversePath_ThreeDomains() throws NoSuchFieldException {
+        Field field = PermView.class.getDeclaredField("users");
+
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+                field, Arrays.asList(1, 2, 3, 4), UserView.class);
+
+        String expected = "SELECT j1rp.perm_id AS PK_FOR_JOIN, u.id, u.username, u.email\n" +
+                " FROM t_user u\n" +
+                " INNER JOIN j_user_and_role j0ur ON u.id = j0ur.user_id\n" +
+                " INNER JOIN j_role_and_perm j1rp ON j0ur.role_id = j1rp.role_id AND j1rp.perm_id IN (1, 2, 3, 4)";
+        assertEquals(expected, sqlAndArgs.getSql());
+    }
+
+    @Test
+    void buildJoinSqlForReversePath_FourDomains() throws NoSuchFieldException {
+        Field field = MenuView.class.getDeclaredField("users");
+
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+                field, Arrays.asList(1, 2, 3, 4), UserView.class);
+
+        String expected = "SELECT j2pm.menu_id AS PK_FOR_JOIN, u.id, u.username, u.email\n" +
+                " FROM t_user u\n" +
+                " INNER JOIN j_user_and_role j0ur ON u.id = j0ur.user_id\n" +
+                " INNER JOIN j_role_and_perm j1rp ON j0ur.role_id = j1rp.role_id\n" +
+                " INNER JOIN j_perm_and_menu j2pm ON j1rp.perm_id = j2pm.perm_id AND j2pm.menu_id IN (1, 2, 3, 4)";
         assertEquals(expected, sqlAndArgs.getSql());
     }
 }

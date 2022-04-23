@@ -23,23 +23,18 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * NestedQueries
+ * DomainPath
  *
- * @author f0rb on 2019-05-28
- * @deprecated use {@link win.doyto.query.core.DomainRoute} for nested query
+ * @author f0rb on 2022-04-08
  */
-@SuppressWarnings("java:S1133")
-@Deprecated
 @Target(FIELD)
 @Retention(RUNTIME)
-public @interface NestedQueries {
-
-    String column() default "id";
-
-    String op() default "IN";
-
-    boolean appendWhere() default true;
-
-    NestedQuery[] value();
-
+public @interface DomainPath {
+    /**
+     * To describe how to route from main domain
+     * to the current annotated domain.
+     *
+     * @return paths array
+     */
+    String[] value();
 }

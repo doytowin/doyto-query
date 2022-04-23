@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.Aggregation;
+import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.Joins;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.ColumnUtil;
@@ -58,7 +59,7 @@ public class EntityMetadata {
         this.entityClass = entityClass;
         this.tableName = entityClass.getAnnotation(Table.class).name();
 
-        buildSelectColumns(entityClass);
+        this.columnsForSelect = buildSelectColumns(entityClass);
         buildJoinSql(entityClass);
         buildGroupBySql(entityClass);
     }
@@ -67,10 +68,11 @@ public class EntityMetadata {
         return holder.computeIfAbsent(entityClass, EntityMetadata::new);
     }
 
-    private void buildSelectColumns(Class<?> entityClass) {
-        columnsForSelect = ColumnUtil.filterFields(entityClass)
-                                     .map(ColumnUtil::selectAs)
-                                     .collect(Collectors.joining(SEPARATOR));
+    private String buildSelectColumns(Class<?> entityClass) {
+        return ColumnUtil.filterFields(entityClass)
+                         .filter(field -> !field.isAnnotationPresent(DomainPath.class))
+                         .map(ColumnUtil::selectAs)
+                         .collect(Collectors.joining(SEPARATOR));
     }
 
     private void buildJoinSql(Class<?> entityClass) {

@@ -14,32 +14,22 @@
  * limitations under the License.
  */
 
-package win.doyto.query.annotation;
+package win.doyto.query.core;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.io.Serializable;
+import java.util.List;
 
 /**
- * NestedQueries
+ * DomainRoute
  *
- * @author f0rb on 2019-05-28
- * @deprecated use {@link win.doyto.query.core.DomainRoute} for nested query
+ * @author f0rb on 2022-04-22
  */
-@SuppressWarnings("java:S1133")
-@Deprecated
-@Target(FIELD)
-@Retention(RUNTIME)
-public @interface NestedQueries {
+public interface DomainRoute extends Serializable {
 
-    String column() default "id";
+    List<String> getPath();
 
-    String op() default "IN";
+    boolean isReverse();
 
-    boolean appendWhere() default true;
-
-    NestedQuery[] value();
+    String getLastDomainIdColumn();
 
 }

@@ -27,6 +27,7 @@ interface Constant {
     String PLACE_HOLDER = "?";
     String SPACE = " ";
     String EQUAL = " = ";
+    String EQUAL_HOLDER = " = ?";
     String SELECT = "SELECT ";
     String COUNT = "count(*)";
     String FROM = " FROM ";
@@ -34,4 +35,12 @@ interface Constant {
     String EMPTY = "";
     String SPACE_OR = " OR ";
     String DELETE_FROM = "DELETE" + FROM;
+    String AND = " AND ";
+    String IN = " IN ";
+    String ON = " ON ";
+    String AS = " AS ";
+    String CONN = ".";
+    String INNER_JOIN = " INNER JOIN ";
+    String LF = "\n";
+    String ID = "id";
 }

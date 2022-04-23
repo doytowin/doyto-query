@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.role;
+package win.doyto.query.test.join;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,34 +24,30 @@ import lombok.experimental.SuperBuilder;
 import win.doyto.query.core.JoinQuery;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.PermissionQuery;
-import win.doyto.query.test.UserQuery;
-import win.doyto.query.test.join.RoleView;
+import win.doyto.query.test.role.RoleQuery;
 
 import javax.persistence.Transient;
 
 /**
- * UserQuery
+ * UserJoinQuery
  *
- * @author f0rb on 2020-04-01
+ * @author f0rb on 2022-03-26
  */
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @SuperBuilder
-public class RoleQuery extends PageQuery implements JoinQuery<RoleView, Integer> {
-    private String roleName;
-    private String roleNameLike;
-    private Boolean valid;
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserJoinQuery extends PageQuery implements JoinQuery<UserView, Long> {
 
     @Transient
-    private UserQuery usersQuery;
+    private RoleQuery rolesQuery;
 
     @Transient
     private PermissionQuery permsQuery;
 
     @Override
-    public Class<RoleView> getDomainClass() {
-        return RoleView.class;
+    public Class<UserView> getDomainClass() {
+        return UserView.class;
     }
 }

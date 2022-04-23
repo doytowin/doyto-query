@@ -18,7 +18,6 @@ package win.doyto.query.sql;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.util.ColumnUtil;
@@ -26,7 +25,6 @@ import win.doyto.query.util.CommonUtil;
 
 import java.util.List;
 import java.util.function.BiFunction;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
 import static win.doyto.query.sql.Constant.*;
@@ -56,15 +54,11 @@ public class QueryBuilder {
     }
 
     public QueryBuilder(Class<?> entityClass) {
-        this(resolveTableName(entityClass), resolveIdColumn(entityClass));
+        this(resolveTableName(entityClass), ColumnUtil.resolveIdColumn(entityClass));
     }
 
     private static String resolveTableName(Class<?> entityClass) {
         return entityClass.getAnnotation(Table.class).name();
-    }
-
-    private static String resolveIdColumn(Class<?> entityClass) {
-        return ColumnUtil.resolveColumn(FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0]);
     }
 
     protected String resolveTableName(IdWrapper<?> idWrapper) {

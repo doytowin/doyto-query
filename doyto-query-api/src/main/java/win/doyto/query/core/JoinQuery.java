@@ -14,32 +14,17 @@
  * limitations under the License.
  */
 
-package win.doyto.query.annotation;
+package win.doyto.query.core;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import win.doyto.query.entity.Persistable;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.io.Serializable;
 
 /**
- * NestedQueries
+ * JoinQuery
  *
- * @author f0rb on 2019-05-28
- * @deprecated use {@link win.doyto.query.core.DomainRoute} for nested query
+ * @author f0rb on 2022-03-26
  */
-@SuppressWarnings("java:S1133")
-@Deprecated
-@Target(FIELD)
-@Retention(RUNTIME)
-public @interface NestedQueries {
-
-    String column() default "id";
-
-    String op() default "IN";
-
-    boolean appendWhere() default true;
-
-    NestedQuery[] value();
-
+public interface JoinQuery<V extends Persistable<I>, I extends Serializable> extends DoytoQuery {
+    Class<V> getDomainClass();
 }

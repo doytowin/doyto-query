@@ -21,9 +21,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 import win.doyto.query.service.PageList;
-import win.doyto.query.test.join.TestJoinQuery;
-import win.doyto.query.test.join.TestJoinView;
-import win.doyto.query.test.join.UserCountByRoleView;
+import win.doyto.query.test.PermissionQuery;
+import win.doyto.query.test.UserQuery;
+import win.doyto.query.test.join.*;
+import win.doyto.query.test.role.RoleQuery;
 
 import java.util.List;
 
@@ -75,4 +76,46 @@ class JdbcDataQueryTest extends JdbcApplicationTest {
         assertThat(testJoinQuery.getPageSize()).isEqualTo(10);
     }
 
+    @Test
+    void queryUserWithRoles() {
+        UserJoinQuery userJoinQuery = UserJoinQuery.builder().rolesQuery(new RoleQuery()).permsQuery(new PermissionQuery()).build();
+
+        List<UserView> users = jdbcDataQuery.joinQuery(userJoinQuery);
+
+        assertThat(users).extracting("roles")
+                         .extractingResultOf("size", Integer.class)
+                         .containsExactly(2, 0, 1, 2);
+        assertThat(users.get(0).getRoles())
+                .hasSize(2)
+                .flatExtracting("id", "roleName", "roleCode")
+                .containsExactly(1, "测试", "TEST", 2, "高级", "VIP");
+        assertThat(users).extracting("perms")
+                         .extractingResultOf("size", Integer.class)
+                         .containsExactly(3, 0, 2, 3);
+    }
+
+    @Test
+    void shouldNotQuerySubDomainWhenItsQueryFieldIsNull() {
+        List<UserView> users = jdbcDataQuery.joinQuery(UserJoinQuery.builder().build());
+        assertThat(users).hasSize(4);
+        assertThat(users).extracting("roles").containsOnlyNulls();
+        assertThat(users).extracting("perms").containsOnlyNulls();
+    }
+
+    @Test
+    void queryRoleWithUsersAndPerms() {
+        RoleQuery roleQuery = RoleQuery.builder().usersQuery(new UserQuery())
+                                       .permsQuery(new PermissionQuery()).build();
+
+        List<RoleView> roles = jdbcDataQuery.joinQuery(roleQuery);
+
+        assertThat(roles)
+                .extracting("perms")
+                .extractingResultOf("size", Integer.class)
+                .containsExactly(2, 1, 0, 0, 2);
+        assertThat(roles)
+                .extracting("users")
+                .extractingResultOf("size", Integer.class)
+                .containsExactly(3, 2, 0, 0, 0);
+    }
 }

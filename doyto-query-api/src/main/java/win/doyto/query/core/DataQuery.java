@@ -16,8 +16,10 @@
 
 package win.doyto.query.core;
 
+import win.doyto.query.entity.Persistable;
 import win.doyto.query.service.PageList;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -34,4 +36,10 @@ public interface DataQuery {
     default <V, Q extends DoytoQuery> PageList<V> page(Q query, Class<V> viewClass) {
         return new PageList<>(query(query, viewClass), count(query, viewClass));
     }
+
+    default <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    List<V> joinQuery(Q query) {
+        return query(query, query.getDomainClass());
+    }
+
 }

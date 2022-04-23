@@ -14,32 +14,31 @@
  * limitations under the License.
  */
 
-package win.doyto.query.annotation;
+package win.doyto.query.core;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.util.List;
+import javax.persistence.Transient;
 
 /**
- * NestedQueries
+ * AbstractDomainRoute
  *
- * @author f0rb on 2019-05-28
- * @deprecated use {@link win.doyto.query.core.DomainRoute} for nested query
+ * @author f0rb on 2022-04-23
  */
-@SuppressWarnings("java:S1133")
-@Deprecated
-@Target(FIELD)
-@Retention(RUNTIME)
-public @interface NestedQueries {
-
-    String column() default "id";
-
-    String op() default "IN";
-
-    boolean appendWhere() default true;
-
-    NestedQuery[] value();
-
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public class AbstractDomainRoute implements DomainRoute {
+    @Transient
+    private List<String> path;
+    @Transient
+    private boolean reverse;
+    @NonNull
+    @Builder.Default
+    @Transient
+    private String lastDomainIdColumn = "id";
 }

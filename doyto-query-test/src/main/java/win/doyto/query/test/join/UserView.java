@@ -18,27 +18,35 @@ package win.doyto.query.test.join;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.Joins;
+import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.entity.Persistable;
 
-import javax.persistence.Column;
+import java.util.List;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * TestJoinView
+ * UserCountByRoleView
  *
- * @author f0rb on 2019-06-09
+ * @author f0rb on 2019-06-15
  */
 @Getter
 @Setter
-@Table(name = "t_user u")
-@Joins({
-        "left join j_user_and_role ur on ur.user_id = u.id",
-        "inner join t_role r on r.id = ur.role_id and r.roleName = #{roleName}"
-})
-public class TestJoinView {
+@Table(name = "t_user")
+public class UserView implements Persistable<Long> {
 
+    @Id
+    private Long id;
     private String username;
+    private String email;
 
-    @Column(name = "r.roleName")
-    private String roleName;
+    @DomainPath({"user", "role"})
+    private List<RoleView> roles;
+
+    @DomainPath({"user", "role", "perm"})
+    private List<PermView> perms;
+
+    @DomainPath({"user", "role", "perm", "menu"})
+    private List<MenuView> menus;
+
 }

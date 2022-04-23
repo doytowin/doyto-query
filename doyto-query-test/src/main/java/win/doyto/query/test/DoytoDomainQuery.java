@@ -14,32 +14,27 @@
  * limitations under the License.
  */
 
-package win.doyto.query.annotation;
+package win.doyto.query.test;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.PageQuery;
 
 /**
- * NestedQueries
+ * PermissionQuery
  *
  * @author f0rb on 2019-05-28
- * @deprecated use {@link win.doyto.query.core.DomainRoute} for nested query
  */
-@SuppressWarnings("java:S1133")
-@Deprecated
-@Target(FIELD)
-@Retention(RUNTIME)
-public @interface NestedQueries {
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public class DoytoDomainQuery extends PageQuery {
 
-    String column() default "id";
-
-    String op() default "IN";
-
-    boolean appendWhere() default true;
-
-    NestedQuery[] value();
+    private DoytoDomainRoute domainRoute;
 
 }

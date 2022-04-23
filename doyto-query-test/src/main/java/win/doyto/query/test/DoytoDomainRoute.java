@@ -14,44 +14,34 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.role;
+package win.doyto.query.test;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.JoinQuery;
-import win.doyto.query.core.PageQuery;
-import win.doyto.query.test.PermissionQuery;
-import win.doyto.query.test.UserQuery;
-import win.doyto.query.test.join.RoleView;
+import win.doyto.query.core.AbstractDomainRoute;
+import win.doyto.query.test.role.RoleQuery;
 
-import javax.persistence.Transient;
+import java.util.List;
 
 /**
- * UserQuery
+ * DoytoDomainRoute
  *
- * @author f0rb on 2020-04-01
+ * @author f0rb on 2022-04-22
  */
-@Getter
 @Setter
+@Getter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-public class RoleQuery extends PageQuery implements JoinQuery<RoleView, Integer> {
-    private String roleName;
-    private String roleNameLike;
-    private Boolean valid;
-
-    @Transient
-    private UserQuery usersQuery;
-
-    @Transient
-    private PermissionQuery permsQuery;
-
-    @Override
-    public Class<RoleView> getDomainClass() {
-        return RoleView.class;
-    }
+public class DoytoDomainRoute extends AbstractDomainRoute {
+    private Integer userId;
+    private Integer roleId;
+    private List<Integer> roleIdIn;
+    private UserQuery userQuery;
+    private RoleQuery roleQuery;
+    private PermissionQuery permQuery;
+    private MenuQuery menuQuery;
 }

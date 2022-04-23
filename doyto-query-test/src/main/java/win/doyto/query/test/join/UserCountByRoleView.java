@@ -31,10 +31,10 @@ import javax.persistence.Table;
  */
 @Getter
 @Setter
-@Table(name = "user u")
+@Table(name = "t_user u")
 @Joins(value = {
-        "left join t_user_and_role ur on ur.userId = u.id",
-        "inner join t_role r on r.id = ur.roleId"
+        "left join j_user_and_role ur on ur.user_id = u.id",
+        "inner join t_role r on r.id = ur.role_id"
 })
 @Aggregation(groupBy = "r.roleName", having = "count(*) > 0")
 public class UserCountByRoleView {

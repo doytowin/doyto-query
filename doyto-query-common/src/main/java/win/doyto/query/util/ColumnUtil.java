@@ -33,6 +33,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.Transient;
 
 /**
@@ -61,7 +63,7 @@ public class ColumnUtil {
 
     public static Stream<Field> filterFields(Class<?> clazz) {
         return FieldUtils.getAllFieldsList(clazz).stream()
-                         .filter(CommonUtil::fieldFilter);
+                         .filter(ColumnUtil::filterForEntity);
     }
 
     /**
@@ -98,21 +100,34 @@ public class ColumnUtil {
     }
 
     public static String[] resolveSelectColumns(Class<?> entityClass) {
-        return FieldUtils.getAllFieldsList(entityClass)
-                         .stream()
-                         .filter(ColumnUtil::shouldRetain)
-                         .map(ColumnUtil::selectAs)
-                         .toArray(String[]::new);
+        return resolveSelectColumnStream(entityClass).toArray(String[]::new);
     }
 
-    private static boolean shouldRetain(Field field) {
-        return !field.getName().startsWith("$")              // $jacocoData
-            && !Modifier.isStatic(field.getModifiers())      // static field
-            && !field.isAnnotationPresent(Transient.class)   // Transient field
-            ;
+    public static Stream<String> resolveSelectColumnStream(Class<?> entityClass) {
+        return FieldUtils.getAllFieldsList(entityClass).stream()
+                         .filter(ColumnUtil::shouldRetain)
+                         .map(ColumnUtil::selectAs);
+    }
+
+    public static boolean filterForEntity(Field field) {
+        return shouldRetain(field) &&
+                !field.isAnnotationPresent(GeneratedValue.class) // ignore id
+                ;
+    }
+
+    public static boolean shouldRetain(Field field) {
+        return !field.getName().startsWith("$")                  // $jacocoData
+                && !Modifier.isStatic(field.getModifiers())      // static field
+                // Transient field, won't be used in where condition
+                && !field.isAnnotationPresent(Transient.class)
+                ;
     }
 
     public static boolean isSingleColumn(String... columns) {
         return columns.length == 1 && !columns[0].contains(",");
+    }
+
+    public static String resolveIdColumn(Class<?> entityClass) {
+        return resolveColumn(FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0]);
     }
 }

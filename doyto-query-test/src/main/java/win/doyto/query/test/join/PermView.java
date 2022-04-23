@@ -14,32 +14,33 @@
  * limitations under the License.
  */
 
-package win.doyto.query.annotation;
+package win.doyto.query.test.join;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import lombok.Getter;
+import lombok.Setter;
+import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.entity.Persistable;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.util.List;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
- * NestedQueries
+ * PermView
  *
- * @author f0rb on 2019-05-28
- * @deprecated use {@link win.doyto.query.core.DomainRoute} for nested query
+ * @author f0rb on 2022-03-26
  */
-@SuppressWarnings("java:S1133")
-@Deprecated
-@Target(FIELD)
-@Retention(RUNTIME)
-public @interface NestedQueries {
+@Getter
+@Setter
+@Table(name = "t_perm")
+public class PermView implements Persistable<Long> {
 
-    String column() default "id";
+    @Id
+    private Long id;
+    private String permName;
+    private Boolean valid;
 
-    String op() default "IN";
-
-    boolean appendWhere() default true;
-
-    NestedQuery[] value();
+    @DomainPath({"user", "role", "perm"})
+    private List<UserView> users;
 
 }

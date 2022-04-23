@@ -124,12 +124,6 @@ class MemoryDataAccessTest {
     }
 
     @Test
-    void ignoreFieldWithSubQuery() {
-        TestQuery byNoneNullMemo = TestQuery.builder().roleId(1).build();
-        assertEquals(5, testMemoryDataAccess.count(byNoneNullMemo));
-    }
-
-    @Test
     void not() {
         TestQuery byNotNormal = TestQuery.builder().userLevelNot(TestEnum.NORMAL).build();
         assertEquals(1, testMemoryDataAccess.count(byNotNormal));

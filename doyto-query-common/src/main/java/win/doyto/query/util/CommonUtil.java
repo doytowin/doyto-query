@@ -26,7 +26,6 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,8 +33,6 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Transient;
 
 /**
  * CommonUtil
@@ -112,7 +109,11 @@ public class CommonUtil {
     }
 
     public static Object readField(Object target, String fieldName) {
-        return readField(getField(target, fieldName), target);
+        Field field = getField(target, fieldName);
+        if (field == null) {
+            return null;
+        }
+        return readField(field, target);
     }
 
     public static Field getField(Object target, String fieldName) {
@@ -128,14 +129,6 @@ public class CommonUtil {
         FieldUtils.writeField(field, target, value, true);
     }
 
-    public static boolean fieldFilter(Field field) {
-        return !(field.getName().startsWith("$")                // $jacocoData
-            || Modifier.isStatic(field.getModifiers())          // static field
-            || field.isAnnotationPresent(GeneratedValue.class)  // id
-            || field.isAnnotationPresent(Transient.class)       // Transient field
-        );
-    }
-
     public static String escapeLike(String like) {
         return StringUtils.isBlank(like) ? like : "%" + escape(like) + "%";
     }
@@ -148,8 +141,10 @@ public class CommonUtil {
         return like.replaceAll("[%|_]", "\\\\$0");
     }
 
-    public static String camelize(String or) {
-        return or.substring(0, 1).toLowerCase() + or.substring(1);
+    public static String camelize(String input) {
+        char[] chars = input.toCharArray();
+        chars[0] = Character.toLowerCase(chars[0]);
+        return new String(chars);
     }
 
     public static String[] splitByOr(String columnName) {
@@ -170,4 +165,7 @@ public class CommonUtil {
         return result.toString();
     }
 
+    public static Character firstLetter(String str) {
+        return str.charAt(0);
+    }
 }
