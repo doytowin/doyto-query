@@ -25,6 +25,8 @@ import win.doyto.query.test.TestEntity;
 import win.doyto.query.test.TestQuery;
 
 import java.lang.reflect.Field;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -61,4 +63,11 @@ class ColumnUtilTest {
         assertEquals(1, subFields.length - parentFields.length);
     }
 
+    @Test
+    void shouldPlaceFieldsOfSuperClassAtFirstPosition() {
+        List<Field> fields = ColumnUtil.filterFields(TestChildQuery.class).collect(Collectors.toList());
+        assertEquals("domainRoute", fields.get(0).getName());
+        assertEquals("idIn", fields.get(1).getName());
+        assertEquals("oneMoreField", fields.get(fields.size() - 1).getName());
+    }
 }

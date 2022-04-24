@@ -17,6 +17,7 @@
 package win.doyto.query.util;
 
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.Dialect;
@@ -62,7 +63,12 @@ public class ColumnUtil {
     }
 
     public static Stream<Field> filterFields(Class<?> clazz) {
-        return FieldUtils.getAllFieldsList(clazz).stream()
+        List<Class<?>> allClasses = ClassUtils.getAllSuperclasses(clazz);
+        allClasses.remove(allClasses.size() - 1);
+        Collections.reverse(allClasses);
+        allClasses.add(clazz);
+        return allClasses.stream()
+                         .flatMap(c -> Arrays.stream(c.getDeclaredFields()))
                          .filter(ColumnUtil::filterForEntity);
     }
 

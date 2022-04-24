@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.QueryField;
-import win.doyto.query.core.PageQuery;
 
 import java.util.Date;
 import java.util.List;
@@ -37,8 +36,7 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TestQuery extends PageQuery {
-    private DoytoDomainRoute domainRoute;
+public class TestQuery extends DoytoDomainQuery {
     private List<Integer> idIn;
     private List<Integer> idNotIn;
     private Integer idLt;
