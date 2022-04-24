@@ -112,12 +112,11 @@ class JoinQueryBuilderTest {
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 2, 3), PermView.class);
 
-        String expected = "SELECT j0ur.user_id AS PK_FOR_JOIN, p.id, p.permName, p.valid" +
+        String expected = "\nSELECT j0ur.user_id AS PK_FOR_JOIN, p.id, p.permName, p.valid" +
                 "\n FROM j_user_and_role j0ur" +
-                "\n INNER JOIN j_role_and_perm j1rp ON j0ur.role_id = j1rp.role_id" +
-                "\n INNER JOIN t_perm p ON j1rp.perm_id = p.id" +
-                "\n WHERE j0ur.user_id IN (1, 2, 3)";
-        assertEquals(expected, sqlAndArgs.getSql());
+                "\n INNER JOIN j_role_and_perm j1rp ON j0ur.user_id IN (1, 2, 3) AND j0ur.role_id = j1rp.role_id" +
+                "\n INNER JOIN t_perm p ON j1rp.perm_id = p.id";
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
     }
 
     @Test
@@ -127,13 +126,12 @@ class JoinQueryBuilderTest {
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 2, 3), PermView.class);
 
-        String expected = "SELECT j0ur.user_id AS PK_FOR_JOIN, m.id, m.permName, m.valid" +
+        String expected = "\nSELECT j0ur.user_id AS PK_FOR_JOIN, m.id, m.permName, m.valid" +
                 "\n FROM j_user_and_role j0ur" +
-                "\n INNER JOIN j_role_and_perm j1rp ON j0ur.role_id = j1rp.role_id" +
+                "\n INNER JOIN j_role_and_perm j1rp ON j0ur.user_id IN (1, 2, 3) AND j0ur.role_id = j1rp.role_id" +
                 "\n INNER JOIN j_perm_and_menu j2pm ON j1rp.perm_id = j2pm.perm_id" +
-                "\n INNER JOIN t_menu m ON j2pm.menu_id = m.id" +
-                "\n WHERE j0ur.user_id IN (1, 2, 3)";
-        assertEquals(expected, sqlAndArgs.getSql());
+                "\n INNER JOIN t_menu m ON j2pm.menu_id = m.id";
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
     }
 
     @Test

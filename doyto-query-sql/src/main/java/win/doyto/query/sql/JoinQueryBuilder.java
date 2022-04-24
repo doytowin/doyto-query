@@ -125,21 +125,21 @@ public class JoinQueryBuilder {
         String columns = buildSubDomainColumns(joinEntityClass, joinAliases[n]);
         String subDomainId = ColumnUtil.resolveIdColumn(joinEntityClass);
 
-        String sql = SELECT + joinAliases[0] + CONN + joinIds[0] + AS + KEY_COLUMN + SEPARATOR + columns + LF
-                + FROM + joinTables[0] + SPACE + joinAliases[0] + LF
-                + INNER_JOIN + joinTables[1] + SPACE + joinAliases[1]
-                + ON + joinAliases[0] + CONN + joinIds[1];
+        StringBuilder sqlBuilder = new StringBuilder(LF)
+                .append(SELECT).append(joinAliases[0]).append(CONN).append(joinIds[0]).append(AS).append(KEY_COLUMN).append(SEPARATOR).append(columns)
+                .append(LF).append(FROM).append(joinTables[0]).append(SPACE).append(joinAliases[0])
+                .append(LF).append(INNER_JOIN).append(joinTables[1]).append(SPACE).append(joinAliases[1])
+                .append(ON).append(joinAliases[0]).append(CONN).append(joinIds[0]).append(IN).append(mainIdsArg)
+                .append(AND).append(joinAliases[0]).append(CONN).append(joinIds[1]);
 
-        StringBuilder innerJoinSB = new StringBuilder();
         for (int i = 1; i < n; i++) {
-            innerJoinSB.append(EQUAL).append(joinAliases[i]).append(CONN).append(joinIds[i]).append(LF)
-                       .append(INNER_JOIN).append(joinTables[i + 1]).append(SPACE).append(joinAliases[i + 1])
-                       .append(ON).append(joinAliases[i]).append(CONN).append(joinIds[i + 1]);
+            sqlBuilder.append(EQUAL).append(joinAliases[i]).append(CONN).append(joinIds[i]).append(LF)
+                      .append(INNER_JOIN).append(joinTables[i + 1]).append(SPACE).append(joinAliases[i + 1])
+                      .append(ON).append(joinAliases[i]).append(CONN).append(joinIds[i + 1]);
         }
-        sql = sql + innerJoinSB + EQUAL + joinAliases[n] + CONN + subDomainId
-                + LF + WHERE + joinAliases[0] + CONN + joinIds[0] + IN + mainIdsArg;
+        sqlBuilder.append(EQUAL).append(joinAliases[n]).append(CONN).append(subDomainId);
 
-        return new SqlAndArgs(sql);
+        return new SqlAndArgs(sqlBuilder.toString());
     }
 
     private static <R> StringBuilder buildJoinSqlForReversePath(Class<R> joinEntityClass, String[] domains, String mainIdsArg) {
