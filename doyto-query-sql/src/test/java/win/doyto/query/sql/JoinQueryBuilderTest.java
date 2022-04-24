@@ -19,6 +19,7 @@ package win.doyto.query.sql;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.test.PermissionQuery;
 import win.doyto.query.test.TestEnum;
 import win.doyto.query.test.UserQuery;
 import win.doyto.query.test.join.*;
@@ -115,7 +116,7 @@ class JoinQueryBuilderTest {
         String expected = "\nSELECT j0ur.user_id AS PK_FOR_JOIN, p.id, p.permName, p.valid" +
                 "\n FROM j_user_and_role j0ur" +
                 "\n INNER JOIN j_role_and_perm j1rp ON j0ur.user_id IN (1, 2, 3) AND j0ur.role_id = j1rp.role_id" +
-                "\n INNER JOIN t_perm p ON j1rp.perm_id = p.id";
+                "\n INNER JOIN t_perm p ON j1rp.perm_id = p.id\n";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
     }
 
@@ -130,7 +131,7 @@ class JoinQueryBuilderTest {
                 "\n FROM j_user_and_role j0ur" +
                 "\n INNER JOIN j_role_and_perm j1rp ON j0ur.user_id IN (1, 2, 3) AND j0ur.role_id = j1rp.role_id" +
                 "\n INNER JOIN j_perm_and_menu j2pm ON j1rp.perm_id = j2pm.perm_id" +
-                "\n INNER JOIN t_menu m ON j2pm.menu_id = m.id";
+                "\n INNER JOIN t_menu m ON j2pm.menu_id = m.id\n";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
     }
 
@@ -189,9 +190,27 @@ class JoinQueryBuilderTest {
 
         String expected = "\nSELECT j0ur.role_id AS PK_FOR_JOIN, u.id, u.username, u.email" +
                 "\n FROM t_user u" +
-                "\n INNER JOIN j_user_and_role j0ur ON u.id = j0ur.user_id AND j0ur.role_id IN (1, 2, 3)"+
+                "\n INNER JOIN j_user_and_role j0ur ON u.id = j0ur.user_id AND j0ur.role_id IN (1, 2, 3)" +
                 "\n WHERE email LIKE ? ORDER BY id DESC LIMIT 10 OFFSET 0";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly("%@163%");
+    }
+
+    @Test
+    void buildSqlAndArgsForSubDomainWithQuery() throws NoSuchFieldException {
+        Field field = UserView.class.getDeclaredField("perms");
+
+        PermissionQuery permissionQuery = PermissionQuery.builder().valid(true)
+                                                         .pageSize(10).sort("id,DESC").build();
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+                permissionQuery, PermView.class, field, Arrays.asList(1, 2, 3));
+
+        String expected = "\nSELECT j0ur.user_id AS PK_FOR_JOIN, p.id, p.permName, p.valid" +
+                "\n FROM j_user_and_role j0ur" +
+                "\n INNER JOIN j_role_and_perm j1rp ON j0ur.user_id IN (1, 2, 3) AND j0ur.role_id = j1rp.role_id" +
+                "\n INNER JOIN t_perm p ON j1rp.perm_id = p.id" +
+                "\n WHERE valid = ? ORDER BY id DESC LIMIT 10 OFFSET 0";
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(true);
     }
 }

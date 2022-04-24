@@ -92,7 +92,7 @@ public class JoinQueryBuilder {
         if (joinField.getName().contains(domains[0])) {
             return buildSqlAndArgsForReverseJoin(query, joinEntityClass, domains, mainIdsArg);
         } else {
-            return buildJoinSql(joinEntityClass, domains, mainIdsArg);
+            return buildSqlAndArgsForJoin(query, joinEntityClass, domains, mainIdsArg);
         }
     }
 
@@ -106,7 +106,17 @@ public class JoinQueryBuilder {
         });
     }
 
-    private static <R> SqlAndArgs buildJoinSql(Class<R> joinEntityClass, String[] domains, String mainIdsArg) {
+    private static <R> SqlAndArgs buildSqlAndArgsForJoin(DoytoQuery query, Class<R> joinEntityClass, String[] domains, String mainIdsArg) {
+        return SqlAndArgs.buildSqlWithArgs(args -> {
+            String sql = buildJoinSql(joinEntityClass, domains, mainIdsArg)
+                    .append(LF).append(buildWhere(query, args))
+                    .append(buildOrderBy(query))
+                    .toString();
+            return buildPaging(sql, query);
+        });
+    }
+
+    private static <R> StringBuilder buildJoinSql(Class<R> joinEntityClass, String[] domains, String mainIdsArg) {
         int size = domains.length;
         int n = size - 1;
         String[] joinTables = new String[size];
@@ -137,9 +147,8 @@ public class JoinQueryBuilder {
                       .append(INNER_JOIN).append(joinTables[i + 1]).append(SPACE).append(joinAliases[i + 1])
                       .append(ON).append(joinAliases[i]).append(CONN).append(joinIds[i + 1]);
         }
-        sqlBuilder.append(EQUAL).append(joinAliases[n]).append(CONN).append(subDomainId);
+        return sqlBuilder.append(EQUAL).append(joinAliases[n]).append(CONN).append(subDomainId);
 
-        return new SqlAndArgs(sqlBuilder.toString());
     }
 
     private static <R> StringBuilder buildJoinSqlForReversePath(Class<R> joinEntityClass, String[] domains, String mainIdsArg) {
