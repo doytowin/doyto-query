@@ -100,6 +100,21 @@ class DomainRouteProcessorTest {
     }
 
     @Test
+    void supportNestedQueryWithThreeDomains() {
+        DoytoDomainRoute domainRoute = DoytoDomainRoute
+                .builder().path(Arrays.asList("user", "role", "perm")).build();
+
+        String sql = domainRouteProcessor.process(argList, domainRoute);;
+
+        String expected = "id IN (" +
+                "SELECT user_id FROM j_user_and_role WHERE role_id IN (" +
+                "SELECT role_id FROM j_role_and_perm" +
+                "))";
+        assertThat(sql).isEqualTo(expected);
+        assertThat(argList).isEmpty();
+    }
+
+    @Test
     void supportReverseNestedQueryWithThreeDomains() {
         DoytoDomainRoute domainRoute = DoytoDomainRoute
                 .builder().path(Arrays.asList("user", "role", "perm")).reverse(true).build();

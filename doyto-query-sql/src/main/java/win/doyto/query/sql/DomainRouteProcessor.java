@@ -54,6 +54,7 @@ class DomainRouteProcessor implements FieldProcessor.Processor {
             lastDomain = domains.get(0);
         } else {
             ArrayUtils.reverse(domainIds);
+            ArrayUtils.reverse(joinTables);
             lastDomain = domains.get(domains.size() - 1);
         }
         return buildClause(lastDomain, domains, domainIds, joinTables, argList, domainRoute);
