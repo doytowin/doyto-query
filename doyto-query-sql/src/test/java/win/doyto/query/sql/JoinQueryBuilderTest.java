@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.TestEnum;
+import win.doyto.query.test.UserQuery;
 import win.doyto.query.test.join.*;
 
 import java.lang.reflect.Field;
@@ -142,9 +143,9 @@ class JoinQueryBuilderTest {
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 2, 3), UserView.class);
 
-        String expected = "SELECT j0ur.role_id AS PK_FOR_JOIN, u.id, u.username, u.email" +
+        String expected = "\nSELECT j0ur.role_id AS PK_FOR_JOIN, u.id, u.username, u.email" +
                 "\n FROM t_user u" +
-                "\n INNER JOIN j_user_and_role j0ur ON u.id = j0ur.user_id AND j0ur.role_id IN (1, 2, 3)";
+                "\n INNER JOIN j_user_and_role j0ur ON u.id = j0ur.user_id AND j0ur.role_id IN (1, 2, 3)\n";
         assertEquals(expected, sqlAndArgs.getSql());
     }
 
@@ -155,10 +156,10 @@ class JoinQueryBuilderTest {
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 2, 3, 4), UserView.class);
 
-        String expected = "SELECT j1rp.perm_id AS PK_FOR_JOIN, u.id, u.username, u.email\n" +
-                " FROM t_user u\n" +
-                " INNER JOIN j_user_and_role j0ur ON u.id = j0ur.user_id\n" +
-                " INNER JOIN j_role_and_perm j1rp ON j0ur.role_id = j1rp.role_id AND j1rp.perm_id IN (1, 2, 3, 4)";
+        String expected = "\nSELECT j1rp.perm_id AS PK_FOR_JOIN, u.id, u.username, u.email" +
+                "\n FROM t_user u" +
+                "\n INNER JOIN j_user_and_role j0ur ON u.id = j0ur.user_id" +
+                "\n INNER JOIN j_role_and_perm j1rp ON j0ur.role_id = j1rp.role_id AND j1rp.perm_id IN (1, 2, 3, 4)\n";
         assertEquals(expected, sqlAndArgs.getSql());
     }
 
@@ -169,11 +170,30 @@ class JoinQueryBuilderTest {
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 2, 3, 4), UserView.class);
 
-        String expected = "SELECT j2pm.menu_id AS PK_FOR_JOIN, u.id, u.username, u.email\n" +
-                " FROM t_user u\n" +
-                " INNER JOIN j_user_and_role j0ur ON u.id = j0ur.user_id\n" +
-                " INNER JOIN j_role_and_perm j1rp ON j0ur.role_id = j1rp.role_id\n" +
-                " INNER JOIN j_perm_and_menu j2pm ON j1rp.perm_id = j2pm.perm_id AND j2pm.menu_id IN (1, 2, 3, 4)";
+        String expected = "\nSELECT j2pm.menu_id AS PK_FOR_JOIN, u.id, u.username, u.email" +
+                "\n FROM t_user u" +
+                "\n INNER JOIN j_user_and_role j0ur ON u.id = j0ur.user_id" +
+                "\n INNER JOIN j_role_and_perm j1rp ON j0ur.role_id = j1rp.role_id" +
+                "\n INNER JOIN j_perm_and_menu j2pm ON j1rp.perm_id = j2pm.perm_id AND j2pm.menu_id IN (1, 2, 3, 4)\n";
         assertEquals(expected, sqlAndArgs.getSql());
+    }
+
+    @Test
+    void buildReverseJoinWithQuery() throws NoSuchFieldException {
+        Field field = RoleView.class.getDeclaredField("users");
+
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+                UserQuery.builder().emailLike("@163")
+                         .pageSize(10).sort("id,DESC")
+                         .build(),
+                UserView.class, field, Arrays.asList(1, 2, 3)
+        );
+
+        String expected = "\nSELECT j0ur.role_id AS PK_FOR_JOIN, u.id, u.username, u.email" +
+                "\n FROM t_user u" +
+                "\n INNER JOIN j_user_and_role j0ur ON u.id = j0ur.user_id AND j0ur.role_id IN (1, 2, 3)"+
+                "\n WHERE email LIKE ? ORDER BY id DESC LIMIT 10 OFFSET 0";
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly("%@163%");
     }
 }
