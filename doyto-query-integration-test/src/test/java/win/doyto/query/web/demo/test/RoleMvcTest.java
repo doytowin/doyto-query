@@ -53,7 +53,7 @@ class RoleMvcTest extends DemoApplicationTest {
         RequestBuilder requestBuilder = post("/role/").content(content).contentType(MediaType.APPLICATION_JSON);
         performAndExpectSuccess(requestBuilder);
         performAndExpectSuccess(get("/role/?pageSize=1"))
-                .andExpect(jsonPath("$.data.total").value(4))
+                .andExpect(jsonPath("$.data.total").value(6))
         ;
     }
 
@@ -85,7 +85,7 @@ class RoleMvcTest extends DemoApplicationTest {
     void deleteById() throws Exception {
         performAndExpectSuccess(delete("/role/1"));
         performAndExpectSuccess(get("/role/?pageSize=1"))
-                .andExpect(jsonPath("$.data.total").value(2))
+                .andExpect(jsonPath("$.data.total").value(4))
                 .andExpect(jsonPath("$.data.list[0].id").value(2))
         ;
     }
@@ -93,9 +93,10 @@ class RoleMvcTest extends DemoApplicationTest {
     @Test
     @Rollback
     void batch() throws Exception {
-        performAndExpectSuccess(post("/role").content("[{\"roleName\":\"vip3\",\"roleCode\":\"VIP3\"},{\"roleName\":\"vip4\",\"roleCode\":\"VIP4\"}]").contentType(MediaType.APPLICATION_JSON));
+        String data = "[{\"roleName\":\"vip5\",\"roleCode\":\"VIP5\"},{\"roleName\":\"vip6\",\"roleCode\":\"VIP6\"}]";
+        performAndExpectSuccess(post("/role").content(data).contentType(MediaType.APPLICATION_JSON));
         performAndExpectSuccess(get("/role/?pageSize=1"))
-                .andExpect(jsonPath("$.data.total").value(5))
+                .andExpect(jsonPath("$.data.total").value(7))
         ;
     }
 }

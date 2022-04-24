@@ -39,6 +39,7 @@ import java.util.List;
 public class DoytoDomainRoute extends AbstractDomainRoute {
     private Integer userId;
     private Integer roleId;
+    private Integer permId;
     private List<Integer> roleIdIn;
     private UserQuery userQuery;
     private RoleQuery roleQuery;
