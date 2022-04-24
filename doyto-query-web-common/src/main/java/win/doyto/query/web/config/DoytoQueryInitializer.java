@@ -46,7 +46,7 @@ public class DoytoQueryInitializer implements ApplicationContextInitializer<Conf
     }
 
     private void configJoinIdFormat(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {
-        String defaultValue = globalConfiguration.getTableFormat();
+        String defaultValue = globalConfiguration.getJoinIdFormat();
         globalConfiguration.setJoinIdFormat(environment.getProperty(key("join-id-format"), String.class, defaultValue));
     }
 
