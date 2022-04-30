@@ -33,12 +33,12 @@ import javax.persistence.Table;
 @Table(name = "t_user u")
 @Joins({
         "left join j_user_and_role ur on ur.user_id = u.id",
-        "inner join t_role r on r.id = ur.role_id and r.roleName = #{roleName}"
+        "inner join t_role r on r.id = ur.role_id and r.role_name = #{roleName}"
 })
 public class TestJoinView {
 
     private String username;
 
-    @Column(name = "r.roleName")
+    @Column(name = "r.role_name")
     private String roleName;
 }

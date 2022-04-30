@@ -18,31 +18,27 @@ package win.doyto.query.test.join;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.Aggregation;
 import win.doyto.query.annotation.Joins;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
 
 /**
- * UserCountByRoleView
+ * TestJoinView
  *
- * @author f0rb on 2019-06-15
+ * @author f0rb on 2019-06-09
  */
 @Getter
 @Setter
 @Table(name = "t_user u")
-@Joins(value = {
+@Joins({
         "left join j_user_and_role ur on ur.user_id = u.id",
-        "inner join t_role r on r.id = ur.role_id"
+        "inner join t_role r on r.id = ur.role_id and r.roleName = #{roleName}"
 })
-@Aggregation(groupBy = "r.role_name", having = "count(*) > 0")
-public class UserCountByRoleView {
+public class TestJoinView {
 
-    @Column(name = "r.role_name")
+    private String username;
+
+    @Column(name = "r.roleName")
     private String roleName;
-
-    @Column(name = "count(u.id)")
-    private Integer userCount;
-
 }

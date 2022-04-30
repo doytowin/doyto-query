@@ -36,10 +36,10 @@ import javax.persistence.Table;
         "left join j_user_and_role ur on ur.user_id = u.id",
         "inner join t_role r on r.id = ur.role_id"
 })
-@Aggregation(groupBy = "r.role_name", having = "count(*) > 0")
+@Aggregation(groupBy = "r.roleName", having = "count(*) > 0")
 public class UserCountByRoleView {
 
-    @Column(name = "r.role_name")
+    @Column(name = "r.roleName")
     private String roleName;
 
     @Column(name = "count(u.id)")

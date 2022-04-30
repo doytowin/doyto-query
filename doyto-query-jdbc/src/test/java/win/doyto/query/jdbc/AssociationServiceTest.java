@@ -146,7 +146,7 @@ class AssociationServiceTest extends JdbcApplicationTest {
     void associateWithCreateUserId(@Autowired JdbcOperations jdbcOperations) {
         userAndRoleAssociationService.associate(5L, 20);
 
-        String sql = "select count(*) from j_user_and_role where createUserId = 0";
+        String sql = "select count(*) from j_user_and_role where create_user_id = 0";
         Long ret = jdbcOperations.queryForObject(sql, new SingleColumnRowMapper<>(Long.class));
         assertThat(ret).isEqualTo(1L);
     }

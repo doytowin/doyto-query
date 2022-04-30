@@ -66,7 +66,7 @@ class JdbcDataQueryTest extends JdbcApplicationTest {
     @Test
     void pageForJoin() {
         TestJoinQuery testJoinQuery = new TestJoinQuery();
-        testJoinQuery.setRoleName("高级");
+        testJoinQuery.setRoleName("vip");
 
         PageList<TestJoinView> page = jdbcDataQuery.page(testJoinQuery, TestJoinView.class);
 
@@ -88,7 +88,7 @@ class JdbcDataQueryTest extends JdbcApplicationTest {
         assertThat(users.get(0).getRoles())
                 .hasSize(2)
                 .flatExtracting("id", "roleName", "roleCode")
-                .containsExactly(1, "测试", "TEST", 2, "高级", "VIP");
+                .containsExactly(1, "admin", "ADMIN", 2, "vip", "VIP");
         assertThat(users).extracting("perms")
                          .extractingResultOf("size", Integer.class)
                          .containsExactly(3, 0, 2, 3);
