@@ -24,7 +24,9 @@ import win.doyto.query.service.PageList;
 import win.doyto.query.test.DoytoDomainRoute;
 import win.doyto.query.test.PermissionQuery;
 import win.doyto.query.test.UserQuery;
-import win.doyto.query.test.join.*;
+import win.doyto.query.test.join.RoleView;
+import win.doyto.query.test.join.UserJoinQuery;
+import win.doyto.query.test.join.UserView;
 import win.doyto.query.test.role.RoleQuery;
 
 import java.util.Arrays;
@@ -69,9 +71,15 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
 
     @Test
     void countForGroupBy() {
+        /*
         TestJoinQuery query = TestJoinQuery.builder().sort("userCount,desc").build();
         Long count = jdbcDataQueryClient.count(query, UserCountByRoleView.class);
 
+        assertThat(count).isEqualTo(2);
+        */
+        DoytoDomainRoute domainRoute = DoytoDomainRoute.builder().path(Arrays.asList("user", "role")).reverse(true).build();
+        RoleQuery roleQuery = RoleQuery.builder().domainRoute(domainRoute).build();
+        long count = jdbcDataQueryClient.count(roleQuery);
         assertThat(count).isEqualTo(2);
     }
 
