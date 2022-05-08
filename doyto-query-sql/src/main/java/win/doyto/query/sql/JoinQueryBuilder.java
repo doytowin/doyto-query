@@ -17,7 +17,6 @@
 package win.doyto.query.sql;
 
 import lombok.experimental.UtilityClass;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.DomainPath;
@@ -88,35 +87,16 @@ public class JoinQueryBuilder {
     ) {
         DomainPath domainPath = joinField.getAnnotation(DomainPath.class);
         String[] domains = domainPath.value();
-
-        int size = domains.length;
-        int n = size - 1;
-        String[] joinTables = new String[size];
-        String[] joinIds = new String[size];
-        for (int i = 0; i < n; i++) {
-            joinIds[i] = String.format(JOIN_ID_FORMAT, domains[i]);
-            joinTables[i] = String.format(JOIN_TABLE_FORMAT, domains[i], domains[i + 1]);
-        }
-        String target = domains[n];
-        joinTables[n] = String.format(TABLE_FORMAT, target);
-        joinIds[n] = String.format(JOIN_ID_FORMAT, target);
-
-        if (joinField.getName().contains(domains[0])) {
-            for (int i = 0; i < n; i++) {
-                joinTables[n - 1 - i] = String.format(JOIN_TABLE_FORMAT, domains[i], domains[i + 1]);
-            }
-            joinTables[n] = String.format(TABLE_FORMAT, domains[0]);
-            ArrayUtils.reverse(joinIds);
-        }
-        return buildSqlAndArgsForJoin(query, joinEntityClass, mainIds, joinTables, joinIds);
+        boolean reverse = joinField.getName().contains(domains[0]);
+        String columns = buildSubDomainColumns(joinEntityClass);
+        return buildSqlAndArgsForJoin(query, mainIds, columns, domains, reverse);
     }
 
     private static <I extends Serializable> SqlAndArgs buildSqlAndArgsForJoin(
-            DoytoQuery query, Class<?> joinEntityClass, List<I> mainIds, String[] joinTables, String[] joinIds
+            DoytoQuery query, List<I> mainIds, String columns, String[] domains, boolean reverse
     ) {
         LinkedList<Object> queryArgs = new LinkedList<>();
-        String columns = buildSubDomainColumns(joinEntityClass);
-        String clause = buildQueryForEachMainDomain(query, queryArgs, columns, joinTables, joinIds);
+        String clause = buildQueryForEachMainDomain(query, queryArgs, columns, domains, reverse);
 
         return SqlAndArgs.buildSqlWithArgs(args -> mainIds
                 .stream()
@@ -131,15 +111,36 @@ public class JoinQueryBuilder {
 
     private static String buildQueryForEachMainDomain(
             DoytoQuery query, LinkedList<Object> queryArgs, String columns,
-            String[] joinTables, String[] joinIds) {
+            String[] domains, boolean reverse) {
 
-        int n = joinTables.length - 1;
+        int size = domains.length;
+        int n = size - 1;
+        String[] joinTables = new String[n];
+        String[] joinIds = new String[size];
+        String targetDomainTable;
+        if (reverse) {
+            for (int i = 0; i <= n; i++) {
+                joinIds[i] = String.format(JOIN_ID_FORMAT, domains[n - i]);
+            }
+            for (int i = 0; i < n; i++) {
+                joinTables[n - 1 - i] = String.format(JOIN_TABLE_FORMAT, domains[i], domains[i + 1]);
+            }
+            targetDomainTable = String.format(TABLE_FORMAT, domains[0]);
+        } else {
+            for (int i = 0; i <= n; i++) {
+                joinIds[i] = String.format(JOIN_ID_FORMAT, domains[i]);
+            }
+            for (int i = 0; i < n; i++) {
+                joinTables[i] = String.format(JOIN_TABLE_FORMAT, domains[i], domains[i + 1]);
+            }
+            targetDomainTable = String.format(TABLE_FORMAT, domains[n]);
+        }
 
         // select columns from target domain `joinTables[n]`
         StringBuilder sqlBuilder = new StringBuilder();
         sqlBuilder.append(SELECT).append(PLACE_HOLDER).append(AS).append(KEY_COLUMN)
                   .append(SEPARATOR).append(columns)
-                  .append(FROM).append(joinTables[n]).append(LF)
+                  .append(FROM).append(targetDomainTable).append(LF)
                   .append(WHERE).append(ID);
         // nested query for medium domains
         for (int i = n - 1; i >= 0; i--) {
