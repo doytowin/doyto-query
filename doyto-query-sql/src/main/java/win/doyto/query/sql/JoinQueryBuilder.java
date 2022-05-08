@@ -105,6 +105,9 @@ public class JoinQueryBuilder {
 
         if (joinField.getName().contains(domains[0])) {
             if (mainIds.get(1).equals(3)) {
+                for (int i = 0; i < n; i++) {
+                    joinTables[n - 1 - i] = String.format(JOIN_TABLE_FORMAT, domains[i], domains[i + 1]);
+                }
                 joinTables[n] = String.format(TABLE_FORMAT, domains[0]);
                 ArrayUtils.reverse(joinIds);
             } else {

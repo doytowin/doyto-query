@@ -183,13 +183,22 @@ class JoinQueryBuilderTest {
         Field field = PermView.class.getDeclaredField("users");
 
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
-                field, Arrays.asList(1, 2, 3, 4), UserView.class);
+                field, Arrays.asList(1, 3), UserView.class);
 
-        String expected = "\nSELECT j1rp.perm_id AS PK_FOR_JOIN, u.id, u.username, u.email" +
-                "\n FROM t_user u" +
-                "\n INNER JOIN j_user_and_role j0ur ON u.id = j0ur.user_id" +
-                "\n INNER JOIN j_role_and_perm j1rp ON j0ur.role_id = j1rp.role_id AND j1rp.perm_id IN (1, 2, 3, 4)\n";
+        String expected = "\n" +
+                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+                " WHERE id IN (\n" +
+                "  SELECT user_id FROM j_user_and_role WHERE role_id IN (\n" +
+                "  SELECT role_id FROM j_role_and_perm WHERE perm_id = ?\n" +
+                "  ))\n" +
+                "UNION ALL\n" +
+                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+                " WHERE id IN (\n" +
+                "  SELECT user_id FROM j_user_and_role WHERE role_id IN (\n" +
+                "  SELECT role_id FROM j_role_and_perm WHERE perm_id = ?\n" +
+                "  ))";
         assertEquals(expected, sqlAndArgs.getSql());
+        assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
     }
 
     @Test
