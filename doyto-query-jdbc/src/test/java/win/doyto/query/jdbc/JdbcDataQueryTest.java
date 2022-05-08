@@ -91,7 +91,7 @@ class JdbcDataQueryTest extends JdbcApplicationTest {
                 .containsExactly(1, "admin", "ADMIN", 2, "vip", "VIP");
         assertThat(users).extracting("perms")
                          .extractingResultOf("size", Integer.class)
-                         .containsExactly(3, 0, 2, 3);
+                         .containsExactly(2, 0, 2, 2);
     }
 
     @Test
