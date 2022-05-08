@@ -37,12 +37,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author f0rb on 2020-04-11
  */
-class JdbcDataQueryTest extends JdbcApplicationTest {
-    private JdbcDataQuery jdbcDataQuery;
+class JdbcDataQueryClientTest extends JdbcApplicationTest {
+    private JdbcDataQueryClient jdbcDataQueryClient;
 
     @BeforeEach
     void setUp(@Autowired JdbcOperations jdbcOperations) {
-        jdbcDataQuery = new JdbcDataQuery(jdbcOperations);
+        jdbcDataQueryClient = new JdbcDataQueryClient(jdbcOperations);
     }
 
     @Test
@@ -61,7 +61,7 @@ class JdbcDataQueryTest extends JdbcApplicationTest {
         UserQuery usersQuery = UserQuery.builder().build();
         DoytoDomainRoute domainRoute = DoytoDomainRoute.builder().path(Arrays.asList("user", "role")).reverse(true).build();
         RoleQuery roleQuery = RoleQuery.builder().domainRoute(domainRoute).usersQuery(usersQuery).build();
-        List<RoleView> roleViews = jdbcDataQuery.joinQuery(roleQuery);
+        List<RoleView> roleViews = jdbcDataQueryClient.query(roleQuery);
         assertThat(roleViews)
                 .extracting(roleView -> roleView.getUsers().size())
                 .containsExactly(3, 2);
@@ -70,13 +70,14 @@ class JdbcDataQueryTest extends JdbcApplicationTest {
     @Test
     void countForGroupBy() {
         TestJoinQuery query = TestJoinQuery.builder().sort("userCount,desc").build();
-        Long count = jdbcDataQuery.count(query, UserCountByRoleView.class);
+        Long count = jdbcDataQueryClient.count(query, UserCountByRoleView.class);
 
         assertThat(count).isEqualTo(2);
     }
 
     @Test
     void pageForJoin() {
+        /*
         TestJoinQuery testJoinQuery = new TestJoinQuery();
         testJoinQuery.setRoleName("vip");
 
@@ -86,13 +87,21 @@ class JdbcDataQueryTest extends JdbcApplicationTest {
         assertThat(page.getList()).extracting(TestJoinView::getUsername).containsExactly("f0rb", "user4");
         assertThat(testJoinQuery.getPageNumber()).isZero();
         assertThat(testJoinQuery.getPageSize()).isEqualTo(10);
+        */
+
+        RoleQuery roleQuery = RoleQuery.builder().roleName("vip").build();
+        DoytoDomainRoute domainRoute = DoytoDomainRoute.builder().path(Arrays.asList("user", "role")).roleQuery(roleQuery).build();
+        UserJoinQuery userJoinQuery = UserJoinQuery.builder().domainRoute(domainRoute).rolesQuery(roleQuery).build();
+        PageList<UserView> page = jdbcDataQueryClient.page(userJoinQuery);
+        assertThat(page.getTotal()).isEqualTo(2);
+        assertThat(page.getList()).extracting(UserView::getUsername).containsExactly("f0rb", "user4");
     }
 
     @Test
     void queryUserWithRoles() {
         UserJoinQuery userJoinQuery = UserJoinQuery.builder().rolesQuery(new RoleQuery()).permsQuery(new PermissionQuery()).build();
 
-        List<UserView> users = jdbcDataQuery.joinQuery(userJoinQuery);
+        List<UserView> users = jdbcDataQueryClient.query(userJoinQuery);
 
         assertThat(users).extracting("roles")
                          .extractingResultOf("size", Integer.class)
@@ -108,7 +117,7 @@ class JdbcDataQueryTest extends JdbcApplicationTest {
 
     @Test
     void shouldNotQuerySubDomainWhenItsQueryFieldIsNull() {
-        List<UserView> users = jdbcDataQuery.joinQuery(UserJoinQuery.builder().build());
+        List<UserView> users = jdbcDataQueryClient.query(UserJoinQuery.builder().build());
         assertThat(users).hasSize(4);
         assertThat(users).extracting("roles").containsOnlyNulls();
         assertThat(users).extracting("perms").containsOnlyNulls();
@@ -119,7 +128,7 @@ class JdbcDataQueryTest extends JdbcApplicationTest {
         RoleQuery roleQuery = RoleQuery.builder().usersQuery(new UserQuery())
                                        .permsQuery(new PermissionQuery()).build();
 
-        List<RoleView> roles = jdbcDataQuery.joinQuery(roleQuery);
+        List<RoleView> roles = jdbcDataQueryClient.query(roleQuery);
 
         assertThat(roles)
                 .extracting("perms")

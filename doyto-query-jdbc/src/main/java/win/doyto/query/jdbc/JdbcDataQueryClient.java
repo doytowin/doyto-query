@@ -22,6 +22,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.DataQuery;
+import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.JoinQuery;
 import win.doyto.query.entity.Persistable;
@@ -44,12 +45,12 @@ import java.util.stream.Collectors;
  *
  * @author f0rb on 2021-12-28
  */
-public class JdbcDataQuery implements DataQuery {
+public class JdbcDataQueryClient implements DataQuery, DataQueryClient {
 
     private Map<Class<?>, RowMapper<?>> holder = new HashMap<>();
     private DatabaseOperations databaseOperations;
 
-    public JdbcDataQuery(JdbcOperations jdbcOperations) {
+    public JdbcDataQueryClient(JdbcOperations jdbcOperations) {
         this.databaseOperations = new DatabaseTemplate(jdbcOperations);
     }
 
@@ -69,11 +70,15 @@ public class JdbcDataQuery implements DataQuery {
 
     @Override
     public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
-    List<V> joinQuery(Q query) {
+    List<V> query(Q query) {
         Class<V> viewClass = query.getDomainClass();
-        List<V> mainEntities = this.query(query, viewClass);
+        List<V> mainEntities = query(query, viewClass);
         querySubEntities(viewClass, mainEntities, query);
         return mainEntities;
+    }
+    @Override
+    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>> long count(Q query) {
+        return count(query, query.getDomainClass());
     }
 
     private <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>

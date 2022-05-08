@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.core.JoinQuery;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.test.DoytoDomainQuery;
 import win.doyto.query.test.PermissionQuery;
 import win.doyto.query.test.role.RoleQuery;
 
@@ -38,7 +38,7 @@ import javax.persistence.Transient;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserJoinQuery extends PageQuery implements JoinQuery<UserView, Long> {
+public class UserJoinQuery extends DoytoDomainQuery implements JoinQuery<UserView, Long> {
 
     @Transient
     private RoleQuery rolesQuery;
