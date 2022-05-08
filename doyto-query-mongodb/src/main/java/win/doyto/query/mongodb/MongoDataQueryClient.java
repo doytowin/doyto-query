@@ -21,11 +21,14 @@ import com.mongodb.client.model.Aggregates;
 import lombok.AllArgsConstructor;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import win.doyto.query.core.DataQuery;
+import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.core.JoinQuery;
+import win.doyto.query.entity.Persistable;
 import win.doyto.query.mongodb.filter.MongoFilterBuilder;
 import win.doyto.query.util.BeanUtil;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,14 +39,16 @@ import java.util.List;
  * @author f0rb on 2022-01-25
  */
 @AllArgsConstructor
-public class MongoDataQuery implements DataQuery {
+public class MongoDataQueryClient implements DataQueryClient {
 
     private static final Document SORT_BY_ID = new Document("_id", 1);
 
     private MongoClient mongoClient;
 
     @Override
-    public <V, Q extends DoytoQuery> List<V> query(Q query, Class<V> viewClass) {
+    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>> List<V> query(Q query) {
+        Class<V> viewClass = query.getDomainClass();
+        assert viewClass != null : "Domain class should be specified.";
         AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
         return md.getCollection().aggregate(Arrays.asList(md.getGroupBy(), buildSort(query), md.getProject()))
                  .map(document -> BeanUtil.parse(document.toJson(), viewClass))
@@ -59,7 +64,8 @@ public class MongoDataQuery implements DataQuery {
     }
 
     @Override
-    public <V, Q extends DoytoQuery> Long count(Q query, Class<V> viewClass) {
-        return null;
+    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    long count(Q query) {
+        return 0;
     }
 }

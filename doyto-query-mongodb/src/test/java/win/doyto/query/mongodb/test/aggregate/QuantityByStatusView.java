@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.Aggregation;
 import win.doyto.query.entity.MongoEntity;
+import win.doyto.query.mongodb.entity.MongoPersistable;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ import java.util.List;
 @Setter
 @MongoEntity(database = "doyto", collection = "c_inventory")
 @Aggregation(groupBy = "status")
-public class QuantityByStatusView {
+public class QuantityByStatusView extends MongoPersistable<String> {
 
     private Integer sumQty;
 

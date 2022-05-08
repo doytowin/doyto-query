@@ -47,7 +47,7 @@ class MongoDataAccessTest extends MongoApplicationTest {
 
     @Test
     void query() {
-        InventoryQuery query = InventoryQuery.builder().build();
+        InventoryQuery query = InventoryQuery.create().build();
         List<InventoryEntity> list = mongoDataAccess.query(query);
         assertThat(list)
                   .hasSize(5)
@@ -58,7 +58,7 @@ class MongoDataAccessTest extends MongoApplicationTest {
 
     @Test
     void get() {
-        InventoryQuery query = InventoryQuery.builder().build();
+        InventoryQuery query = InventoryQuery.create().build();
         List<InventoryEntity> list = mongoDataAccess.query(query);
 
         String id = list.get(0).getId();
@@ -70,7 +70,7 @@ class MongoDataAccessTest extends MongoApplicationTest {
 
     @Test
     void queryByStatus() {
-        InventoryQuery query = InventoryQuery.builder().status("A").build();
+        InventoryQuery query = InventoryQuery.create().status("A").build();
         List<InventoryEntity> list = mongoDataAccess.query(query);
         assertThat(list)
                   .hasSize(3)
@@ -81,7 +81,7 @@ class MongoDataAccessTest extends MongoApplicationTest {
 
     @Test
     void queryByStatusAndItemContain() {
-        InventoryQuery query = InventoryQuery.builder().itemContain("t").status("A").build();
+        InventoryQuery query = InventoryQuery.create().itemContain("t").status("A").build();
         List<InventoryEntity> list = mongoDataAccess.query(query);
         assertThat(list)
                   .hasSize(2)
@@ -93,7 +93,7 @@ class MongoDataAccessTest extends MongoApplicationTest {
     @Test
     void queryBySizeGt() {
         SizeQuery sizeQuery = SizeQuery.builder().hLt(10).build();
-        InventoryQuery query = InventoryQuery.builder().size(sizeQuery).status("A").build();
+        InventoryQuery query = InventoryQuery.create().size(sizeQuery).status("A").build();
         List<InventoryEntity> list = mongoDataAccess.query(query);
         assertThat(list)
                   .hasSize(1)
@@ -105,7 +105,7 @@ class MongoDataAccessTest extends MongoApplicationTest {
     @Test
     void countBySize$hLt10AndStatusEqA() {
         SizeQuery sizeQuery = SizeQuery.builder().hLt(10).build();
-        InventoryQuery query = InventoryQuery.builder().size(sizeQuery).status("A").build();
+        InventoryQuery query = InventoryQuery.create().size(sizeQuery).status("A").build();
         long count = mongoDataAccess.count(query);
         assertThat(count).isEqualTo(1);
     }
@@ -113,7 +113,7 @@ class MongoDataAccessTest extends MongoApplicationTest {
     @Test
     void deleteBySize$hLt10AndStatusEqA() {
         SizeQuery sizeQuery = SizeQuery.builder().hLt(10).build();
-        InventoryQuery query = InventoryQuery.builder().size(sizeQuery).status("A").build();
+        InventoryQuery query = InventoryQuery.create().size(sizeQuery).status("A").build();
         long deleted = mongoDataAccess.delete(query);
         assertThat(deleted).isEqualTo(1);
 
@@ -123,7 +123,7 @@ class MongoDataAccessTest extends MongoApplicationTest {
 
     @Test
     void update() {
-        InventoryQuery query = InventoryQuery.builder().build();
+        InventoryQuery query = InventoryQuery.create().build();
         List<InventoryEntity> list = mongoDataAccess.query(query);
 
         InventoryEntity first = list.get(0);
@@ -163,7 +163,7 @@ class MongoDataAccessTest extends MongoApplicationTest {
     void createSubDocument(@Autowired MongoClient mongoClient) {
         MongoDataAccess<InventorySize, ObjectId, SizeQuery> sizeDataAccess
                 = new MongoDataAccess<>(mongoClient, InventorySize.class);
-        InventoryEntity inventoryEntity = mongoDataAccess.query(InventoryQuery.builder().build()).get(0);
+        InventoryEntity inventoryEntity = mongoDataAccess.query(InventoryQuery.create().build()).get(0);
 
         InventorySize size = inventoryEntity.getSize();
         sizeDataAccess.create(size);
@@ -174,7 +174,7 @@ class MongoDataAccessTest extends MongoApplicationTest {
     @Test
     void paging() {
         // query [2,4)
-        InventoryQuery testQuery = InventoryQuery.builder().pageNumber(2).pageSize(2).build();
+        InventoryQuery testQuery = InventoryQuery.create().pageNumber(2).pageSize(2).build();
         assertThat(mongoDataAccess.count(testQuery)).isEqualTo(5);
         assertThat(mongoDataAccess.query(testQuery))
                 .extracting("item")
@@ -185,7 +185,7 @@ class MongoDataAccessTest extends MongoApplicationTest {
     @Test
     void deleteById() {
         SizeQuery sizeQuery = SizeQuery.builder().hLt(10).build();
-        InventoryQuery query = InventoryQuery.builder().size(sizeQuery).status("A").build();
+        InventoryQuery query = InventoryQuery.create().size(sizeQuery).status("A").build();
         List<InventoryEntity> list = mongoDataAccess.query(query);
 
         //when
@@ -198,7 +198,7 @@ class MongoDataAccessTest extends MongoApplicationTest {
 
     @Test
     void patch() {
-        InventoryQuery query = InventoryQuery.builder().build();
+        InventoryQuery query = InventoryQuery.create().build();
         InventoryEntity notebook = mongoDataAccess.query(query).get(1);
         InventoryEntity patch = new InventoryEntity();
         patch.setId(notebook.getId());
@@ -219,7 +219,7 @@ class MongoDataAccessTest extends MongoApplicationTest {
 
     @Test
     void patchByQuery() {
-        InventoryQuery query = InventoryQuery.builder().status("A").build();
+        InventoryQuery query = InventoryQuery.create().status("A").build();
         InventoryEntity patch = new InventoryEntity();
         patch.setStatus("P");
 
@@ -232,7 +232,7 @@ class MongoDataAccessTest extends MongoApplicationTest {
 
     @Test
     void queryColumns() {
-        InventoryQuery query = InventoryQuery.builder().build();
+        InventoryQuery query = InventoryQuery.create().build();
         List<InventoryEntity> entities = mongoDataAccess.queryColumns(query, InventoryEntity.class, "item", "size.h");
         assertThat(entities)
                   .hasSize(5)
@@ -243,7 +243,7 @@ class MongoDataAccessTest extends MongoApplicationTest {
 
     @Test
     void queryOid() {
-        InventoryQuery query = InventoryQuery.builder().status("A").build();
+        InventoryQuery query = InventoryQuery.create().status("A").build();
 
         //when
         List<ObjectId> ids = mongoDataAccess.queryObjectId(query);
@@ -255,14 +255,14 @@ class MongoDataAccessTest extends MongoApplicationTest {
 
     @Test
     void queryFirstLevelSingleColumn() {
-        InventoryQuery query = InventoryQuery.builder().pageSize(2).build();
+        InventoryQuery query = InventoryQuery.create().pageSize(2).build();
         List<String> items = mongoDataAccess.queryColumns(query, String.class, "item");
         assertThat(items).containsExactly("journal", "notebook");
     }
 
     @Test
     void queryNestedSingleColumn() {
-        InventoryQuery query = InventoryQuery.builder().pageSize(2).build();
+        InventoryQuery query = InventoryQuery.create().pageSize(2).build();
         List<String> items = mongoDataAccess.queryColumns(query, String.class, "size.uom");
         assertThat(items).containsExactly("cm", "in");
     }
@@ -270,7 +270,7 @@ class MongoDataAccessTest extends MongoApplicationTest {
     @Test
     void patchWithPage() {
         // only change [2, 4) inventories' status to F
-        InventoryQuery query = InventoryQuery.builder().pageNumber(1).pageSize(2).build();
+        InventoryQuery query = InventoryQuery.create().pageNumber(1).pageSize(2).build();
         InventoryEntity patch = new InventoryEntity();
         patch.setStatus("F");
 
@@ -281,7 +281,7 @@ class MongoDataAccessTest extends MongoApplicationTest {
     @Test
     void deleteWithPage() {
         // only change [2, 4) inventories' status to F
-        InventoryQuery query = InventoryQuery.builder().pageNumber(1).pageSize(2).build();
+        InventoryQuery query = InventoryQuery.create().pageNumber(1).pageSize(2).build();
 
         int count = mongoDataAccess.delete(query);
         assertThat(count).isEqualTo(2);
@@ -289,14 +289,14 @@ class MongoDataAccessTest extends MongoApplicationTest {
 
     @Test
     void queryNestedSingleColumnWithTypeDouble() {
-        InventoryQuery query = InventoryQuery.builder().pageSize(2).build();
+        InventoryQuery query = InventoryQuery.create().pageSize(2).build();
         List<Double> items = mongoDataAccess.queryColumns(query, Double.class, "size.h");
         assertThat(items).containsExactly(14., 8.5);
     }
 
     @Test
     void sort() {
-        InventoryQuery query = InventoryQuery.builder().sort("item,desc").build();
+        InventoryQuery query = InventoryQuery.create().sort("item,desc").build();
         List<InventoryEntity> inventoryEntities = mongoDataAccess.query(query);
         assertThat(inventoryEntities)
                   .extracting("item")
@@ -305,7 +305,7 @@ class MongoDataAccessTest extends MongoApplicationTest {
 
     @Test
     void sortForNestedField() {
-        InventoryQuery query = InventoryQuery.builder().sort("size.h;item,desc").build();
+        InventoryQuery query = InventoryQuery.create().sort("size.h;item,desc").build();
         List<InventoryEntity> inventoryEntities = mongoDataAccess.query(query);
         assertThat(inventoryEntities)
                   .extracting("item", "size.h")
@@ -320,7 +320,7 @@ class MongoDataAccessTest extends MongoApplicationTest {
 
     @Test
     void queryIds() {
-        InventoryQuery query = InventoryQuery.builder().status("A").build();
+        InventoryQuery query = InventoryQuery.create().status("A").build();
 
         //when
         List<String> ids = mongoDataAccess.queryIds(query);

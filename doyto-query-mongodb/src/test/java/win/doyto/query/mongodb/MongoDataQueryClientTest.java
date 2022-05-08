@@ -20,6 +20,7 @@ import com.mongodb.client.MongoClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import org.springframework.beans.factory.annotation.Autowired;
+import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.mongodb.test.aggregate.QuantityByStatusView;
 import win.doyto.query.mongodb.test.aggregate.QuantityView;
 import win.doyto.query.mongodb.test.inventory.InventoryQuery;
@@ -36,17 +37,18 @@ import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
  * @author f0rb on 2022-01-25
  */
 @ResourceLock(value = "inventory", mode = READ_WRITE)
-class MongoDataQueryTest extends MongoApplicationTest {
+class MongoDataQueryClientTest extends MongoApplicationTest {
 
-    MongoDataQuery mongoDataQuery;
+    DataQueryClient dataQueryClient;
 
-    MongoDataQueryTest(@Autowired MongoClient mongoClient) {
-        this.mongoDataQuery = new MongoDataQuery(mongoClient);
+    MongoDataQueryClientTest(@Autowired MongoClient mongoClient) {
+        this.dataQueryClient = new MongoDataQueryClient(mongoClient);
     }
 
     @Test
     void aggregateQuery() {
-        List<QuantityView> views = mongoDataQuery.query(new InventoryQuery(), QuantityView.class);
+        InventoryQuery<QuantityView, String> inventoryQuery = InventoryQuery.<QuantityView, String>create().domainClass(QuantityView.class).build();
+        List<QuantityView> views = dataQueryClient.query(inventoryQuery);
         assertThat(views).hasSize(1)
                          .first()
                          .hasFieldOrPropertyWithValue("sumQty", 295)
@@ -62,8 +64,9 @@ class MongoDataQueryTest extends MongoApplicationTest {
 
     @Test
     void groupQuery() {
-        InventoryQuery query = new InventoryQuery();
-        List<QuantityByStatusView> views = mongoDataQuery.query(query, QuantityByStatusView.class);
+        InventoryQuery<QuantityByStatusView, String> inventoryQuery = InventoryQuery
+                .<QuantityByStatusView, String>create().domainClass(QuantityByStatusView.class).build();
+        List<QuantityByStatusView> views = dataQueryClient.query(inventoryQuery);
         assertThat(views).hasSize(2)
                          .first()
                          .extracting("sumQty", "status", "addToSetItem")
@@ -79,8 +82,11 @@ class MongoDataQueryTest extends MongoApplicationTest {
 
     @Test
     void groupQueryWithSort() {
-        InventoryQuery query = InventoryQuery.builder().sort("status,desc").build();
-        List<QuantityByStatusView> views = mongoDataQuery.query(query, QuantityByStatusView.class);
+        InventoryQuery<QuantityByStatusView, String> query = InventoryQuery
+                .<QuantityByStatusView, String>create()
+                .domainClass(QuantityByStatusView.class)
+                .sort("status,desc").build();
+        List<QuantityByStatusView> views = dataQueryClient.query(query);
         assertThat(views).hasSize(2)
                          .first()
                          .extracting("sumQty", "status")
