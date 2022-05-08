@@ -26,7 +26,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Joins
  *
  * @author f0rb on 2019-06-09
+ * @deprecated use {@link win.doyto.query.annotation.DomainPath} for join query
  */
+@SuppressWarnings("java:S1133")
+@Deprecated
 @Target(TYPE)
 @Retention(RUNTIME)
 public @interface Joins {

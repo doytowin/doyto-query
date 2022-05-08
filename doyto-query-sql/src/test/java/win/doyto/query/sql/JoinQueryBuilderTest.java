@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.PermissionQuery;
-import win.doyto.query.test.TestEnum;
 import win.doyto.query.test.UserQuery;
 import win.doyto.query.test.join.*;
 
@@ -42,68 +41,6 @@ class JoinQueryBuilderTest {
     void supportAggregateQuery() {
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(new PageQuery(), MaxIdView.class);
         assertEquals("SELECT max(id) AS maxId FROM user", sqlAndArgs.getSql());
-    }
-
-    @Test
-    void buildJoinSelectAndArgs() {
-        TestJoinQuery testJoinQuery = new TestJoinQuery();
-        testJoinQuery.setRoleName("VIP");
-        testJoinQuery.setUserLevel(TestEnum.VIP);
-
-        String expected = "SELECT username, r.roleName AS roleName " +
-                "FROM t_user u " +
-                "left join j_user_and_role ur on ur.user_id = u.id " +
-                "inner join t_role r on r.id = ur.role_id and r.roleName = ? " +
-                "WHERE u.userLevel = ?";
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(testJoinQuery, TestJoinView.class);
-        assertEquals(expected, sqlAndArgs.getSql());
-        assertThat(sqlAndArgs.getArgs()).containsExactly("VIP", TestEnum.VIP.ordinal());
-    }
-
-    @Test
-    void buildJoinSelectAndArgsWithAlias() {
-        TestJoinQuery testJoinQuery = new TestJoinQuery();
-        testJoinQuery.setRoleName("VIP");
-        testJoinQuery.setRoleNameLikeOrRoleCodeLike("VIP");
-        testJoinQuery.setUserLevel(TestEnum.VIP);
-
-        String expected = "SELECT username, r.roleName AS roleName " +
-                "FROM t_user u " +
-                "left join j_user_and_role ur on ur.user_id = u.id " +
-                "inner join t_role r on r.id = ur.role_id and r.roleName = ? " +
-                "WHERE u.userLevel = ? AND (r.roleName LIKE ? OR r.roleCode LIKE ?)";
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(testJoinQuery, TestJoinView.class);
-        assertEquals(expected, sqlAndArgs.getSql());
-        assertThat(sqlAndArgs.getArgs()).containsExactly("VIP", TestEnum.VIP.ordinal(), "%VIP%", "%VIP%");
-
-    }
-
-    @Test
-    void buildJoinGroupBy() {
-        TestJoinQuery testJoinQuery = TestJoinQuery.builder().pageSize(5).sort("userCount,asc").build();
-
-        String expected = "SELECT r.roleName AS roleName, count(u.id) AS userCount " +
-                "FROM t_user u " +
-                "left join j_user_and_role ur on ur.user_id = u.id " +
-                "inner join t_role r on r.id = ur.role_id " +
-                "GROUP BY r.roleName HAVING count(*) > 0 " +
-                "ORDER BY userCount asc " +
-                "LIMIT 5 OFFSET 0";
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(testJoinQuery, UserCountByRoleView.class);
-        assertEquals(expected, sqlAndArgs.getSql());
-        assertThat(sqlAndArgs.getArgs()).isEmpty();
-    }
-
-    @Test
-    void buildCountAndArgs() {
-        TestJoinQuery testJoinQuery = TestJoinQuery.builder().pageSize(5).sort("userCount,asc").build();
-
-        String expected = "SELECT COUNT(DISTINCT(r.roleName)) " +
-                "FROM t_user u " +
-                "left join j_user_and_role ur on ur.user_id = u.id " +
-                "inner join t_role r on r.id = ur.role_id";
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildCountAndArgs(testJoinQuery, UserCountByRoleView.class);
-        assertEquals(expected, sqlAndArgs.getSql());
     }
 
     @Test
