@@ -43,4 +43,5 @@ interface Constant {
     String INNER_JOIN = " INNER JOIN ";
     String LF = "\n";
     String ID = "id";
+    String UNION_ALL = "\nUNION ALL\n";
 }

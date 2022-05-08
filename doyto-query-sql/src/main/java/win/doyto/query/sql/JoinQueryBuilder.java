@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static win.doyto.query.sql.BuildHelper.*;
 import static win.doyto.query.sql.Constant.*;
@@ -92,6 +93,42 @@ public class JoinQueryBuilder {
         if (joinField.getName().contains(domains[0])) {
             return buildSqlAndArgsForReverseJoin(query, joinEntityClass, domains, mainIdsArg);
         } else {
+            int size = domains.length;
+            int n = size - 1;
+            String[] joinTables = new String[size];
+            String[] joinIds = new String[size];
+            for (int i = 0; i < n; i++) {
+                joinIds[i] = String.format(JOIN_ID_FORMAT, domains[i]);
+                joinTables[i] = String.format(JOIN_TABLE_FORMAT, domains[i], domains[i + 1]);
+            }
+            String target = domains[n];
+            joinTables[n] = String.format(TABLE_FORMAT, target);
+            joinIds[n] = String.format(JOIN_ID_FORMAT, target);
+            if (joinField.getName().equals("perms")) {
+                String columns = buildSubDomainColumns(joinEntityClass);
+                return SqlAndArgs.buildSqlWithArgs(args -> {
+                    StringBuilder sqlBuilder = new StringBuilder();
+                    sqlBuilder.append(SELECT).append(PLACE_HOLDER).append(AS).append(KEY_COLUMN)
+                              .append(SEPARATOR).append(columns)
+                              .append(FROM).append(joinTables[n]).append(LF)
+                              .append(WHERE).append(ID);
+                    for (int i = n - 1; i >= 0; i--) {
+                        sqlBuilder.append(IN).append("(").append(LF).append("  ")
+                                  .append(SELECT).append(joinIds[i + 1]).append(FROM).append(joinTables[i])
+                                  .append(WHERE).append(joinIds[i]);
+                    }
+                    sqlBuilder.append(EQUAL_HOLDER).append(LF).append("  ");
+                    IntStream.range(0, n).mapToObj(i -> ")").forEach(sqlBuilder::append);
+                    String clause = sqlBuilder.toString();
+                    return mainIds.stream()
+                                  .map(mainId -> {
+                                      args.add(mainId);
+                                      args.add(mainId);
+                                      return clause;
+                                  }).collect(Collectors.joining(UNION_ALL, LF, EMPTY));
+                });
+            }
+
             return buildSqlAndArgsForJoin(query, joinEntityClass, domains, mainIdsArg);
         }
     }
@@ -195,9 +232,17 @@ public class JoinQueryBuilder {
                          .collect(Collectors.joining(SEPARATOR));
     }
 
+    private static <R> String buildSubDomainColumns(Class<R> joinEntityClass) {
+        return FieldUtils.getAllFieldsList(joinEntityClass).stream()
+                         .filter(JoinQueryBuilder::filterForJoinEntity)
+                         .map(ColumnUtil::selectAs)
+                         .collect(Collectors.joining(SEPARATOR));
+    }
+
     private static boolean filterForJoinEntity(Field field) {
         return ColumnUtil.shouldRetain(field)
                 && !field.isAnnotationPresent(DomainPath.class)    // ignore join field
                 ;
     }
+
 }
