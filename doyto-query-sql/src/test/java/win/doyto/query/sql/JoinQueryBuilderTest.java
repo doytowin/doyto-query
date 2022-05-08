@@ -140,14 +140,23 @@ class JoinQueryBuilderTest {
         Field field = UserView.class.getDeclaredField("menus");
 
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
-                field, Arrays.asList(1, 2, 3), PermView.class);
+                field, Arrays.asList(1, 3), MenuView.class);
 
-        String expected = "\nSELECT j0ur.user_id AS PK_FOR_JOIN, m.id, m.permName, m.valid" +
-                "\n FROM j_user_and_role j0ur" +
-                "\n INNER JOIN j_role_and_perm j1rp ON j0ur.user_id IN (1, 2, 3) AND j0ur.role_id = j1rp.role_id" +
-                "\n INNER JOIN j_perm_and_menu j2pm ON j1rp.perm_id = j2pm.perm_id" +
-                "\n INNER JOIN t_menu m ON j2pm.menu_id = m.id\n";
+        String expected = "\nSELECT ? AS PK_FOR_JOIN, id, menuName, platform FROM t_menu\n" +
+                " WHERE id IN (\n" +
+                "  SELECT menu_id FROM j_perm_and_menu WHERE perm_id IN (\n" +
+                "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
+                "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
+                "  )))\n" +
+                "UNION ALL\n" +
+                "SELECT ? AS PK_FOR_JOIN, id, menuName, platform FROM t_menu\n" +
+                " WHERE id IN (\n" +
+                "  SELECT menu_id FROM j_perm_and_menu WHERE perm_id IN (\n" +
+                "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
+                "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
+                "  )))";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
     }
 
     @Test
