@@ -163,12 +163,19 @@ class JoinQueryBuilderTest {
         Field field = RoleView.class.getDeclaredField("users");
 
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
-                field, Arrays.asList(1, 2, 3), UserView.class);
+                field, Arrays.asList(1, 3), UserView.class);
 
-        String expected = "\nSELECT j0ur.role_id AS PK_FOR_JOIN, u.id, u.username, u.email" +
-                "\n FROM t_user u" +
-                "\n INNER JOIN j_user_and_role j0ur ON u.id = j0ur.user_id AND j0ur.role_id IN (1, 2, 3)\n";
-        assertEquals(expected, sqlAndArgs.getSql());
+        String expected = "\nSELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+                " WHERE id IN (\n" +
+                "  SELECT user_id FROM j_user_and_role WHERE role_id = ?\n" +
+                "  )\n" +
+                "UNION ALL\n" +
+                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+                " WHERE id IN (\n" +
+                "  SELECT user_id FROM j_user_and_role WHERE role_id = ?\n" +
+                "  )";
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
     }
 
     @Test

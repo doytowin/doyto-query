@@ -17,6 +17,7 @@
 package win.doyto.query.sql;
 
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.DomainPath;
@@ -89,13 +90,29 @@ public class JoinQueryBuilder {
     ) {
         DomainPath domainPath = joinField.getAnnotation(DomainPath.class);
         String[] domains = domainPath.value();
-        String mainIdsArg = mainIds.stream().map(Object::toString).collect(CLT_COMMA_WITH_PAREN);
+
+        int size = domains.length;
+        int n = size - 1;
+        String[] joinTables = new String[size];
+        String[] joinIds = new String[size];
+        for (int i = 0; i < n; i++) {
+            joinIds[i] = String.format(JOIN_ID_FORMAT, domains[i]);
+            joinTables[i] = String.format(JOIN_TABLE_FORMAT, domains[i], domains[i + 1]);
+        }
+        String target = domains[n];
+        joinTables[n] = String.format(TABLE_FORMAT, target);
+        joinIds[n] = String.format(JOIN_ID_FORMAT, target);
 
         if (joinField.getName().contains(domains[0])) {
-            return buildSqlAndArgsForReverseJoin(query, joinEntityClass, domains, mainIdsArg);
-        } else {
-            return buildSqlAndArgsForJoin(query, joinEntityClass, mainIds, domains);
+            if (mainIds.get(1).equals(3)) {
+                joinTables[n] = String.format(TABLE_FORMAT, domains[0]);
+                ArrayUtils.reverse(joinIds);
+            } else {
+                String mainIdsArg = mainIds.stream().map(Object::toString).collect(CLT_COMMA_WITH_PAREN);
+                return buildSqlAndArgsForReverseJoin(query, joinEntityClass, domains, mainIdsArg);
+            }
         }
+        return buildSqlAndArgsForJoin(query, joinEntityClass, mainIds, joinTables, joinIds);
     }
 
     private static <R> SqlAndArgs buildSqlAndArgsForReverseJoin(DoytoQuery query, Class<R> joinEntityClass, String[] domains, String mainIdsArg) {
@@ -109,11 +126,11 @@ public class JoinQueryBuilder {
     }
 
     private static <I extends Serializable> SqlAndArgs buildSqlAndArgsForJoin(
-            DoytoQuery query, Class<?> joinEntityClass, List<I> mainIds, String[] domains
+            DoytoQuery query, Class<?> joinEntityClass, List<I> mainIds, String[] joinTables, String[] joinIds
     ) {
         LinkedList<Object> queryArgs = new LinkedList<>();
         String columns = buildSubDomainColumns(joinEntityClass);
-        String clause = buildQueryForEachMainDomain(query, queryArgs, domains, columns);
+        String clause = buildQueryForEachMainDomain(query, queryArgs, columns, joinTables, joinIds);
 
         return SqlAndArgs.buildSqlWithArgs(args -> mainIds
                 .stream()
@@ -127,19 +144,10 @@ public class JoinQueryBuilder {
     }
 
     private static String buildQueryForEachMainDomain(
-            DoytoQuery query, LinkedList<Object> queryArgs, String[] domains, String columns
-    ) {
-        int size = domains.length;
-        int n = size - 1;
-        String[] joinTables = new String[size];
-        String[] joinIds = new String[size];
-        for (int i = 0; i < n; i++) {
-            joinIds[i] = String.format(JOIN_ID_FORMAT, domains[i]);
-            joinTables[i] = String.format(JOIN_TABLE_FORMAT, domains[i], domains[i + 1]);
-        }
-        String target = domains[n];
-        joinTables[n] = String.format(TABLE_FORMAT, target);
-        joinIds[n] = String.format(JOIN_ID_FORMAT, target);
+            DoytoQuery query, LinkedList<Object> queryArgs, String columns,
+            String[] joinTables, String[] joinIds) {
+
+        int n = joinTables.length - 1;
 
         // select columns from target domain `joinTables[n]`
         StringBuilder sqlBuilder = new StringBuilder();
@@ -164,7 +172,7 @@ public class JoinQueryBuilder {
         return buildPaging(sqlBuilder.toString(), query);
     }
 
-    private static <R> StringBuilder buildJoinSqlForReversePath(Class<R> joinEntityClass, String[] domains, String mainIdsArg) {
+    private static StringBuilder buildJoinSqlForReversePath(Class<?> joinEntityClass, String[] domains, String mainIdsArg) {
         String subDomainId = ColumnUtil.resolveIdColumn(joinEntityClass);
 
         int size = domains.length;
