@@ -21,11 +21,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 import win.doyto.query.service.PageList;
+import win.doyto.query.test.DoytoDomainRoute;
 import win.doyto.query.test.PermissionQuery;
 import win.doyto.query.test.UserQuery;
 import win.doyto.query.test.join.*;
 import win.doyto.query.test.role.RoleQuery;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,6 +47,7 @@ class JdbcDataQueryTest extends JdbcApplicationTest {
 
     @Test
     void queryForJoin() {
+        /*
         TestJoinQuery query = new TestJoinQuery();
         query.setSort("userCount,desc");
 
@@ -52,6 +55,15 @@ class JdbcDataQueryTest extends JdbcApplicationTest {
 
         assertThat(list)
                 .extracting(UserCountByRoleView::getUserCount)
+                .containsExactly(3, 2);
+        */
+
+        UserQuery usersQuery = UserQuery.builder().build();
+        DoytoDomainRoute domainRoute = DoytoDomainRoute.builder().path(Arrays.asList("user", "role")).reverse(true).build();
+        RoleQuery roleQuery = RoleQuery.builder().domainRoute(domainRoute).usersQuery(usersQuery).build();
+        List<RoleView> roleViews = jdbcDataQuery.joinQuery(roleQuery);
+        assertThat(roleViews)
+                .extracting(roleView -> roleView.getUsers().size())
                 .containsExactly(3, 2);
     }
 
