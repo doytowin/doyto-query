@@ -21,7 +21,6 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.core.DataQuery;
 import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.JoinQuery;
@@ -45,10 +44,10 @@ import java.util.stream.Collectors;
  *
  * @author f0rb on 2021-12-28
  */
-public class JdbcDataQueryClient implements DataQuery, DataQueryClient {
+public class JdbcDataQueryClient implements DataQueryClient {
 
-    private Map<Class<?>, RowMapper<?>> holder = new HashMap<>();
-    private DatabaseOperations databaseOperations;
+    private static final Map<Class<?>, RowMapper<?>> holder = new HashMap<>();
+    private final DatabaseOperations databaseOperations;
 
     public JdbcDataQueryClient(JdbcOperations jdbcOperations) {
         this.databaseOperations = new DatabaseTemplate(jdbcOperations);
@@ -56,29 +55,19 @@ public class JdbcDataQueryClient implements DataQuery, DataQueryClient {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <V, Q extends DoytoQuery> List<V> query(Q query, Class<V> viewClass) {
-        RowMapper<V> rowMapper = (RowMapper<V>) holder.computeIfAbsent(viewClass, BeanPropertyRowMapper::new);
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(query, viewClass);
-        return databaseOperations.query(sqlAndArgs, rowMapper);
-    }
-
-    @Override
-    public <V, Q extends DoytoQuery> Long count(Q query, Class<V> viewClass) {
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildCountAndArgs(query, viewClass);
-        return databaseOperations.count(sqlAndArgs);
-    }
-
-    @Override
     public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
     List<V> query(Q query) {
         Class<V> viewClass = query.getDomainClass();
-        List<V> mainEntities = query(query, viewClass);
+        RowMapper<V> rowMapper = (RowMapper<V>) holder.computeIfAbsent(viewClass, BeanPropertyRowMapper::new);
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(query, viewClass);
+        List<V> mainEntities = databaseOperations.query(sqlAndArgs, rowMapper);
         querySubEntities(viewClass, mainEntities, query);
         return mainEntities;
     }
     @Override
     public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>> long count(Q query) {
-        return count(query, query.getDomainClass());
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildCountAndArgs(query, query.getDomainClass());
+        return databaseOperations.count(sqlAndArgs);
     }
 
     private <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
