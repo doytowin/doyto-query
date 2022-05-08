@@ -117,19 +117,19 @@ class JoinQueryBuilderTest {
                 " WHERE id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
-                "  ))\n" +
+                " ))\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
                 " WHERE id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
-                "  ))\n" +
+                " ))\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
                 " WHERE id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
-                "  ))";
+                " ))";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 2, 3, 3);
     }
@@ -146,14 +146,14 @@ class JoinQueryBuilderTest {
                 "  SELECT menu_id FROM j_perm_and_menu WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
-                "  )))\n" +
+                " )))\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS PK_FOR_JOIN, id, menuName, platform FROM t_menu\n" +
                 " WHERE id IN (\n" +
                 "  SELECT menu_id FROM j_perm_and_menu WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
-                "  )))";
+                " )))";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
     }
@@ -168,12 +168,12 @@ class JoinQueryBuilderTest {
         String expected = "\nSELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
                 " WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id = ?\n" +
-                "  )\n" +
+                " )\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
                 " WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id = ?\n" +
-                "  )";
+                " )";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
     }
@@ -190,13 +190,13 @@ class JoinQueryBuilderTest {
                 " WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_role_and_perm WHERE perm_id = ?\n" +
-                "  ))\n" +
+                " ))\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
                 " WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_role_and_perm WHERE perm_id = ?\n" +
-                "  ))";
+                " ))";
         assertEquals(expected, sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
     }
@@ -214,21 +214,21 @@ class JoinQueryBuilderTest {
                 "  SELECT user_id FROM j_user_and_role WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_role_and_perm WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM j_perm_and_menu WHERE menu_id = ?\n" +
-                "  )))\n" +
+                " )))\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
                 " WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_role_and_perm WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM j_perm_and_menu WHERE menu_id = ?\n" +
-                "  )))\n" +
+                " )))\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
                 " WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_role_and_perm WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM j_perm_and_menu WHERE menu_id = ?\n" +
-                "  )))";
+                " )))";
         assertEquals(expected, sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3, 4, 4);
     }
@@ -244,12 +244,26 @@ class JoinQueryBuilderTest {
                 UserView.class, field, Arrays.asList(1, 2, 3)
         );
 
-        String expected = "\nSELECT j0ur.role_id AS PK_FOR_JOIN, u.id, u.username, u.email" +
-                "\n FROM t_user u" +
-                "\n INNER JOIN j_user_and_role j0ur ON u.id = j0ur.user_id AND j0ur.role_id IN (1, 2, 3)" +
-                "\n WHERE email LIKE ? ORDER BY id DESC LIMIT 10 OFFSET 0";
+        String expected = "\n" +
+                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+                " WHERE id IN (\n" +
+                "  SELECT user_id FROM j_user_and_role WHERE role_id = ?\n" +
+                " ) AND email LIKE ?\n" +
+                " ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
+                "UNION ALL\n" +
+                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+                " WHERE id IN (\n" +
+                "  SELECT user_id FROM j_user_and_role WHERE role_id = ?\n" +
+                " ) AND email LIKE ?\n" +
+                " ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
+                "UNION ALL\n" +
+                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+                " WHERE id IN (\n" +
+                "  SELECT user_id FROM j_user_and_role WHERE role_id = ?\n" +
+                " ) AND email LIKE ?\n" +
+                " ORDER BY id DESC LIMIT 10 OFFSET 0";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
-        assertThat(sqlAndArgs.getArgs()).containsExactly("%@163%");
+        assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, "%@163%", 2, 2, "%@163%", 3, 3, "%@163%");
     }
 
     /**
@@ -269,21 +283,21 @@ class JoinQueryBuilderTest {
                 " WHERE id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
-                "  )) AND valid = ?\n" +
+                " )) AND valid = ?\n" +
                 " ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
                 " WHERE id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
-                "  )) AND valid = ?\n" +
+                " )) AND valid = ?\n" +
                 " ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
                 " WHERE id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
-                "  )) AND valid = ?\n" +
+                " )) AND valid = ?\n" +
                 " ORDER BY id DESC LIMIT 10 OFFSET 0";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, true, 2, 2, true, 3, 3, true);

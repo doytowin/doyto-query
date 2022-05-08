@@ -35,8 +35,6 @@ import java.util.stream.IntStream;
 
 import static win.doyto.query.sql.BuildHelper.*;
 import static win.doyto.query.sql.Constant.*;
-import static win.doyto.query.util.CommonUtil.CLT_COMMA_WITH_PAREN;
-import static win.doyto.query.util.CommonUtil.firstLetter;
 
 /**
  * JoinQueryBuilder
@@ -104,28 +102,13 @@ public class JoinQueryBuilder {
         joinIds[n] = String.format(JOIN_ID_FORMAT, target);
 
         if (joinField.getName().contains(domains[0])) {
-            if (mainIds.get(1).equals(3)) {
-                for (int i = 0; i < n; i++) {
-                    joinTables[n - 1 - i] = String.format(JOIN_TABLE_FORMAT, domains[i], domains[i + 1]);
-                }
-                joinTables[n] = String.format(TABLE_FORMAT, domains[0]);
-                ArrayUtils.reverse(joinIds);
-            } else {
-                String mainIdsArg = mainIds.stream().map(Object::toString).collect(CLT_COMMA_WITH_PAREN);
-                return buildSqlAndArgsForReverseJoin(query, joinEntityClass, domains, mainIdsArg);
+            for (int i = 0; i < n; i++) {
+                joinTables[n - 1 - i] = String.format(JOIN_TABLE_FORMAT, domains[i], domains[i + 1]);
             }
+            joinTables[n] = String.format(TABLE_FORMAT, domains[0]);
+            ArrayUtils.reverse(joinIds);
         }
         return buildSqlAndArgsForJoin(query, joinEntityClass, mainIds, joinTables, joinIds);
-    }
-
-    private static <R> SqlAndArgs buildSqlAndArgsForReverseJoin(DoytoQuery query, Class<R> joinEntityClass, String[] domains, String mainIdsArg) {
-        return SqlAndArgs.buildSqlWithArgs(args -> {
-            String sql = buildJoinSqlForReversePath(joinEntityClass, domains, mainIdsArg)
-                    .append(LF).append(buildWhere(query, args))
-                    .append(buildOrderBy(query))
-                    .toString();
-            return buildPaging(sql, query);
-        });
     }
 
     private static <I extends Serializable> SqlAndArgs buildSqlAndArgsForJoin(
@@ -164,7 +147,7 @@ public class JoinQueryBuilder {
                       .append(SELECT).append(joinIds[i + 1]).append(FROM).append(joinTables[i])
                       .append(WHERE).append(joinIds[i]);
         }
-        sqlBuilder.append(EQUAL_HOLDER).append(LF).append("  ");
+        sqlBuilder.append(EQUAL_HOLDER).append(LF).append(" ");
         IntStream.range(0, n).mapToObj(i -> ")").forEach(sqlBuilder::append);
 
         String condition = buildCondition("", query, queryArgs);
@@ -173,50 +156,6 @@ public class JoinQueryBuilder {
         }
         sqlBuilder.append(buildOrderBy(query));
         return buildPaging(sqlBuilder.toString(), query);
-    }
-
-    private static StringBuilder buildJoinSqlForReversePath(Class<?> joinEntityClass, String[] domains, String mainIdsArg) {
-        String subDomainId = ColumnUtil.resolveIdColumn(joinEntityClass);
-
-        int size = domains.length;
-        int n = size - 1;
-        String[] joinTables = new String[size];
-        String[] joinAliases = new String[size];
-        String[] joinIds = new String[size];
-        String target = domains[0];
-        joinTables[0] = String.format(TABLE_FORMAT, target);
-        joinAliases[0] = firstLetter(target).toString();
-        joinIds[0] = String.format(JOIN_ID_FORMAT, target);
-        for (int i = 1; i < size; i++) {
-            joinIds[i] = String.format(JOIN_ID_FORMAT, domains[i]);
-            joinTables[i] = String.format(JOIN_TABLE_FORMAT, domains[i - 1], domains[i]);
-            joinAliases[i] = String.format("j%d%c%c", i - 1, domains[i - 1].charAt(0), domains[i].charAt(0));
-        }
-
-        String columns = buildSubDomainColumns(joinEntityClass, joinAliases[0]);
-
-        StringBuilder sqlBuilder = new StringBuilder(LF)
-                .append(SELECT).append(joinAliases[n]).append(CONN).append(joinIds[n])
-                .append(AS).append(KEY_COLUMN).append(SEPARATOR).append(columns).append(LF)
-                .append(FROM).append(joinTables[0]).append(SPACE).append(joinAliases[0]).append(LF)
-                .append(INNER_JOIN).append(joinTables[1]).append(SPACE).append(joinAliases[1])
-                .append(ON).append(joinAliases[0]).append(CONN).append(subDomainId);
-
-        for (int i = 1; i < n; i++) {
-            sqlBuilder.append(EQUAL).append(joinAliases[i]).append(CONN).append(joinIds[i - 1]).append(LF)
-                      .append(INNER_JOIN).append(joinTables[i + 1]).append(SPACE).append(joinAliases[i + 1])
-                      .append(ON).append(joinAliases[i]).append(CONN).append(joinIds[i]);
-        }
-        return sqlBuilder.append(EQUAL).append(joinAliases[n]).append(CONN).append(joinIds[n - 1])
-                         .append(AND).append(joinAliases[n]).append(CONN).append(joinIds[n]).append(IN).append(mainIdsArg);
-    }
-
-    private static <R> String buildSubDomainColumns(Class<R> joinEntityClass, String joinAlias) {
-        return FieldUtils.getAllFieldsList(joinEntityClass).stream()
-                         .filter(JoinQueryBuilder::filterForJoinEntity)
-                         .map(ColumnUtil::selectAs)
-                         .map(col -> joinAlias + CONN + col)
-                         .collect(Collectors.joining(SEPARATOR));
     }
 
     private static String buildSubDomainColumns(Class<?> joinEntityClass) {
