@@ -46,14 +46,14 @@ public class BuildHelper {
     }
 
     public static String buildWhere(DoytoQuery query, List<Object> argList) {
-        String whereJoiner = buildWhere("", query, argList);
+        String whereJoiner = buildCondition("", query, argList);
         if (whereJoiner.isEmpty()) {
             return "";
         }
         return WHERE + whereJoiner;
     }
 
-    public static String buildWhere(String aliasWithDot, DoytoQuery query, List<Object> argList) {
+    public static String buildCondition(String aliasWithDot, DoytoQuery query, List<Object> argList) {
         Field[] fields = ColumnUtil.initFields(query.getClass(), FieldProcessor::init);
         StringJoiner whereJoiner = new StringJoiner(AND);
         for (Field field : fields) {

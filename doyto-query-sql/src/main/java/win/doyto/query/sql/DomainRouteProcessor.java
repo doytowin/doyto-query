@@ -100,7 +100,7 @@ class DomainRouteProcessor implements FieldProcessor.Processor {
             return;
         }
         Character domainAlias = firstLetter(domainIds[current]);
-        String condition = BuildHelper.buildWhere(domainAlias + CONN, (DoytoQuery) domainQuery, argList);
+        String condition = BuildHelper.buildCondition(domainAlias + CONN, (DoytoQuery) domainQuery, argList);
         String joinTableAlias = EMPTY + firstLetter(domains.get(current)) + firstLetter(domains.get(current + 1));
         String table = String.format(tableFormat, domains.get(current));
         subQueryBuilder.append(SPACE).append(joinTableAlias)

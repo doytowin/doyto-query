@@ -16,7 +16,6 @@
 
 package win.doyto.query.sql;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.core.PageQuery;
@@ -220,7 +219,10 @@ class JoinQueryBuilderTest {
         assertThat(sqlAndArgs.getArgs()).containsExactly("%@163%");
     }
 
-    @Disabled("Fix later")
+    /**
+     * Fetch at most 10 valid permissions for each user row,
+     * and sorted by id in descending order.
+     */
     @Test
     void buildSqlAndArgsForSubDomainWithQuery() throws NoSuchFieldException {
         Field field = UserView.class.getDeclaredField("perms");
@@ -230,12 +232,27 @@ class JoinQueryBuilderTest {
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
                 permissionQuery, PermView.class, field, Arrays.asList(1, 2, 3));
 
-        String expected = "\nSELECT j0ur.user_id AS PK_FOR_JOIN, p.id, p.permName, p.valid" +
-                "\n FROM j_user_and_role j0ur" +
-                "\n INNER JOIN j_role_and_perm j1rp ON j0ur.user_id IN (1, 2, 3) AND j0ur.role_id = j1rp.role_id" +
-                "\n INNER JOIN t_perm p ON j1rp.perm_id = p.id" +
-                "\n WHERE valid = ? ORDER BY id DESC LIMIT 10 OFFSET 0";
+        String expected = "\nSELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
+                " WHERE id IN (\n" +
+                "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
+                "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
+                "  )) AND valid = ?\n" +
+                " ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
+                "UNION ALL\n" +
+                "SELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
+                " WHERE id IN (\n" +
+                "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
+                "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
+                "  )) AND valid = ?\n" +
+                " ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
+                "UNION ALL\n" +
+                "SELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
+                " WHERE id IN (\n" +
+                "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
+                "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
+                "  )) AND valid = ?\n" +
+                " ORDER BY id DESC LIMIT 10 OFFSET 0";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
-        assertThat(sqlAndArgs.getArgs()).containsExactly(true);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, true, 2, 2, true, 3, 3, true);
     }
 }
