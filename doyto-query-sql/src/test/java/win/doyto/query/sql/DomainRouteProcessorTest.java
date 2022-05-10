@@ -170,8 +170,12 @@ class DomainRouteProcessorTest {
         String sql = domainRouteProcessor.process(argList, domainRoute);;
 
         String expected = "id IN (" +
-                "SELECT menu_id FROM j_perm_and_menu pm INNER JOIN t_perm p ON p.id = pm.perm_id AND p.valid = ? WHERE perm_id IN (" +
-                "SELECT perm_id FROM j_role_and_perm rp INNER JOIN t_role r ON r.id = rp.role_id AND r.role_name LIKE ? AND r.valid = ? WHERE role_id IN (" +
+                "SELECT menu_id FROM j_perm_and_menu WHERE perm_id IN (" +
+                "SELECT id FROM t_perm WHERE valid = ?" +
+                "\nINTERSECT\n" +
+                "SELECT perm_id FROM j_role_and_perm WHERE role_id IN (" +
+                "SELECT id FROM t_role WHERE role_name LIKE ? AND valid = ?" +
+                "\nINTERSECT\n" +
                 "SELECT role_id FROM j_user_and_role WHERE user_id = ?)))";
         assertThat(sql).isEqualTo(expected);
         assertThat(argList).containsExactly(true, "%vip%", true, 1);

@@ -44,4 +44,5 @@ interface Constant {
     String LF = "\n";
     String ID = "id";
     String UNION_ALL = "\nUNION ALL\n";
+    String INTERSECT = "\nINTERSECT\n";
 }
