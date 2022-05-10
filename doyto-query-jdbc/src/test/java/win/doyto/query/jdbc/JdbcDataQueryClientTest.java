@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 import win.doyto.query.service.PageList;
-import win.doyto.query.test.DoytoDomainRoute;
 import win.doyto.query.test.PermissionQuery;
 import win.doyto.query.test.UserQuery;
 import win.doyto.query.test.join.RoleView;
@@ -29,7 +28,6 @@ import win.doyto.query.test.join.UserJoinQuery;
 import win.doyto.query.test.join.UserView;
 import win.doyto.query.test.role.RoleQuery;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,20 +47,8 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
 
     @Test
     void queryForJoin() {
-        /*
-        TestJoinQuery query = new TestJoinQuery();
-        query.setSort("userCount,desc");
-
-        List<UserCountByRoleView> list = jdbcDataQuery.query(query, UserCountByRoleView.class);
-
-        assertThat(list)
-                .extracting(UserCountByRoleView::getUserCount)
-                .containsExactly(3, 2);
-        */
-
         UserQuery usersQuery = UserQuery.builder().build();
-        DoytoDomainRoute domainRoute = DoytoDomainRoute.builder().path(Arrays.asList("user", "role")).reverse(true).build();
-        RoleQuery roleQuery = RoleQuery.builder().domainRoute(domainRoute).usersQuery(usersQuery).build();
+        RoleQuery roleQuery = RoleQuery.builder().user(usersQuery).usersQuery(usersQuery).build();
         List<RoleView> roleViews = jdbcDataQueryClient.query(roleQuery);
         assertThat(roleViews)
                 .extracting(roleView -> roleView.getUsers().size())
@@ -71,38 +57,20 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
 
     @Test
     void countForGroupBy() {
-        /*
-        TestJoinQuery query = TestJoinQuery.builder().sort("userCount,desc").build();
-        Long count = jdbcDataQueryClient.count(query, UserCountByRoleView.class);
-
-        assertThat(count).isEqualTo(2);
-        */
-        DoytoDomainRoute domainRoute = DoytoDomainRoute.builder().path(Arrays.asList("user", "role")).reverse(true).build();
-        RoleQuery roleQuery = RoleQuery.builder().domainRoute(domainRoute).build();
+        RoleQuery roleQuery = RoleQuery.builder().user(new UserQuery()).build();
         long count = jdbcDataQueryClient.count(roleQuery);
         assertThat(count).isEqualTo(2);
     }
 
     @Test
     void pageForJoin() {
-        /*
-        TestJoinQuery testJoinQuery = new TestJoinQuery();
-        testJoinQuery.setRoleName("vip");
-
-        PageList<TestJoinView> page = jdbcDataQuery.page(testJoinQuery, TestJoinView.class);
-
-        assertThat(page.getTotal()).isEqualTo(2);
-        assertThat(page.getList()).extracting(TestJoinView::getUsername).containsExactly("f0rb", "user4");
-        assertThat(testJoinQuery.getPageNumber()).isZero();
-        assertThat(testJoinQuery.getPageSize()).isEqualTo(10);
-        */
-
         RoleQuery roleQuery = RoleQuery.builder().roleName("vip").build();
-        DoytoDomainRoute domainRoute = DoytoDomainRoute.builder().path(Arrays.asList("user", "role")).roleQuery(roleQuery).build();
-        UserJoinQuery userJoinQuery = UserJoinQuery.builder().domainRoute(domainRoute).rolesQuery(roleQuery).build();
+        RoleQuery rolesQuery = RoleQuery.builder().roleNameLike("vip").build();
+        UserJoinQuery userJoinQuery = UserJoinQuery.builder().role(roleQuery).rolesQuery(rolesQuery).build();
         PageList<UserView> page = jdbcDataQueryClient.page(userJoinQuery);
         assertThat(page.getTotal()).isEqualTo(2);
         assertThat(page.getList()).extracting(UserView::getUsername).containsExactly("f0rb", "user4");
+        assertThat(page.getList()).extracting(it -> it.getRoles().size()).containsExactly(1, 1);
     }
 
     @Test

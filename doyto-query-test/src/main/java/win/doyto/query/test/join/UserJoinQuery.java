@@ -21,12 +21,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.JoinQuery;
-import win.doyto.query.test.DoytoDomainQuery;
+import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.PermissionQuery;
 import win.doyto.query.test.role.RoleQuery;
-
-import javax.persistence.Transient;
 
 /**
  * UserJoinQuery
@@ -38,12 +37,13 @@ import javax.persistence.Transient;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserJoinQuery extends DoytoDomainQuery implements JoinQuery<UserView, Long> {
+public class UserJoinQuery extends PageQuery implements JoinQuery<UserView, Long> {
 
-    @Transient
+    @DomainPath({"user", "role"})
+    private RoleQuery role;
+
     private RoleQuery rolesQuery;
 
-    @Transient
     private PermissionQuery permsQuery;
 
     @Override

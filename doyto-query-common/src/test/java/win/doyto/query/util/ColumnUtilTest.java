@@ -66,7 +66,7 @@ class ColumnUtilTest {
     @Test
     void shouldPlaceFieldsOfSuperClassAtFirstPosition() {
         List<Field> fields = ColumnUtil.filterFields(TestChildQuery.class).collect(Collectors.toList());
-        assertEquals("domainRoute", fields.get(0).getName());
+        assertEquals("perm", fields.get(0).getName());
         assertEquals("idIn", fields.get(1).getName());
         assertEquals("oneMoreField", fields.get(fields.size() - 1).getName());
     }

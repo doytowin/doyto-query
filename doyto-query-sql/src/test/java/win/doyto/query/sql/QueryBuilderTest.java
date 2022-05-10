@@ -383,17 +383,4 @@ class QueryBuilderTest {
         assertThat(argList).containsExactly();
     }
 
-    @Test
-    void shouldPlaceNestedQueryAtFirstPosition() {
-        DoytoDomainRoute domainRoute = DoytoDomainRoute
-                .builder().path(Arrays.asList("role", "perm")).reverse(true).build();
-        TestQuery testQuery = TestQuery.builder().domainRoute(domainRoute).valid(true).build();
-
-        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
-
-        String expected = "SELECT * FROM user WHERE id IN (SELECT perm_id FROM j_role_and_perm) AND valid = ?";
-        assertThat(sql).isEqualTo(expected);
-        assertThat(argList).containsExactly(true);
-    }
-
 }

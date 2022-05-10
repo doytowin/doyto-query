@@ -16,16 +16,21 @@
 
 package win.doyto.query.sql;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.test.*;
+import win.doyto.query.test.MenuQuery;
+import win.doyto.query.test.PermissionQuery;
+import win.doyto.query.test.UserLevel;
+import win.doyto.query.test.UserQuery;
 import win.doyto.query.test.role.RoleQuery;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,7 +43,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ResourceLock(value = "mapCamelCaseToUnderscore")
 class DomainRouteProcessorTest {
 
-    DomainRouteProcessor domainRouteProcessor = new DomainRouteProcessor();
     List<Object> argList = new ArrayList<>();
 
     @BeforeEach
@@ -51,106 +55,137 @@ class DomainRouteProcessorTest {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
     }
 
+    @SneakyThrows
+    private static DomainPathProcessor buildProcessor(Class<?> clazz, String fieldName) {
+        return new DomainPathProcessor(clazz.getDeclaredField(fieldName));
+    }
+
     @Test
     void supportNestedQueryWithTwoDomains() {
-        DoytoDomainRoute domainRoute = DoytoDomainRoute.builder().path(Arrays.asList("user", "role")).roleId(1).build();
+        DomainPathProcessor domainPathProcessor = buildProcessor(UserQuery.class, "role");
+        RoleQuery roleQuery = RoleQuery.builder().id(1).valid(true).build();
 
-        String sql = domainRouteProcessor.process(argList, domainRoute);;
+        String sql = domainPathProcessor.process(argList, roleQuery);
 
-        assertThat(sql).isEqualTo("id IN (SELECT user_id FROM j_user_and_role WHERE role_id = ?)");
-        assertThat(argList).containsExactly(1);
+        String expected = "id IN (" +
+                "SELECT user_id FROM j_user_and_role WHERE role_id IN (" +
+                "SELECT id FROM t_role WHERE id = ? AND valid = ?" +
+                "))";
+        assertThat(sql).isEqualTo(expected);
+        assertThat(argList).containsExactly(1, true);
     }
 
     @Test
     void supportReverseNestedQueryWithTwoDomains() {
-        DoytoDomainRoute domainRoute = DoytoDomainRoute
-                .builder().path(Arrays.asList("role", "perm")).reverse(true).build();
+        DomainPathProcessor domainPathProcessor = buildProcessor(PermissionQuery.class, "role");
 
-        String sql = domainRouteProcessor.process(argList, domainRoute);;
+        String sql = domainPathProcessor.process(argList, new RoleQuery());
 
-        String expected = "id IN (SELECT perm_id FROM j_role_and_perm)";
+        String expected = "id IN (" +
+                "SELECT perm_id FROM j_role_and_perm WHERE role_id IN (" +
+                "SELECT id FROM t_role" +
+                "))";
         assertThat(sql).isEqualTo(expected);
         assertThat(argList).isEmpty();
     }
 
     @Test
+    void supportReverseNestedQueryWithTwoDomainsAndConditions() {
+        DomainPathProcessor domainPathProcessor = buildProcessor(PermissionQuery.class, "role");
+        RoleQuery roleQuery = RoleQuery.builder().id(1).valid(true).build();
+
+        String sql = domainPathProcessor.process(argList, roleQuery);
+
+        String expected = "id IN (" +
+                "SELECT perm_id FROM j_role_and_perm WHERE role_id IN (" +
+                "SELECT id FROM t_role WHERE id = ? AND valid = ?" +
+                "))";
+        assertThat(sql).isEqualTo(expected);
+        assertThat(argList).containsExactly(1, true);
+    }
+
+    @Test
     void buildSubQueryWithCollection() {
-        DoytoDomainRoute domainRoute = DoytoDomainRoute
-                .builder().path(Arrays.asList("role", "perm")).reverse(true)
-                .roleIdIn(Arrays.asList(1, 2, 3)).build();
+        DomainPathProcessor domainPathProcessor = buildProcessor(PermissionQuery.class, "role");
+        RoleQuery roleQuery = RoleQuery.builder().idIn(Arrays.asList(1, 2, 3)).build();
 
-        String sql = domainRouteProcessor.process(argList, domainRoute);;
+        String sql = domainPathProcessor.process(argList, roleQuery);
 
-        String expected = "id IN (SELECT perm_id FROM j_role_and_perm WHERE role_id IN (?, ?, ?))";
+        String expected = "id IN (" +
+                "SELECT perm_id FROM j_role_and_perm WHERE role_id IN (" +
+                "SELECT id FROM t_role WHERE id IN (?, ?, ?)" +
+                "))";
         assertThat(sql).isEqualTo(expected);
         assertThat(argList).containsExactly(1, 2, 3);
     }
 
     @Test
     void buildSubQueryWithNullCollection() {
-        DoytoDomainRoute domainRoute = DoytoDomainRoute
-                .builder().path(Arrays.asList("role", "perm")).reverse(true)
-                .roleIdIn(Arrays.asList()).build();
+        DomainPathProcessor domainPathProcessor = buildProcessor(PermissionQuery.class, "role");
+        RoleQuery roleQuery = RoleQuery.builder().idIn(Collections.emptyList()).build();
 
-        String sql = domainRouteProcessor.process(argList, domainRoute);;
+        String sql = domainPathProcessor.process(argList, roleQuery);
 
-        String expected = "id IN (SELECT perm_id FROM j_role_and_perm WHERE role_id IN (null))";
+        String expected = "id IN (" +
+                "SELECT perm_id FROM j_role_and_perm WHERE role_id IN (" +
+                "SELECT id FROM t_role WHERE id IN (null)" +
+                "))";
+
         assertThat(sql).isEqualTo(expected);
         assertThat(argList).isEmpty();
     }
 
     @Test
     void supportNestedQueryWithThreeDomains() {
-        DoytoDomainRoute domainRoute = DoytoDomainRoute
-                .builder().path(Arrays.asList("user", "role", "perm")).build();
+        DomainPathProcessor domainPathProcessor = buildProcessor(UserQuery.class, "perm");
 
-        String sql = domainRouteProcessor.process(argList, domainRoute);;
+        String sql = domainPathProcessor.process(argList, new PermissionQuery());
 
         String expected = "id IN (" +
                 "SELECT user_id FROM j_user_and_role WHERE role_id IN (" +
-                "SELECT role_id FROM j_role_and_perm" +
-                "))";
+                "SELECT role_id FROM j_role_and_perm WHERE perm_id IN (" +
+                "SELECT id FROM t_perm" +
+                ")))";
         assertThat(sql).isEqualTo(expected);
         assertThat(argList).isEmpty();
     }
 
     @Test
     void supportReverseNestedQueryWithThreeDomains() {
-        DoytoDomainRoute domainRoute = DoytoDomainRoute
-                .builder().path(Arrays.asList("user", "role", "perm")).reverse(true).build();
+        DomainPathProcessor domainPathProcessor = buildProcessor(PermissionQuery.class, "user");
 
-        String sql = domainRouteProcessor.process(argList, domainRoute);;
+        String sql = domainPathProcessor.process(argList, new UserQuery());
 
         String expected = "id IN (" +
                 "SELECT perm_id FROM j_role_and_perm WHERE role_id IN (" +
-                "SELECT role_id FROM j_user_and_role" +
-                "))";
+                "SELECT role_id FROM j_user_and_role WHERE user_id IN (" +
+                "SELECT id FROM t_user" +
+                ")))";
         assertThat(sql).isEqualTo(expected);
         assertThat(argList).isEmpty();
     }
 
     @Test
     void supportReverseNestedQueryWithThreeDomainsAndSimpleConditionForLastDomain() {
-        DoytoDomainRoute domainRoute = DoytoDomainRoute
-                .builder().path(Arrays.asList("user", "role", "perm")).reverse(true)
-                .userId(2).build();
+        DomainPathProcessor domainPathProcessor = buildProcessor(PermissionQuery.class, "user");
+        UserQuery userQuery = UserQuery.builder().id(2).build();
 
-        String sql = domainRouteProcessor.process(argList, domainRoute);;
+        String sql = domainPathProcessor.process(argList, userQuery);
 
         String expected = "id IN (SELECT perm_id FROM j_role_and_perm WHERE role_id IN " +
-                "(SELECT role_id FROM j_user_and_role WHERE user_id = ?))";
+                "(SELECT role_id FROM j_user_and_role WHERE user_id IN (" +
+                "SELECT id FROM t_user WHERE id = ?" +
+                ")))";
         assertThat(sql).isEqualTo(expected);
         assertThat(argList).containsExactly(2);
     }
 
     @Test
     void supportReverseNestedQueryWithThreeDomainsAndQueryForLastDomain() {
+        DomainPathProcessor domainPathProcessor = buildProcessor(PermissionQuery.class, "user");
         UserQuery userQuery = UserQuery.builder().usernameLike("test").userLevel(UserLevel.普通).build();
-        DoytoDomainRoute domainRoute = DoytoDomainRoute
-                .builder().path(Arrays.asList("user", "role", "perm")).reverse(true)
-                .userQuery(userQuery).build();
 
-        String sql = domainRouteProcessor.process(argList, domainRoute);;
+        String sql = domainPathProcessor.process(argList, userQuery);
 
         String expected = "id IN (SELECT perm_id FROM j_role_and_perm WHERE role_id IN " +
                 "(SELECT role_id FROM j_user_and_role WHERE user_id IN " +
@@ -161,13 +196,14 @@ class DomainRouteProcessorTest {
 
     @Test
     void supportReverseNestedQueryWithFourDomainsAndQueryForEachDomain() {
-        DoytoDomainRoute domainRoute = DoytoDomainRoute
-                .builder().path(Arrays.asList("user", "role", "perm", "menu")).reverse(true)
+        DomainPathProcessor domainPathProcessor = buildProcessor(MenuQuery.class, "user");
+        UserQuery userQuery = UserQuery
+                .builder()
                 .permQuery(PermissionQuery.builder().valid(true).build())
                 .roleQuery(RoleQuery.builder().roleNameLike("vip").valid(true).build())
-                .userId(1).build();
+                .id(1).build();
 
-        String sql = domainRouteProcessor.process(argList, domainRoute);;
+        String sql = domainPathProcessor.process(argList, userQuery);
 
         String expected = "id IN (" +
                 "SELECT menu_id FROM j_perm_and_menu WHERE perm_id IN (" +
@@ -176,20 +212,18 @@ class DomainRouteProcessorTest {
                 "SELECT perm_id FROM j_role_and_perm WHERE role_id IN (" +
                 "SELECT id FROM t_role WHERE role_name LIKE ? AND valid = ?" +
                 "\nINTERSECT\n" +
-                "SELECT role_id FROM j_user_and_role WHERE user_id = ?)))";
+                "SELECT role_id FROM j_user_and_role WHERE user_id IN (" +
+                "SELECT id FROM t_user WHERE id = ?))))";
         assertThat(sql).isEqualTo(expected);
         assertThat(argList).containsExactly(true, "%vip%", true, 1);
     }
 
     @Test
     void supportSelfOneToManyQuery() {
+        DomainPathProcessor domainPathProcessor = buildProcessor(MenuQuery.class, "menuParentQuery");
         MenuQuery parentQuery = MenuQuery.builder().nameLike("test").valid(true).build();
-        DoytoDomainRoute domainRoute = DoytoDomainRoute
-                .builder().path(Arrays.asList("menu")).lastDomainIdColumn("parent_id")
-                .menuQuery(parentQuery)
-                .build();
 
-        String sql = domainRouteProcessor.process(argList, domainRoute);
+        String sql = domainPathProcessor.process(argList, parentQuery);
 
         String expected = "id IN (SELECT parent_id FROM t_menu WHERE name LIKE ? AND valid = ?)";
         assertThat(sql).isEqualTo(expected);

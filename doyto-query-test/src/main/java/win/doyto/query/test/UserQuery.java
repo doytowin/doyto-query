@@ -23,6 +23,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.test.role.RoleQuery;
 
 /**
  * TestQuery
@@ -36,6 +37,16 @@ import win.doyto.query.core.PageQuery;
 @AllArgsConstructor
 @SuppressWarnings("unused")
 public class UserQuery extends PageQuery {
+    private Integer id;
+
+    @DomainPath({"user", "role"})
+    private RoleQuery role;
+    private RoleQuery roleQuery;
+
+    @DomainPath({"user", "role", "perm"})
+    private PermissionQuery perm;
+    private PermissionQuery permQuery;
+
     private String username;
 
     private String usernameOrEmailOrMobile;
@@ -50,8 +61,6 @@ public class UserQuery extends PageQuery {
 
     private UserLevel userLevel;
 
-    @DomainPath({"user", "role", "perm"})
-    private PermissionQuery perm;
 
     public void setAccount(String account) {
         this.usernameOrEmailOrMobile = account;

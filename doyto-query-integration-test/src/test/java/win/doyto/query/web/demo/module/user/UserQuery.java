@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.test.DoytoDomainQuery;
+import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.PermissionQuery;
 
 /**
@@ -35,7 +35,10 @@ import win.doyto.query.test.PermissionQuery;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class UserQuery extends DoytoDomainQuery {
+public class UserQuery extends PageQuery {
+    @DomainPath({"user", "role", "perm"})
+    private PermissionQuery perm;
+
     private String username;
     private String email;
     private String mobile;
@@ -44,9 +47,6 @@ public class UserQuery extends DoytoDomainQuery {
     private String emailLike;
     private boolean memoNull;
     private UserLevel userLevel;
-
-    @DomainPath({"user", "role", "perm"})
-    private PermissionQuery perm;
 
     @SuppressWarnings("unused")
     public void setAccount(String account) {

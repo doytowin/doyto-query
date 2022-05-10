@@ -23,7 +23,6 @@ import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.NestedQueries;
 import win.doyto.query.annotation.QueryField;
 import win.doyto.query.annotation.QueryTableAlias;
-import win.doyto.query.core.DomainRoute;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Or;
 import win.doyto.query.core.QuerySuffix;
@@ -51,7 +50,6 @@ import static win.doyto.query.sql.NestedQueryInitializer.initFieldAnnotatedByNes
 final class FieldProcessor {
 
     private static final Map<Field, Processor> FIELD_PROCESSOR_MAP = new ConcurrentHashMap<>();
-    private static final DomainRouteProcessor DOMAIN_ROUTE_PROCESSOR = new DomainRouteProcessor();
 
     public static String execute(Field field, List<Object> argList, Object value) {
         return FIELD_PROCESSOR_MAP.get(field).process(argList, value);
@@ -59,9 +57,7 @@ final class FieldProcessor {
 
     public static void init(Field field) {
         Processor processor;
-        if (DomainRoute.class.isAssignableFrom(field.getType())) {
-            processor = DOMAIN_ROUTE_PROCESSOR;
-        } else if (Or.class.isAssignableFrom(field.getType())) {
+        if (Or.class.isAssignableFrom(field.getType())) {
             processor = initFieldMappedByOr(field);
         } else if (DoytoQuery.class.isAssignableFrom(field.getType())) {
             if (field.isAnnotationPresent(DomainPath.class)) {

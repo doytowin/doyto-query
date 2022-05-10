@@ -37,4 +37,6 @@ public @interface DomainPath {
      * @return paths array
      */
     String[] value();
+
+    String lastDomainIdColumn() default "id";
 }

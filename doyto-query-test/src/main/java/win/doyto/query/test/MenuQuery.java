@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.core.PageQuery;
 
 /**
  * MenuQuery
@@ -32,10 +34,15 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MenuQuery extends DoytoDomainQuery {
+public class MenuQuery extends PageQuery {
+
+    @DomainPath(value = "menu", lastDomainIdColumn = "parent_id")
+    private MenuQuery menuParentQuery;
+
+    @DomainPath({"user", "role", "perm", "menu"})
+    private UserQuery user;
 
     private String nameLike;
 
     private Boolean valid;
-
 }

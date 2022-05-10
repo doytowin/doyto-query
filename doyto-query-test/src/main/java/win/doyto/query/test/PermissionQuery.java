@@ -21,6 +21,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.core.PageQuery;
+import win.doyto.query.test.role.RoleQuery;
 
 /**
  * PermissionQuery
@@ -32,6 +35,12 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PermissionQuery extends DoytoDomainQuery {
+public class PermissionQuery extends PageQuery {
+    @DomainPath({"role", "perm"})
+    private RoleQuery role;
+
+    @DomainPath({"user", "role", "perm"})
+    private UserQuery user;
+
     private Boolean valid;
 }
