@@ -124,8 +124,9 @@ class UserMvcTest extends DemoApplicationTest {
 
     @Test
     void queryUsersWhoHaveRole1() throws Exception {
-        performAndExpectSuccess(get("/user/?domainRoute.path=user,role,perm&domainRoute.permId=1"))
+        performAndExpectSuccess(get("/user/?perm.id=1"))
                 .andExpect(jsonPath("$.data.list").isArray())
+                .andExpect(jsonPath("$.data.list.size()").value(3))
                 .andExpect(jsonPath("$.data.list[*].id", containsInRelativeOrder(1, 3, 4)))
         ;
     }

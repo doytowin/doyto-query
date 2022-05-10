@@ -21,7 +21,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.test.DoytoDomainQuery;
+import win.doyto.query.test.PermissionQuery;
 
 /**
  * UserQuery
@@ -42,6 +44,9 @@ public class UserQuery extends DoytoDomainQuery {
     private String emailLike;
     private boolean memoNull;
     private UserLevel userLevel;
+
+    @DomainPath({"user", "role", "perm"})
+    private PermissionQuery perm;
 
     @SuppressWarnings("unused")
     public void setAccount(String account) {

@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.PageQuery;
 
 /**
@@ -48,6 +49,9 @@ public class UserQuery extends PageQuery {
     private boolean memoNull;
 
     private UserLevel userLevel;
+
+    @DomainPath({"user", "role", "perm"})
+    private PermissionQuery perm;
 
     public void setAccount(String account) {
         this.usernameOrEmailOrMobile = account;

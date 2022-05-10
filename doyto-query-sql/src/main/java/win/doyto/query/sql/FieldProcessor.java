@@ -19,10 +19,12 @@ package win.doyto.query.sql;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.NestedQueries;
 import win.doyto.query.annotation.QueryField;
 import win.doyto.query.annotation.QueryTableAlias;
 import win.doyto.query.core.DomainRoute;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Or;
 import win.doyto.query.core.QuerySuffix;
 import win.doyto.query.util.ColumnUtil;
@@ -61,6 +63,12 @@ final class FieldProcessor {
             processor = DOMAIN_ROUTE_PROCESSOR;
         } else if (Or.class.isAssignableFrom(field.getType())) {
             processor = initFieldMappedByOr(field);
+        } else if (DoytoQuery.class.isAssignableFrom(field.getType())) {
+            if (field.isAnnotationPresent(DomainPath.class)) {
+                processor = new DomainPathProcessor(field);
+            } else {
+                processor = (argList, value) -> null;
+            }
         } else if (field.isAnnotationPresent(QueryTableAlias.class)) {
             processor = initFieldAnnotatedByQueryTableAlias(field);
         } else if (field.isAnnotationPresent(QueryField.class)) {
