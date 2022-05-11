@@ -16,6 +16,7 @@
 
 package win.doyto.query.jdbc;
 
+import lombok.NonNull;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -23,7 +24,6 @@ import org.springframework.jdbc.core.RowMapper;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.core.DoytoQuery;
-import win.doyto.query.core.JoinQuery;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.sql.JoinQueryBuilder;
 import win.doyto.query.sql.SqlAndArgs;
@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * JdbcDataQuery
+ * JdbcDataQueryClient
  *
  * @author f0rb on 2021-12-28
  */
@@ -55,22 +55,23 @@ public class JdbcDataQueryClient implements DataQueryClient {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
-    List<V> query(Q query) {
-        Class<V> viewClass = query.getDomainClass();
+    public <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
+    List<V> query(Q query, @NonNull Class<V> viewClass) {
         RowMapper<V> rowMapper = (RowMapper<V>) holder.computeIfAbsent(viewClass, BeanPropertyRowMapper::new);
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(query, viewClass);
         List<V> mainEntities = databaseOperations.query(sqlAndArgs, rowMapper);
         querySubEntities(viewClass, mainEntities, query);
         return mainEntities;
     }
+
     @Override
-    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>> long count(Q query) {
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildCountAndArgs(query, query.getDomainClass());
+    public <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
+    long count(Q query, Class<V> viewClass) {
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildCountAndArgs(query, viewClass);
         return databaseOperations.count(sqlAndArgs);
     }
 
-    private <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    private <V extends Persistable<I>, I extends Serializable, Q>
     void querySubEntities(Class<V> viewClass, List<V> mainEntities, Q query) {
         if (mainEntities.isEmpty()) {
             return;

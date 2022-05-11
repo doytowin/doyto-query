@@ -30,15 +30,30 @@ import java.util.List;
  */
 public interface DataQueryClient {
 
-    <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
-    List<V> query(Q query);
+    <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
+    List<V> query(Q query, Class<V> viewClass);
 
-    <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
-    long count(Q query);
+    <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
+    long count(Q query, Class<V> viewClass);
+
+    default <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
+    PageList<V> page(Q query, Class<V> viewClass) {
+        return new PageList<>(query(query, viewClass), count(query, viewClass));
+    }
+
+    default <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    List<V> query(Q query) {
+        return query(query, query.getDomainClass());
+    }
+
+    default <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    long count(Q query) {
+        return count(query, query.getDomainClass());
+    }
 
     default <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
     PageList<V> page(Q query) {
-        return new PageList<>(query(query), count(query));
+        return page(query, query.getDomainClass());
     }
 
 }
