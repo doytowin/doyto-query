@@ -14,30 +14,23 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb.test.inventory;
+package win.doyto.query.mongodb.test.aggregate;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.JoinQuery;
 import win.doyto.query.core.PageQuery;
 
 /**
- * InventoryQuery
+ * QuantityByStatusQuery
  *
- * @author f0rb on 2021-11-23
+ * @author f0rb on 2022-05-11
  */
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @SuperBuilder
-public class InventoryQuery extends PageQuery {
-
-    private String itemContain;
-    private String status;
-    private SizeQuery size;
-    private ConditionOr condition;
-
+@NoArgsConstructor
+public class QuantityByStatusQuery extends PageQuery implements JoinQuery<QuantityByStatusView, String> {
+    @Override
+    public Class<QuantityByStatusView> getDomainClass() {
+        return QuantityByStatusView.class;
+    }
 }

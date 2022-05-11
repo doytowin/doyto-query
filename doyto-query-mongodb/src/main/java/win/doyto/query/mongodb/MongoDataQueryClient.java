@@ -23,7 +23,6 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.core.DoytoQuery;
-import win.doyto.query.core.JoinQuery;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.mongodb.filter.MongoFilterBuilder;
 import win.doyto.query.util.BeanUtil;
@@ -46,9 +45,7 @@ public class MongoDataQueryClient implements DataQueryClient {
     private MongoClient mongoClient;
 
     @Override
-    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>> List<V> query(Q query) {
-        Class<V> viewClass = query.getDomainClass();
-        assert viewClass != null : "Domain class should be specified.";
+    public <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery> List<V> query(Q query, Class<V> viewClass) {
         AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
         return md.getCollection().aggregate(Arrays.asList(md.getGroupBy(), buildSort(query), md.getProject()))
                  .map(document -> BeanUtil.parse(document.toJson(), viewClass))
@@ -64,8 +61,8 @@ public class MongoDataQueryClient implements DataQueryClient {
     }
 
     @Override
-    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
-    long count(Q query) {
+    public <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
+    long count(Q query, Class<V> viewClass) {
         return 0;
     }
 }
