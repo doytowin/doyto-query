@@ -14,33 +14,21 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb.test.aggregate;
+package win.doyto.query.annotation;
 
-import lombok.Getter;
-import lombok.Setter;
-import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.entity.MongoEntity;
-import win.doyto.query.mongodb.entity.MongoPersistable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import java.util.List;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * QuantityView
+ * GroupBy
  *
- * @author f0rb on 2022-01-25
+ * @author f0rb on 2022-05-11
+ * @since 0.3.1
  */
-@Getter
-@Setter
-@MongoEntity(database = "doyto", collection = "c_inventory")
-public class QuantityByStatusView extends MongoPersistable<String> {
-
-    private Integer sumQty;
-
-    @GroupBy
-    private String status;
-
-    private List<ItemStatus> pushItemStatuses;
-
-    private List<String> addToSetItem;
-
+@Target(FIELD)
+@Retention(RUNTIME)
+public @interface GroupBy {
 }

@@ -24,16 +24,14 @@ import com.mongodb.client.model.BsonField;
 import lombok.Getter;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import win.doyto.query.annotation.Aggregation;
+import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.entity.MongoEntity;
 import win.doyto.query.mongodb.filter.MongoGroupBuilder;
 import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * AggregationMetadata
@@ -49,7 +47,7 @@ public class AggregationMetadata {
     private final Bson project;
 
     private <V> AggregationMetadata(Class<V> viewClass, MongoClient mongoClient) {
-        this.collection = getCollection(viewClass, mongoClient);
+        this.collection = getCollection(mongoClient, viewClass.getAnnotation(MongoEntity.class));
         this.groupBy = buildGroupBy(viewClass);
         this.project = buildProject(viewClass);
     }
@@ -58,50 +56,44 @@ public class AggregationMetadata {
         return holder.computeIfAbsent(viewClass, clazz -> new AggregationMetadata(clazz, mongoClient));
     }
 
-    private <V> MongoCollection<Document> getCollection(Class<V> viewClass, MongoClient mongoClient) {
-        MongoEntity table = viewClass.getAnnotation(MongoEntity.class);
-        MongoDatabase database = mongoClient.getDatabase(table.database());
-        return database.getCollection(table.collection());
+    private static MongoCollection<Document> getCollection(MongoClient mongoClient, MongoEntity mongoEntity) {
+        MongoDatabase database = mongoClient.getDatabase(mongoEntity.database());
+        return database.getCollection(mongoEntity.collection());
     }
 
-    private <V> Bson buildGroupBy(Class<V> viewClass) {
+    private static <V> Bson buildGroupBy(Class<V> viewClass) {
         return Aggregates.group(buildGroupId(viewClass), buildAggregation(viewClass));
     }
 
-    private <V> List<BsonField> buildAggregation(Class<V> viewClass) {
+    private static <V> List<BsonField> buildAggregation(Class<V> viewClass) {
         Field[] fields = ColumnUtil.initFields(viewClass);
-        List<BsonField> list = new ArrayList<>();
-        for (Field field : fields) {
-            BsonField bsonField = MongoGroupBuilder.getBsonField(field);
-            if (bsonField != null) {
-                list.add(bsonField);
-            }
-        }
-        return list;
+        return Arrays.stream(fields)
+                     .map(MongoGroupBuilder::getBsonField)
+                     .filter(Objects::nonNull)
+                     .collect(Collectors.toList());
     }
 
-    private <V> Bson buildGroupId(Class<V> viewClass) {
-        Aggregation aggregation = viewClass.getAnnotation(Aggregation.class);
+    private static <V> Bson buildGroupId(Class<V> viewClass) {
         Document id = new Document();
-        if (aggregation != null) {
-            for (String field : aggregation.groupBy()) {
-                id.append(field, "$" + field);
+        Field[] fields = ColumnUtil.initFields(viewClass);
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(GroupBy.class)) {
+                String fieldName = field.getName();
+                id.append(fieldName, "$" + fieldName);
             }
         }
         return id;
     }
 
-    private <V> Bson buildProject(Class<V> viewClass) {
+    private static <V> Bson buildProject(Class<V> viewClass) {
         Field[] fields = ColumnUtil.initFields(viewClass);
         Document columns = new Document("_id", 0); // don't want to show _id
         for (Field field : fields) {
             String column = field.getName();
             columns.append(column, "$" + column);
-        }
-        Aggregation aggregation = viewClass.getAnnotation(Aggregation.class);
-        if (aggregation != null) {
-            for (String field : aggregation.groupBy()) {
-                columns.append(field, "$_id." + field); //grouped fields are in _id
+            if (field.isAnnotationPresent(GroupBy.class)) {
+                String fieldName = field.getName();
+                columns.append(fieldName, "$_id." + fieldName); //grouped fields are in _id
             }
         }
 
