@@ -20,7 +20,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.Aggregation;
-import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.Joins;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.ColumnUtil;
@@ -44,6 +43,7 @@ import static win.doyto.query.util.CommonUtil.*;
  */
 @Getter
 @Setter
+@SuppressWarnings("java:S1874")
 public class EntityMetadata {
     private static final Map<Class<?>, EntityMetadata> holder = new HashMap<>();
     private static final Pattern PTN_PLACE_HOLDER = Pattern.compile("#\\{(\\w+)}");
@@ -70,7 +70,6 @@ public class EntityMetadata {
 
     private String buildSelectColumns(Class<?> entityClass) {
         return ColumnUtil.filterFields(entityClass)
-                         .filter(field -> !field.isAnnotationPresent(DomainPath.class))
                          .map(ColumnUtil::selectAs)
                          .collect(Collectors.joining(SEPARATOR));
     }

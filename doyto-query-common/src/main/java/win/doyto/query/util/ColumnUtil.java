@@ -19,6 +19,7 @@ package win.doyto.query.util;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.Dialect;
 
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -49,27 +51,33 @@ public class ColumnUtil {
     private static final Pattern PTN_CAPITAL_CHAR = Pattern.compile("([A-Z])");
     private static final Map<Class<?>, Field[]> classFieldsMap = new ConcurrentHashMap<>();
 
-    public static Field[] initFields(Class<?> queryClass) {
-        return initFields(queryClass, field -> {});
+    public static Field[] initFields(Class<?> clazz) {
+        return initFields(clazz, null);
     }
 
     public static Field[] initFields(Class<?> queryClass, Consumer<Field> fieldConsumer) {
         classFieldsMap.computeIfAbsent(queryClass, c -> {
-            Field[] fields = filterFields(c).toArray(Field[]::new);
-            Arrays.stream(fields).forEach(fieldConsumer);
+            Field[] fields = filterFields(c, ColumnUtil::shouldRetain).toArray(Field[]::new);
+            if (fieldConsumer != null) {
+                Arrays.stream(fields).forEach(fieldConsumer);
+            }
             return fields;
         });
         return classFieldsMap.get(queryClass);
     }
 
-    public static Stream<Field> filterFields(Class<?> clazz) {
+    public static Stream<Field> filterFields(Class<?> entityClass) {
+        return filterFields(entityClass, ColumnUtil::filterForEntity);
+    }
+
+    public static Stream<Field> filterFields(Class<?> clazz, Predicate<Field> fieldFilter) {
         List<Class<?>> allClasses = ClassUtils.getAllSuperclasses(clazz);
-        allClasses.remove(allClasses.size() - 1);
+        allClasses.remove(allClasses.size() - 1); // remove Object.class
         Collections.reverse(allClasses);
-        allClasses.add(clazz);
+        allClasses.add(clazz); // add target class to the tail
         return allClasses.stream()
                          .flatMap(c -> Arrays.stream(c.getDeclaredFields()))
-                         .filter(ColumnUtil::filterForEntity);
+                         .filter(fieldFilter);
     }
 
     /**
@@ -116,8 +124,9 @@ public class ColumnUtil {
     }
 
     public static boolean filterForEntity(Field field) {
-        return shouldRetain(field) &&
-                !field.isAnnotationPresent(GeneratedValue.class) // ignore id
+        return shouldRetain(field)
+                && !field.isAnnotationPresent(GeneratedValue.class) // ignore id
+                && !field.isAnnotationPresent(DomainPath.class)     // ignore subdomains
                 ;
     }
 
