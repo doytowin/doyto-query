@@ -33,6 +33,8 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static win.doyto.query.mongodb.MongoDataAccess.MONGO_ID;
+
 /**
  * AggregationMetadata
  *
@@ -87,7 +89,7 @@ public class AggregationMetadata {
 
     private static <V> Bson buildProject(Class<V> viewClass) {
         Field[] fields = ColumnUtil.initFields(viewClass);
-        Document columns = new Document("_id", 0); // don't want to show _id
+        Document columns = new Document(MONGO_ID, 0); // don't want to show _id
         for (Field field : fields) {
             String column = field.getName();
             columns.append(column, "$" + column);

@@ -55,7 +55,7 @@ import static com.mongodb.client.model.Filters.in;
  */
 @Slf4j
 public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery> implements DataAccess<E, I, Q> {
-    private static final String MONGO_ID = "_id";
+    static final String MONGO_ID = "_id";
     private final Class<E> entityClass;
     @Getter
     private final MongoCollection<Document> collection;

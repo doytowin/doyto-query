@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.mongodb.test.aggregate.QuantityByStatusQuery;
 import win.doyto.query.mongodb.test.aggregate.QuantityByStatusView;
+import win.doyto.query.mongodb.test.aggregate.QuantityHaving;
 import win.doyto.query.mongodb.test.aggregate.QuantityView;
 import win.doyto.query.mongodb.test.inventory.InventoryQuery;
 
@@ -87,6 +88,18 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
                          .first()
                          .extracting("sumQty", "status")
                          .containsExactly(175, "D")
+        ;
+    }
+
+    @Test
+    void groupByHaving() {
+        QuantityHaving having = QuantityHaving.builder().statusNot("D").build();
+        QuantityByStatusQuery query = QuantityByStatusQuery.builder().having(having).build();
+        List<QuantityByStatusView> views = dataQueryClient.query(query);
+        assertThat(views).hasSize(1)
+                         .first()
+                         .extracting("sumQty", "status")
+                         .containsExactly(120, "A")
         ;
     }
 
