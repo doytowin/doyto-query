@@ -24,6 +24,7 @@ import java.io.Serializable;
  * JoinQuery
  *
  * @author f0rb on 2022-03-26
+ * @since 0.3.1
  */
 public interface JoinQuery<V extends Persistable<I>, I extends Serializable> extends DoytoQuery {
     Class<V> getDomainClass();

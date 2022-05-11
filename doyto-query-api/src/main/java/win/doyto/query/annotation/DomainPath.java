@@ -26,6 +26,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * DomainPath
  *
  * @author f0rb on 2022-04-08
+ * @since 0.3.1
  */
 @Target(FIELD)
 @Retention(RUNTIME)

@@ -26,6 +26,7 @@ import java.util.List;
  * DataQuery
  *
  * @author f0rb on 2021-12-26
+ * @since 0.3.1
  */
 public interface DataQueryClient {
 

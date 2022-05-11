@@ -33,7 +33,8 @@ import java.util.stream.Collectors;
 /**
  * QuerySuffix
  *
- * @author f0rb on 2021-12-01
+ * @author f0rb on 2019-05-16
+ * @since 0.0.1
  */
 @SuppressWarnings("java:S115")
 @Slf4j

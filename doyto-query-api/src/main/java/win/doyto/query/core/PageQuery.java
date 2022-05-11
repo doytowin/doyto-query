@@ -30,6 +30,7 @@ import javax.persistence.Transient;
  * PageQuery
  *
  * @author f0rb
+ * @since 0.0.1
  */
 @Getter
 @Setter

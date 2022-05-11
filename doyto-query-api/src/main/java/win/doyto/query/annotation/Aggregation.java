@@ -26,8 +26,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Aggregation
  *
  * @author f0rb on 2021-12-29
+ * @since 0.3.0
  */
-
 @Target(TYPE)
 @Retention(RUNTIME)
 public @interface Aggregation {

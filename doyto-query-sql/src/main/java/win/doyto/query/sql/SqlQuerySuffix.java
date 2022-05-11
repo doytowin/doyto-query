@@ -36,9 +36,10 @@ import javax.persistence.EnumType;
 import static win.doyto.query.sql.Constant.SPACE;
 
 /**
- * QuerySuffix
+ * SqlQuerySuffix
  *
- * @author f0rb
+ * @author f0rb on 2021-12-01
+ * @since 0.3.0
  */
 @SuppressWarnings("java:S115")
 @Getter
