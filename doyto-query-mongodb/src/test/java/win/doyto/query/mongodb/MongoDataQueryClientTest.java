@@ -52,6 +52,7 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
         List<QuantityView> views = dataQueryClient.query(inventoryQuery, QuantityView.class);
         assertThat(views).hasSize(1)
                          .first()
+                         .hasFieldOrPropertyWithValue("count", 5L)
                          .hasFieldOrPropertyWithValue("sumQty", 295)
                          .hasFieldOrPropertyWithValue("maxQty", 100)
                          .hasFieldOrPropertyWithValue("minQty", 25)

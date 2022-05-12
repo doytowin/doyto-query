@@ -30,6 +30,7 @@ import win.doyto.query.mongodb.entity.MongoPersistable;
 @Setter
 @MongoEntity(database = "doyto", collection = "c_inventory")
 public class QuantityView extends MongoPersistable<String> {
+    private Long count;
     private Integer sumQty;
     private Integer maxQty;
     private Integer minQty;

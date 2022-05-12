@@ -57,12 +57,19 @@ public class MongoGroupBuilder {
 
     public static BsonField getBsonField(Field field) {
         String viewFieldName = field.getName();
+        if (viewFieldName.equals("count")) {
+            return buildCountField(viewFieldName);
+        }
         AggregationPrefix aggregationPrefix = AggregationPrefix.resolveField(viewFieldName);
         if (aggregationPrefix == push) {
             return buildPushField(field);
         }
         String fieldName = "$" + aggregationPrefix.resolveColumnName(viewFieldName);
         return build(viewFieldName, aggregationPrefix, fieldName);
+    }
+
+    private static BsonField buildCountField(String viewFieldName) {
+        return new BsonField(viewFieldName, new Document("$sum", 1));
     }
 
     private static BsonField buildPushField(Field field) {
