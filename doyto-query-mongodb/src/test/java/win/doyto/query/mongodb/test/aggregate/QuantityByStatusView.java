@@ -34,10 +34,12 @@ import java.util.List;
 @MongoEntity(database = "doyto", collection = "c_inventory")
 public class QuantityByStatusView extends MongoPersistable<String> {
 
-    private Integer sumQty;
-
     @GroupBy
     private String status;
+
+    private Long count;
+
+    private Integer sumQty;
 
     private List<ItemStatus> pushItemStatuses;
 

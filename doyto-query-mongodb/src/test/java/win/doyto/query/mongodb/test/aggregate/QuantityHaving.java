@@ -30,5 +30,5 @@ import win.doyto.query.core.Having;
 @NoArgsConstructor
 @AllArgsConstructor
 public class QuantityHaving implements Having {
-    private String statusNot;
+    private Long countLt;
 }

@@ -38,6 +38,8 @@ public class QuantityByStatusQuery extends PageQuery implements JoinQuery<Quanti
 
     private QuantityHaving having;
 
+    private String statusNot;
+
     @Override
     public Class<QuantityByStatusView> getDomainClass() {
         return QuantityByStatusView.class;

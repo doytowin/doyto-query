@@ -93,14 +93,27 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
     }
 
     @Test
-    void groupByHaving() {
-        QuantityHaving having = QuantityHaving.builder().statusNot("D").build();
-        QuantityByStatusQuery query = QuantityByStatusQuery.builder().having(having).build();
+    void groupByWhereStatusNot() {
+        QuantityByStatusQuery query = QuantityByStatusQuery.builder().statusNot("D").build();
         List<QuantityByStatusView> views = dataQueryClient.query(query);
         assertThat(views).hasSize(1)
                          .first()
                          .extracting("sumQty", "status")
                          .containsExactly(120, "A")
+        ;
+    }
+
+    @Test
+    void groupByHavingCountGtWhereStatusNot() {
+        loadData("test/inventory/inventory_2.json");
+
+        QuantityHaving having = QuantityHaving.builder().countLt(3L).build();
+        QuantityByStatusQuery query = QuantityByStatusQuery.builder().statusNot("D").having(having).build();
+        List<QuantityByStatusView> views = dataQueryClient.query(query);
+        assertThat(views).hasSize(1)
+                         .first()
+                         .extracting("sumQty", "status")
+                         .containsExactly(144, "C")
         ;
     }
 
