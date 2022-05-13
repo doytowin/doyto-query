@@ -40,7 +40,7 @@ class JoinQueryBuilderTest {
     @Test
     void supportAggregateQuery() {
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(new PageQuery(), MaxIdView.class);
-        assertEquals("SELECT max(id) AS maxId FROM user", sqlAndArgs.getSql());
+        assertEquals("SELECT max(id) AS maxId, first(createUserId) AS firstCreateUserId FROM user", sqlAndArgs.getSql());
     }
 
     @Test

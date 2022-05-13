@@ -21,6 +21,7 @@ import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.core.AggregationPrefix;
 import win.doyto.query.core.Dialect;
 import win.doyto.query.core.Having;
 
@@ -103,8 +104,19 @@ public class ColumnUtil {
 
     public static String resolveColumn(Field field) {
         Column column = field.getAnnotation(Column.class);
-        String columnName = column != null && !column.name().isEmpty() ? column.name() : convertColumn(field.getName());
-        return GlobalConfiguration.dialect().wrapLabel(columnName);
+        if (column != null && !column.name().isEmpty()) {
+            return column.name();
+        }
+        String fieldName = field.getName();
+        AggregationPrefix aggregationPrefix = AggregationPrefix.resolveField(fieldName);
+        String columnName = aggregationPrefix.resolveColumnName(fieldName);
+        columnName = CommonUtil.camelize(columnName);
+        columnName = convertColumn(columnName);
+        columnName = GlobalConfiguration.dialect().wrapLabel(columnName);
+        if (aggregationPrefix != AggregationPrefix.NONE) {
+           columnName = aggregationPrefix.name() + "(" + columnName + ")";
+        }
+        return columnName;
     }
 
     public static String selectAs(Field field) {
