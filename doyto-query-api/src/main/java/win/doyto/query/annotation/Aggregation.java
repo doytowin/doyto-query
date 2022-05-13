@@ -26,8 +26,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Aggregation
  *
  * @author f0rb on 2021-12-29
- * @since 0.3.0
+ * @deprecated from 0.3.1, use {@link win.doyto.query.annotation.GroupBy} for aggregation
  */
+@SuppressWarnings("java:S1133")
+@Deprecated
 @Target(TYPE)
 @Retention(RUNTIME)
 public @interface Aggregation {
