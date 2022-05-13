@@ -70,4 +70,34 @@ class ColumnUtilTest {
         assertEquals("idIn", fields.get(1).getName());
         assertEquals("oneMoreField", fields.get(fields.size() - 1).getName());
     }
+
+    /**
+     * Aggregate function list
+     * <p>
+     * sum
+     * max
+     * min
+     * avg
+     * first
+     * last
+     * stdDev("stddev")
+     * stdDevPop("stddev_pop")
+     * stdDevSamp("stddev_samp")
+     * addToSet
+     * push
+     */
+    @Test
+    void supportAggregateColumnResolving() {
+        assertEquals("max(id)", ColumnUtil.resolveColumn("maxId"));
+        assertEquals("min(id)", ColumnUtil.resolveColumn("minId"));
+        assertEquals("sum(qty)", ColumnUtil.resolveColumn("sumQty"));
+        assertEquals("avg(qty)", ColumnUtil.resolveColumn("avgQty"));
+        assertEquals("first(id)", ColumnUtil.resolveColumn("firstId"));
+        assertEquals("last(id)", ColumnUtil.resolveColumn("lastId"));
+        assertEquals("stddev(salesAmount)", ColumnUtil.resolveColumn("stdDevSalesAmount"));
+        assertEquals("stddev_pop(salesAmount)", ColumnUtil.resolveColumn("stdDevPopSalesAmount"));
+        assertEquals("stddev_samp(salesAmount)", ColumnUtil.resolveColumn("stdDevSampSalesAmount"));
+        assertEquals("addToSet(salesAmount)", ColumnUtil.resolveColumn("addToSetSalesAmount"));
+        assertEquals("push(salesAmount)", ColumnUtil.resolveColumn("pushSalesAmount"));
+    }
 }

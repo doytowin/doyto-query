@@ -107,14 +107,17 @@ public class ColumnUtil {
         if (column != null && !column.name().isEmpty()) {
             return column.name();
         }
-        String fieldName = field.getName();
+        return resolveColumn(field.getName());
+    }
+
+    static String resolveColumn(String fieldName) {
         AggregationPrefix aggregationPrefix = AggregationPrefix.resolveField(fieldName);
         String columnName = aggregationPrefix.resolveColumnName(fieldName);
         columnName = CommonUtil.camelize(columnName);
         columnName = convertColumn(columnName);
         columnName = GlobalConfiguration.dialect().wrapLabel(columnName);
         if (aggregationPrefix != AggregationPrefix.NONE) {
-           columnName = aggregationPrefix.name() + "(" + columnName + ")";
+           columnName = aggregationPrefix.getName() + "(" + columnName + ")";
         }
         return columnName;
     }

@@ -16,6 +16,8 @@
 
 package win.doyto.query.core;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,8 +36,9 @@ public enum AggregationPrefix {
     avg,
     first,
     last,
-    stdDevPop,
-    stdDevSamp,
+    stdDevPop("stddev_pop"),
+    stdDevSamp("stddev_samp"),
+    stdDev("stddev"),
     addToSet,
     push,
 
@@ -49,11 +52,21 @@ public enum AggregationPrefix {
 
     private final int prefixLength;
 
+    @Getter
+    private final String name;
+
     AggregationPrefix() {
+        this.name = name();
+        this.prefixLength = name().length();
+    }
+
+    AggregationPrefix(String name) {
+        this.name = name;
         this.prefixLength = name().length();
     }
 
     AggregationPrefix(int prefixLength) {
+        this.name = name();
         this.prefixLength = prefixLength;
     }
 
