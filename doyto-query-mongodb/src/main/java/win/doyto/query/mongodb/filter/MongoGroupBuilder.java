@@ -20,8 +20,9 @@ import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.BsonField;
 import lombok.experimental.UtilityClass;
 import org.bson.Document;
-import win.doyto.query.mongodb.AggregationPrefix;
+import win.doyto.query.core.AggregationPrefix;
 import win.doyto.query.util.ColumnUtil;
+import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -29,7 +30,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-import static win.doyto.query.mongodb.AggregationPrefix.*;
+import static win.doyto.query.core.AggregationPrefix.*;
 
 /**
  * MongoGroupBuilder
@@ -64,7 +65,7 @@ public class MongoGroupBuilder {
         if (aggregationPrefix == push) {
             return buildPushField(field);
         }
-        String fieldName = "$" + aggregationPrefix.resolveColumnName(viewFieldName);
+        String fieldName = "$" + CommonUtil.camelize(aggregationPrefix.resolveColumnName(viewFieldName));
         return build(viewFieldName, aggregationPrefix, fieldName);
     }
 

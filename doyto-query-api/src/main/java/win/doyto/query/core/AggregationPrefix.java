@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb;
-
-import win.doyto.query.util.CommonUtil;
+package win.doyto.query.core;
 
 import java.util.Arrays;
 import java.util.regex.Matcher;
@@ -65,7 +63,7 @@ public enum AggregationPrefix {
     }
 
     public String resolveColumnName(String viewFieldName) {
-        return CommonUtil.camelize(viewFieldName.substring(prefixLength));
+        return viewFieldName.substring(prefixLength);
     }
 
 }
