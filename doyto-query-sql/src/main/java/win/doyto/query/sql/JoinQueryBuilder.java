@@ -144,16 +144,16 @@ public class JoinQueryBuilder {
                   .append(WHERE).append(ID);
         // nested query for medium domains
         for (int i = n - 1; i >= 0; i--) {
-            sqlBuilder.append(IN).append("(").append(LF).append("  ")
+            sqlBuilder.append(IN).append(OP).append(LF).append(SPACE + SPACE)
                       .append(SELECT).append(joinIds[i + 1]).append(FROM).append(joinTables[i])
                       .append(WHERE).append(joinIds[i]);
         }
-        sqlBuilder.append(EQUAL_HOLDER).append(LF).append(" ");
-        IntStream.range(0, n).mapToObj(i -> ")").forEach(sqlBuilder::append);
+        sqlBuilder.append(EQUAL_HOLDER).append(LF).append(SPACE);
+        IntStream.range(0, n).mapToObj(i -> CP).forEach(sqlBuilder::append);
 
-        String condition = buildCondition("", query, queryArgs);
+        String condition = buildCondition(AND, query, queryArgs);
         if (!condition.isEmpty()) {
-            sqlBuilder.append(AND).append(condition).append(LF);
+            sqlBuilder.append(condition).append(LF);
         }
         sqlBuilder.append(buildOrderBy(query));
         return buildPaging(sqlBuilder.toString(), query);

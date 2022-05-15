@@ -39,8 +39,6 @@ import static win.doyto.query.util.CommonUtil.replaceHolderInString;
 @Slf4j
 public class QueryBuilder {
 
-    protected static final String EQUALS_PLACE_HOLDER = " = " + Constant.PLACE_HOLDER;
-
     protected final String tableName;
     protected final String idColumn;
     protected final String whereId;
@@ -49,7 +47,7 @@ public class QueryBuilder {
     public QueryBuilder(String tableName, String idColumn) {
         this.tableName = tableName;
         this.idColumn = idColumn;
-        this.whereId = WHERE + idColumn + EQUALS_PLACE_HOLDER;
+        this.whereId = WHERE + idColumn + EQUAL_HOLDER;
         this.resolveTableNameFunc = isDynamicTable(tableName) ? CommonUtil::replaceHolderInString : (idWrapper, tableName1) -> tableName1;
     }
 

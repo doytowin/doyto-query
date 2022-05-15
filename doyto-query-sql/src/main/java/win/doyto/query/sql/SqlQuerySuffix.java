@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.persistence.EnumType;
 
-import static win.doyto.query.sql.Constant.SPACE;
+import static win.doyto.query.sql.Constant.*;
 
 /**
  * SqlQuerySuffix
@@ -75,7 +75,7 @@ enum SqlQuerySuffix {
             Arrays.stream(values())
                   .filter(querySuffix -> querySuffix != NONE)
                   .map(Enum::name)
-                  .collect(Collectors.joining("|", "(", ")$")));
+                  .collect(Collectors.joining("|", OP, CP + "$")));
 
     private final String op;
     private final ValueProcessor valueProcessor;
@@ -105,7 +105,7 @@ enum SqlQuerySuffix {
         }
         return Arrays.stream(CommonUtil.splitByOr(fieldNameWithOr))
                      .map(fieldName -> buildConditionForField(alias + fieldName, argList, value))
-                     .collect(Collectors.joining(Constant.SPACE_OR, "(", ")"));
+                     .collect(Collectors.joining(Constant.SPACE_OR, OP, CP));
     }
 
     static String buildConditionForField(String fieldName, List<Object> argList, Object value) {

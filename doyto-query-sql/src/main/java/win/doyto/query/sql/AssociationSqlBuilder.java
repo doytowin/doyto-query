@@ -48,21 +48,21 @@ public class AssociationSqlBuilder<K1, K2> {
     private String countIn;
 
     public AssociationSqlBuilder(String tableName, String k1Column, String k2Column) {
-        selectK1ColumnByK2Id = SELECT + k1Column + " FROM " + tableName + WHERE + k2Column + EQUAL_HOLDER;
-        selectK2ColumnByK1Id = SELECT + k2Column + " FROM " + tableName + WHERE + k1Column + EQUAL_HOLDER;
+        selectK1ColumnByK2Id = SELECT + k1Column + FROM + tableName + WHERE + k2Column + EQUAL_HOLDER;
+        selectK2ColumnByK1Id = SELECT + k2Column + FROM + tableName + WHERE + k1Column + EQUAL_HOLDER;
         deleteByK1 = DELETE_FROM + tableName + WHERE + k1Column + EQUAL_HOLDER;
         deleteByK2 = DELETE_FROM + tableName + WHERE + k2Column + EQUAL_HOLDER;
 
-        insertSql = "INSERT INTO " + tableName + " (" + k1Column + ", " + k2Column + ") VALUES ";
+        insertSql = INSERT_INTO + tableName + SPACE + OP + k1Column + SEPARATOR + k2Column + CP + VALUES;
         placeHolders = "(?, ?)";
         placeHolderFormat = "(?, ?)";
-        deleteIn = DELETE_FROM + tableName + WHERE + "(" + k1Column + ", " + k2Column + ") IN ";
-        countIn = SELECT + "COUNT(*)" + FROM + tableName + WHERE + "(" + k1Column + ", " + k2Column + ") IN ";
+        deleteIn = DELETE_FROM + tableName + WHERE + OP + k1Column + SEPARATOR + k2Column + CP + IN;
+        countIn = SELECT + COUNT + Constant.FROM + tableName + WHERE + OP + k1Column + SEPARATOR + k2Column + CP + IN;
     }
 
     public AssociationSqlBuilder(String tableName, String k1Column, String k2Column, String createUserColumn) {
         this(tableName, k1Column, k2Column);
-        insertSql = "INSERT INTO " + tableName + " (" + k1Column + ", " + k2Column + ", " + createUserColumn + ") VALUES ";
+        insertSql = INSERT_INTO + tableName + SPACE + OP + k1Column + SEPARATOR + k2Column + SEPARATOR + createUserColumn + CP + VALUES;
         placeHolderFormat = "(?, ?, %s)";
     }
 
@@ -87,18 +87,18 @@ public class AssociationSqlBuilder<K1, K2> {
     public SqlAndArgs buildDelete(Set<UniqueKey<K1, K2>> keys) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             keys.stream().map(UniqueKey::toList).forEach(argList::addAll);
-            StringBuilder deleteBuilder = new StringBuilder(deleteIn).append("(");
+            StringBuilder deleteBuilder = new StringBuilder(deleteIn).append(OP);
             buildPlaceHolders(deleteBuilder, keys.size(), placeHolders);
-            return deleteBuilder.append(")").toString();
+            return deleteBuilder.append(CP).toString();
         });
     }
 
     public SqlAndArgs buildCount(Set<UniqueKey<K1, K2>> keys) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             keys.stream().map(UniqueKey::toList).forEach(argList::addAll);
-            StringBuilder countBuilder = new StringBuilder(countIn).append("(");
+            StringBuilder countBuilder = new StringBuilder(countIn).append(OP);
             buildPlaceHolders(countBuilder, keys.size(), placeHolders);
-            return countBuilder.append(")").toString();
+            return countBuilder.append(CP).toString();
         });
     }
 

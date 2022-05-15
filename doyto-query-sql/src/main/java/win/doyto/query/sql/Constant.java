@@ -27,7 +27,7 @@ interface Constant {
     String PLACE_HOLDER = "?";
     String SPACE = " ";
     String EQUAL = " = ";
-    String EQUAL_HOLDER = " = ?";
+    String EQUAL_HOLDER = EQUAL + PLACE_HOLDER;
     String SELECT = "SELECT ";
     String COUNT = "count(*)";
     String FROM = " FROM ";
@@ -45,4 +45,8 @@ interface Constant {
     String ID = "id";
     String UNION_ALL = "\nUNION ALL\n";
     String INTERSECT = "\nINTERSECT\n";
+    String OP = "(";
+    String CP = ")";
+    String INSERT_INTO = "INSERT INTO ";
+    String VALUES = " VALUES ";
 }

@@ -92,7 +92,7 @@ class AssociationSqlBuilderTest {
     void testCount() {
         SqlAndArgs sqlAndArgs = associationSqlBuilder.buildCount(testKeys());
         assertThat(sqlAndArgs.getSql())
-                .isEqualTo("SELECT COUNT(*) FROM t_user_and_role WHERE (user_id, role_id) IN ((?, ?), (?, ?))");
+                .isEqualTo("SELECT count(*) FROM t_user_and_role WHERE (user_id, role_id) IN ((?, ?), (?, ?))");
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 3);
     }
 

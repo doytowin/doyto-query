@@ -59,7 +59,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
 
         List<String> columnList = fields.stream().map(ColumnUtil::resolveColumn).collect(Collectors.toList());
         insertColumns = columnList.stream().collect(CLT_COMMA_WITH_PAREN);
-        wildSetClause = columnList.stream().map(c -> c + EQUALS_PLACE_HOLDER).collect(Collectors.joining(SEPARATOR));
+        wildSetClause = columnList.stream().map(c -> c + EQUAL_HOLDER).collect(Collectors.joining(SEPARATOR));
 
     }
 
@@ -72,13 +72,13 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
      * @return insert statement with placeholders
      */
     static String buildInsertSql(String table, String columns, String fields) {
-        StringJoiner insertSql = new StringJoiner(SPACE);
-        insertSql.add("INSERT INTO");
-        insertSql.add(table);
-        insertSql.add(columns);
-        insertSql.add("VALUES");
-        insertSql.add(fields);
-        return insertSql.toString();
+        return new StringBuilder(INSERT_INTO)
+                .append(table)
+                .append(SPACE)
+                .append(columns)
+                .append(VALUES)
+                .append(fields)
+                .toString();
     }
 
     /**
@@ -90,12 +90,12 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
      * @return update statement with placeholders
      */
     static String buildUpdateSql(String tableName, String setClauses) {
-        StringJoiner updateSql = new StringJoiner(SPACE);
-        updateSql.add("UPDATE");
-        updateSql.add(tableName);
-        updateSql.add("SET");
-        updateSql.add(setClauses);
-        return updateSql.toString();
+        return new StringJoiner(SPACE)
+                .add("UPDATE")
+                .add(tableName)
+                .add("SET")
+                .add(setClauses)
+                .toString();
     }
 
     private static void readValueToArgList(List<Field> fields, Object entity, List<Object> argList) {
@@ -106,7 +106,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
         for (Field field : fields) {
             Object o = readFieldGetter(field, entity);
             if (o != null) {
-                setClauses.add(ColumnUtil.resolveColumn(field) + EQUALS_PLACE_HOLDER);
+                setClauses.add(ColumnUtil.resolveColumn(field) + EQUAL_HOLDER);
                 argList.add(o);
             }
         }
@@ -193,19 +193,19 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
     @Override
     public SqlAndArgs buildDeleteAndArgs(DoytoQuery query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> buildDeleteFromTable(query.toIdWrapper())
-                + WHERE + idColumn + " IN "
-                + "(" + build(query, argList, idColumn) + ")");
+                + WHERE + idColumn + IN
+                + OP + build(query, argList, idColumn) + CP);
     }
 
     @Override
     public SqlAndArgs buildPatchAndArgs(E entity, DoytoQuery query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> buildPatchAndArgs(entity, argList)
-                + WHERE + idColumn + " IN "
-                + "(" + build(query, argList, idColumn) + ")");
+                + WHERE + idColumn + IN
+                + OP + build(query, argList, idColumn) + CP);
     }
 
     private String buildDeleteFromTable(IdWrapper<?> idWrapper) {
-        return "DELETE FROM " + resolveTableName(idWrapper);
+        return DELETE_FROM + resolveTableName(idWrapper);
     }
 
     private String resolveTableName(E e) {

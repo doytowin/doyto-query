@@ -82,7 +82,7 @@ class DomainPathProcessor implements FieldProcessor.Processor {
         int current = domainIds.length - 1;
         StringBuilder subQueryBuilder = new StringBuilder(ID);
         if (current > 0) {
-            subQueryBuilder.append(IN).append("(");
+            subQueryBuilder.append(IN).append(OP);
             while (true) {
                 buildStartForCurrentDomain(subQueryBuilder, domainIds[current], joinTables[current - 1]);
                 if (--current <= 0) {
@@ -98,7 +98,7 @@ class DomainPathProcessor implements FieldProcessor.Processor {
     }
 
     private void buildWhereForCurrentDomain(StringBuilder subQueryBuilder, String domainId) {
-        subQueryBuilder.append(WHERE).append(domainId).append(IN).append("(");
+        subQueryBuilder.append(WHERE).append(domainId).append(IN).append(OP);
     }
 
     private void buildStartForCurrentDomain(StringBuilder subQueryBuilder, String domainId, String joinTable) {
@@ -128,9 +128,9 @@ class DomainPathProcessor implements FieldProcessor.Processor {
         }
         String table = String.format(TABLE_FORMAT, lastDomain);
         String where = BuildHelper.buildWhere(query, argList);
-        subQueryBuilder.append(IN).append("(")
+        subQueryBuilder.append(IN).append(OP)
                        .append(SELECT).append(lastDomainIdColumn).append(FROM).append(table).append(where)
-                       .append(")");
+                       .append(CP);
     }
 
     private void appendTailParenthesis(StringBuilder subQueryBuilder, int count) {

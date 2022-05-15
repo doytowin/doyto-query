@@ -36,8 +36,7 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static win.doyto.query.sql.Constant.PLACE_HOLDER;
-import static win.doyto.query.sql.Constant.SPACE_OR;
+import static win.doyto.query.sql.Constant.*;
 import static win.doyto.query.sql.NestedQueryInitializer.initFieldAnnotatedByNestedQueries;
 
 /**
@@ -81,7 +80,7 @@ final class FieldProcessor {
         Field[] fields = ColumnUtil.initFields(field.getType());
         Arrays.stream(fields).forEach(FieldProcessor::init);
         return (argList, value) -> {
-            StringJoiner or = new StringJoiner(SPACE_OR, "(", ")");
+            StringJoiner or = new StringJoiner(SPACE_OR, OP, CP);
             for (Field subField : fields) {
                 Object subValue = CommonUtil.readField(subField, value);
                 if (QuerySuffix.isValidValue(subValue, subField)) {
