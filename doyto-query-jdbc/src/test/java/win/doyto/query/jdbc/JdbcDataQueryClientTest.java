@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 import win.doyto.query.service.PageList;
+import win.doyto.query.test.MenuQuery;
 import win.doyto.query.test.PermissionQuery;
 import win.doyto.query.test.UserQuery;
 import win.doyto.query.test.join.RoleView;
@@ -88,7 +89,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
                 .containsExactly(1, "admin", "ADMIN", 2, "vip", "VIP");
         assertThat(users).extracting("perms")
                          .extractingResultOf("size", Integer.class)
-                         .containsExactly(2, 0, 2, 2);
+                         .containsExactly(4, 0, 2, 4);
     }
 
     @Test
@@ -109,7 +110,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
         assertThat(roles)
                 .extracting("perms")
                 .extractingResultOf("size", Integer.class)
-                .containsExactly(2, 1, 0, 0, 2);
+                .containsExactly(2, 3, 0, 0, 2);
         assertThat(roles)
                 .extracting("users")
                 .extractingResultOf("size", Integer.class)
@@ -122,9 +123,37 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
 
         List<RoleView> roles = jdbcDataQueryClient.query(roleQuery);
 
-        assertThat(roles)
-                .map(RoleView::getCreateUser)
-                .extracting(userView -> userView == null ? null: userView.getId())
-                .containsExactly(1L, 2L, 2L, 0L, null);
+        assertThat(roles).map(RoleView::getCreateUser)
+                         .extracting(userView -> userView == null ? null : userView.getId())
+                         .containsExactly(1L, 2L, 2L, null, null);
+    }
+
+    /**
+     * A full testcase for subdomains query
+     * <p>
+     * {@link UserView#getMenus()} for <b>many-to-many</b><br>
+     * {@link UserView#getCreateUser()} for <b>many-to-one</b><br>
+     * {@link UserView#getCreateRoles()} ()} for <b>one-to-many</b>
+     */
+    @Test
+    void queryUserWithGrantedMenusAndCreatedRolesAndCreateUser() {
+        UserJoinQuery userJoinQuery = UserJoinQuery
+                .builder()
+                .menusQuery(new MenuQuery())
+                .createUserQuery(new UserQuery())
+                .createRolesQuery(new RoleQuery())
+                .build();
+
+        List<UserView> users = jdbcDataQueryClient.query(userJoinQuery);
+
+        assertThat(users).extracting("menus")
+                         .extractingResultOf("size", Integer.class)
+                         .containsExactly(7, 0, 3, 7);
+        assertThat(users).map(UserView::getCreateUser)
+                         .extracting(userView -> userView == null ? null : userView.getId())
+                         .containsExactly(1L, 1L, 2L, 2L);
+        assertThat(users).extracting("createRoles")
+                         .extractingResultOf("size", Integer.class)
+                         .containsExactly(1, 2, 0, 0);
     }
 }

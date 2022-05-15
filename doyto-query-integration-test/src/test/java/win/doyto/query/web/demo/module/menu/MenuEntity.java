@@ -32,7 +32,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Entity
-@Table(name = "menu${platform}")
+@Table(name = "t_menu${platform}")
 public class MenuEntity extends AbstractCommonEntity<Integer, Long> {
 
     private String platform;

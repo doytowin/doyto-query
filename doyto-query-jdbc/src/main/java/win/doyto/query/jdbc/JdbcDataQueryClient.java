@@ -33,10 +33,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -89,7 +86,7 @@ public class JdbcDataQueryClient implements DataQueryClient {
                       if (queryField != null) {
                           Object subQuery = CommonUtil.readField(queryField, query);
                           if (subQuery instanceof DoytoQuery) {
-                              if (List.class.isAssignableFrom(joinField.getType())) {
+                              if (Collection.class.isAssignableFrom(joinField.getType())) {
                                   queryEntitiesForJoinField(joinField, mainEntities, mainIds, (DoytoQuery) subQuery, mainIdClass);
                               } else {
                                   queryEntityForJoinField(joinField, mainEntities, mainIds, (DoytoQuery) subQuery, mainIdClass);

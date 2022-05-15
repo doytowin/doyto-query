@@ -96,11 +96,11 @@ class MenuMvcTest extends DemoApplicationTest {
 
     @Test
     void deleteMenu() throws Exception {
-        performAndExpectFail(delete("/02/menu/0"), PresetErrorCode.ENTITY_NOT_FOUND);
+        performAndExpectFail(delete("/00/menu/0"), PresetErrorCode.ENTITY_NOT_FOUND);
 
-        performAndExpectSuccess(delete("/02/menu/1"))
+        performAndExpectSuccess(delete("/00/menu/1"))
                 .andExpect(jsonPath("$.data.id").value(1))
-                .andExpect(jsonPath("$.data.platform").value("02"));
+                .andExpect(jsonPath("$.data.platform").value("00"));
     }
 
     @Test

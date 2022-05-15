@@ -27,6 +27,7 @@ import win.doyto.query.util.ColumnUtil;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -94,7 +95,11 @@ public class JoinQueryBuilder {
         String clause;
         if (domains.length == 1) {
             String mainFKColumn = domainPath.lastDomainIdColumn();
-            clause = buildQueryOneForEachMainDomain(mainTableName, mainFKColumn, subTableName, subColumns);
+            if (Collection.class.isAssignableFrom(joinField.getType())) {
+                clause = buildQueryManyForEachMainDomain(mainFKColumn, subTableName, subColumns);
+            } else {
+                clause = buildQueryOneForEachMainDomain(mainTableName, mainFKColumn, subTableName, subColumns);
+            }
         } else {
             boolean reverse = !mainTableName.equals(subTableName);
             clause = buildQueryForEachMainDomain(query, queryArgs, subColumns, domains, reverse);
@@ -116,7 +121,17 @@ public class JoinQueryBuilder {
         );
     }
 
-    private static String buildQueryOneForEachMainDomain(String mainTableName, String mainFKColumn, String subTableName, String subColumns) {
+    private static String buildQueryManyForEachMainDomain(
+            String mainFKColumn, String subTableName, String subColumns
+    ) {
+        return SELECT + PLACE_HOLDER + AS + KEY_COLUMN + SEPARATOR + subColumns +
+                FROM + subTableName +
+                WHERE + mainFKColumn + EQUAL_HOLDER;
+    }
+
+    private static String buildQueryOneForEachMainDomain(
+            String mainTableName, String mainFKColumn, String subTableName, String subColumns
+    ) {
         return SELECT + PLACE_HOLDER + AS + KEY_COLUMN + SEPARATOR + subColumns +
                 FROM + subTableName + LF +
                 WHERE + ID + EQUAL + OP + LF + SPACE + SPACE +

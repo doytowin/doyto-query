@@ -24,7 +24,9 @@ import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.JoinQuery;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.test.MenuQuery;
 import win.doyto.query.test.PermissionQuery;
+import win.doyto.query.test.UserQuery;
 import win.doyto.query.test.role.RoleQuery;
 
 /**
@@ -45,6 +47,10 @@ public class UserJoinQuery extends PageQuery implements JoinQuery<UserView, Long
     private RoleQuery rolesQuery;
 
     private PermissionQuery permsQuery;
+
+    private MenuQuery menusQuery;
+    private UserQuery createUserQuery;
+    private RoleQuery createRolesQuery;
 
     @Override
     public Class<UserView> getDomainClass() {
