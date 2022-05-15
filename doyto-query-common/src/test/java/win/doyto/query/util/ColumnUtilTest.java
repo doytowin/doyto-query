@@ -18,6 +18,7 @@ package win.doyto.query.util;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.TestChildQuery;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
 
 /**
  * ColumnUtilTest
@@ -44,11 +46,13 @@ class ColumnUtilTest {
         assertFalse(ColumnUtil.isSingleColumn("col1", "col2", "col3"));
     }
 
+    @ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ_WRITE)
     @Test
     void resolveSelectColumns() {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
         String columns = StringUtils.join(ColumnUtil.resolveSelectColumns(TestEntity.class), ", ");
         assertEquals("username, password, mobile, email, nickname, user_level AS userLevel, memo, valid, id", columns);
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
     }
 
     @Test
