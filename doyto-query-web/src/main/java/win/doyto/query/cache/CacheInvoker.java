@@ -22,7 +22,6 @@ package win.doyto.query.cache;
  * @author f0rb
  */
 @FunctionalInterface
-public interface CacheInvoker
-        <T> {
+public interface CacheInvoker<T> {
     T invoke();
 }

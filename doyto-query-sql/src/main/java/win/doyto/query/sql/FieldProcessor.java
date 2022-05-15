@@ -30,7 +30,6 @@ import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -77,8 +76,7 @@ final class FieldProcessor {
     }
 
     private static Processor initFieldMappedByOr(Field field) {
-        Field[] fields = ColumnUtil.initFields(field.getType());
-        Arrays.stream(fields).forEach(FieldProcessor::init);
+        Field[] fields = ColumnUtil.initFields(field.getType(), FieldProcessor::init);
         return (argList, value) -> {
             StringJoiner or = new StringJoiner(SPACE_OR, OP, CP);
             for (Field subField : fields) {

@@ -164,8 +164,4 @@ public class CommonUtil {
         }
         return result.toString();
     }
-
-    public static Character firstLetter(String str) {
-        return str.charAt(0);
-    }
 }

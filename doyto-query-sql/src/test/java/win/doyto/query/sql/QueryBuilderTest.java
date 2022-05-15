@@ -41,8 +41,8 @@ import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
 @ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
 class QueryBuilderTest {
 
-    private QueryBuilder testQueryBuilder = new QueryBuilder(TestEntity.class);
-    private QueryBuilder dynamicQueryBuilder = new QueryBuilder(DynamicEntity.class);
+    private final QueryBuilder testQueryBuilder = new QueryBuilder(TestEntity.class);
+    private final QueryBuilder dynamicQueryBuilder = new QueryBuilder(DynamicEntity.class);
     private List<Object> argList;
 
     @BeforeEach

@@ -1,4 +1,4 @@
-SET DATABASE SQL SYNTAX MYS TRUE
+SET DATABASE SQL SYNTAX MYS TRUE;
 
 drop table t_user if exists;
 create table t_user
