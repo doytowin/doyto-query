@@ -48,7 +48,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
-import javax.persistence.Table;
 
 /**
  * AbstractDynamicService
@@ -93,15 +92,15 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         ClassLoader classLoader = beanFactory.getClass().getClassLoader();
         try {
-            if (entityClass.isAnnotationPresent(Table.class)) {
-                Class<?> jdbcDataAccessClass = classLoader.loadClass("win.doyto.query.jdbc.JdbcDataAccess");
-                Object jdbcOperations = beanFactory.getBean("jdbcTemplate");
-                dataAccess = (DataAccess<E, I, Q>) ConstructorUtils.invokeConstructor(jdbcDataAccessClass, jdbcOperations, entityClass);
-            } else if (entityClass.isAnnotationPresent(MongoEntity.class)) {
+            if (entityClass.isAnnotationPresent(MongoEntity.class)) {
                 Class<?> mongoDataAccessClass = classLoader.loadClass("win.doyto.query.mongodb.MongoDataAccess");
                 tryCreateEmbeddedMongoServerFirst(beanFactory);
                 Object mongoClient = beanFactory.getBean("mongo");
                 dataAccess = (DataAccess<E, I, Q>) ConstructorUtils.invokeConstructor(mongoDataAccessClass, mongoClient, entityClass);
+            } else {// using JdbcDataAccess as default DataAccess
+                Class<?> jdbcDataAccessClass = classLoader.loadClass("win.doyto.query.jdbc.JdbcDataAccess");
+                Object jdbcOperations = beanFactory.getBean("jdbcTemplate");
+                dataAccess = (DataAccess<E, I, Q>) ConstructorUtils.invokeConstructor(jdbcDataAccessClass, jdbcOperations, entityClass);
             }
         } catch (Exception e) {
             throw new BeanInitializationException("Failed to create DataAccess for " + entityClass.getName(), e);

@@ -23,7 +23,6 @@ import win.doyto.query.entity.Persistable;
 
 import java.util.List;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
 /**
  * MenuView
@@ -32,7 +31,6 @@ import javax.persistence.Table;
  */
 @Getter
 @Setter
-@Table(name = "t_perm")
 public class MenuView implements Persistable<Long> {
 
     @Id

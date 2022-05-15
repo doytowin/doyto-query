@@ -111,14 +111,9 @@ enum SqlQuerySuffix {
     static String buildConditionForField(String fieldName, List<Object> argList, Object value) {
         SqlQuerySuffix sqlQuerySuffix = resolve(fieldName);
         value = sqlQuerySuffix.valueProcessor.escapeValue(value);
-        String columnName = sqlQuerySuffix.resolveColumnName(fieldName);
+        String columnName = StringUtils.removeEnd(fieldName, sqlQuerySuffix.name());
         columnName = ColumnUtil.convertColumn(columnName);
         return sqlQuerySuffix.buildColumnCondition(columnName, argList, value);
-    }
-
-    String resolveColumnName(String fieldName) {
-        String suffix = this.name();
-        return fieldName.endsWith(suffix) ? fieldName.substring(0, fieldName.length() - suffix.length()) : fieldName;
     }
 
     String buildColumnCondition(String columnName, List<Object> argList, Object value) {

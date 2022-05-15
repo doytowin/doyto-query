@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.persistence.Table;
 
 import static win.doyto.query.sql.Constant.*;
 import static win.doyto.query.util.CommonUtil.*;
@@ -46,7 +45,6 @@ public class EntityMetadata {
     private static final Map<Class<?>, EntityMetadata> holder = new HashMap<>();
     private static final Pattern PTN_PLACE_HOLDER = Pattern.compile("#\\{(\\w+)}");
 
-    private final Class<?> entityClass;
     @Getter
     private final String columnsForSelect;
     @Getter
@@ -58,8 +56,7 @@ public class EntityMetadata {
     private final String groupBySql;
 
     public EntityMetadata(Class<?> entityClass) {
-        this.entityClass = entityClass;
-        this.tableName = entityClass.getAnnotation(Table.class).name();
+        this.tableName = BuildHelper.resolveTableName(entityClass);
 
         this.columnsForSelect = buildSelectColumns(entityClass);
         buildJoinSql(entityClass);
@@ -78,7 +75,7 @@ public class EntityMetadata {
 
     private void buildJoinSql(Class<?> entityClass) {
         if (entityClass.isAnnotationPresent(Joins.class)) {
-            String[] joins = this.entityClass.getAnnotation(Joins.class).value();
+            String[] joins = entityClass.getAnnotation(Joins.class).value();
             joinSql = String.join(SPACE, joins);
         }
     }

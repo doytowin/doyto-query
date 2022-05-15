@@ -23,7 +23,6 @@ import win.doyto.query.entity.Persistable;
 
 import java.util.List;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
 /**
  * UserCountByRoleView
@@ -32,7 +31,6 @@ import javax.persistence.Table;
  */
 @Getter
 @Setter
-@Table(name = "t_user")
 public class UserView implements Persistable<Long> {
 
     @Id

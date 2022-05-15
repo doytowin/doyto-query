@@ -16,7 +16,11 @@
 
 package win.doyto.query.sql;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.test.TestQuery;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,7 +30,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author f0rb on 2021-02-16
  */
+@ResourceLock(value = "mapCamelCaseToUnderscore")
 class BuildHelperTest {
+    @BeforeEach
+    void setUp() {
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
+    }
+
+    @AfterEach
+    void tearDown() {
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
+    }
 
     @Test
     void buildOrderByForFieldSorting() {
@@ -37,4 +51,24 @@ class BuildHelperTest {
         assertEquals(" ORDER BY field(gender,'male','female'), id desc", BuildHelper.buildOrderBy(testQuery));
     }
 
+    private static class UserDetailEntity {
+    }
+
+    @Test
+    void resolveTableNameForEntityWithoutAnnotationTable() {
+        String tableName = BuildHelper.resolveTableName(UserDetailEntity.class);
+        assertEquals("t_user_detail", tableName);
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
+    }
+
+
+    private static class UserDetailView {
+    }
+    @Test
+    void resolveTableNameForViewWithoutAnnotationTable() {
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
+        String tableName = BuildHelper.resolveTableName(UserDetailView.class);
+        assertEquals("t_user_detail", tableName);
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
+    }
 }

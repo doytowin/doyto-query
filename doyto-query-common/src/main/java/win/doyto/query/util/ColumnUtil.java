@@ -94,6 +94,7 @@ public class ColumnUtil {
     }
 
     public static String convertColumn(String columnName) {
+        columnName = CommonUtil.camelize(columnName);
         return GlobalConfiguration.instance().isMapCamelCaseToUnderscore() ?
                 camelCaseToUnderscore(columnName) : columnName;
     }
@@ -113,7 +114,6 @@ public class ColumnUtil {
     static String resolveColumn(String fieldName) {
         AggregationPrefix aggregationPrefix = AggregationPrefix.resolveField(fieldName);
         String columnName = aggregationPrefix.resolveColumnName(fieldName);
-        columnName = CommonUtil.camelize(columnName);
         columnName = convertColumn(columnName);
         columnName = GlobalConfiguration.dialect().wrapLabel(columnName);
         if (aggregationPrefix != AggregationPrefix.NONE) {
