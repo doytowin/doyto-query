@@ -52,7 +52,8 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
     @Test
     void deleteByPage() {
         jdbcDataAccess.delete(RoleQuery.builder().pageNumber(2).pageSize(2).build());
-        assertThat(jdbcDataAccess.query(RoleQuery.builder().build()))
+        List<RoleEntity> roleEntities = jdbcDataAccess.query(RoleQuery.builder().build());
+        assertThat(roleEntities)
                 .extracting("id")
                 .containsExactly(1, 2, 5);
     }
@@ -67,10 +68,11 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
     void updateByPage() {
         RoleEntity patch = new RoleEntity();
         patch.setValid(false);
+        RoleQuery roleQuery = RoleQuery.builder().pageNumber(2).pageSize(2).build();
+        jdbcDataAccess.patch(patch, roleQuery);
 
-        jdbcDataAccess.patch(patch, RoleQuery.builder().pageNumber(2).pageSize(2).build());
-        List<RoleEntity> query = jdbcDataAccess.query(RoleQuery.builder().sort("id").build());
-        assertThat(query)
+        List<RoleEntity> roleEntities = jdbcDataAccess.query(RoleQuery.builder().sort("id").build());
+        assertThat(roleEntities)
                 .extracting("valid")
                 .containsExactly(true, true, false, false, true);
     }

@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package win.doyto.query.core;
+package win.doyto.query.mongodb.test.aggregate;
 
-import java.io.Serializable;
-import java.util.List;
+import lombok.*;
+import win.doyto.query.core.Having;
 
 /**
- * DomainRoute
+ * QuantityHaving
  *
- * @author f0rb on 2022-04-22
+ * @author f0rb on 2022-05-12
  */
-public interface DomainRoute extends Serializable {
-
-    List<String> getPath();
-
-    boolean isReverse();
-
-    String getLastDomainIdColumn();
-
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class QuantityHaving implements Having {
+    private Long countLt;
 }

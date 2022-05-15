@@ -26,6 +26,6 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class TestChildQuery extends TestQuery{
+public class TestChildQuery extends TestQuery {
     private String oneMoreField;
 }

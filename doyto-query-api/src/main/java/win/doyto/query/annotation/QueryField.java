@@ -26,6 +26,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * QueryField
  *
  * @author f0rb
+ * @since 0.0.1
  */
 @Target(FIELD)
 @Retention(RUNTIME)

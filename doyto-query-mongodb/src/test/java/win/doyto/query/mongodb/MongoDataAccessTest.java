@@ -141,7 +141,7 @@ class MongoDataAccessTest extends MongoApplicationTest {
     }
 
     @Test
-    void create() {
+    void builder() {
         InventoryEntity origin = new InventoryEntity();
         origin.setItem("bookshelf");
         origin.setQty(20);

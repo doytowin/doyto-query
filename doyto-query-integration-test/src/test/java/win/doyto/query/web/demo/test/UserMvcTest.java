@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.RequestBuilder;
 
+import static org.hamcrest.Matchers.containsInRelativeOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -121,4 +122,12 @@ class UserMvcTest extends DemoApplicationTest {
         ;
     }
 
+    @Test
+    void queryUsersWhoHaveRole1() throws Exception {
+        performAndExpectSuccess(get("/user/?perm.id=1"))
+                .andExpect(jsonPath("$.data.list").isArray())
+                .andExpect(jsonPath("$.data.list.size()").value(3))
+                .andExpect(jsonPath("$.data.list[*].id", containsInRelativeOrder(1, 3, 4)))
+        ;
+    }
 }

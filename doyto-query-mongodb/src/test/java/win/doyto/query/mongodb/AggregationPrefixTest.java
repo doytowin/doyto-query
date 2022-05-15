@@ -17,6 +17,7 @@
 package win.doyto.query.mongodb;
 
 import org.junit.jupiter.api.Test;
+import win.doyto.query.core.AggregationPrefix;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

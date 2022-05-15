@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
  * Dialect
  *
  * @author f0rb on 2019-06-02
+ * @since 0.1.2
  */
 public interface Dialect {
 

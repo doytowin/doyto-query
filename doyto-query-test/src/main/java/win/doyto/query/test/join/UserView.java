@@ -23,7 +23,6 @@ import win.doyto.query.entity.Persistable;
 
 import java.util.List;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
 /**
  * UserCountByRoleView
@@ -32,7 +31,6 @@ import javax.persistence.Table;
  */
 @Getter
 @Setter
-@Table(name = "t_user")
 public class UserView implements Persistable<Long> {
 
     @Id
@@ -40,13 +38,24 @@ public class UserView implements Persistable<Long> {
     private String username;
     private String email;
 
+    // many-to-many
     @DomainPath({"user", "role"})
     private List<RoleView> roles;
 
+    // many-to-many
     @DomainPath({"user", "role", "perm"})
     private List<PermView> perms;
 
+    // many-to-many
     @DomainPath({"user", "role", "perm", "menu"})
     private List<MenuView> menus;
+
+    // many-to-one
+    @DomainPath(value = "user", lastDomainIdColumn = "create_user_id")
+    private UserView createUser;
+
+    // one-to-many
+    @DomainPath(value = "role", lastDomainIdColumn = "create_user_id")
+    private List<RoleView> createRoles;
 
 }

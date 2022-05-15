@@ -16,10 +16,14 @@
 
 package win.doyto.query.web.demo.test;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.RequestBuilder;
+import win.doyto.query.test.role.RoleEntity;
+import win.doyto.query.util.BeanUtil;
+import win.doyto.query.web.response.JsonResponse;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -53,7 +57,7 @@ class RoleMvcTest extends DemoApplicationTest {
         RequestBuilder requestBuilder = post("/role/").content(content).contentType(MediaType.APPLICATION_JSON);
         performAndExpectSuccess(requestBuilder);
         performAndExpectSuccess(get("/role/?pageSize=1"))
-                .andExpect(jsonPath("$.data.total").value(4))
+                .andExpect(jsonPath("$.data.total").value(6))
         ;
     }
 
@@ -71,12 +75,17 @@ class RoleMvcTest extends DemoApplicationTest {
     @Test
     @Rollback
     void updateRole() throws Exception {
+        String role2 = performAndExpectSuccess(get("/role/2"))
+                .andReturn().getResponse().getContentAsString();
+        RoleEntity patch = BeanUtil.parse(role2, new TypeReference<JsonResponse<RoleEntity>>() {}).getData();
+        patch.setRoleName("vvip");
+
         RequestBuilder requestBuilder = put("/role/2")
-                .content("{\"id\":2,\"roleName\":\"vip3\",\"roleCode\":\"VIP3\"}").contentType(MediaType.APPLICATION_JSON);
+                .content(BeanUtil.stringify(patch)).contentType(MediaType.APPLICATION_JSON);
         performAndExpectSuccess(requestBuilder);
         performAndExpectSuccess(get("/role/2"))
-                .andExpect(jsonPath("$.data.roleName").value("vip3"))
-                .andExpect(jsonPath("$.data.roleCode").value("VIP3"))
+                .andExpect(jsonPath("$.data.roleName").value("vvip"))
+                .andExpect(jsonPath("$.data.roleCode").value("VIP"))
         ;
     }
 
@@ -85,7 +94,7 @@ class RoleMvcTest extends DemoApplicationTest {
     void deleteById() throws Exception {
         performAndExpectSuccess(delete("/role/1"));
         performAndExpectSuccess(get("/role/?pageSize=1"))
-                .andExpect(jsonPath("$.data.total").value(2))
+                .andExpect(jsonPath("$.data.total").value(4))
                 .andExpect(jsonPath("$.data.list[0].id").value(2))
         ;
     }
@@ -93,9 +102,10 @@ class RoleMvcTest extends DemoApplicationTest {
     @Test
     @Rollback
     void batch() throws Exception {
-        performAndExpectSuccess(post("/role").content("[{\"roleName\":\"vip3\",\"roleCode\":\"VIP3\"},{\"roleName\":\"vip4\",\"roleCode\":\"VIP4\"}]").contentType(MediaType.APPLICATION_JSON));
+        String data = "[{\"roleName\":\"vip5\",\"roleCode\":\"VIP5\"},{\"roleName\":\"vip6\",\"roleCode\":\"VIP6\"}]";
+        performAndExpectSuccess(post("/role").content(data).contentType(MediaType.APPLICATION_JSON));
         performAndExpectSuccess(get("/role/?pageSize=1"))
-                .andExpect(jsonPath("$.data.total").value(5))
+                .andExpect(jsonPath("$.data.total").value(7))
         ;
     }
 }

@@ -19,6 +19,7 @@ package win.doyto.query.mongodb;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
+import lombok.SneakyThrows;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +30,6 @@ import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.mongodb.test.inventory.InventoryEntity;
 import win.doyto.query.util.BeanUtil;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -42,13 +42,19 @@ import java.util.List;
 abstract class MongoApplicationTest {
 
     private MongoCollection<Document> collection;
+    private MongoDataAccess<InventoryEntity, String, DoytoQuery> dataAccess;
 
     @BeforeEach
-    void setUp(@Autowired MongoClient mongoClient) throws IOException {
-        MongoDataAccess<InventoryEntity, String, DoytoQuery> dataAccess = new MongoDataAccess<>(mongoClient, InventoryEntity.class);
+    void setUp(@Autowired MongoClient mongoClient) {
+        dataAccess = new MongoDataAccess<>(mongoClient, InventoryEntity.class);
         collection = dataAccess.getCollection();
 
-        List<InventoryEntity> data = BeanUtil.loadJsonData("test/inventory/inventory.json", new TypeReference<List<InventoryEntity>>() {});
+        loadData("test/inventory/inventory.json");
+    }
+
+    @SneakyThrows
+    protected void loadData(String path) {
+        List<InventoryEntity> data = BeanUtil.loadJsonData(path, new TypeReference<List<InventoryEntity>>() {});
         dataAccess.batchInsert(data);
     }
 

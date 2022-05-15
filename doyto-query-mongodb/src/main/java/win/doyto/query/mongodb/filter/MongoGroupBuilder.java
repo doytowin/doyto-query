@@ -20,8 +20,9 @@ import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.BsonField;
 import lombok.experimental.UtilityClass;
 import org.bson.Document;
-import win.doyto.query.mongodb.AggregationPrefix;
+import win.doyto.query.core.AggregationPrefix;
 import win.doyto.query.util.ColumnUtil;
+import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -29,7 +30,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-import static win.doyto.query.mongodb.AggregationPrefix.*;
+import static win.doyto.query.core.AggregationPrefix.*;
 
 /**
  * MongoGroupBuilder
@@ -57,12 +58,19 @@ public class MongoGroupBuilder {
 
     public static BsonField getBsonField(Field field) {
         String viewFieldName = field.getName();
+        if (viewFieldName.equals("count")) {
+            return buildCountField(viewFieldName);
+        }
         AggregationPrefix aggregationPrefix = AggregationPrefix.resolveField(viewFieldName);
         if (aggregationPrefix == push) {
             return buildPushField(field);
         }
-        String fieldName = "$" + aggregationPrefix.resolveColumnName(viewFieldName);
+        String fieldName = "$" + CommonUtil.camelize(aggregationPrefix.resolveColumnName(viewFieldName));
         return build(viewFieldName, aggregationPrefix, fieldName);
+    }
+
+    private static BsonField buildCountField(String viewFieldName) {
+        return new BsonField(viewFieldName, new Document("$sum", 1));
     }
 
     private static BsonField buildPushField(Field field) {

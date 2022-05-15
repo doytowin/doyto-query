@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.QueryField;
 import win.doyto.query.core.PageQuery;
 
@@ -38,7 +39,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TestQuery extends PageQuery {
-    private DoytoDomainRoute domainRoute;
+
+    @DomainPath({"user", "role", "perm"})
+    private PermissionQuery perm;
+
     private List<Integer> idIn;
     private List<Integer> idNotIn;
     private Integer idLt;

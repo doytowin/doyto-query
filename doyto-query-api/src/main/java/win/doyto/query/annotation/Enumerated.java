@@ -26,6 +26,7 @@ import javax.persistence.EnumType;
  * Enumerated
  *
  * @author f0rb on 2019-07-11
+ * @since 0.1.6
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

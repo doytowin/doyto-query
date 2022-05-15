@@ -24,7 +24,15 @@ import java.io.Serializable;
  * JoinQuery
  *
  * @author f0rb on 2022-03-26
+ * @since 0.3.1
  */
 public interface JoinQuery<V extends Persistable<I>, I extends Serializable> extends DoytoQuery {
+
+    Having EMPTY_HAVING = new Having() {};
+
+    default Having getHaving() {
+        return EMPTY_HAVING;
+    }
+
     Class<V> getDomainClass();
 }

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb;
+package win.doyto.query.core;
 
-import win.doyto.query.util.CommonUtil;
+import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.regex.Matcher;
@@ -36,8 +36,9 @@ public enum AggregationPrefix {
     avg,
     first,
     last,
-    stdDevPop,
-    stdDevSamp,
+    stdDevPop("stddev_pop"),
+    stdDevSamp("stddev_samp"),
+    stdDev("stddev"),
     addToSet,
     push,
 
@@ -51,11 +52,21 @@ public enum AggregationPrefix {
 
     private final int prefixLength;
 
+    @Getter
+    private final String name;
+
     AggregationPrefix() {
+        this.name = name();
+        this.prefixLength = name().length();
+    }
+
+    AggregationPrefix(String name) {
+        this.name = name;
         this.prefixLength = name().length();
     }
 
     AggregationPrefix(int prefixLength) {
+        this.name = name();
         this.prefixLength = prefixLength;
     }
 
@@ -65,7 +76,7 @@ public enum AggregationPrefix {
     }
 
     public String resolveColumnName(String viewFieldName) {
-        return CommonUtil.camelize(viewFieldName.substring(prefixLength));
+        return viewFieldName.substring(prefixLength);
     }
 
 }

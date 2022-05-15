@@ -26,6 +26,6 @@ import javax.persistence.EnumType;
  * @author f0rb on 2019-07-11
  */
 @Enumerated(EnumType.STRING)
-public enum  TestStringEnum {
+public enum TestStringEnum {
     E1
 }

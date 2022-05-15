@@ -16,29 +16,11 @@
 
 package win.doyto.query.core;
 
-import lombok.*;
-import lombok.experimental.SuperBuilder;
-
-import java.util.List;
-import javax.persistence.Transient;
-
 /**
- * AbstractDomainRoute
+ * Having
  *
- * @author f0rb on 2022-04-23
+ * @author f0rb on 2022-05-11
+ * @since 0.3.1
  */
-@Getter
-@Setter
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class AbstractDomainRoute implements DomainRoute {
-    @Transient
-    private List<String> path;
-    @Transient
-    private boolean reverse;
-    @NonNull
-    @Builder.Default
-    @Transient
-    private String lastDomainIdColumn = "id";
+public interface Having {
 }

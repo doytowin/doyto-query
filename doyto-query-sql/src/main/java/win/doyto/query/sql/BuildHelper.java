@@ -27,6 +27,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
+import javax.persistence.Table;
 
 import static win.doyto.query.core.QuerySuffix.isValidValue;
 import static win.doyto.query.sql.Constant.*;
@@ -40,20 +41,32 @@ import static win.doyto.query.util.CommonUtil.readFieldGetter;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BuildHelper {
     private static final Pattern PTN_SORT = Pattern.compile(",(asc|desc)", Pattern.CASE_INSENSITIVE);
+    private static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
+
+    static String resolveTableName(Class<?> entityClass) {
+        String tableName;
+        Table table = entityClass.getAnnotation(Table.class);
+        if (table != null) {
+            tableName = table.name();
+        } else {
+            String entityName = entityClass.getSimpleName();
+            entityName = StringUtils.removeEnd(entityName, "Entity");
+            entityName = StringUtils.removeEnd(entityName, "View");
+            entityName = ColumnUtil.convertColumn(entityName);
+            tableName = String.format(TABLE_FORMAT, entityName);
+        }
+        return tableName;
+    }
 
     static String buildStart(String[] columns, String from) {
         return Constant.SELECT + StringUtils.join(columns, SEPARATOR) + FROM + from;
     }
 
     public static String buildWhere(DoytoQuery query, List<Object> argList) {
-        String whereJoiner = buildWhere("", query, argList);
-        if (whereJoiner.isEmpty()) {
-            return "";
-        }
-        return WHERE + whereJoiner;
+        return buildCondition(WHERE, query, argList);
     }
 
-    public static String buildWhere(String aliasWithDot, DoytoQuery query, List<Object> argList) {
+    public static String buildCondition(String prefix, DoytoQuery query, List<Object> argList) {
         Field[] fields = ColumnUtil.initFields(query.getClass(), FieldProcessor::init);
         StringJoiner whereJoiner = new StringJoiner(AND);
         for (Field field : fields) {
@@ -61,16 +74,19 @@ public class BuildHelper {
             if (isValidValue(value, field)) {
                 String and = FieldProcessor.execute(field, argList, value);
                 if (and != null) {
-                    whereJoiner.add(aliasWithDot + and);
+                    whereJoiner.add(and);
                 }
             }
         }
-        return whereJoiner.toString();
+        if (whereJoiner.length() == 0) {
+            return EMPTY;
+        }
+        return prefix + whereJoiner;
     }
 
     public static String buildOrderBy(DoytoQuery pageQuery) {
         if (pageQuery.getSort() == null) {
-            return "";
+            return EMPTY;
         }
         return " ORDER BY " + PTN_SORT.matcher(pageQuery.getSort()).replaceAll(" $1").replace(";", SEPARATOR);
     }

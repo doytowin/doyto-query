@@ -85,12 +85,12 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     }
 
     @Override
-    public final List<E> query(Q q) {
+    public List<E> query(Q q) {
         return queryColumns(q, rowMapper, columnsForSelect);
     }
 
     @Override
-    public final <V> List<V> queryColumns(Q q, Class<V> clazz, String... columns) {
+    public <V> List<V> queryColumns(Q q, Class<V> clazz, String... columns) {
         @SuppressWarnings("unchecked")
         RowMapper<V> localRowMapper = (RowMapper<V>) classRowMapperMap.computeIfAbsent(
                 clazz, c -> ColumnUtil.isSingleColumn(columns) ? new SingleColumnRowMapper<>(clazz) : new BeanPropertyRowMapper<>(clazz));
@@ -103,19 +103,19 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     }
 
     @Override
-    public final long count(Q q) {
+    public long count(Q q) {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildCountAndArgs(q);
         return databaseOperations.count(sqlAndArgs);
     }
 
     @Override
-    public final int delete(Q q) {
+    public int delete(Q q) {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildDeleteAndArgs(q);
         return databaseOperations.update(sqlAndArgs);
     }
 
     @Override
-    public final E get(IdWrapper<I> w) {
+    public E get(IdWrapper<I> w) {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildSelectById(w, columnsForSelect);
         List<E> list = databaseOperations.query(sqlAndArgs, rowMapper);
         return list.isEmpty() ? null : list.get(0);
@@ -128,7 +128,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     }
 
     @Override
-    public final void create(E e) {
+    public void create(E e) {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildCreateAndArgs(e);
 
         if (isGeneratedId) {
@@ -149,26 +149,26 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     }
 
     @Override
-    public final int update(E e) {
+    public int update(E e) {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildUpdateAndArgs(e);
         return databaseOperations.update(sqlAndArgs);
     }
 
     @Override
-    public final int patch(E e) {
+    public int patch(E e) {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildPatchAndArgsWithId(e);
         return databaseOperations.update(sqlAndArgs);
     }
 
     @Override
-    public final int patch(E e, Q q) {
+    public int patch(E e, Q q) {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildPatchAndArgs(e, q);
         return databaseOperations.update(sqlAndArgs);
     }
 
     @Override
-    public List<I> queryIds(Q query) {
-        SqlAndArgs sqlAndArgs = sqlBuilder.buildSelectIdAndArgs(query);
+    public List<I> queryIds(Q q) {
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildSelectIdAndArgs(q);
         return databaseOperations.query(sqlAndArgs, idRowMapper);
     }
 

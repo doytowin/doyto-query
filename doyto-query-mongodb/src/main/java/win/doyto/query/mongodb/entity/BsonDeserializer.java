@@ -27,9 +27,12 @@ import java.io.IOException;
 
 /**
  * BsonDeserializer
+ * <p>
+ * Used by {@link win.doyto.query.util.BeanUtil}
  *
  * @author f0rb on 2021-12-04
  */
+@SuppressWarnings("unused")
 public class BsonDeserializer extends JsonDeserializer<Bson> {
 
     @Override

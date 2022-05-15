@@ -17,10 +17,9 @@
 package win.doyto.query.sql;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.Aggregation;
-import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.annotation.Joins;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.ColumnUtil;
@@ -32,7 +31,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.persistence.Table;
 
 import static win.doyto.query.sql.Constant.*;
 import static win.doyto.query.util.CommonUtil.*;
@@ -42,26 +40,27 @@ import static win.doyto.query.util.CommonUtil.*;
  *
  * @author f0rb on 2021-12-28
  */
-@Getter
-@Setter
+@SuppressWarnings("java:S1874")
 public class EntityMetadata {
     private static final Map<Class<?>, EntityMetadata> holder = new HashMap<>();
     private static final Pattern PTN_PLACE_HOLDER = Pattern.compile("#\\{(\\w+)}");
 
-    private Class<?> entityClass;
-    private String columnsForSelect;
-    private String tableName;
+    @Getter
+    private final String columnsForSelect;
+    @Getter
+    private final String tableName;
     private String joinSql = "";
+    @Getter
     private String groupByColumns = "";
-    private String groupBySql = "";
+    @Getter
+    private final String groupBySql;
 
     public EntityMetadata(Class<?> entityClass) {
-        this.entityClass = entityClass;
-        this.tableName = entityClass.getAnnotation(Table.class).name();
+        this.tableName = BuildHelper.resolveTableName(entityClass);
 
         this.columnsForSelect = buildSelectColumns(entityClass);
         buildJoinSql(entityClass);
-        buildGroupBySql(entityClass);
+        this.groupBySql = buildGroupBySql(entityClass);
     }
 
     static EntityMetadata build(Class<?> entityClass) {
@@ -70,27 +69,35 @@ public class EntityMetadata {
 
     private String buildSelectColumns(Class<?> entityClass) {
         return ColumnUtil.filterFields(entityClass)
-                         .filter(field -> !field.isAnnotationPresent(DomainPath.class))
                          .map(ColumnUtil::selectAs)
                          .collect(Collectors.joining(SEPARATOR));
     }
 
     private void buildJoinSql(Class<?> entityClass) {
         if (entityClass.isAnnotationPresent(Joins.class)) {
-            String[] joins = this.entityClass.getAnnotation(Joins.class).value();
+            String[] joins = entityClass.getAnnotation(Joins.class).value();
             joinSql = String.join(SPACE, joins);
         }
     }
 
-    private void buildGroupBySql(Class<?> entityClass) {
+    private String buildGroupBySql(Class<?> entityClass) {
+        String groupBy = "";
+
+        groupByColumns = ColumnUtil.filterFields(entityClass, field -> field.isAnnotationPresent(GroupBy.class))
+                                        .map(Field::getName)
+                                        .collect(Collectors.joining(SEPARATOR));
+        if (!groupByColumns.isEmpty()) {
+            groupBy = " GROUP BY " + this.groupByColumns;
+        }
         if (entityClass.isAnnotationPresent(Aggregation.class)) {
             Aggregation aggregation = entityClass.getAnnotation(Aggregation.class);
-            groupByColumns = StringUtils.join(aggregation.groupBy(), SEPARATOR);
-            groupBySql = " GROUP BY " + groupByColumns;
+            this.groupByColumns = StringUtils.join(aggregation.groupBy(), SEPARATOR);
+            groupBy = " GROUP BY " + this.groupByColumns;
             if (!aggregation.having().isEmpty()) {
-                groupBySql += " HAVING " + aggregation.having();
+                groupBy += " HAVING " + aggregation.having();
             }
         }
+        return groupBy;
     }
 
     public String resolveJoinSql(DoytoQuery query, List<Object> argList) {

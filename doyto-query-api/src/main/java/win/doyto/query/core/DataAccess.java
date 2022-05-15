@@ -25,6 +25,7 @@ import java.util.List;
  * DataAccess
  *
  * @author f0rb
+ * @since 0.0.1
  */
 public interface DataAccess<E extends Persistable<I>, I extends Serializable, Q> {
 

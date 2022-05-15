@@ -22,12 +22,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.env.MockEnvironment;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.Dialect;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
+import static win.doyto.query.web.config.DoytoQueryInitializer.key;
 
 /**
  * DoytoQueryInitializerTest
@@ -39,7 +41,15 @@ class DoytoQueryInitializerTest {
     @BeforeEach
     void setUp() {
         DoytoQueryInitializer doytoQueryInitializer = new DoytoQueryInitializer();
-        ConfigurableApplicationContext context = new GenericApplicationContext();
+        ConfigurableApplicationContext context = new GenericApplicationContext() {
+            @Override
+            protected ConfigurableEnvironment createEnvironment() {
+                return new MockEnvironment()
+                        .withProperty(key("table-format"), "sys_%s")
+                        .withProperty(key("join-table-format"), "t_%s_and_%s")
+                        .withProperty(key("join-id-format"), "%sId");
+            }
+        };
         doytoQueryInitializer.initialize(context);
     }
 
@@ -55,6 +65,9 @@ class DoytoQueryInitializerTest {
         assertFalse(globalConfiguration.isMapCamelCaseToUnderscore());
         assertTrue(globalConfiguration.isIgnoreCacheException());
         assertTrue(globalConfiguration.getDialect() instanceof Dialect);
+        assertEquals("sys_%s", globalConfiguration.getTableFormat());
+        assertEquals("t_%s_and_%s", globalConfiguration.getJoinTableFormat());
+        assertEquals("%sId", globalConfiguration.getJoinIdFormat());
     }
 
     @Test
@@ -81,11 +94,14 @@ class DoytoQueryInitializerTest {
     @Test
     void fixMapCamelCaseToUnderscore() {
         DoytoQueryInitializer doytoQueryInitializer = new DoytoQueryInitializer();
-        GlobalConfiguration globalConfiguration = GlobalConfiguration.instance();
-        MockEnvironment env = new MockEnvironment().withProperty("doyto.query.config.map-camel-case-to-underscore", "true");
-
-        doytoQueryInitializer.configCamelCase(globalConfiguration, env);
-
-        assertTrue(globalConfiguration.isMapCamelCaseToUnderscore());
+        ConfigurableApplicationContext context = new GenericApplicationContext() {
+            @Override
+            protected ConfigurableEnvironment createEnvironment() {
+                return new MockEnvironment()
+                        .withProperty(key("map-camel-case-to-underscore"), "true");
+            }
+        };
+        doytoQueryInitializer.initialize(context);
+        assertTrue(GlobalConfiguration.instance().isMapCamelCaseToUnderscore());
     }
 }

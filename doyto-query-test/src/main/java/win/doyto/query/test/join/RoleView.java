@@ -23,7 +23,6 @@ import win.doyto.query.entity.Persistable;
 
 import java.util.List;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
 /**
  * UserEntity
@@ -32,7 +31,6 @@ import javax.persistence.Table;
  */
 @Getter
 @Setter
-@Table(name = "t_role")
 public class RoleView implements Persistable<Integer> {
 
     @Id
@@ -44,10 +42,16 @@ public class RoleView implements Persistable<Integer> {
 
     private Boolean valid;
 
+    // many-to-many
     @DomainPath({"user", "role"})
     private List<UserView> users;
 
+    // many-to-many
     @DomainPath({"role", "perm"})
     private List<PermView> perms;
+
+    // many-to-one
+    @DomainPath(value = "user", lastDomainIdColumn = "create_user_id")
+    private UserView createUser;
 
 }

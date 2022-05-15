@@ -19,9 +19,10 @@ package win.doyto.query.core;
 import java.io.Serializable;
 
 /**
- * Or2
+ * Or
  *
  * @author f0rb on 2021-12-24
+ * @since 0.3.0
  */
 public interface Or extends Serializable {
 }

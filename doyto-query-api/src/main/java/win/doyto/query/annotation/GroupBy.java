@@ -14,31 +14,21 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.join;
+package win.doyto.query.annotation;
 
-import lombok.Getter;
-import lombok.Setter;
-import win.doyto.query.annotation.Joins;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import javax.persistence.Column;
-import javax.persistence.Table;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * TestJoinView
+ * GroupBy
  *
- * @author f0rb on 2019-06-09
+ * @author f0rb on 2022-05-11
+ * @since 0.3.1
  */
-@Getter
-@Setter
-@Table(name = "t_user u")
-@Joins({
-        "left join j_user_and_role ur on ur.user_id = u.id",
-        "inner join t_role r on r.id = ur.role_id and r.roleName = #{roleName}"
-})
-public class TestJoinView {
-
-    private String username;
-
-    @Column(name = "r.roleName")
-    private String roleName;
+@Target(FIELD)
+@Retention(RUNTIME)
+public @interface GroupBy {
 }

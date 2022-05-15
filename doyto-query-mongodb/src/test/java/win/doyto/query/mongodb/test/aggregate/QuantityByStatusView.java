@@ -18,8 +18,9 @@ package win.doyto.query.mongodb.test.aggregate;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.Aggregation;
+import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.entity.MongoEntity;
+import win.doyto.query.mongodb.entity.MongoPersistable;
 
 import java.util.List;
 
@@ -31,12 +32,14 @@ import java.util.List;
 @Getter
 @Setter
 @MongoEntity(database = "doyto", collection = "c_inventory")
-@Aggregation(groupBy = "status")
-public class QuantityByStatusView {
+public class QuantityByStatusView extends MongoPersistable<String> {
+
+    @GroupBy
+    private String status;
+
+    private Long count;
 
     private Integer sumQty;
-
-    private String status;
 
     private List<ItemStatus> pushItemStatuses;
 

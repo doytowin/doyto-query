@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static win.doyto.query.sql.Constant.*;
+
 /**
  * SqlAndArgs
  *
@@ -51,8 +53,8 @@ public class SqlAndArgs {
             log.debug("SQL  : {}", sql);
             String params = Arrays
                     .stream(args)
-                    .map(arg -> arg + (arg == null ? "" : "(" + arg.getClass().getName() + ")"))
-                    .collect(Collectors.joining(", "));
+                    .map(arg -> arg + (arg == null ? EMPTY : OP + arg.getClass().getName() + CP))
+                    .collect(Collectors.joining(SEPARATOR));
             log.debug("Param: {}", params);
         }
     }

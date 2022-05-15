@@ -37,7 +37,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DatabaseTemplate implements DatabaseOperations {
 
-    private static RowMapper<Long> countRowMapper = new SingleColumnRowMapper<>(Long.class);
+    private static final RowMapper<Long> countRowMapper = new SingleColumnRowMapper<>(Long.class);
     private final JdbcOperations jdbcOperations;
 
     @Override
@@ -55,6 +55,7 @@ public class DatabaseTemplate implements DatabaseOperations {
         return jdbcOperations.update(sqlAndArgs.getSql(), sqlAndArgs.getArgs());
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public long count(SqlAndArgs sqlAndArgs) {
         return jdbcOperations.queryForObject(sqlAndArgs.getSql(), countRowMapper, sqlAndArgs.getArgs());

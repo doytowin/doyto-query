@@ -40,6 +40,24 @@ public class DoytoQueryInitializer implements ApplicationContextInitializer<Conf
         configIgnoreCacheException(globalConfiguration, environment);
         configDialect(globalConfiguration, environment);
         configStartPageNumber(globalConfiguration, environment);
+        configJoinTableFormat(globalConfiguration, environment);
+        configTableFormat(globalConfiguration, environment);
+        configJoinIdFormat(globalConfiguration, environment);
+    }
+
+    private void configJoinIdFormat(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {
+        String defaultValue = globalConfiguration.getJoinIdFormat();
+        globalConfiguration.setJoinIdFormat(environment.getProperty(key("join-id-format"), String.class, defaultValue));
+    }
+
+    private void configTableFormat(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {
+        String defaultValue = globalConfiguration.getTableFormat();
+        globalConfiguration.setTableFormat(environment.getProperty(key("table-format"), String.class, defaultValue));
+    }
+
+    private void configJoinTableFormat(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {
+        String defaultValue = globalConfiguration.getJoinTableFormat();
+        globalConfiguration.setJoinTableFormat(environment.getProperty(key("join-table-format"), String.class, defaultValue));
     }
 
     private void configStartPageNumber(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {
@@ -47,7 +65,7 @@ public class DoytoQueryInitializer implements ApplicationContextInitializer<Conf
         globalConfiguration.setStartPageNumberFromOne(environment.getProperty(key("start-page-number-from-one"), boolean.class, defaultValue));
     }
 
-    void configCamelCase(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {
+    private void configCamelCase(GlobalConfiguration globalConfiguration, ConfigurableEnvironment environment) {
         boolean defaultValue = globalConfiguration.isMapCamelCaseToUnderscore();
         globalConfiguration.setMapCamelCaseToUnderscore(environment.getProperty(key("map-camel-case-to-underscore"), boolean.class, defaultValue));
     }
@@ -71,7 +89,7 @@ public class DoytoQueryInitializer implements ApplicationContextInitializer<Conf
         return (Dialect) Class.forName(dialectClass).getDeclaredConstructor().newInstance();
     }
 
-    private String key(String key) {
+    static String key(String key) {
         return DOYTO_QUERY_CONFIG + key;
     }
 }

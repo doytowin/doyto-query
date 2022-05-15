@@ -19,6 +19,7 @@ package win.doyto.query.mongodb.test.aggregate;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.entity.MongoEntity;
+import win.doyto.query.mongodb.entity.MongoPersistable;
 
 /**
  * QuantityView
@@ -28,7 +29,8 @@ import win.doyto.query.entity.MongoEntity;
 @Getter
 @Setter
 @MongoEntity(database = "doyto", collection = "c_inventory")
-public class QuantityView {
+public class QuantityView extends MongoPersistable<String> {
+    private Long count;
     private Integer sumQty;
     private Integer maxQty;
     private Integer minQty;

@@ -33,12 +33,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.persistence.EnumType;
 
-import static win.doyto.query.sql.Constant.SPACE;
+import static win.doyto.query.sql.Constant.*;
 
 /**
- * QuerySuffix
+ * SqlQuerySuffix
  *
- * @author f0rb
+ * @author f0rb on 2021-12-01
+ * @since 0.3.0
  */
 @SuppressWarnings("java:S115")
 @Getter
@@ -74,7 +75,7 @@ enum SqlQuerySuffix {
             Arrays.stream(values())
                   .filter(querySuffix -> querySuffix != NONE)
                   .map(Enum::name)
-                  .collect(Collectors.joining("|", "(", ")$")));
+                  .collect(Collectors.joining("|", OP, CP + "$")));
 
     private final String op;
     private final ValueProcessor valueProcessor;
@@ -104,20 +105,15 @@ enum SqlQuerySuffix {
         }
         return Arrays.stream(CommonUtil.splitByOr(fieldNameWithOr))
                      .map(fieldName -> buildConditionForField(alias + fieldName, argList, value))
-                     .collect(Collectors.joining(Constant.SPACE_OR, "(", ")"));
+                     .collect(Collectors.joining(Constant.SPACE_OR, OP, CP));
     }
 
     static String buildConditionForField(String fieldName, List<Object> argList, Object value) {
         SqlQuerySuffix sqlQuerySuffix = resolve(fieldName);
         value = sqlQuerySuffix.valueProcessor.escapeValue(value);
-        String columnName = sqlQuerySuffix.resolveColumnName(fieldName);
+        String columnName = StringUtils.removeEnd(fieldName, sqlQuerySuffix.name());
         columnName = ColumnUtil.convertColumn(columnName);
         return sqlQuerySuffix.buildColumnCondition(columnName, argList, value);
-    }
-
-    String resolveColumnName(String fieldName) {
-        String suffix = this.name();
-        return fieldName.endsWith(suffix) ? fieldName.substring(0, fieldName.length() - suffix.length()) : fieldName;
     }
 
     String buildColumnCondition(String columnName, List<Object> argList, Object value) {

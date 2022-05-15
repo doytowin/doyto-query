@@ -14,27 +14,34 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test;
+package win.doyto.query.mongodb.test.aggregate;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.JoinQuery;
 import win.doyto.query.core.PageQuery;
 
 /**
- * PermissionQuery
+ * QuantityByStatusQuery
  *
- * @author f0rb on 2019-05-28
+ * @author f0rb on 2022-05-11
  */
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DoytoDomainQuery extends PageQuery {
+public class QuantityByStatusQuery extends PageQuery implements JoinQuery<QuantityByStatusView, String> {
 
-    private DoytoDomainRoute domainRoute;
+    private QuantityHaving having;
 
+    private String statusNot;
+
+    @Override
+    public Class<QuantityByStatusView> getDomainClass() {
+        return QuantityByStatusView.class;
+    }
 }
