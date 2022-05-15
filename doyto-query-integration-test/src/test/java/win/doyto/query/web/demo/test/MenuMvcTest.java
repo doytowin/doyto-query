@@ -42,7 +42,7 @@ class MenuMvcTest extends DemoApplicationTest {
     @Test
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     void pageMenu() throws Exception {
-        performAndExpectSuccess(get(menuUriWith("?pageNumber=1&pageSize=1")))
+        performAndExpectSuccess(get(menuUriWith("?page=1&size=1")))
                 .andExpect(jsonPath("$.data.list.size()").value(1))
                 .andExpect(jsonPath("$.data.total").value(2))
         ;
