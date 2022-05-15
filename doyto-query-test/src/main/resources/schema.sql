@@ -62,7 +62,7 @@ create table t_role(
   role_name VARCHAR(100) not null,
   role_code VARCHAR(100) not null,
   valid boolean DEFAULT TRUE,
-  create_time timestamp,
+  create_time timestamp not null default CURRENT_TIMESTAMP,
   create_user_id bigint,
   update_time timestamp,
   update_user_id bigint,

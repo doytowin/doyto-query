@@ -115,4 +115,16 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
                 .extractingResultOf("size", Integer.class)
                 .containsExactly(3, 2, 0, 0, 0);
     }
+
+    @Test
+    void queryRoleWithCreateUser() {
+        RoleQuery roleQuery = RoleQuery.builder().createUserQuery(new UserQuery()).build();
+
+        List<RoleView> roles = jdbcDataQueryClient.query(roleQuery);
+
+        assertThat(roles)
+                .map(RoleView::getCreateUser)
+                .extracting(userView -> userView == null ? null: userView.getId())
+                .containsExactly(1L, 2L, 2L, 0L, null);
+    }
 }

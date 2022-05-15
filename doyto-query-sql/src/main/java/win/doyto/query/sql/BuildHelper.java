@@ -27,6 +27,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
+import javax.persistence.Table;
 
 import static win.doyto.query.core.QuerySuffix.isValidValue;
 import static win.doyto.query.sql.Constant.*;
@@ -40,6 +41,10 @@ import static win.doyto.query.util.CommonUtil.readFieldGetter;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BuildHelper {
     private static final Pattern PTN_SORT = Pattern.compile(",(asc|desc)", Pattern.CASE_INSENSITIVE);
+
+    static String resolveTableName(Class<?> entityClass) {
+        return entityClass.getAnnotation(Table.class).name();
+    }
 
     static String buildStart(String[] columns, String from) {
         return Constant.SELECT + StringUtils.join(columns, SEPARATOR) + FROM + from;

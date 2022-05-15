@@ -19,11 +19,13 @@ package win.doyto.query.sql;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.annotation.GroupBy;
 
 import javax.persistence.Table;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * EntityMetadataTest
@@ -42,6 +44,7 @@ class EntityMetadataTest {
         private Double avgScore;
     }
 
+    @ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
     @Test
     void supportGroupByAnnotation() {
         EntityMetadata entityMetadata = new EntityMetadata(ScoreGroupByStudentView.class);

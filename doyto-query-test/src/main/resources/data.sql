@@ -9,10 +9,10 @@ INSERT INTO menu_01 (id, platform, parent_id, menu_name, memo, valid) VALUES (1,
 INSERT INTO menu_01 (id, platform, parent_id, menu_name, memo, valid) VALUES (2, '01', 1, 'first', 'first menu', true);
 INSERT INTO menu (id, platform, parent_id, menu_name, memo, valid) VALUES (1, '02', 0, 'root', 'root menu', true);
 
-INSERT INTO t_role (role_name, role_code) VALUES ('admin', 'ADMIN');
-INSERT INTO t_role (role_name, role_code) VALUES ('vip', 'VIP');
-INSERT INTO t_role (role_name, role_code) VALUES ('vip2', 'VIP2');
-INSERT INTO t_role (role_name, role_code) VALUES ('vip3', 'VIP3');
+INSERT INTO t_role (role_name, role_code, create_user_id) VALUES ('admin', 'ADMIN', 1);
+INSERT INTO t_role (role_name, role_code, create_user_id) VALUES ('vip', 'VIP', 2);
+INSERT INTO t_role (role_name, role_code, create_user_id) VALUES ('vip2', 'VIP2', 2);
+INSERT INTO t_role (role_name, role_code, create_user_id) VALUES ('vip3', 'VIP3', 0);
 INSERT INTO t_role (role_name, role_code) VALUES ('vip4', 'VIP4');
 
 INSERT INTO j_user_and_role (user_id, role_id) VALUES (1, 1);

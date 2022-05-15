@@ -25,7 +25,6 @@ import win.doyto.query.util.CommonUtil;
 
 import java.util.List;
 import java.util.function.BiFunction;
-import javax.persistence.Table;
 
 import static win.doyto.query.sql.Constant.*;
 import static win.doyto.query.util.CommonUtil.isDynamicTable;
@@ -52,11 +51,7 @@ public class QueryBuilder {
     }
 
     public QueryBuilder(Class<?> entityClass) {
-        this(resolveTableName(entityClass), ColumnUtil.resolveIdColumn(entityClass));
-    }
-
-    private static String resolveTableName(Class<?> entityClass) {
-        return entityClass.getAnnotation(Table.class).name();
+        this(BuildHelper.resolveTableName(entityClass), ColumnUtil.resolveIdColumn(entityClass));
     }
 
     protected String resolveTableName(IdWrapper<?> idWrapper) {

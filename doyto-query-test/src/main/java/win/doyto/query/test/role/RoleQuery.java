@@ -55,6 +55,8 @@ public class RoleQuery extends PageQuery implements JoinQuery<RoleView, Integer>
 
     private PermissionQuery permsQuery;
 
+    private UserQuery createUserQuery;
+
     @Override
     public Class<RoleView> getDomainClass() {
         return RoleView.class;

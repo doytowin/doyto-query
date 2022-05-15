@@ -87,17 +87,24 @@ public class JoinQueryBuilder {
     ) {
         DomainPath domainPath = joinField.getAnnotation(DomainPath.class);
         String[] domains = domainPath.value();
-        boolean reverse = joinField.getName().contains(domains[0]);
-        String columns = buildSubDomainColumns(joinEntityClass);
-        return buildSqlAndArgsForJoin(query, mainIds, columns, domains, reverse);
+        String mainTableName = resolveTableName(joinField.getDeclaringClass());
+        String subTableName = String.format(TABLE_FORMAT, domains[0]);
+        String subColumns = buildSubDomainColumns(joinEntityClass);
+        LinkedList<Object> queryArgs = new LinkedList<>();
+        String clause;
+        if (domains.length == 1) {
+            String mainFKColumn = domainPath.lastDomainIdColumn();
+            clause = buildQueryOneForEachMainDomain(mainTableName, mainFKColumn, subTableName, subColumns);
+        } else {
+            boolean reverse = !mainTableName.equals(subTableName);
+            clause = buildQueryForEachMainDomain(query, queryArgs, subColumns, domains, reverse);
+        }
+        return buildSqlAndArgsForJoin(clause, mainIds, queryArgs);
     }
 
     private static <I extends Serializable> SqlAndArgs buildSqlAndArgsForJoin(
-            DoytoQuery query, List<I> mainIds, String columns, String[] domains, boolean reverse
+            String clause, List<I> mainIds, LinkedList<Object> queryArgs
     ) {
-        LinkedList<Object> queryArgs = new LinkedList<>();
-        String clause = buildQueryForEachMainDomain(query, queryArgs, columns, domains, reverse);
-
         return SqlAndArgs.buildSqlWithArgs(args -> mainIds
                 .stream()
                 .map(mainId -> {
@@ -107,6 +114,14 @@ public class JoinQueryBuilder {
                     return clause;
                 }).collect(Collectors.joining(UNION_ALL, LF, EMPTY))
         );
+    }
+
+    private static String buildQueryOneForEachMainDomain(String mainTableName, String mainFKColumn, String subTableName, String subColumns) {
+        return SELECT + PLACE_HOLDER + AS + KEY_COLUMN + SEPARATOR + subColumns +
+                FROM + subTableName + LF +
+                WHERE + ID + EQUAL + OP + LF + SPACE + SPACE +
+                SELECT + mainFKColumn + FROM + mainTableName +
+                WHERE + ID + EQUAL_HOLDER + LF + SPACE + CP;
     }
 
     private static String buildQueryForEachMainDomain(

@@ -239,4 +239,24 @@ class JoinQueryBuilderTest {
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, true, 2, 2, true, 3, 3, true);
     }
+
+    @Test
+    void buildSqlAndArgsForManyToOne() throws NoSuchFieldException {
+        Field field = RoleView.class.getDeclaredField("createUser");
+
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+                new UserQuery(), UserView.class, field, Arrays.asList(1, 3));
+
+        String expected = "\nSELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+                " WHERE id = (\n" +
+                "  SELECT create_user_id FROM t_role WHERE id = ?\n" +
+                " )\n" +
+                "UNION ALL\n" +
+                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+                " WHERE id = (\n" +
+                "  SELECT create_user_id FROM t_role WHERE id = ?\n" +
+                " )";
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
+    }
 }
