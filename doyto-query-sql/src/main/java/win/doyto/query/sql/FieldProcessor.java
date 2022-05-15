@@ -20,7 +20,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.annotation.NestedQueries;
 import win.doyto.query.annotation.QueryField;
 import win.doyto.query.annotation.QueryTableAlias;
 import win.doyto.query.core.DoytoQuery;
@@ -36,7 +35,6 @@ import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static win.doyto.query.sql.Constant.*;
-import static win.doyto.query.sql.NestedQueryInitializer.initFieldAnnotatedByNestedQueries;
 
 /**
  * FieldProcessor
@@ -67,8 +65,6 @@ final class FieldProcessor {
             processor = initFieldAnnotatedByQueryTableAlias(field);
         } else if (field.isAnnotationPresent(QueryField.class)) {
             processor = initFieldAnnotatedByQueryField(field);
-        } else if (field.isAnnotationPresent(NestedQueries.class)) {
-            processor = initFieldAnnotatedByNestedQueries(field);
         } else {
             processor = initCommonField(field);
         }

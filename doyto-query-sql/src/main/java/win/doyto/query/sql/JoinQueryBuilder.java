@@ -55,7 +55,6 @@ public class JoinQueryBuilder {
             EntityMetadata entityMetadata = EntityMetadata.build(entityClass);
             String sql = SELECT + entityMetadata.getColumnsForSelect() +
                     FROM + entityMetadata.getTableName() +
-                    entityMetadata.resolveJoinSql(query, argList) +
                     buildWhere(query, argList) +
                     entityMetadata.getGroupBySql() +
                     buildOrderBy(query);
@@ -74,7 +73,6 @@ public class JoinQueryBuilder {
             }
             return SELECT + count +
                     FROM + entityMetadata.getTableName() +
-                    entityMetadata.resolveJoinSql(query, argList) +
                     buildWhere(query, argList);
         }));
     }
