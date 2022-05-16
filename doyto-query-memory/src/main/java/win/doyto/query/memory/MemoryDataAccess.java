@@ -16,9 +16,9 @@
 
 package win.doyto.query.memory;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DataAccess;
@@ -222,7 +222,6 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     }
 
     @Override
-    @SneakyThrows
     public <V> List<V> queryColumns(Q q, Class<V> classV, String... columns) {
         List<E> entities = query(q);
         List<V> objects = new ArrayList<>(entities.size());
@@ -237,11 +236,11 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     }
 
     protected void doSort(List<E> queryList, String sort) {
-        String[] orders = sort.split(";");
+        String[] orders = StringUtils.split(sort, ";");
         for (int i = orders.length - 1; i >= 0; i--) {
             String order = orders[i];
             queryList.sort((o1, o2) -> {
-                String[] pd = order.split(",");
+                String[] pd = StringUtils.split(order, ",");
                 String property = toCamelCase(pd[0]);
                 Comparable<Object> c1 = (Comparable<Object>) readField(o1, property);
                 Object c2 = readField(o2, property);
