@@ -30,13 +30,13 @@ import java.util.List;
  */
 public interface DataQueryClient {
 
-    <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
+    <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
     List<V> query(Q query, Class<V> viewClass);
 
-    <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
+    <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
     long count(Q query, Class<V> viewClass);
 
-    default <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
+    default <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
     PageList<V> page(Q query, Class<V> viewClass) {
         return new PageList<>(query(query, viewClass), count(query, viewClass));
     }

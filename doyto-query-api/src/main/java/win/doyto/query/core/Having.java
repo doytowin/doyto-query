@@ -16,11 +16,13 @@
 
 package win.doyto.query.core;
 
+import java.io.Serializable;
+
 /**
  * Having
  *
  * @author f0rb on 2022-05-11
  * @since 0.3.1
  */
-public interface Having {
+public interface Having extends Serializable {
 }

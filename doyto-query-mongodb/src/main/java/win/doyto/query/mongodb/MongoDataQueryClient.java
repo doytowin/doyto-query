@@ -48,7 +48,7 @@ public class MongoDataQueryClient implements DataQueryClient {
     private MongoClient mongoClient;
 
     @Override
-    public <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
+    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
     List<V> query(Q query, Class<V> viewClass) {
         AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
         List<Bson> list = new ArrayList<>();
@@ -80,7 +80,7 @@ public class MongoDataQueryClient implements DataQueryClient {
     }
 
     @Override
-    public <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
+    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
     long count(Q query, Class<V> viewClass) {
         return 0;
     }
