@@ -17,12 +17,8 @@
 package win.doyto.query.web;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -36,10 +32,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import win.doyto.query.geo.GeoShape;
-import win.doyto.query.geo.GeoShapeDeserializer;
-import win.doyto.query.geo.Point;
-import win.doyto.query.geo.PointDeserializer;
+import win.doyto.query.util.BeanUtil;
 import win.doyto.query.web.config.WebComponentsConfiguration;
 
 import java.nio.charset.StandardCharsets;
@@ -100,30 +93,16 @@ public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
         converter.setDefaultCharset(StandardCharsets.UTF_8);
     }
 
-    public static ObjectMapper configObjectMapper(ObjectMapper objectMapper) {
-        return objectMapper
-                .enable(JsonParser.Feature.ALLOW_SINGLE_QUOTES)
-                .enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES)
-                .enable(JsonParser.Feature.IGNORE_UNDEFINED)
-                .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                .setTimeZone(TimeZone.getTimeZone("GMT+8")) // 中国的东8时区
-                .registerModule(buildGeoModule())
-                .setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-    }
-
-    @SuppressWarnings("unchecked")
-    protected static SimpleModule buildGeoModule() {
-        SimpleModule geoModule = new SimpleModule("Geo", new Version(1, 0, 0, "", "win.doyto", "doyto-query-geo"));
-        geoModule.addDeserializer(Point.class, new PointDeserializer());
-        geoModule.addDeserializer(GeoShape.class, new GeoShapeDeserializer());
-        return geoModule;
+    protected ObjectMapper configObjectMapper(ObjectMapper objectMapper) {
+        return BeanUtil.configObjectMapper(objectMapper)
+                       .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                       .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                       .setTimeZone(TimeZone.getTimeZone("GMT+8")) // 中国的东8时区
+                       .setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
     }
 
     @Bean
-    public LocaleResolver localeResolver(){
+    public LocaleResolver localeResolver() {
         CookieLocaleResolver cookieLocaleResolver = new CookieLocaleResolver() {
             @Override
             protected Locale determineDefaultLocale(HttpServletRequest request) {

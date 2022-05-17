@@ -16,20 +16,17 @@
 
 package win.doyto.query.web.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import win.doyto.query.util.BeanUtil;
 import win.doyto.query.web.response.ErrorCode;
 
 import java.io.PrintWriter;
 import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import static win.doyto.query.web.WebMvcConfigurerAdapter.configObjectMapper;
-
 
 /**
  * Created by IntelliJ IDEA.
@@ -41,8 +38,6 @@ import static win.doyto.query.web.WebMvcConfigurerAdapter.configObjectMapper;
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class HttpUtil {
-    public static final String UNKNOWN = "unknown";
-    private static final ObjectMapper objectMapper = configObjectMapper(new ObjectMapper());
 
     /**
      * 获取header信息，名字大小写无关.
@@ -68,7 +63,7 @@ public class HttpUtil {
 
     @SneakyThrows
     public static void writeJson(HttpServletResponse response, Object content) {
-        writeJson(response, objectMapper.writeValueAsString(content));
+        writeJson(response, BeanUtil.stringify(content));
     }
 
     public static void writeJson(HttpServletResponse response, Enum<?> content) {

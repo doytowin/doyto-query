@@ -16,6 +16,7 @@
 
 package win.doyto.query.mongodb.test.inventory;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +35,9 @@ import win.doyto.query.core.PageQuery;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SizeQuery extends PageQuery {
+    // https://stackoverflow.com/questions/30205006/why-does-jackson-2-not-recognize-the-first-capital-letter-if-the-leading-camel-c
+    // @Jacksonized also works
+    @JsonProperty("hLt")
     private Integer hLt;
     private UnitQuery unit;
 }
