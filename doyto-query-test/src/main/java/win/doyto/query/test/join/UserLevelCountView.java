@@ -37,6 +37,9 @@ public class UserLevelCountView {
     @GroupBy
     private UserLevel userLevel;
 
+    @GroupBy
+    private Boolean valid;
+
     private Long count;
 
 }

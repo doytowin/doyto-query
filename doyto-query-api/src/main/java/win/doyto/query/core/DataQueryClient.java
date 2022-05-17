@@ -56,4 +56,6 @@ public interface DataQueryClient {
         return page(query, query.getDomainClass());
     }
 
+    <V, Q extends AggregationQuery>
+    List<V> aggregate(Q query, Class<V> viewClass);
 }

@@ -281,8 +281,8 @@ class JoinQueryBuilderTest {
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(
                 UserLevelQuery.builder().having(having).valid(true).build(), UserLevelCountView.class);
 
-        String expected = "SELECT userLevel, count(*) AS count FROM t_user WHERE valid = ? " +
-                "GROUP BY userLevel HAVING count(*) > ? AND count(*) < ?";
+        String expected = "SELECT userLevel, valid, count(*) AS count FROM t_user WHERE valid = ? " +
+                "GROUP BY userLevel, valid HAVING count(*) > ? AND count(*) < ?";
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(true, 1, 10);

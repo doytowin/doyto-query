@@ -21,10 +21,7 @@ import com.mongodb.client.model.Aggregates;
 import lombok.AllArgsConstructor;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import win.doyto.query.core.DataQueryClient;
-import win.doyto.query.core.DoytoQuery;
-import win.doyto.query.core.Having;
-import win.doyto.query.core.JoinQuery;
+import win.doyto.query.core.*;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.mongodb.filter.MongoFilterBuilder;
 import win.doyto.query.util.BeanUtil;
@@ -83,5 +80,10 @@ public class MongoDataQueryClient implements DataQueryClient {
     public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
     long count(Q query, Class<V> viewClass) {
         return 0;
+    }
+
+    @Override
+    public <V, Q extends AggregationQuery> List<V> aggregate(Q query, Class<V> viewClass) {
+        return new ArrayList<>();
     }
 }
