@@ -67,7 +67,7 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
     @Test
     void groupQuery() {
         QuantityByStatusQuery query = QuantityByStatusQuery.builder().build();
-        List<QuantityByStatusView> views = dataQueryClient.query(query);
+        List<QuantityByStatusView> views = dataQueryClient.aggregate(query, QuantityByStatusView.class);
         assertThat(views).hasSize(2)
                          .first()
                          .extracting("sumQty", "status", "addToSetItem")
@@ -84,7 +84,7 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
     @Test
     void groupQueryWithSort() {
         QuantityByStatusQuery query = QuantityByStatusQuery.builder().sort("status,desc").build();
-        List<QuantityByStatusView> views = dataQueryClient.query(query);
+        List<QuantityByStatusView> views = dataQueryClient.aggregate(query, QuantityByStatusView.class);
         assertThat(views).hasSize(2)
                          .first()
                          .extracting("sumQty", "status")
@@ -95,7 +95,7 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
     @Test
     void groupByWhereStatusNot() {
         QuantityByStatusQuery query = QuantityByStatusQuery.builder().statusNot("D").build();
-        List<QuantityByStatusView> views = dataQueryClient.query(query);
+        List<QuantityByStatusView> views = dataQueryClient.aggregate(query, QuantityByStatusView.class);
         assertThat(views).hasSize(1)
                          .first()
                          .extracting("sumQty", "status")
@@ -109,7 +109,7 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
 
         QuantityHaving having = QuantityHaving.builder().countLt(3L).build();
         QuantityByStatusQuery query = QuantityByStatusQuery.builder().statusNot("D").having(having).build();
-        List<QuantityByStatusView> views = dataQueryClient.query(query);
+        List<QuantityByStatusView> views = dataQueryClient.aggregate(query, QuantityByStatusView.class);
         assertThat(views).hasSize(1)
                          .first()
                          .extracting("sumQty", "status")

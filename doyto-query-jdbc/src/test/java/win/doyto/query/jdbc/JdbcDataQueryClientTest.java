@@ -16,6 +16,7 @@
 
 package win.doyto.query.jdbc;
 
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +24,9 @@ import org.springframework.jdbc.core.JdbcOperations;
 import win.doyto.query.service.PageList;
 import win.doyto.query.test.MenuQuery;
 import win.doyto.query.test.PermissionQuery;
+import win.doyto.query.test.UserLevel;
 import win.doyto.query.test.UserQuery;
-import win.doyto.query.test.join.RoleView;
-import win.doyto.query.test.join.UserJoinQuery;
-import win.doyto.query.test.join.UserView;
+import win.doyto.query.test.join.*;
 import win.doyto.query.test.role.RoleQuery;
 
 import java.util.List;
@@ -155,5 +155,19 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
         assertThat(users).extracting("createRoles")
                          .extractingResultOf("size", Integer.class)
                          .containsExactly(1, 2, 0, 0);
+    }
+
+    @Test
+    void supportAggregateQuery() {
+        UserLevelQuery query = new UserLevelQuery();
+        List<UserLevelCountView> userLevelCountViews = jdbcDataQueryClient.aggregate(query, UserLevelCountView.class);
+        assertThat(userLevelCountViews)
+                .hasSize(3)
+                .extracting("userLevel", "valid", "count")
+                .containsExactly(
+                        new Tuple(UserLevel.高级, true, 1L),
+                        new Tuple(UserLevel.普通, false, 1L),
+                        new Tuple(UserLevel.普通, true, 2L)
+                );
     }
 }

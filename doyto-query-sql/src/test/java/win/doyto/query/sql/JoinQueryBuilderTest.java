@@ -274,4 +274,17 @@ class JoinQueryBuilderTest {
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
     }
+
+    @Test
+    void supportHaving() {
+        UserLevelHaving having = UserLevelHaving.builder().countGt(1).countLt(10).build();
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(
+                UserLevelQuery.builder().having(having).valid(true).build(), UserLevelCountView.class);
+
+        String expected = "SELECT userLevel, valid, count(*) AS count FROM t_user WHERE valid = ? " +
+                "GROUP BY userLevel, valid HAVING count(*) > ? AND count(*) < ?";
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(true, 1, 10);
+    }
 }

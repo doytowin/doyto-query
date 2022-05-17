@@ -14,34 +14,20 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb.test.aggregate;
-
-import lombok.Getter;
-import lombok.Setter;
-import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.entity.MongoEntity;
-
-import java.util.List;
+package win.doyto.query.core;
 
 /**
- * QuantityView
+ * AggregationQuery
  *
- * @author f0rb on 2022-01-25
+ * @author f0rb on 2022-05-17
+ * @since 0.3.1
  */
-@Getter
-@Setter
-@MongoEntity(database = "doyto", collection = "c_inventory")
-public class QuantityByStatusView {
+public interface AggregationQuery extends DoytoQuery {
 
-    @GroupBy
-    private String status;
+    Having EMPTY_HAVING = new Having() {};
 
-    private Long count;
-
-    private Integer sumQty;
-
-    private List<ItemStatus> pushItemStatuses;
-
-    private List<String> addToSetItem;
+    default Having getHaving() {
+        return EMPTY_HAVING;
+    }
 
 }

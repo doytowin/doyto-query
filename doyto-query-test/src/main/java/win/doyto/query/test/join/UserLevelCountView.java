@@ -14,34 +14,32 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb.test.aggregate;
+package win.doyto.query.test.join;
 
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.entity.MongoEntity;
+import win.doyto.query.test.UserLevel;
 
-import java.util.List;
+import javax.persistence.Table;
 
 /**
- * QuantityView
+ * UserLevelCountView
  *
- * @author f0rb on 2022-01-25
+ * @author f0rb on 2022-05-16
+ * @since 0.3.1
  */
 @Getter
 @Setter
-@MongoEntity(database = "doyto", collection = "c_inventory")
-public class QuantityByStatusView {
+@Table(name = "t_user")
+public class UserLevelCountView {
 
     @GroupBy
-    private String status;
+    private UserLevel userLevel;
+
+    @GroupBy
+    private Boolean valid;
 
     private Long count;
-
-    private Integer sumQty;
-
-    private List<ItemStatus> pushItemStatuses;
-
-    private List<String> addToSetItem;
 
 }

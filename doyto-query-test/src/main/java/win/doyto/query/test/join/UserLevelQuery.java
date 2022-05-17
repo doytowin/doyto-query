@@ -14,34 +14,30 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb.test.aggregate;
+package win.doyto.query.test.join;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.entity.MongoEntity;
-
-import java.util.List;
+import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.AggregationQuery;
+import win.doyto.query.core.PageQuery;
 
 /**
- * QuantityView
+ * UserJoinQuery
  *
- * @author f0rb on 2022-01-25
+ * @author f0rb on 2022-03-26
  */
 @Getter
 @Setter
-@MongoEntity(database = "doyto", collection = "c_inventory")
-public class QuantityByStatusView {
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserLevelQuery extends PageQuery implements AggregationQuery {
 
-    @GroupBy
-    private String status;
+    private UserLevelHaving having;
 
-    private Long count;
-
-    private Integer sumQty;
-
-    private List<ItemStatus> pushItemStatuses;
-
-    private List<String> addToSetItem;
+    private Boolean valid;
 
 }

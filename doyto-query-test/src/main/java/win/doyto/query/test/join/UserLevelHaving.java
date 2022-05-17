@@ -14,34 +14,23 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb.test.aggregate;
+package win.doyto.query.test.join;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.entity.MongoEntity;
-
-import java.util.List;
+import win.doyto.query.core.Having;
 
 /**
- * QuantityView
+ * UserLevelHaving
  *
- * @author f0rb on 2022-01-25
+ * @author f0rb on 2022-05-16
+ * @since 0.3.1
  */
 @Getter
 @Setter
-@MongoEntity(database = "doyto", collection = "c_inventory")
-public class QuantityByStatusView {
-
-    @GroupBy
-    private String status;
-
-    private Long count;
-
-    private Integer sumQty;
-
-    private List<ItemStatus> pushItemStatuses;
-
-    private List<String> addToSetItem;
-
+@Builder
+public class UserLevelHaving implements Having {
+    private Integer countGt;
+    private Integer countLt;
 }

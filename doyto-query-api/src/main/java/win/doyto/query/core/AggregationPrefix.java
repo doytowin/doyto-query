@@ -41,13 +41,19 @@ public enum AggregationPrefix {
     stdDev("stddev"),
     addToSet,
     push,
+    count {
+        @Override
+        public String resolveColumnName(String viewFieldName) {
+            return  viewFieldName.equals(name()) ?  "*" :super.resolveColumnName(viewFieldName);
+        }
+    },
 
     NONE(0);
 
     private static final Pattern SUFFIX_PTN = Pattern.compile(
             Arrays.stream(values())
                   .map(Enum::name)
-                  .collect(Collectors.joining("|", "^\\b(", ")(?=[A-Z])"))
+                  .collect(Collectors.joining("|", "^\\b(", ")(?=[A-Z])|count"))
     );
 
     private final int prefixLength;

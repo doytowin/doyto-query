@@ -21,7 +21,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.JoinQuery;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.mongodb.test.aggregate.QuantityView;
 
 /**
  * InventoryQuery
@@ -33,11 +35,15 @@ import win.doyto.query.core.PageQuery;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class InventoryQuery extends PageQuery {
+public class InventoryQuery extends PageQuery implements JoinQuery<QuantityView, String> {
 
     private String itemContain;
     private String status;
     private SizeQuery size;
     private ConditionOr condition;
 
+    @Override
+    public Class<QuantityView> getDomainClass() {
+        return QuantityView.class;
+    }
 }

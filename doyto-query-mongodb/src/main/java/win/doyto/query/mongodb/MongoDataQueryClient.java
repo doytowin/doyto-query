@@ -21,10 +21,7 @@ import com.mongodb.client.model.Aggregates;
 import lombok.AllArgsConstructor;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import win.doyto.query.core.DataQueryClient;
-import win.doyto.query.core.DoytoQuery;
-import win.doyto.query.core.Having;
-import win.doyto.query.core.JoinQuery;
+import win.doyto.query.core.*;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.mongodb.filter.MongoFilterBuilder;
 import win.doyto.query.util.BeanUtil;
@@ -48,20 +45,25 @@ public class MongoDataQueryClient implements DataQueryClient {
     private MongoClient mongoClient;
 
     @Override
-    public <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
+    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
     List<V> query(Q query, Class<V> viewClass) {
+        return commonQuery(query, viewClass);
+    }
+
+    private <V, Q extends DoytoQuery> ArrayList<V>
+    commonQuery(Q query, Class<V> viewClass) {
         AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
         List<Bson> list = new ArrayList<>();
+        list.add(Aggregates.match(MongoFilterBuilder.buildFilter(query)));
         list.add(md.getGroupBy());
-        if (query instanceof JoinQuery) {
-            Having having = ((JoinQuery<?, ?>) query).getHaving();
+        if (query instanceof AggregationQuery) {
+            Having having = ((AggregationQuery) query).getHaving();
             if (having != null) {
                 list.add(buildHaving(having));
             }
         }
         list.add(buildSort(query));
         list.add(md.getProject());
-        list.add(Aggregates.match(MongoFilterBuilder.buildFilter(query)));
         return md.getCollection().aggregate(list)
                  .map(document -> BeanUtil.parse(document.toJson(), viewClass))
                  .into(new ArrayList<>());
@@ -80,8 +82,13 @@ public class MongoDataQueryClient implements DataQueryClient {
     }
 
     @Override
-    public <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
+    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
     long count(Q query, Class<V> viewClass) {
         return 0;
+    }
+
+    @Override
+    public <V, Q extends AggregationQuery> List<V> aggregate(Q query, Class<V> viewClass) {
+        return commonQuery(query, viewClass);
     }
 }

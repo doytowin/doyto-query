@@ -111,7 +111,7 @@ public class ColumnUtil {
         return resolveColumn(field.getName());
     }
 
-    static String resolveColumn(String fieldName) {
+    public static String resolveColumn(String fieldName) {
         AggregationPrefix aggregationPrefix = AggregationPrefix.resolveField(fieldName);
         String columnName = aggregationPrefix.resolveColumnName(fieldName);
         columnName = convertColumn(columnName);
