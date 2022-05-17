@@ -66,7 +66,7 @@ public class BuildHelper {
         return buildCondition(WHERE, query, argList);
     }
 
-    public static String buildCondition(String prefix, DoytoQuery query, List<Object> argList) {
+    public static String buildCondition(String prefix, Object query, List<Object> argList) {
         Field[] fields = ColumnUtil.initFields(query.getClass(), FieldProcessor::init);
         StringJoiner whereJoiner = new StringJoiner(AND);
         for (Field field : fields) {
