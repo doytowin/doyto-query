@@ -21,7 +21,7 @@ package win.doyto.query.test;
  *
  * @author f0rb on 2019-05-29
  */
-@SuppressWarnings("java:S115")
+@SuppressWarnings({"java:S115", "unused"})
 public enum UserLevel {
     普通, 高级
 }
