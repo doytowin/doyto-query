@@ -103,5 +103,7 @@ class ColumnUtilTest {
         assertEquals("stddev_samp(salesAmount)", ColumnUtil.resolveColumn("stdDevSampSalesAmount"));
         assertEquals("addToSet(salesAmount)", ColumnUtil.resolveColumn("addToSetSalesAmount"));
         assertEquals("push(salesAmount)", ColumnUtil.resolveColumn("pushSalesAmount"));
+        assertEquals("count(*)", ColumnUtil.resolveColumn("count"));
+        assertEquals("count(id)", ColumnUtil.resolveColumn("countId"));
     }
 }

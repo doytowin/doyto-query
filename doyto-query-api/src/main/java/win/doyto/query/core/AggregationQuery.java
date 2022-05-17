@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test;
+package win.doyto.query.core;
 
 /**
- * TestEnum
+ * AggregationQuery
  *
- * @author f0rb on 2019-05-29
+ * @author f0rb on 2022-05-17
+ * @since 0.3.1
  */
-@SuppressWarnings({"java:S115", "unused"})
-public enum UserLevel {
-    普通, 高级
+public interface AggregationQuery extends DoytoQuery {
+
+    Having EMPTY_HAVING = new Having() {};
+
+    default Having getHaving() {
+        return EMPTY_HAVING;
+    }
+
 }

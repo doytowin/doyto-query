@@ -22,8 +22,10 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.core.JoinQuery;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.sql.JoinQueryBuilder;
 import win.doyto.query.sql.SqlAndArgs;
@@ -52,7 +54,7 @@ public class JdbcDataQueryClient implements DataQueryClient {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
+    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
     List<V> query(Q query, @NonNull Class<V> viewClass) {
         RowMapper<V> rowMapper = (RowMapper<V>) holder.computeIfAbsent(viewClass, BeanPropertyRowMapper::new);
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(query, viewClass);
@@ -62,10 +64,18 @@ public class JdbcDataQueryClient implements DataQueryClient {
     }
 
     @Override
-    public <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
+    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
     long count(Q query, Class<V> viewClass) {
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildCountAndArgs(query, viewClass);
         return databaseOperations.count(sqlAndArgs);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <V, Q extends AggregationQuery> List<V> aggregate(Q query, Class<V> viewClass) {
+        RowMapper<V> rowMapper = (RowMapper<V>) holder.computeIfAbsent(viewClass, BeanPropertyRowMapper::new);
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(query, viewClass);
+        return databaseOperations.query(sqlAndArgs, rowMapper);
     }
 
     private <V extends Persistable<I>, I extends Serializable, Q>
@@ -82,15 +92,12 @@ public class JdbcDataQueryClient implements DataQueryClient {
                   .forEach(joinField -> {
                       // The name of query field for subdomain should follow this format `<joinFieldName>Query`
                       String queryFieldName = joinField.getName() + "Query";
-                      Field queryField = CommonUtil.getField(query, queryFieldName);
-                      if (queryField != null) {
-                          Object subQuery = CommonUtil.readField(queryField, query);
-                          if (subQuery instanceof DoytoQuery) {
-                              if (Collection.class.isAssignableFrom(joinField.getType())) {
-                                  queryEntitiesForJoinField(joinField, mainEntities, mainIds, (DoytoQuery) subQuery, mainIdClass);
-                              } else {
-                                  queryEntityForJoinField(joinField, mainEntities, mainIds, (DoytoQuery) subQuery, mainIdClass);
-                              }
+                      Object subQuery = CommonUtil.readField(query, queryFieldName);
+                      if (subQuery instanceof DoytoQuery) {
+                          if (Collection.class.isAssignableFrom(joinField.getType())) {
+                              queryEntitiesForJoinField(joinField, mainEntities, mainIds, (DoytoQuery) subQuery, mainIdClass);
+                          } else {
+                              queryEntityForJoinField(joinField, mainEntities, mainIds, (DoytoQuery) subQuery, mainIdClass);
                           }
                       }
                   });

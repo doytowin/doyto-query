@@ -157,7 +157,7 @@ public class CommonUtil {
     }
 
     public static String toCamelCase(String input) {
-        String[] parts = input.split("_");
+        String[] parts = StringUtils.split(input, "_");
         StringBuilder result = new StringBuilder(parts[0]);
         for (int i = 1; i < parts.length; i++) {
             result.append(StringUtils.capitalize(parts[i]));

@@ -14,14 +14,30 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test;
+package win.doyto.query.test.join;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.AggregationQuery;
+import win.doyto.query.core.PageQuery;
 
 /**
- * TestEnum
+ * UserJoinQuery
  *
- * @author f0rb on 2019-05-29
+ * @author f0rb on 2022-03-26
  */
-@SuppressWarnings({"java:S115", "unused"})
-public enum UserLevel {
-    普通, 高级
+@Getter
+@Setter
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserLevelQuery extends PageQuery implements AggregationQuery {
+
+    private UserLevelHaving having;
+
+    private Boolean valid;
+
 }

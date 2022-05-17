@@ -113,6 +113,7 @@ enum SqlQuerySuffix {
         value = sqlQuerySuffix.valueProcessor.escapeValue(value);
         String columnName = StringUtils.removeEnd(fieldName, sqlQuerySuffix.name());
         columnName = ColumnUtil.convertColumn(columnName);
+        columnName = ColumnUtil.resolveColumn(columnName);
         return sqlQuerySuffix.buildColumnCondition(columnName, argList, value);
     }
 

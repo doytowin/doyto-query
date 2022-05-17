@@ -21,7 +21,9 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.core.Having;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.util.ColumnUtil;
 
@@ -53,13 +55,24 @@ public class JoinQueryBuilder {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             DoytoQuery query = SerializationUtils.clone(q);
             EntityMetadata entityMetadata = EntityMetadata.build(entityClass);
-            String sql = SELECT + entityMetadata.getColumnsForSelect() +
-                    FROM + entityMetadata.getTableName() +
-                    buildWhere(query, argList) +
-                    entityMetadata.getGroupBySql() +
-                    buildOrderBy(query);
-            return buildPaging(sql, query);
+            StringBuilder sqlBuilder = new StringBuilder()
+                    .append(SELECT).append(entityMetadata.getColumnsForSelect())
+                    .append(FROM).append(entityMetadata.getTableName())
+                    .append(buildWhere(query, argList))
+                    .append(entityMetadata.getGroupBySql());
+            if (query instanceof AggregationQuery) {
+                sqlBuilder.append(buildHaving(((AggregationQuery) query).getHaving(), argList));
+            }
+            sqlBuilder.append(buildOrderBy(query));
+            return buildPaging(sqlBuilder.toString(), query);
         });
+    }
+
+    private static String buildHaving(Having having, List<Object> argList) {
+        if (having == null) {
+            return EMPTY;
+        }
+        return buildCondition(" HAVING ", having, argList);
     }
 
     public static SqlAndArgs buildCountAndArgs(DoytoQuery q, Class<?> entityClass) {

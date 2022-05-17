@@ -66,6 +66,7 @@ class CommonUtilTest {
     static class PlaceHolderObject {
         private String part1;
 
+        @SuppressWarnings("unused")
         public String getPart2() {
             return "test2";
         }

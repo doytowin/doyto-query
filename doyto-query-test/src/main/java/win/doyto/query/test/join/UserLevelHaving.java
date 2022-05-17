@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test;
+package win.doyto.query.test.join;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import win.doyto.query.core.Having;
 
 /**
- * TestEnum
+ * UserLevelHaving
  *
- * @author f0rb on 2019-05-29
+ * @author f0rb on 2022-05-16
+ * @since 0.3.1
  */
-@SuppressWarnings({"java:S115", "unused"})
-public enum UserLevel {
-    普通, 高级
+@Getter
+@Setter
+@Builder
+public class UserLevelHaving implements Having {
+    private Integer countGt;
+    private Integer countLt;
 }

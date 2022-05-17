@@ -22,9 +22,7 @@ import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.AccessLevel;
@@ -55,31 +53,44 @@ public class BeanUtil {
     private static final ObjectMapper objectMapper2;
 
     static {
-        objectMapper = JsonMapper
-                .builder()
-                .enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES)
-                .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
-                .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                .build();
-
-        objectMapper.registerModule(new JavaTimeModule());
-        register(Point.class, new PointDeserializer());
-        register(GeoShape.class, new GeoShapeDeserializer());
-        register("org.bson.conversions.Bson", "win.doyto.query.mongodb.entity.BsonDeserializer");
-
+        objectMapper = configObjectMapper(new ObjectMapper());
         objectMapper2 = objectMapper
                 .copy()
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
+    public static ObjectMapper configObjectMapper(ObjectMapper objectMapper) {
+        objectMapper.enable(JsonParser.Feature.ALLOW_SINGLE_QUOTES)
+                    .enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES)
+                    .enable(JsonParser.Feature.IGNORE_UNDEFINED)
+                    .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+                    .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                    .registerModule(buildGeoModule())
+                    .registerModule(new JavaTimeModule());
+        SimpleModule bsonModule = buildBsonModule();
+        if (bsonModule != null) {
+            objectMapper.registerModule(bsonModule);
+        }
+        return objectMapper;
+    }
+
+    private static SimpleModule buildGeoModule() {
+        SimpleModule geoModule = new SimpleModule("Geo", new Version(1, 0, 0, "", "win.doyto", "doyto-query-geo"));
+        geoModule.addDeserializer(Point.class, new PointDeserializer());
+        geoModule.addDeserializer(GeoShape.class, new GeoShapeDeserializer());
+        return geoModule;
+    }
+
     @SuppressWarnings("unchecked")
-    private static <T> void register(String objectClassName, String serializerClassName) {
+    private static <T> SimpleModule buildBsonModule() {
         try {
-            Class<T> bson = (Class<T>) ClassUtils.getClass(objectClassName);
-            Class<JsonDeserializer<T>> bsonDeserializer = (Class<JsonDeserializer<T>>) ClassUtils.getClass(serializerClassName);
-            register(bson, ConstructorUtils.invokeConstructor(bsonDeserializer));
+            Class<T> bson = (Class<T>) ClassUtils.getClass("org.bson.conversions.Bson");
+            Class<JsonDeserializer<T>> bsonDeserializer = (Class<JsonDeserializer<T>>) ClassUtils.getClass("win.doyto.query.mongodb.entity.BsonDeserializer");
+            SimpleModule mod = new SimpleModule(bson.getName(), new Version(1, 0, 0, "", "win.doyto", "doyto-query-code"));
+            mod.addDeserializer(bson, ConstructorUtils.invokeConstructor(bsonDeserializer));
+            return mod;
         } catch (Exception e) {// ignore
+            return null;
         }
     }
 
@@ -151,9 +162,4 @@ public class BeanUtil {
         return (Class<I>) propertyDescriptor.getPropertyType();
     }
 
-    public static <T> void register(Class<T> clazz, JsonDeserializer<? extends T> jsonDeserializer) {
-        SimpleModule mod = new SimpleModule(clazz.getName(), new Version(1, 0, 0, "", "win.doyto", "doyto-query-code"));
-        mod.addDeserializer(clazz, jsonDeserializer);
-        objectMapper.registerModule(mod);
-    }
 }
