@@ -47,18 +47,23 @@ public class MongoDataQueryClient implements DataQueryClient {
     @Override
     public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
     List<V> query(Q query, Class<V> viewClass) {
+        return commonQuery(query, viewClass);
+    }
+
+    private <V, Q extends DoytoQuery> ArrayList<V>
+    commonQuery(Q query, Class<V> viewClass) {
         AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
         List<Bson> list = new ArrayList<>();
+        list.add(Aggregates.match(MongoFilterBuilder.buildFilter(query)));
         list.add(md.getGroupBy());
-        if (query instanceof JoinQuery) {
-            Having having = ((JoinQuery<?, ?>) query).getHaving();
+        if (query instanceof AggregationQuery) {
+            Having having = ((AggregationQuery) query).getHaving();
             if (having != null) {
                 list.add(buildHaving(having));
             }
         }
         list.add(buildSort(query));
         list.add(md.getProject());
-        list.add(Aggregates.match(MongoFilterBuilder.buildFilter(query)));
         return md.getCollection().aggregate(list)
                  .map(document -> BeanUtil.parse(document.toJson(), viewClass))
                  .into(new ArrayList<>());
@@ -84,6 +89,6 @@ public class MongoDataQueryClient implements DataQueryClient {
 
     @Override
     public <V, Q extends AggregationQuery> List<V> aggregate(Q query, Class<V> viewClass) {
-        return new ArrayList<>();
+        return commonQuery(query, viewClass);
     }
 }

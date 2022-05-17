@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.JoinQuery;
+import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.PageQuery;
 
 /**
@@ -34,14 +34,10 @@ import win.doyto.query.core.PageQuery;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuantityByStatusQuery extends PageQuery implements JoinQuery<QuantityByStatusView, String> {
+public class QuantityByStatusQuery extends PageQuery implements AggregationQuery {
 
     private QuantityHaving having;
 
     private String statusNot;
 
-    @Override
-    public Class<QuantityByStatusView> getDomainClass() {
-        return QuantityByStatusView.class;
-    }
 }

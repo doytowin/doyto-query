@@ -20,7 +20,6 @@ import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.entity.MongoEntity;
-import win.doyto.query.mongodb.entity.MongoPersistable;
 
 import java.util.List;
 
@@ -32,7 +31,7 @@ import java.util.List;
 @Getter
 @Setter
 @MongoEntity(database = "doyto", collection = "c_inventory")
-public class QuantityByStatusView extends MongoPersistable<String> {
+public class QuantityByStatusView {
 
     @GroupBy
     private String status;
