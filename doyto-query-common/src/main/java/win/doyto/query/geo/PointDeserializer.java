@@ -34,6 +34,10 @@ public class PointDeserializer extends JsonDeserializer<Point> {
     @Override
     public Point deserialize(JsonParser p, DeserializationContext context) throws IOException {
         TreeNode treeNode = p.readValueAsTree();
+        return resolvePoint(treeNode);
+    }
+
+    static Point resolvePoint(TreeNode treeNode) {
         double x;
         double y;
         if (treeNode.isArray()) {

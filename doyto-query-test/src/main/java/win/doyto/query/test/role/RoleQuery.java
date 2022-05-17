@@ -21,7 +21,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.core.JoinQuery;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.test.PermissionQuery;
+import win.doyto.query.test.UserQuery;
+import win.doyto.query.test.join.RoleView;
+
+import java.util.List;
 
 /**
  * UserQuery
@@ -33,8 +40,25 @@ import win.doyto.query.core.PageQuery;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class RoleQuery extends PageQuery {
+public class RoleQuery extends PageQuery implements JoinQuery<RoleView, Integer> {
+    private Integer id;
+    private List<Integer> idIn;
+
+    @DomainPath({"user", "role"})
+    private UserQuery user;
+
     private String roleName;
     private String roleNameLike;
     private Boolean valid;
+
+    private UserQuery usersQuery;
+
+    private PermissionQuery permsQuery;
+
+    private UserQuery createUserQuery;
+
+    @Override
+    public Class<RoleView> getDomainClass() {
+        return RoleView.class;
+    }
 }

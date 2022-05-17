@@ -1,0 +1,44 @@
+{
+  "properties": [
+    {
+      "name": "doyto.query.config.map-camel-case-to-underscore",
+      "type": "java.lang.Boolean",
+      "description": "True to map camelCase to under_score. Default: false."
+    },
+    {
+      "name": "doyto.query.config.ignore-cache-exception",
+      "type": "java.lang.Boolean",
+      "description": "Ignore cache operation exception, e.g. timeout. Default: true."
+    },
+    {
+      "name": "doyto.query.config.dialect",
+      "type": "java.lang.Class<? extends win.doyto.query.core.Dialect>",
+      "description": "Database dialect implementation."
+    },
+    {
+      "name": "doyto.query.config.start-page-number-from-one",
+      "type": "java.lang.Boolean",
+      "description": "Set start page number to 1. Default: true. Since 0.3.0."
+    },
+    {
+      "name": "doyto.query.config.table-format",
+      "type": "java.lang.String",
+      "description": "Table format for domain. Default: t_%s. Since 0.3.1."
+    },
+    {
+      "name": "doyto.query.config.join-table-format",
+      "type": "java.lang.String",
+      "description": "Join table format for multiple tables query. Default: j_%s_and_%s. Since 0.3.1."
+    },
+    {
+      "name": "doyto.query.config.join-id-format",
+      "type": "java.lang.String",
+      "description": "Join id format in join tables. Default: %s_id. Since 0.3.1."
+    },
+    {
+      "name": "doyto.query.caches",
+      "type": "java.util.List<String>",
+      "description": "Entity cache list."
+    }
+  ]
+}

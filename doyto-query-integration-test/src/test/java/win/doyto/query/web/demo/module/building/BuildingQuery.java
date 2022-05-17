@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.geo.GeoShape;
 
 import java.math.BigInteger;
 
@@ -37,4 +38,5 @@ import java.math.BigInteger;
 @AllArgsConstructor
 public class BuildingQuery extends PageQuery {
     private BigInteger id;
+    private GeoShape<?> locIntX;
 }

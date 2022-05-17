@@ -18,7 +18,7 @@ package win.doyto.query.web.demo.module.user;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.entity.CommonEntity;
+import win.doyto.query.entity.AbstractCommonEntity;
 import win.doyto.query.validation.CreateGroup;
 
 import javax.persistence.EnumType;
@@ -34,7 +34,7 @@ import javax.validation.constraints.NotNull;
 @Table(name = "t_user")
 @Getter
 @Setter
-public class UserEntity extends CommonEntity<Long, Long> {
+public class UserEntity extends AbstractCommonEntity<Long, Long> {
 
     @NotNull(groups = CreateGroup.class)
     private String username;

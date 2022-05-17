@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.transaction.annotation.Transactional;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.entity.UserIdProvider;
 import win.doyto.query.service.AssociationService;
 import win.doyto.query.service.UniqueKey;
@@ -36,6 +37,7 @@ import java.util.Set;
  */
 public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2> {
 
+    private static final GlobalConfiguration instance = GlobalConfiguration.instance();
     private DatabaseOperations databaseOperations;
     private final AssociationSqlBuilder<K1, K2> sqlBuilder;
     private final SingleColumnRowMapper<K1> k1RowMapper = new SingleColumnRowMapper<>();
@@ -44,12 +46,19 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
     @Autowired(required = false)
     private UserIdProvider<?> userIdProvider = () -> null;
 
-    public JdbcAssociationService(String tableName, String k1Column, String k2Columns) {
-        this.sqlBuilder = new AssociationSqlBuilder<>(tableName, k1Column, k2Columns);
+    public JdbcAssociationService(String domain1, String domain2) {
+        this.sqlBuilder = new AssociationSqlBuilder<>(
+                instance.formatJoinTable(domain1, domain2), instance.formatJoinId(domain1), instance.formatJoinId(domain2)
+        );
     }
 
-    public JdbcAssociationService(String tableName, String k1Column, String k2Column, String createUserColumn) {
-        this.sqlBuilder = new AssociationSqlBuilder<>(tableName, k1Column, k2Column, createUserColumn);
+    public JdbcAssociationService(String domain1, String domain2, String createUserColumn) {
+        this.sqlBuilder = new AssociationSqlBuilder<>(
+                instance.formatJoinTable(domain1, domain2),
+                instance.formatJoinId(domain1),
+                instance.formatJoinId(domain2),
+                createUserColumn
+        );
     }
 
     @Autowired

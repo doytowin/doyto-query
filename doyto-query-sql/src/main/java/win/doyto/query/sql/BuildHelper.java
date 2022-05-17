@@ -25,7 +25,9 @@ import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.regex.Pattern;
+import javax.persistence.Table;
 
 import static win.doyto.query.core.QuerySuffix.isValidValue;
 import static win.doyto.query.sql.Constant.*;
@@ -39,37 +41,57 @@ import static win.doyto.query.util.CommonUtil.readFieldGetter;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BuildHelper {
     private static final Pattern PTN_SORT = Pattern.compile(",(asc|desc)", Pattern.CASE_INSENSITIVE);
+    private static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
+
+    static String resolveTableName(Class<?> entityClass) {
+        String tableName;
+        Table table = entityClass.getAnnotation(Table.class);
+        if (table != null) {
+            tableName = table.name();
+        } else {
+            String entityName = entityClass.getSimpleName();
+            entityName = StringUtils.removeEnd(entityName, "Entity");
+            entityName = StringUtils.removeEnd(entityName, "View");
+            entityName = ColumnUtil.convertColumn(entityName);
+            tableName = String.format(TABLE_FORMAT, entityName);
+        }
+        return tableName;
+    }
 
     static String buildStart(String[] columns, String from) {
         return Constant.SELECT + StringUtils.join(columns, SEPARATOR) + FROM + from;
     }
 
     public static String buildWhere(DoytoQuery query, List<Object> argList) {
+        return buildCondition(WHERE, query, argList);
+    }
+
+    public static String buildCondition(String prefix, Object query, List<Object> argList) {
         Field[] fields = ColumnUtil.initFields(query.getClass(), FieldProcessor::init);
-        StringJoiner whereJoiner = new StringJoiner(" AND ", fields.length);
+        StringJoiner whereJoiner = new StringJoiner(AND);
         for (Field field : fields) {
             Object value = readFieldGetter(field, query);
             if (isValidValue(value, field)) {
                 String and = FieldProcessor.execute(field, argList, value);
                 if (and != null) {
-                    whereJoiner.append(and);
+                    whereJoiner.add(and);
                 }
             }
         }
-        if (whereJoiner.isEmpty()) {
-            return "";
+        if (whereJoiner.length() == 0) {
+            return EMPTY;
         }
-        return WHERE + whereJoiner;
+        return prefix + whereJoiner;
     }
 
-    static String buildOrderBy(DoytoQuery pageQuery) {
+    public static String buildOrderBy(DoytoQuery pageQuery) {
         if (pageQuery.getSort() == null) {
-            return "";
+            return EMPTY;
         }
         return " ORDER BY " + PTN_SORT.matcher(pageQuery.getSort()).replaceAll(" $1").replace(";", SEPARATOR);
     }
 
-    static String buildPaging(String sql, DoytoQuery pageQuery) {
+    public static String buildPaging(String sql, DoytoQuery pageQuery) {
         if (pageQuery.needPaging()) {
             int pageSize = pageQuery.getPageSize();
             int offset = GlobalConfiguration.calcOffset(pageQuery);

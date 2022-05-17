@@ -25,41 +25,23 @@ import java.util.Date;
 /**
  * CommonEntity
  *
+ * @param <I> the type of entity id
+ * @param <U> the type of user id
  * @author f0rb
+ * @deprecated due to {@link java.util.Date}. Switch to
+ * {@link AbstractEntity} or {@link AbstractCommonEntity}
  */
 @Getter
 @Setter
+@Deprecated
+@SuppressWarnings("java:S1133")
 public abstract class CommonEntity<I extends Serializable, U extends Serializable>
-        extends AbstractPersistable<I> implements Serializable, CreateUserAware<U>, UpdateUserAware<U> {
+        extends AbstractEntity<I, U, Date> {
 
-    private static final long serialVersionUID = 3904043862384245488L;
-    /**
-     * 创建者
-     */
-    private U createUserId;
+    private static final long serialVersionUID = 1;
 
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-
-    /**
-     * 更新者
-     */
-    private U updateUserId;
-
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
-
-    public void setCreateUserId(U createUserId) {
-        this.createUserId = createUserId;
-        this.createTime = new Date();
-    }
-
-    public void setUpdateUserId(U updateUserId) {
-        this.updateUserId = updateUserId;
-        this.setUpdateTime(new Date());
+    @Override
+    protected Date current() {
+        return new Date();
     }
 }

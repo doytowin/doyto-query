@@ -21,6 +21,7 @@ import java.io.Serializable;
  * DoytoQuery
  *
  * @author f0rb on 2021-12-02
+ * @since 0.3.0
  */
 public interface DoytoQuery extends Serializable {
 

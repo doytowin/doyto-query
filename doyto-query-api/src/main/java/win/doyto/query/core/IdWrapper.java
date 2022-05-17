@@ -23,6 +23,12 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+/**
+ * IdWrapper
+ *
+ * @author f0rb on 2020-02-07
+ * @since 0.3.0
+ */
 public interface IdWrapper<I extends Serializable> {
     I getId();
 

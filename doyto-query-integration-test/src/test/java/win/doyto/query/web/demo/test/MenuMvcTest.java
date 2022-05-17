@@ -42,7 +42,7 @@ class MenuMvcTest extends DemoApplicationTest {
     @Test
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     void pageMenu() throws Exception {
-        performAndExpectSuccess(get(menuUriWith("?pageNumber=1&pageSize=1")))
+        performAndExpectSuccess(get(menuUriWith("?page=1&size=1")))
                 .andExpect(jsonPath("$.data.list.size()").value(1))
                 .andExpect(jsonPath("$.data.total").value(2))
         ;
@@ -96,11 +96,11 @@ class MenuMvcTest extends DemoApplicationTest {
 
     @Test
     void deleteMenu() throws Exception {
-        performAndExpectFail(delete("/02/menu/0"), PresetErrorCode.ENTITY_NOT_FOUND);
+        performAndExpectFail(delete("/00/menu/0"), PresetErrorCode.ENTITY_NOT_FOUND);
 
-        performAndExpectSuccess(delete("/02/menu/1"))
+        performAndExpectSuccess(delete("/00/menu/1"))
                 .andExpect(jsonPath("$.data.id").value(1))
-                .andExpect(jsonPath("$.data.platform").value("02"));
+                .andExpect(jsonPath("$.data.platform").value("00"));
     }
 
     @Test

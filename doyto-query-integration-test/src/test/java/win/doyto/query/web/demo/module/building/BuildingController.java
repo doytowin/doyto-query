@@ -28,4 +28,5 @@ import win.doyto.query.web.controller.AbstractEIQController;
 @RestController
 @RequestMapping("building")
 public class BuildingController extends AbstractEIQController<BuildingEntity, String, BuildingQuery> {
+
 }

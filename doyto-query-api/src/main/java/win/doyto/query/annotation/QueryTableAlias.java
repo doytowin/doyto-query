@@ -26,6 +26,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * QueryTableAlias
  *
  * @author f0rb on 2019-06-11
+ * @since 0.1.4
  */
 @Target(FIELD)
 @Retention(RUNTIME)

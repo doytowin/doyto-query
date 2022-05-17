@@ -24,7 +24,6 @@ import lombok.experimental.SuperBuilder;
 import win.doyto.query.core.PageQuery;
 
 import java.util.Objects;
-import javax.persistence.Transient;
 
 /**
  * MenuQuery
@@ -38,7 +37,6 @@ import javax.persistence.Transient;
 @AllArgsConstructor
 public class MenuQuery extends PageQuery {
 
-    @Transient
     private String platform;
 
     private String menuNameLike;

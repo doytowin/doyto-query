@@ -33,4 +33,6 @@ import javax.persistence.Table;
 public class MaxIdView {
     @Column(name = "max(id)")
     private Integer maxId;
+
+    private Integer firstCreateUserId;
 }

@@ -16,11 +16,10 @@
 
 package win.doyto.query.memory;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import win.doyto.query.annotation.NestedQueries;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
@@ -28,11 +27,13 @@ import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.QuerySuffix;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.BeanUtil;
-import win.doyto.query.util.CommonUtil;
+import win.doyto.query.util.ColumnUtil;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -63,10 +64,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         tableMap.put(entityClass, entitiesMap);
 
         // init fields
-        Field[] allFields = FieldUtils.getAllFields(entityClass);
-        List<Field> tempFields = new ArrayList<>(allFields.length);
-        Arrays.stream(allFields).filter(CommonUtil::fieldFilter).forEachOrdered(tempFields::add);
-        fields = Collections.unmodifiableList(tempFields);
+        fields = ColumnUtil.getColumnFieldsFrom(entityClass);
         Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
         idClass = BeanUtil.getIdClass(entityClass);
         if (idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class)) {
@@ -74,7 +72,6 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         } else {
             idField = null;
         }
-
     }
 
     protected void generateNewId(E entity) {
@@ -179,7 +176,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     }
 
     private boolean supportFilter(Field field) {
-        return fieldFilter(field) && !field.isAnnotationPresent(NestedQueries.class);
+        return ColumnUtil.filterForEntity(field);
     }
 
     protected boolean shouldDiscard(E entity, String queryFieldName, Object queryFieldValue) {
@@ -225,7 +222,6 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     }
 
     @Override
-    @SneakyThrows
     public <V> List<V> queryColumns(Q q, Class<V> classV, String... columns) {
         List<E> entities = query(q);
         List<V> objects = new ArrayList<>(entities.size());
@@ -240,11 +236,11 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     }
 
     protected void doSort(List<E> queryList, String sort) {
-        String[] orders = sort.split(";");
+        String[] orders = StringUtils.split(sort, ";");
         for (int i = orders.length - 1; i >= 0; i--) {
             String order = orders[i];
             queryList.sort((o1, o2) -> {
-                String[] pd = order.split(",");
+                String[] pd = StringUtils.split(order, ",");
                 String property = toCamelCase(pd[0]);
                 Comparable<Object> c1 = (Comparable<Object>) readField(o1, property);
                 Object c2 = readField(o2, property);

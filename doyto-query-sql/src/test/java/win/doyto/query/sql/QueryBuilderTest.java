@@ -41,10 +41,8 @@ import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
 @ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
 class QueryBuilderTest {
 
-    private QueryBuilder testQueryBuilder = new QueryBuilder(TestEntity.class);
-    private QueryBuilder menuQueryBuilder = new QueryBuilder("menu", "id");
-    private QueryBuilder permQueryBuilder = new QueryBuilder("permission", "id");
-    private QueryBuilder dynamicQueryBuilder = new QueryBuilder(DynamicEntity.class);
+    private final QueryBuilder testQueryBuilder = new QueryBuilder(TestEntity.class);
+    private final QueryBuilder dynamicQueryBuilder = new QueryBuilder(DynamicEntity.class);
     private List<Object> argList;
 
     @BeforeEach
@@ -231,62 +229,6 @@ class QueryBuilderTest {
     }
 
     @Test
-    void buildSubQuery() {
-        TestQuery testQuery = TestQuery.builder().roleId(1).build();
-
-        assertEquals("SELECT * FROM user WHERE id IN (SELECT userId FROM t_user_and_role WHERE roleId = ?)",
-                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
-        assertThat(argList).containsExactly(1);
-    }
-
-
-    @Test
-    void buildNestedQuery() {
-        PermissionQuery permissionQuery = PermissionQuery.builder().userId(1).build();
-
-        assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN " +
-                         "(SELECT roleId FROM t_user_and_role WHERE userId = ?))",
-                     permQueryBuilder.buildSelectAndArgs(permissionQuery, argList));
-        assertThat(argList).containsExactly(1);
-    }
-
-    @Test
-    void buildNestedQuery2() {
-        MenuQuery menuQuery = MenuQuery.builder().userId(1).build();
-
-        String expected = "SELECT * FROM menu WHERE id IN (" +
-            "SELECT menuId FROM t_perm_and_menu pm inner join t_perm p on p.id = pm.perm_id and p.valid = true WHERE permId IN (" +
-            "SELECT permId FROM t_role_and_perm rp inner join t_role r on r.id = rp.role_id and r.valid = true WHERE roleId IN (" +
-            "SELECT roleId FROM t_user_and_role WHERE userId = ?)))";
-        assertEquals(expected, menuQueryBuilder.buildSelectAndArgs(menuQuery, argList));
-        assertThat(argList).containsExactly(1);
-    }
-
-    @Test
-    void build_boolean_field() {
-        MenuQuery menuQuery = MenuQuery.builder().onlyParent(true).build();
-
-        String expected = "SELECT * FROM menu WHERE id IN (SELECT parent_id FROM menu)";
-        assertEquals(expected, menuQueryBuilder.buildSelectAndArgs(menuQuery, argList));
-        assertThat(argList).isEmpty();
-    }
-
-    /**
-     * 感觉这个测试用例对TDD本身也是一个挑战,
-     * 随着设计的不断抽象, 小步迭代式开发也不那么直观了
-     * 必须要熟悉源码才能准确找到修改哪里
-     */
-    @Test
-    void buildSubQueryWithQueryObject() {
-        MenuQuery parentQuery = MenuQuery.builder().nameLike("test").valid(true).build();
-        MenuQuery menuQuery = MenuQuery.builder().parent(parentQuery).build();
-
-        String expected = "SELECT * FROM menu WHERE id IN (SELECT parent_id FROM menu WHERE name LIKE ? AND valid = ?)";
-        assertEquals(expected, menuQueryBuilder.buildSelectAndArgs(menuQuery, argList));
-        assertThat(argList).containsExactly("%test%", true);
-    }
-
-    @Test
     void buildSelectIdWithArgs() {
         TestQuery testQuery = TestQuery.builder().username("test").build();
 
@@ -316,10 +258,11 @@ class QueryBuilderTest {
 
     @Test
     void supportIsNull() {
-        MenuQuery byNoParent = MenuQuery.builder().parentIdNull(true).build();
+        TestQuery testQuery = TestQuery.builder().memoNull(true).build();
 
-        assertEquals("SELECT * FROM menu WHERE parentId IS NULL",
-                     menuQueryBuilder.buildSelectAndArgs(byNoParent, argList));
+        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
+
+        assertThat(sql).isEqualTo("SELECT * FROM user WHERE memo IS NULL");
         assertThat(argList).isEmpty();
     }
 
@@ -337,32 +280,6 @@ class QueryBuilderTest {
         // reset
         globalConfiguration.setDialect(origin);
 
-    }
-
-    @Test
-    void buildNestedQueryIgnoreWhere() {
-        PermissionQuery permissionQuery = PermissionQuery.builder().validUser(true).build();
-
-        assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN " +
-                         "(SELECT roleId FROM t_user_and_role ur inner join user u on u.id = ur.userId and u.valid = ?))",
-                     permQueryBuilder.buildSelectAndArgs(permissionQuery, argList));
-        assertThat(argList).containsExactly(true);
-    }
-
-    @Test
-    void buildSubQueryWithCollection() {
-        PermissionQuery permissionQuery = PermissionQuery.builder().roleIdIn(Arrays.asList(1, 2, 3)).build();
-        assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN (?, ?, ?))",
-                     permQueryBuilder.buildSelectAndArgs(permissionQuery, argList));
-        assertThat(argList).containsExactly(1, 2, 3);
-    }
-
-    @Test
-    void buildSubQueryWithNullCollection() {
-        PermissionQuery nullQuery = PermissionQuery.builder().roleIdIn(Arrays.asList()).build();
-        assertEquals("SELECT * FROM permission WHERE id IN (SELECT permId FROM t_role_and_perm WHERE roleId IN (null))",
-                     permQueryBuilder.buildSelectAndArgs(nullQuery, argList));
-        assertThat(argList).isEmpty();
     }
 
     @Test
@@ -465,4 +382,5 @@ class QueryBuilderTest {
         assertThat(sql).isEqualTo("SELECT * FROM user");
         assertThat(argList).containsExactly();
     }
+
 }

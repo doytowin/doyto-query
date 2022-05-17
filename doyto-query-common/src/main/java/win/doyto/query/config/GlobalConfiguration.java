@@ -37,6 +37,9 @@ public class GlobalConfiguration {
 
     private boolean mapCamelCaseToUnderscore;
     private boolean ignoreCacheException = true;
+    private String joinIdFormat = "%s_id";
+    private String tableFormat = "t_%s";
+    private String joinTableFormat = "j_%s_and_%s";
     private Dialect dialect = (sql, limit, offset) ->  sql + " LIMIT " + limit + " OFFSET " + offset;
     private Function<Integer, Integer> startPageNumberAdjuster;
 
@@ -69,4 +72,11 @@ public class GlobalConfiguration {
         return GlobalConfiguration.adjustStartPageNumber(query.getPageNumber()) * query.getPageSize();
     }
 
+    public String formatJoinId(String domain) {
+        return String.format(joinIdFormat, domain);
+    }
+
+    public String formatJoinTable(String domain1, String domain2) {
+        return String.format(joinTableFormat, domain1, domain2);
+    }
 }

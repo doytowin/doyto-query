@@ -66,8 +66,15 @@ class CommonUtilTest {
     static class PlaceHolderObject {
         private String part1;
 
+        @SuppressWarnings("unused")
         public String getPart2() {
             return "test2";
         }
+    }
+
+    @Test
+    void fixNPEInReadField() {
+        Object noop = readField(new PlaceHolderObject("test1"), "noop");
+        assertNull(noop);
     }
 }

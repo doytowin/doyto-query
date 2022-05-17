@@ -18,6 +18,7 @@ package win.doyto.query.jdbc;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -26,6 +27,7 @@ import win.doyto.query.sql.SqlAndArgs;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Map;
 
 /**
  * DbTemplate
@@ -35,7 +37,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DatabaseTemplate implements DatabaseOperations {
 
-    private static RowMapper<Long> countRowMapper = new SingleColumnRowMapper<>(Long.class);
+    private static final RowMapper<Long> countRowMapper = new SingleColumnRowMapper<>(Long.class);
     private final JdbcOperations jdbcOperations;
 
     @Override
@@ -44,10 +46,16 @@ public class DatabaseTemplate implements DatabaseOperations {
     }
 
     @Override
+    public <I, R> Map<I, List<R>> query(SqlAndArgs sqlAndArgs, ResultSetExtractor<Map<I, List<R>>> resultSetExtractor) {
+        return jdbcOperations.query(sqlAndArgs.getSql(), resultSetExtractor, sqlAndArgs.getArgs());
+    }
+
+    @Override
     public int update(SqlAndArgs sqlAndArgs) {
         return jdbcOperations.update(sqlAndArgs.getSql(), sqlAndArgs.getArgs());
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public long count(SqlAndArgs sqlAndArgs) {
         return jdbcOperations.queryForObject(sqlAndArgs.getSql(), countRowMapper, sqlAndArgs.getArgs());

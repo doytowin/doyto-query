@@ -21,5 +21,6 @@
 
     <springProfile name="test">
         <logger name="win.doyto.query" level="debug"/>
+        <logger name="org.mongodb.driver" level="debug"/>
     </springProfile>
 </configuration>

@@ -17,19 +17,18 @@
 package win.doyto.query.sql;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.ColumnUtil;
-import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javax.persistence.Id;
 
 import static win.doyto.query.sql.Constant.*;
@@ -45,7 +44,6 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
 
     private final Field idField;
     private final List<Field> fields;
-    private final int fieldsSize;
     private final String wildInsertValue;   // ?, ?, ?
     private final String insertColumns;
     private final String wildSetClause;     // column1 = ?, column2 = ?
@@ -55,37 +53,49 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
         idField = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0];
 
         // init fields
-        Field[] allFields = FieldUtils.getAllFields(entityClass);
-        List<Field> tempFields = new ArrayList<>(allFields.length);
-        Arrays.stream(allFields).filter(CommonUtil::fieldFilter).forEachOrdered(tempFields::add);
-        fields = Collections.unmodifiableList(tempFields);
-        fieldsSize = fields.size();
+        fields = ColumnUtil.getColumnFieldsFrom(entityClass);
 
-        wildInsertValue = wrapWithParenthesis(StringUtils.join(IntStream.range(0, fieldsSize).mapToObj(i -> PLACE_HOLDER).collect(Collectors.toList()), SEPARATOR));
+        wildInsertValue = fields.stream().map(f -> PLACE_HOLDER).collect(CLT_COMMA_WITH_PAREN);
 
         List<String> columnList = fields.stream().map(ColumnUtil::resolveColumn).collect(Collectors.toList());
-        insertColumns = wrapWithParenthesis(StringUtils.join(columnList, SEPARATOR));
-        wildSetClause = StringUtils.join(columnList.stream().map(c -> c + EQUALS_PLACE_HOLDER).collect(Collectors.toList()), SEPARATOR);
+        insertColumns = columnList.stream().collect(CLT_COMMA_WITH_PAREN);
+        wildSetClause = columnList.stream().map(c -> c + EQUAL_HOLDER).collect(Collectors.joining(SEPARATOR));
 
     }
 
-    private static String buildInsertSql(String table, String columns, String fields) {
-        StringJoiner insertSql = new StringJoiner(SPACE, 5);
-        insertSql.append("INSERT INTO");
-        insertSql.append(table);
-        insertSql.append(columns);
-        insertSql.append("VALUES");
-        insertSql.append(fields);
-        return insertSql.toString();
+    /**
+     * Build insert statements with table name, columns and fields' placeholders
+     * <p>
+     * Note: Make this method package private for DoytoQL project.
+     * </p>
+     *
+     * @return insert statement with placeholders
+     */
+    static String buildInsertSql(String table, String columns, String fields) {
+        return new StringBuilder(INSERT_INTO)
+                .append(table)
+                .append(SPACE)
+                .append(columns)
+                .append(VALUES)
+                .append(fields)
+                .toString();
     }
 
-    private static String buildUpdateSql(String tableName, String setClauses) {
-        StringJoiner updateSql = new StringJoiner(SPACE, 4);
-        updateSql.append("UPDATE");
-        updateSql.append(tableName);
-        updateSql.append("SET");
-        updateSql.append(setClauses);
-        return updateSql.toString();
+    /**
+     * Build update statements with table name, columns and fields' placeholders
+     * <p>
+     * Note: Make this method package private for DoytoQL project.
+     * </p>
+     *
+     * @return update statement with placeholders
+     */
+    static String buildUpdateSql(String tableName, String setClauses) {
+        return new StringJoiner(SPACE)
+                .add("UPDATE")
+                .add(tableName)
+                .add("SET")
+                .add(setClauses)
+                .toString();
     }
 
     private static void readValueToArgList(List<Field> fields, Object entity, List<Object> argList) {
@@ -96,7 +106,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
         for (Field field : fields) {
             Object o = readFieldGetter(field, entity);
             if (o != null) {
-                setClauses.append(ColumnUtil.resolveColumn(field) + EQUALS_PLACE_HOLDER);
+                setClauses.add(ColumnUtil.resolveColumn(field) + EQUAL_HOLDER);
                 argList.add(o);
             }
         }
@@ -145,7 +155,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
 
     private String buildPatchAndArgs(E entity, List<Object> argList) {
         String table = resolveTableName(entity);
-        StringJoiner setClauses = new StringJoiner(SEPARATOR, fieldsSize);
+        StringJoiner setClauses = new StringJoiner(SEPARATOR);
         readValueToArgList(fields, entity, argList, setClauses);
         String setClausesText = replaceHolderInString(entity, setClauses.toString());
         return buildUpdateSql(table, setClausesText);
@@ -183,19 +193,19 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
     @Override
     public SqlAndArgs buildDeleteAndArgs(DoytoQuery query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> buildDeleteFromTable(query.toIdWrapper())
-                + WHERE + idColumn + " IN "
-                + "(" + build(query, argList, idColumn) + ")");
+                + WHERE + idColumn + IN
+                + OP + build(query, argList, idColumn) + CP);
     }
 
     @Override
     public SqlAndArgs buildPatchAndArgs(E entity, DoytoQuery query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> buildPatchAndArgs(entity, argList)
-                + WHERE + idColumn + " IN "
-                + "(" + build(query, argList, idColumn) + ")");
+                + WHERE + idColumn + IN
+                + OP + build(query, argList, idColumn) + CP);
     }
 
     private String buildDeleteFromTable(IdWrapper<?> idWrapper) {
-        return "DELETE FROM " + resolveTableName(idWrapper);
+        return DELETE_FROM + resolveTableName(idWrapper);
     }
 
     private String resolveTableName(E e) {

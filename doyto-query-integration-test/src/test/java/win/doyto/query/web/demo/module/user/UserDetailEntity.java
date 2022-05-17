@@ -33,7 +33,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Entity
-@Table(name = "user_detail")
+@Table(name = "t_user_detail")
 public class UserDetailEntity implements Persistable<Long>, Serializable {
 
     @Id

@@ -33,9 +33,9 @@
     <url>https://query.doyto.win/</url>
 
     <properties>
-        <revision>0.3.0</revision>
+        <revision>0.3.1</revision>
 
-        <spring-boot.version>2.6.1</spring-boot.version>
+        <spring-boot.version>2.6.7</spring-boot.version>
 
         <sourceDirectory>src/main/java</sourceDirectory>
         <skipDeploy>false</skipDeploy>
@@ -46,10 +46,12 @@
 
     <modules>
         <module>doyto-query-test</module>
+        <module>doyto-query-geo</module>
         <module>doyto-query-api</module>
         <module>doyto-query-common</module>
         <module>doyto-query-memory</module>
         <module>doyto-query-sql</module>
+        <module>doyto-query-web-common</module>
         <module>doyto-query-web</module>
         <module>doyto-query-jdbc</module>
         <module>doyto-query-mongodb</module>

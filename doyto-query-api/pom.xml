@@ -38,6 +38,11 @@
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>win.doyto</groupId>
+            <artifactId>doyto-query-geo</artifactId>
+            <version>${revision}</version>
+        </dependency>
 
         <!-- OPTIONAL -->
         <dependency>

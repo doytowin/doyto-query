@@ -17,16 +17,11 @@
 package win.doyto.query.web;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -37,7 +32,8 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import win.doyto.query.web.component.InjectionBeanPostProcessor;
+import win.doyto.query.util.BeanUtil;
+import win.doyto.query.web.config.WebComponentsConfiguration;
 
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -49,7 +45,7 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author f0rb
  */
-@ComponentScan("win.doyto.query.web.component")
+@Import(WebComponentsConfiguration.class)
 public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
 
     @Override
@@ -97,35 +93,16 @@ public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
         converter.setDefaultCharset(StandardCharsets.UTF_8);
     }
 
-    public static ObjectMapper configObjectMapper(ObjectMapper objectMapper) {
-        return objectMapper
-                .enable(JsonParser.Feature.ALLOW_SINGLE_QUOTES)
-                .enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES)
-                .enable(JsonParser.Feature.IGNORE_UNDEFINED)
-                .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                .setTimeZone(TimeZone.getTimeZone("GMT+8")) // 中国的东8时区
-                .setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+    protected ObjectMapper configObjectMapper(ObjectMapper objectMapper) {
+        return BeanUtil.configObjectMapper(objectMapper)
+                       .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                       .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                       .setTimeZone(TimeZone.getTimeZone("GMT+8")) // 中国的东8时区
+                       .setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
     }
 
     @Bean
-    public BeanPostProcessor injectionBeanPostProcessor(AutowireCapableBeanFactory beanFactory) {
-        return new InjectionBeanPostProcessor(beanFactory);
-    }
-
-    @Bean
-    public ResourceBundleMessageSource resourceBundleMessageSource() {
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasenames("business", "error");
-        messageSource.setDefaultEncoding("UTF-8");
-        messageSource.setFallbackToSystemLocale(false);
-        return messageSource;
-    }
-
-    @Bean
-    public LocaleResolver localeResolver(){
+    public LocaleResolver localeResolver() {
         CookieLocaleResolver cookieLocaleResolver = new CookieLocaleResolver() {
             @Override
             protected Locale determineDefaultLocale(HttpServletRequest request) {
