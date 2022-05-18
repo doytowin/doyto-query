@@ -16,12 +16,10 @@
 
 package win.doyto.query.jdbc;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-import win.doyto.query.config.GlobalConfiguration;
 
 /**
  * JdbcApplicationTest
@@ -33,8 +31,4 @@ import win.doyto.query.config.GlobalConfiguration;
 @Rollback
 @SpringBootTest
 abstract class JdbcApplicationTest {
-    @BeforeAll
-    static void beforeAll() {
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
-    }
 }

@@ -19,7 +19,6 @@ package win.doyto.query.sql;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
-import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.test.DynamicEntity;
 import win.doyto.query.test.DynamicQuery;
 import win.doyto.query.test.TestEntity;
@@ -33,7 +32,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
-import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
 
 /**
  * CrudBuilderTest
@@ -64,14 +62,14 @@ class CrudBuilderTest {
     @Test
     void create() {
         SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildCreateAndArgs(new TestEntity());
-        String expected = "INSERT INTO user (username, password, mobile, email, nickname, userLevel, memo, valid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String expected = "INSERT INTO user (username, password, mobile, email, nickname, user_level, memo, valid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         assertEquals(expected, sqlAndArgs.getSql());
     }
 
     @Test
     void update() {
         SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildUpdateAndArgs(new TestEntity());
-        String expected = "UPDATE user SET username = ?, password = ?, mobile = ?, email = ?, nickname = ?, userLevel = ?, memo = ?, valid = ? WHERE id = ?";
+        String expected = "UPDATE user SET username = ?, password = ?, mobile = ?, email = ?, nickname = ?, user_level = ?, memo = ?, valid = ? WHERE id = ?";
         assertEquals(expected, sqlAndArgs.getSql());
     }
 
@@ -118,6 +116,7 @@ class CrudBuilderTest {
         assertEquals("user", CommonUtil.replaceHolderInString(new TestEntity(), TestEntity.TABLE));
 
     }
+
     @Test
     void fixReplaceTableNameWithTail() {
 
@@ -130,31 +129,24 @@ class CrudBuilderTest {
 
     }
 
-    @ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ_WRITE)
     @Test
     void supportMapFieldToUnderscore() {
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
+        TestEntity testEntity = new TestEntity();
+        testEntity.setId(1);
+        testEntity.setUserLevel(TestEnum.VIP);
+        testEntity.setValid(true);
 
-        try {
-            TestEntity testEntity = new TestEntity();
-            testEntity.setId(1);
-            testEntity.setUserLevel(TestEnum.VIP);
-            testEntity.setValid(true);
+        SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildPatchAndArgsWithId(testEntity);
 
-            SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildPatchAndArgsWithId(testEntity);
-
-            assertEquals("UPDATE user SET user_level = ?, valid = ? WHERE id = ?", sqlAndArgs.getSql());
-            assertThat(sqlAndArgs.getArgs()).containsExactly(0, true, 1);
-        } finally {
-            GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
-        }
+        assertEquals("UPDATE user SET user_level = ?, valid = ? WHERE id = ?", sqlAndArgs.getSql());
+        assertThat(sqlAndArgs.getArgs()).containsExactly(0, true, 1);
     }
 
     @Test
     void createMulti() {
         SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildCreateAndArgs(Arrays.asList(new TestEntity(), new TestEntity(), new TestEntity()));
         assertEquals(
-                "INSERT INTO user (username, password, mobile, email, nickname, userLevel, memo, valid) VALUES " +
+                "INSERT INTO user (username, password, mobile, email, nickname, user_level, memo, valid) VALUES " +
                         "(?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?)", sqlAndArgs.getSql());
     }
 
@@ -192,7 +184,7 @@ class CrudBuilderTest {
                 "mobile", "email"
         );
         assertEquals(
-                "INSERT INTO user (username, password, mobile, email, nickname, userLevel, memo, valid) VALUES " +
+                "INSERT INTO user (username, password, mobile, email, nickname, user_level, memo, valid) VALUES " +
                         "(?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?)" +
                         " ON DUPLICATE KEY UPDATE " +
                         "mobile = VALUES (mobile), " +

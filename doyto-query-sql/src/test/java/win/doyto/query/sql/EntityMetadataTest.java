@@ -48,7 +48,7 @@ class EntityMetadataTest {
     @Test
     void supportGroupByAnnotation() {
         EntityMetadata entityMetadata = new EntityMetadata(ScoreGroupByStudentView.class);
-        assertEquals("studentId, avg(score) AS avgScore", entityMetadata.getColumnsForSelect());
+        assertEquals("student_id AS studentId, avg(score) AS avgScore", entityMetadata.getColumnsForSelect());
         assertEquals(" GROUP BY studentId", entityMetadata.getGroupBySql());
     }
 }
