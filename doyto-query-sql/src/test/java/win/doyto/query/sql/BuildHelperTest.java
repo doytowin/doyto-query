@@ -20,6 +20,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.test.TestQuery;
 
+import java.util.ArrayList;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -55,5 +58,12 @@ class BuildHelperTest {
     void resolveTableNameForViewWithoutAnnotationTable() {
         String tableName = BuildHelper.resolveTableName(UserDetailView.class);
         assertEquals("t_user_detail", tableName);
+    }
+
+    @Test
+    void treatAsNormalFieldWhenAnnotatedByGroupBy() {
+        TestHaving having = TestHaving.builder().firstName("test").firstFirstName("test").build();
+        String havingClause = BuildHelper.buildCondition(" HAVING ", having, new ArrayList<>());
+        assertThat(havingClause).isEqualTo(" HAVING first_name = ? AND first(first_name) = ?");
     }
 }

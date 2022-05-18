@@ -112,8 +112,12 @@ enum SqlQuerySuffix {
         SqlQuerySuffix sqlQuerySuffix = resolve(fieldName);
         value = sqlQuerySuffix.valueProcessor.escapeValue(value);
         String columnName = StringUtils.removeEnd(fieldName, sqlQuerySuffix.name());
-        columnName = ColumnUtil.convertColumn(columnName);
-        columnName = ColumnUtil.resolveColumn(columnName);
+        if (columnName.startsWith(HAVING_PREFIX)) {
+            columnName = columnName.substring(HAVING_PREFIX.length());
+            columnName = ColumnUtil.resolveColumn(columnName);
+        } else {
+            columnName = ColumnUtil.convertColumn(columnName);
+        }
         return sqlQuerySuffix.buildColumnCondition(columnName, argList, value);
     }
 

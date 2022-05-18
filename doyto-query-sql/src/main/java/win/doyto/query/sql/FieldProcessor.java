@@ -20,8 +20,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.annotation.QueryField;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.core.Having;
 import win.doyto.query.core.Or;
 import win.doyto.query.core.QuerySuffix;
 import win.doyto.query.util.ColumnUtil;
@@ -62,6 +64,8 @@ final class FieldProcessor {
             }
         } else if (field.isAnnotationPresent(QueryField.class)) {
             processor = initFieldAnnotatedByQueryField(field);
+        } else if (Having.class.isAssignableFrom(field.getDeclaringClass())) {
+            processor = initHavingField(field);
         } else {
             processor = initCommonField(field);
         }
@@ -85,6 +89,14 @@ final class FieldProcessor {
 
     private static Processor initCommonField(Field field) {
         String fieldName = field.getName();
+        return chooseProcessorForFieldWithOr(fieldName);
+    }
+
+    private static Processor initHavingField(Field field) {
+        String fieldName = field.getName();
+        if (!field.isAnnotationPresent(GroupBy.class)) {
+             fieldName = HAVING_PREFIX + field.getName();
+        }
         return chooseProcessorForFieldWithOr(fieldName);
     }
 
