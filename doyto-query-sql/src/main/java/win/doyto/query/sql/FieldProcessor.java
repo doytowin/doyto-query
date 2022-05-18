@@ -21,7 +21,6 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.QueryField;
-import win.doyto.query.annotation.QueryTableAlias;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Or;
 import win.doyto.query.core.QuerySuffix;
@@ -61,8 +60,6 @@ final class FieldProcessor {
             } else {
                 processor = (argList, value) -> null;
             }
-        } else if (field.isAnnotationPresent(QueryTableAlias.class)) {
-            processor = initFieldAnnotatedByQueryTableAlias(field);
         } else if (field.isAnnotationPresent(QueryField.class)) {
             processor = initFieldAnnotatedByQueryField(field);
         } else {
@@ -89,13 +86,6 @@ final class FieldProcessor {
     private static Processor initCommonField(Field field) {
         String fieldName = field.getName();
         return chooseProcessorForFieldWithOr(fieldName);
-    }
-
-    private static Processor initFieldAnnotatedByQueryTableAlias(Field field) {
-        String fieldName = field.getName();
-        String tableAlias = field.getAnnotation(QueryTableAlias.class).value();
-        String fieldNameWithAlias = tableAlias + "." + fieldName;
-        return chooseProcessorForFieldWithOr(fieldNameWithAlias);
     }
 
     private static Processor chooseProcessorForFieldWithOr(String fieldName) {
