@@ -28,7 +28,6 @@
 
     <artifactId>doyto-query-mongodb</artifactId>
     <name>doyto-query-mongodb</name>
-    <version>${revision}-ALPHA</version>
 
     <dependencies>
 

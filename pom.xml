@@ -33,7 +33,7 @@
     <url>https://query.doyto.win/</url>
 
     <properties>
-        <revision>1.0.0-SNAPSHOT</revision>
+        <revision>1.0.0-ALPHA</revision>
 
         <spring-boot.version>2.6.7</spring-boot.version>
 

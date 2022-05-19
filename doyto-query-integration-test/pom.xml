@@ -53,7 +53,7 @@
         <dependency>
             <groupId>win.doyto</groupId>
             <artifactId>doyto-query-mongodb</artifactId>
-            <version>${revision}-ALPHA</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
