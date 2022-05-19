@@ -18,9 +18,9 @@ package win.doyto.query.test.join;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.Entity;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 
 /**
  * MaxIdView

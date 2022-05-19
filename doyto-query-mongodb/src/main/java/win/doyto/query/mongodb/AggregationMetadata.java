@@ -24,7 +24,6 @@ import com.mongodb.client.model.BsonField;
 import lombok.Getter;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import win.doyto.query.annotation.Entity;
 import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.mongodb.filter.MongoGroupBuilder;
 import win.doyto.query.util.ColumnUtil;
@@ -32,6 +31,7 @@ import win.doyto.query.util.ColumnUtil;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.persistence.Entity;
 
 import static win.doyto.query.mongodb.MongoDataAccess.MONGO_ID;
 

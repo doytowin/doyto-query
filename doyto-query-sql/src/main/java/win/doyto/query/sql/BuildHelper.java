@@ -19,7 +19,6 @@ package win.doyto.query.sql;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import win.doyto.query.annotation.Entity;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.ColumnUtil;
@@ -28,6 +27,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
+import javax.persistence.Entity;
 
 import static win.doyto.query.core.QuerySuffix.isValidValue;
 import static win.doyto.query.sql.Constant.*;

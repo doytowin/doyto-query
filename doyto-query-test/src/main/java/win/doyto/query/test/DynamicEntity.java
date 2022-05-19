@@ -18,12 +18,12 @@ package win.doyto.query.test;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.Entity;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.entity.AbstractPersistable;
 
 import java.util.Date;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 /**

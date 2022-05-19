@@ -18,11 +18,11 @@ package win.doyto.query.mongodb.test.aggregate;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.Entity;
-import win.doyto.query.annotation.EntityType;
 import win.doyto.query.annotation.GroupBy;
 
 import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.EntityType;
 
 /**
  * QuantityView

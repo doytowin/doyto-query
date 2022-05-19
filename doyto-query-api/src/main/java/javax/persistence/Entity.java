@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.annotation;
+package javax.persistence;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

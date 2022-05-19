@@ -21,9 +21,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.bson.types.ObjectId;
-import win.doyto.query.annotation.Entity;
-import win.doyto.query.annotation.EntityType;
 import win.doyto.query.mongodb.entity.MongoPersistable;
+
+import javax.persistence.Entity;
+import javax.persistence.EntityType;
 
 /**
  * SizeEntity
