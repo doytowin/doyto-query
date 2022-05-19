@@ -30,13 +30,14 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.*;
+import win.doyto.query.annotation.Entity;
+import win.doyto.query.annotation.EntityType;
 import win.doyto.query.cache.CacheInvoker;
 import win.doyto.query.cache.CacheWrapper;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.entity.EntityAspect;
-import win.doyto.query.entity.MongoEntity;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.entity.UserIdProvider;
 import win.doyto.query.memory.MemoryDataAccess;
@@ -92,7 +93,12 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         ClassLoader classLoader = beanFactory.getClass().getClassLoader();
         try {
-            if (entityClass.isAnnotationPresent(MongoEntity.class)) {
+            EntityType entityType = EntityType.RELATIONAL;
+            Entity entity = entityClass.getAnnotation(Entity.class);
+            if (entity != null) {
+                entityType = entity.type();
+            }
+            if (entityType == EntityType.MONGO_DB) {
                 Class<?> mongoDataAccessClass = classLoader.loadClass("win.doyto.query.mongodb.MongoDataAccess");
                 tryCreateEmbeddedMongoServerFirst(beanFactory);
                 Object mongoClient = beanFactory.getBean("mongo");

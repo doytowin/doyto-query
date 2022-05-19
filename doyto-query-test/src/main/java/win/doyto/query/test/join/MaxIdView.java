@@ -18,9 +18,9 @@ package win.doyto.query.test.join;
 
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.annotation.Entity;
 
 import javax.persistence.Column;
-import javax.persistence.Table;
 
 /**
  * MaxIdView
@@ -29,7 +29,7 @@ import javax.persistence.Table;
  */
 @Getter
 @Setter
-@Table(name = "user")
+@Entity(name = "user")
 public class MaxIdView {
     @Column(name = "max(id)")
     private Integer maxId;

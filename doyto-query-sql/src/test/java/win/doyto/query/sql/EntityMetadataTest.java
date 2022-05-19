@@ -20,9 +20,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
+import win.doyto.query.annotation.Entity;
 import win.doyto.query.annotation.GroupBy;
-
-import javax.persistence.Table;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
@@ -37,7 +36,7 @@ class EntityMetadataTest {
 
     @Getter
     @Setter
-    @Table(name = "t_score")
+    @Entity(name = "t_score")
     private static class ScoreGroupByStudentView {
         @GroupBy
         private Long studentId;

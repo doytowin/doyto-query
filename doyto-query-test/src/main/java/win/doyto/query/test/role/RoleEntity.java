@@ -28,7 +28,6 @@ import javax.validation.constraints.NotNull;
  *
  * @author f0rb on 2020-04-01
  */
-// @Table(name = "t_role")
 @Getter
 @Setter
 public class RoleEntity extends AbstractCommonEntity<Integer, Long> {

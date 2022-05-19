@@ -18,12 +18,12 @@ package win.doyto.query.test;
 
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.annotation.Entity;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.entity.AbstractPersistable;
 
 import java.util.Date;
 import javax.persistence.Column;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
@@ -33,7 +33,7 @@ import javax.persistence.Transient;
  */
 @Getter
 @Setter
-@Table(name = DynamicEntity.TABLE)
+@Entity(name = DynamicEntity.TABLE)
 public class DynamicEntity extends AbstractPersistable<Integer> {
     public static final String TABLE = "t_dynamic_${user}_${project}";
 

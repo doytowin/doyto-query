@@ -28,11 +28,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+import win.doyto.query.annotation.Entity;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
-import win.doyto.query.entity.MongoEntity;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.mongodb.entity.ObjectIdAware;
 import win.doyto.query.mongodb.entity.ObjectIdMapper;
@@ -62,9 +62,9 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
 
     public MongoDataAccess(MongoClient mongoClient, Class<E> entityClass) {
         this.entityClass = entityClass;
-        MongoEntity table = entityClass.getAnnotation(MongoEntity.class);
-        MongoDatabase database = mongoClient.getDatabase(table.database());
-        this.collection = database.getCollection(table.collection());
+        Entity entity = entityClass.getAnnotation(Entity.class);
+        MongoDatabase database = mongoClient.getDatabase(entity.database());
+        this.collection = database.getCollection(entity.name());
     }
 
     private void setObjectId(E entity, Document document) {

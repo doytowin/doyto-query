@@ -18,10 +18,10 @@ package win.doyto.query.util.menu;
 
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.annotation.Entity;
 import win.doyto.query.entity.AbstractPersistable;
 
 import java.util.Objects;
-import javax.persistence.Table;
 
 /**
  * MenuEntity
@@ -30,7 +30,7 @@ import javax.persistence.Table;
  */
 @Getter
 @Setter
-@Table(name = "t_menu${platform}")
+@Entity(name = "t_menu${platform}")
 public class MenuEntity extends AbstractPersistable<Integer> {
 
     private String platform;

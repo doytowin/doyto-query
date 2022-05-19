@@ -22,7 +22,6 @@ import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
 /**
  * UserDetailEntity
@@ -31,7 +30,6 @@ import javax.persistence.Table;
  */
 @Getter
 @Setter
-@Table(name = "t_user_detail")
 public class UserDetailEntity implements Persistable<Long>, Serializable {
 
     @Id

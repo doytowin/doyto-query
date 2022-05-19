@@ -14,25 +14,14 @@
  * limitations under the License.
  */
 
-package win.doyto.query.entity;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+package win.doyto.query.annotation;
 
 /**
- * MongoEntity
+ * EntityType
  *
- * @author f0rb on 2021-12-04
+ * @author f0rb on 2022-05-19
  */
-@Target(TYPE)
-@Retention(RUNTIME)
-public @interface MongoEntity {
-
-    String database();
-
-    String collection();
-
+public enum EntityType {
+    RELATIONAL,
+    MONGO_DB
 }
