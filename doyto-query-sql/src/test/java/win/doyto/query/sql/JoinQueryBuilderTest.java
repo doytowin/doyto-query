@@ -16,8 +16,11 @@
 
 package win.doyto.query.sql;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.PermissionQuery;
 import win.doyto.query.test.UserQuery;
@@ -28,15 +31,24 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * JoinQueryBuilderTest
  *
  * @author f0rb on 2021-12-11
  */
-@ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
+@ResourceLock(value = "mapCamelCaseToUnderscore")
 class JoinQueryBuilderTest {
+    @BeforeEach
+    void setUp() {
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
+    }
+
+    @AfterEach
+    void tearDown() {
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
+    }
+
     @Test
     void supportAggregateQuery() {
         SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(new PageQuery(), MaxIdView.class);

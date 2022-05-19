@@ -16,6 +16,7 @@
 
 package win.doyto.query.sql;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
@@ -30,15 +31,13 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
-import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
 
 /**
  * QueryBuilderTest
  *
  * @author f0rb 2019-05-12
  */
-@ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
+@ResourceLock(value = "mapCamelCaseToUnderscore")
 class QueryBuilderTest {
 
     private final QueryBuilder testQueryBuilder = new QueryBuilder(TestEntity.class);
@@ -47,8 +46,14 @@ class QueryBuilderTest {
 
     @BeforeEach
     void setUp() {
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
         GlobalConfiguration.instance().setDialect(new SimpleDialect());
         argList = new ArrayList<>();
+    }
+
+    @AfterEach
+    void tearDown() {
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
     }
 
     @Test
@@ -213,7 +218,6 @@ class QueryBuilderTest {
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
     }
 
-    @ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ_WRITE)
     @Test
     void supportMapFieldToUnderscore() {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);

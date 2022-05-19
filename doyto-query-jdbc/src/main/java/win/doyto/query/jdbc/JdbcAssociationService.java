@@ -21,9 +21,9 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.core.AssociationService;
+import win.doyto.query.core.UniqueKey;
 import win.doyto.query.entity.UserIdProvider;
-import win.doyto.query.service.AssociationService;
-import win.doyto.query.service.UniqueKey;
 import win.doyto.query.sql.AssociationSqlBuilder;
 import win.doyto.query.sql.SqlAndArgs;
 

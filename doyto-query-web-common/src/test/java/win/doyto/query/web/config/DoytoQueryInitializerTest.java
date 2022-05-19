@@ -16,7 +16,6 @@
 
 package win.doyto.query.web.config;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
@@ -53,16 +52,11 @@ class DoytoQueryInitializerTest {
         doytoQueryInitializer.initialize(context);
     }
 
-    @AfterEach
-    void tearDown() {
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
-    }
-
     @ResourceLock(value = "ignoreCacheException", mode = READ)
     @Test
     void initialize() {
         GlobalConfiguration globalConfiguration = GlobalConfiguration.instance();
-        assertFalse(globalConfiguration.isMapCamelCaseToUnderscore());
+        assertTrue(globalConfiguration.isMapCamelCaseToUnderscore());
         assertTrue(globalConfiguration.isIgnoreCacheException());
         assertTrue(globalConfiguration.getDialect() instanceof Dialect);
         assertEquals("sys_%s", globalConfiguration.getTableFormat());

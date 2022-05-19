@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-package win.doyto.query.entity;
+package win.doyto.query.core;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * MongoEntity
+ * UniqueKey
  *
- * @author f0rb on 2021-12-04
+ * @author f0rb on 2021-12-17
  */
-@Target(TYPE)
-@Retention(RUNTIME)
-public @interface MongoEntity {
+@Getter
+@AllArgsConstructor
+@EqualsAndHashCode
+public class UniqueKey<K1, K2> {
+    private K1 k1;
+    private K2 k2;
 
-    String database();
-
-    String collection();
-
+    public List<Object> toList() {
+        return Arrays.asList(k1, k2);
+    }
 }

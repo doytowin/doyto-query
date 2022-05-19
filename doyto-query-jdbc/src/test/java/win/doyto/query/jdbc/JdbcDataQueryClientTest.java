@@ -21,7 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
-import win.doyto.query.service.PageList;
+import win.doyto.query.core.PageList;
 import win.doyto.query.test.MenuQuery;
 import win.doyto.query.test.PermissionQuery;
 import win.doyto.query.test.UserLevel;

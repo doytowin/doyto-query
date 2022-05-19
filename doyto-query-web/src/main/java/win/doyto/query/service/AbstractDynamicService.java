@@ -36,7 +36,6 @@ import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.entity.EntityAspect;
-import win.doyto.query.entity.MongoEntity;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.entity.UserIdProvider;
 import win.doyto.query.memory.MemoryDataAccess;
@@ -48,6 +47,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
+import javax.persistence.Entity;
+import javax.persistence.EntityType;
 
 /**
  * AbstractDynamicService
@@ -92,7 +93,12 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         ClassLoader classLoader = beanFactory.getClass().getClassLoader();
         try {
-            if (entityClass.isAnnotationPresent(MongoEntity.class)) {
+            EntityType entityType = EntityType.RELATIONAL;
+            Entity entity = entityClass.getAnnotation(Entity.class);
+            if (entity != null) {
+                entityType = entity.type();
+            }
+            if (entityType == EntityType.MONGO_DB) {
                 Class<?> mongoDataAccessClass = classLoader.loadClass("win.doyto.query.mongodb.MongoDataAccess");
                 tryCreateEmbeddedMongoServerFirst(beanFactory);
                 Object mongoClient = beanFactory.getBean("mongo");

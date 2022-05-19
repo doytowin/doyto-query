@@ -25,13 +25,13 @@ import lombok.Getter;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.entity.MongoEntity;
 import win.doyto.query.mongodb.filter.MongoGroupBuilder;
 import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.persistence.Entity;
 
 import static win.doyto.query.mongodb.MongoDataAccess.MONGO_ID;
 
@@ -49,7 +49,7 @@ public class AggregationMetadata {
     private final Bson project;
 
     private <V> AggregationMetadata(Class<V> viewClass, MongoClient mongoClient) {
-        this.collection = getCollection(mongoClient, viewClass.getAnnotation(MongoEntity.class));
+        this.collection = getCollection(mongoClient, viewClass.getAnnotation(Entity.class));
         this.groupBy = buildGroupBy(viewClass);
         this.project = buildProject(viewClass);
     }
@@ -58,9 +58,9 @@ public class AggregationMetadata {
         return holder.computeIfAbsent(viewClass, clazz -> new AggregationMetadata(clazz, mongoClient));
     }
 
-    private static MongoCollection<Document> getCollection(MongoClient mongoClient, MongoEntity mongoEntity) {
+    private static MongoCollection<Document> getCollection(MongoClient mongoClient, Entity mongoEntity) {
         MongoDatabase database = mongoClient.getDatabase(mongoEntity.database());
-        return database.getCollection(mongoEntity.collection());
+        return database.getCollection(mongoEntity.name());
     }
 
     private static <V> Bson buildGroupBy(Class<V> viewClass) {

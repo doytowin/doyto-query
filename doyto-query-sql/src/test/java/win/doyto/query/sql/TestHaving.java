@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-package win.doyto.query.annotation;
+package win.doyto.query.sql;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import javax.persistence.EnumType;
+import lombok.*;
+import win.doyto.query.annotation.GroupBy;
+import win.doyto.query.core.Having;
 
 /**
- * Enumerated
+ * TestHaving
  *
- * @author f0rb on 2019-07-11
- * @since 0.1.6
+ * @author f0rb on 2022-05-18
+ * @since 0.3.1
  */
-@Target({ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Enumerated {
-    EnumType value() default EnumType.ORDINAL;
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class TestHaving implements Having {
+    @GroupBy
+    private String firstName;
+    private String firstFirstName;
 }

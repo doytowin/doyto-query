@@ -19,7 +19,7 @@ package win.doyto.query.web.demo.test;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import win.doyto.query.service.PageList;
+import win.doyto.query.core.PageList;
 import win.doyto.query.test.role.RoleEntity;
 import win.doyto.query.test.role.RoleQuery;
 import win.doyto.query.util.BeanUtil;

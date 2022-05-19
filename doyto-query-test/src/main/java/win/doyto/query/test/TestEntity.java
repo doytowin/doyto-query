@@ -25,7 +25,6 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
@@ -35,8 +34,7 @@ import javax.persistence.Transient;
  */
 @Getter
 @Setter
-@Entity
-@Table(name = TestEntity.TABLE)
+@Entity(name = TestEntity.TABLE)
 public class TestEntity extends AbstractPersistable<Integer> {
     public static final String TABLE = "user";
     @Column

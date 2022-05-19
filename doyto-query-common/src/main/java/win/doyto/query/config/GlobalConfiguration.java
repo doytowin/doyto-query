@@ -35,7 +35,7 @@ import java.util.function.Function;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GlobalConfiguration {
 
-    private boolean mapCamelCaseToUnderscore;
+    private boolean mapCamelCaseToUnderscore = true;
     private boolean ignoreCacheException = true;
     private String joinIdFormat = "%s_id";
     private String tableFormat = "t_%s";

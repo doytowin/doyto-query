@@ -18,7 +18,7 @@ package win.doyto.query.sql;
 
 import lombok.Getter;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.service.UniqueKey;
+import win.doyto.query.core.UniqueKey;
 
 import java.util.Set;
 import java.util.stream.Collectors;

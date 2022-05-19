@@ -17,11 +17,8 @@
 package win.doyto.query.sql;
 
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
-import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.test.MenuQuery;
 import win.doyto.query.test.PermissionQuery;
 import win.doyto.query.test.UserLevel;
@@ -44,16 +41,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DomainRouteProcessorTest {
 
     List<Object> argList = new ArrayList<>();
-
-    @BeforeEach
-    void setUp() {
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
-    }
-
-    @AfterEach
-    void tearDown() {
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
-    }
 
     @SneakyThrows
     private static DomainPathProcessor buildProcessor(Class<?> clazz, String fieldName) {
