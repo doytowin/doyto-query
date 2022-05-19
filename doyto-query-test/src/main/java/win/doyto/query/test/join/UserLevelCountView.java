@@ -21,7 +21,7 @@ import lombok.Setter;
 import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.test.UserLevel;
 
-import javax.persistence.Table;
+import javax.persistence.Entity;
 
 /**
  * UserLevelCountView
@@ -31,7 +31,7 @@ import javax.persistence.Table;
  */
 @Getter
 @Setter
-@Table(name = "t_user")
+@Entity(name = "t_user")
 public class UserLevelCountView {
 
     @GroupBy

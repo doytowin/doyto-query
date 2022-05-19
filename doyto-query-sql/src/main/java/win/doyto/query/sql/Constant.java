@@ -49,4 +49,5 @@ interface Constant {
     String CP = ")";
     String INSERT_INTO = "INSERT INTO ";
     String VALUES = " VALUES ";
+    String HAVING_PREFIX = "_having_";
 }

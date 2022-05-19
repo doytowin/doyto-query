@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.annotation.GroupBy;
 
-import javax.persistence.Table;
+import javax.persistence.Entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
@@ -37,7 +37,7 @@ class EntityMetadataTest {
 
     @Getter
     @Setter
-    @Table(name = "t_score")
+    @Entity(name = "t_score")
     private static class ScoreGroupByStudentView {
         @GroupBy
         private Long studentId;
@@ -48,7 +48,7 @@ class EntityMetadataTest {
     @Test
     void supportGroupByAnnotation() {
         EntityMetadata entityMetadata = new EntityMetadata(ScoreGroupByStudentView.class);
-        assertEquals("studentId, avg(score) AS avgScore", entityMetadata.getColumnsForSelect());
+        assertEquals("student_id AS studentId, avg(score) AS avgScore", entityMetadata.getColumnsForSelect());
         assertEquals(" GROUP BY studentId", entityMetadata.getGroupBySql());
     }
 }

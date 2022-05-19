@@ -20,7 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Column;
-import javax.persistence.Table;
+import javax.persistence.Entity;
 
 /**
  * MaxIdView
@@ -29,7 +29,7 @@ import javax.persistence.Table;
  */
 @Getter
 @Setter
-@Table(name = "user")
+@Entity(name = "user")
 public class MaxIdView {
     @Column(name = "max(id)")
     private Integer maxId;

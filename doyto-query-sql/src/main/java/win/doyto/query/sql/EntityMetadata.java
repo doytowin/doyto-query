@@ -17,23 +17,15 @@
 package win.doyto.query.sql;
 
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
-import win.doyto.query.annotation.Aggregation;
 import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.annotation.Joins;
-import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static win.doyto.query.sql.Constant.*;
-import static win.doyto.query.util.CommonUtil.*;
+import static win.doyto.query.sql.Constant.SEPARATOR;
 
 /**
  * EntityMetadata
@@ -43,13 +35,11 @@ import static win.doyto.query.util.CommonUtil.*;
 @SuppressWarnings("java:S1874")
 public class EntityMetadata {
     private static final Map<Class<?>, EntityMetadata> holder = new HashMap<>();
-    private static final Pattern PTN_PLACE_HOLDER = Pattern.compile("#\\{(\\w+)}");
 
     @Getter
     private final String columnsForSelect;
     @Getter
     private final String tableName;
-    private String joinSql = "";
     @Getter
     private String groupByColumns = "";
     @Getter
@@ -59,7 +49,6 @@ public class EntityMetadata {
         this.tableName = BuildHelper.resolveTableName(entityClass);
 
         this.columnsForSelect = buildSelectColumns(entityClass);
-        buildJoinSql(entityClass);
         this.groupBySql = buildGroupBySql(entityClass);
     }
 
@@ -73,13 +62,6 @@ public class EntityMetadata {
                          .collect(Collectors.joining(SEPARATOR));
     }
 
-    private void buildJoinSql(Class<?> entityClass) {
-        if (entityClass.isAnnotationPresent(Joins.class)) {
-            String[] joins = entityClass.getAnnotation(Joins.class).value();
-            joinSql = String.join(SPACE, joins);
-        }
-    }
-
     private String buildGroupBySql(Class<?> entityClass) {
         String groupBy = "";
 
@@ -89,37 +71,7 @@ public class EntityMetadata {
         if (!groupByColumns.isEmpty()) {
             groupBy = " GROUP BY " + this.groupByColumns;
         }
-        if (entityClass.isAnnotationPresent(Aggregation.class)) {
-            Aggregation aggregation = entityClass.getAnnotation(Aggregation.class);
-            this.groupByColumns = StringUtils.join(aggregation.groupBy(), SEPARATOR);
-            groupBy = " GROUP BY " + this.groupByColumns;
-            if (!aggregation.having().isEmpty()) {
-                groupBy += " HAVING " + aggregation.having();
-            }
-        }
         return groupBy;
     }
 
-    public String resolveJoinSql(DoytoQuery query, List<Object> argList) {
-        return resolveJoin(query, argList, this.joinSql);
-    }
-
-    private static String resolveJoin(Object query, List<Object> argList, String join) {
-        if (join.isEmpty()) {
-            return "";
-        }
-        Matcher matcher = PTN_PLACE_HOLDER.matcher(join);
-
-        StringBuffer sb = new StringBuffer(SPACE);
-        while (matcher.find()) {
-            String fieldName = matcher.group(1);
-            Field field = getField(query, fieldName);
-            Object value = readField(field, query);
-            argList.add(value);
-            writeField(field, query, null);
-            matcher.appendReplacement(sb, PLACE_HOLDER);
-        }
-
-        return matcher.appendTail(sb).toString();
-    }
 }

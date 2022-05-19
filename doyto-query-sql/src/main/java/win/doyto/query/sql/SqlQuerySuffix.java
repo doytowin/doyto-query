@@ -19,7 +19,6 @@ package win.doyto.query.sql;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import win.doyto.query.annotation.Enumerated;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
@@ -32,6 +31,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 import static win.doyto.query.sql.Constant.*;
 
@@ -112,8 +112,12 @@ enum SqlQuerySuffix {
         SqlQuerySuffix sqlQuerySuffix = resolve(fieldName);
         value = sqlQuerySuffix.valueProcessor.escapeValue(value);
         String columnName = StringUtils.removeEnd(fieldName, sqlQuerySuffix.name());
-        columnName = ColumnUtil.convertColumn(columnName);
-        columnName = ColumnUtil.resolveColumn(columnName);
+        if (columnName.startsWith(HAVING_PREFIX)) {
+            columnName = columnName.substring(HAVING_PREFIX.length());
+            columnName = ColumnUtil.resolveColumn(columnName);
+        } else {
+            columnName = ColumnUtil.convertColumn(columnName);
+        }
         return sqlQuerySuffix.buildColumnCondition(columnName, argList, value);
     }
 

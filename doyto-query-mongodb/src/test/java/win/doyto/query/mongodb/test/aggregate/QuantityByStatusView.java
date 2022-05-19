@@ -19,9 +19,10 @@ package win.doyto.query.mongodb.test.aggregate;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.entity.MongoEntity;
 
 import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.EntityType;
 
 /**
  * QuantityView
@@ -30,7 +31,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-@MongoEntity(database = "doyto", collection = "c_inventory")
+@Entity(type = EntityType.MONGO_DB, database = "doyto", name = "c_inventory")
 public class QuantityByStatusView {
 
     @GroupBy

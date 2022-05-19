@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.service;
+package win.doyto.query.core;
 
 import java.util.Collections;
 import java.util.List;

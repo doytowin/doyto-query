@@ -42,7 +42,7 @@ class SqlQuerySuffixTest {
     @CsvSource({
             "id, 1, id = ?, 1",
             "idNot, 2, id != ?, 2",
-            "testLikeEq, test, testLike = ?, test",
+            "testLikeEq, test, test_like = ?, test",
             "nameNotLike, test, name NOT LIKE ?, %test%",
             "nameLike, test, name LIKE ?, %test%",
             "nameStart, test, name LIKE ?, test%",
@@ -66,7 +66,7 @@ class SqlQuerySuffixTest {
     void buildConditionForFieldContainsOr() {
         ArrayList<Object> argList = new ArrayList<>();
         String condition = SqlQuerySuffix.buildConditionForFieldContainsOr("usernameOrUserCodeLike", argList, "test");
-        assertEquals("(username = ? OR userCode LIKE ?)", condition);
+        assertEquals("(username = ? OR user_code LIKE ?)", condition);
         assertThat(argList).containsExactly("test", "%test%");
     }
 
@@ -74,7 +74,7 @@ class SqlQuerySuffixTest {
     void buildConditionForFieldContainsOrAndAlias() {
         ArrayList<Object> argList = new ArrayList<>();
         String condition = SqlQuerySuffix.buildConditionForFieldContainsOr("u.usernameOrUserCodeLike", argList, "test");
-        assertEquals("(u.username = ? OR u.userCode LIKE ?)", condition);
+        assertEquals("(u.username = ? OR u.user_code LIKE ?)", condition);
         assertThat(argList).containsExactly("test", "%test%");
     }
 

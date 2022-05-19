@@ -58,7 +58,6 @@ public class JoinQueryBuilder {
             StringBuilder sqlBuilder = new StringBuilder()
                     .append(SELECT).append(entityMetadata.getColumnsForSelect())
                     .append(FROM).append(entityMetadata.getTableName())
-                    .append(entityMetadata.resolveJoinSql(query, argList))
                     .append(buildWhere(query, argList))
                     .append(entityMetadata.getGroupBySql());
             if (query instanceof AggregationQuery) {
@@ -87,7 +86,6 @@ public class JoinQueryBuilder {
             }
             return SELECT + count +
                     FROM + entityMetadata.getTableName() +
-                    entityMetadata.resolveJoinSql(query, argList) +
                     buildWhere(query, argList);
         }));
     }

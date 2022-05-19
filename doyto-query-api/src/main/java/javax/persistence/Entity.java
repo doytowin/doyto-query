@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.annotation;
+package javax.persistence;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -23,16 +23,30 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Joins
+ * Entity
  *
- * @author f0rb on 2019-06-09
- * @since 0.1.3
- * @deprecated from 0.3.1, use {@link win.doyto.query.annotation.DomainPath} for join query
+ * @author f0rb on 2022-05-19
  */
-@SuppressWarnings("java:S1133")
-@Deprecated
 @Target(TYPE)
 @Retention(RUNTIME)
-public @interface Joins {
-    String[] value();
+public @interface Entity {
+
+    EntityType type() default EntityType.RELATIONAL;
+
+    /**
+     * For relational database:
+     * <p>
+     * (Optional) The schema of the table.
+     * Defaults to the default schema for user.
+     * <p>
+     * For MongoDb:
+     * (Required) The database of the collection.
+     */
+    String database() default "";
+
+    /**
+     * Table name for relational database.
+     * Collection name for MongoDB.
+     */
+    String name();
 }

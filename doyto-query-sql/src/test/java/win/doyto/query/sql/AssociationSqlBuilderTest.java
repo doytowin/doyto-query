@@ -18,7 +18,7 @@ package win.doyto.query.sql;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import win.doyto.query.service.UniqueKey;
+import win.doyto.query.core.UniqueKey;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;

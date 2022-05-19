@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-package win.doyto.query.annotation;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+package javax.persistence;
 
 /**
- * QueryTableAlias
+ * EntityType
  *
- * @author f0rb on 2019-06-11
- * @since 0.1.4
+ * @author f0rb on 2022-05-19
  */
-@Target(FIELD)
-@Retention(RUNTIME)
-public @interface QueryTableAlias {
-    String value();
+public enum EntityType {
+    RELATIONAL,
+    MONGO_DB
 }

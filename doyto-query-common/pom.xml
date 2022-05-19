@@ -28,7 +28,7 @@
     </parent>
 
     <artifactId>doyto-query-common</artifactId>
-    <version>${revision}</version>
+    <name>doyto-query-common</name>
 
     <dependencies>
         <dependency>

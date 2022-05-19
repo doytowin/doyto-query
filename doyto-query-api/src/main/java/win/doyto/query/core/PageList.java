@@ -14,28 +14,21 @@
  * limitations under the License.
  */
 
-package win.doyto.query.annotation;
+package win.doyto.query.core;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.util.List;
 
 /**
- * Aggregation
+ * PageList
  *
- * @author f0rb on 2021-12-29
- * @deprecated from 0.3.1, use {@link win.doyto.query.annotation.GroupBy} for aggregation
+ * @author f0rb
  */
-@SuppressWarnings("java:S1133")
-@Deprecated
-@Target(TYPE)
-@Retention(RUNTIME)
-public @interface Aggregation {
-
-    String[] groupBy();
-
-    String having() default "";
-
+@Getter
+@AllArgsConstructor
+public class PageList<T> {
+    private final List<T> list;
+    private final long total;
 }

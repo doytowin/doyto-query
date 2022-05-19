@@ -23,7 +23,6 @@ import win.doyto.query.validation.CreateGroup;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -31,7 +30,6 @@ import javax.validation.constraints.NotNull;
  *
  * @author f0rb on 2020-04-01
  */
-@Table(name = "t_user")
 @Getter
 @Setter
 public class UserEntity extends AbstractCommonEntity<Long, Long> {
