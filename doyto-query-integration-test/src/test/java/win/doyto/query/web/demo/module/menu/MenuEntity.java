@@ -21,7 +21,6 @@ import lombok.Setter;
 import win.doyto.query.entity.AbstractCommonEntity;
 
 import java.util.Objects;
-import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
@@ -31,7 +30,6 @@ import javax.persistence.Table;
  */
 @Getter
 @Setter
-@Entity
 @Table(name = "t_menu${platform}")
 public class MenuEntity extends AbstractCommonEntity<Integer, Long> {
 
