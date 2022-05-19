@@ -19,7 +19,6 @@ package win.doyto.query.sql;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import win.doyto.query.annotation.Enumerated;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
@@ -32,6 +31,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 import static win.doyto.query.sql.Constant.*;
 
