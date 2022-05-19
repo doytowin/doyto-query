@@ -27,6 +27,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>doyto-query-integration-test</artifactId>
+    <name>doyto-query-integration-test</name>
 
     <properties>
         <skipDeploy>true</skipDeploy>
