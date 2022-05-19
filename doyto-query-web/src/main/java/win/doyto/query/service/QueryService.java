@@ -17,6 +17,7 @@
 package win.doyto.query.service;
 
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.core.PageList;
 
 import java.util.List;
 import java.util.function.Function;

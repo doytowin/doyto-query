@@ -19,7 +19,7 @@ package win.doyto.query.web.controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import win.doyto.query.core.DoytoQuery;
-import win.doyto.query.service.PageList;
+import win.doyto.query.core.PageList;
 import win.doyto.query.validation.PageGroup;
 import win.doyto.query.validation.PatchGroup;
 import win.doyto.query.validation.UpdateGroup;

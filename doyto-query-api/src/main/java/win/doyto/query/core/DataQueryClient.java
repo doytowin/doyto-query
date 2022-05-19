@@ -17,7 +17,6 @@
 package win.doyto.query.core;
 
 import win.doyto.query.entity.Persistable;
-import win.doyto.query.service.PageList;
 
 import java.io.Serializable;
 import java.util.List;

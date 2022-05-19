@@ -20,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import win.doyto.query.core.IdWrapper;
+import win.doyto.query.core.PageList;
 import win.doyto.query.entity.EntityAspect;
 import win.doyto.query.test.TestEntity;
 import win.doyto.query.test.TestQuery;

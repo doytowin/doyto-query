@@ -14,28 +14,21 @@
  * limitations under the License.
  */
 
-package win.doyto.query.service;
+package win.doyto.query.core;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
- * UniqueKey
+ * PageList
  *
- * @author f0rb on 2021-12-17
+ * @author f0rb
  */
 @Getter
 @AllArgsConstructor
-@EqualsAndHashCode
-public class UniqueKey<K1, K2> {
-    private K1 k1;
-    private K2 k2;
-
-    public List<Object> toList() {
-        return Arrays.asList(k1, k2);
-    }
+public class PageList<T> {
+    private final List<T> list;
+    private final long total;
 }
