@@ -53,8 +53,6 @@ import static javax.persistence.GenerationType.AUTO;
  * </pre>
  *
  * @see Id
- * @see TableGenerator
- * @see SequenceGenerator
  *
  * @since Java Persistence 1.0
  */
@@ -72,8 +70,8 @@ public @interface GeneratedValue {
 
     /**
      * (Optional) The name of the primary key generator
-     * to use as specified in the {@link SequenceGenerator}
-     * or {@link TableGenerator} annotation.
+     * to use as specified in the SequenceGenerator
+     * or TableGenerator annotation.
      * <p> Defaults to the id generator supplied by persistence provider.
      */
     String generator() default "";

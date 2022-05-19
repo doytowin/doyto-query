@@ -47,9 +47,6 @@ import static javax.persistence.EnumType.ORDINAL;
  *   }
  * </pre>
  *
- * @see Basic
- * @see ElementCollection
- *
  * @since Java Persistence 1.0
  */
 @Target({METHOD, FIELD, TYPE})
