@@ -27,6 +27,7 @@ import win.doyto.query.test.TestQuery;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static win.doyto.query.test.TestEntity.initUserEntities;
@@ -136,7 +137,15 @@ class AbstractDynamicServiceTest {
         TestQuery testQuery = new TestQuery();
         PageList<TestEntity> pageList = testService.page(testQuery);
         assertEquals(5, pageList.getTotal());
-        assertEquals(0, (int) testQuery.getPageNumber());
-        assertEquals(10, (int) testQuery.getPageSize());
+        assertEquals(0, testQuery.getPageNumber());
+        assertEquals(10, testQuery.getPageSize());
+    }
+
+    @Test
+    void pageAndTransform() {
+        TestQuery testQuery = new TestQuery();
+        PageList<String> pageList = testService.page(testQuery, TestEntity::getUsername);
+        assertThat(pageList.getList())
+                .containsExactly("username1", "username2", "username3", "username4", "f0rb");
     }
 }
