@@ -44,7 +44,8 @@ public class DomainPathBuilder {
     private static final int PROJECTING = 1;
 
     public static <V> Bson buildLookUpForSubDomain(DoytoQuery query, Class<V> viewClass, Field field) {
-        String[] paths = field.getAnnotation(DomainPath.class).value();
+        DomainPath domainPath = field.getAnnotation(DomainPath.class);
+        String[] paths = domainPath.value();
         String viewName = field.getName();
         String $viewName = "$" + viewName;
 
@@ -56,6 +57,11 @@ public class DomainPathBuilder {
         String[] joinIds = Arrays.stream(paths).map(path -> String.format(JOIN_ID_FORMAT, path)).toArray(String[]::new);
         String[] joints = IntStream.range(0, n).mapToObj(i -> String.format(JOIN_TABLE_FORMAT, paths[i], paths[i + 1]))
                                    .toArray(String[]::new);
+
+        if (n == 0) {
+            // many-to-one
+            return lookup0(tableNames[0], domainPath.lastDomainIdColumn(), MONGO_ID, viewName);
+        }
 
         List<Bson> pipeline = Arrays.asList(
                 lookup0(tableNames[n], joinIds[n], MONGO_ID, viewName),

@@ -21,6 +21,7 @@ import org.bson.BsonDocument;
 import org.bson.conversions.Bson;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.StreamUtils;
+import win.doyto.query.core.PageQuery;
 import win.doyto.query.mongodb.test.join.MenuEntity;
 import win.doyto.query.mongodb.test.join.PermEntity;
 import win.doyto.query.mongodb.test.join.RoleEntity;
@@ -48,7 +49,7 @@ class DomainPathBuilderTest {
     }
 
     @Test
-    void buildSqlAndArgsForSubDomainWithOneJointAndQuery() throws NoSuchFieldException {
+    void buildDocForSubDomainWithOneJointAndQuery() throws NoSuchFieldException {
         Field field = UserEntity.class.getDeclaredField("roles");
         RoleQuery roleQuery = RoleQuery.builder().valid(true).build();
 
@@ -60,7 +61,7 @@ class DomainPathBuilderTest {
     }
 
     @Test
-    void buildSqlAndArgsForSubDomainWithTwoJointsAndQuery() throws NoSuchFieldException {
+    void buildDocForSubDomainWithTwoJointsAndQuery() throws NoSuchFieldException {
         Field field = UserEntity.class.getDeclaredField("perms");
         PermissionQuery permissionQuery = PermissionQuery.builder().valid(true).build();
 
@@ -72,7 +73,7 @@ class DomainPathBuilderTest {
     }
 
     @Test
-    void buildSqlAndArgsForSubDomainWithThreeJointsAndQuery() throws NoSuchFieldException {
+    void buildDocForSubDomainWithThreeJointsAndQuery() throws NoSuchFieldException {
         Field field = UserEntity.class.getDeclaredField("menus");
         MenuQuery menuQuery = MenuQuery.builder().valid(true).build();
 
@@ -80,6 +81,17 @@ class DomainPathBuilderTest {
 
         BsonDocument result = bson.toBsonDocument();
         BsonDocument expected = BsonDocument.parse(readString("/query_user_with_menus.json"));
+        assertThat(result).isEqualTo(expected);
+    }
+
+    @Test
+    void buildDocForManyToOne() throws NoSuchFieldException {
+        Field field = UserEntity.class.getDeclaredField("createUser");
+
+        Bson bson = buildLookUpForSubDomain(new PageQuery(), UserEntity.class, field);
+
+        BsonDocument result = bson.toBsonDocument();
+        BsonDocument expected = BsonDocument.parse(readString("/query_user_with_create_user.json"));
         assertThat(result).isEqualTo(expected);
     }
 }

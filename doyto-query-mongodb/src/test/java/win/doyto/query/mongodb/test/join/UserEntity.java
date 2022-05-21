@@ -52,4 +52,8 @@ public class UserEntity extends MongoPersistable<BigInteger> {
     @DomainPath({"user", "role", "perm", "menu"})
     private List<MenuEntity> menus;
 
+    // many-to-one
+    @DomainPath(value = "user", lastDomainIdColumn = "createUserId")
+    private UserEntity createUser;
+
 }
