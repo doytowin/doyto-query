@@ -13,10 +13,11 @@
         }
       },
       {
+        $unwind: "$roles"
+      },
+      {
         $replaceRoot: {
-          newRoot: {
-            $arrayElemAt: ["$roles", 0]
-          }
+          newRoot: "$roles"
         }
       },
       {

@@ -21,8 +21,10 @@ import org.bson.BsonDocument;
 import org.bson.conversions.Bson;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.StreamUtils;
+import win.doyto.query.mongodb.test.join.PermEntity;
 import win.doyto.query.mongodb.test.join.RoleEntity;
 import win.doyto.query.mongodb.test.join.UserEntity;
+import win.doyto.query.test.PermissionQuery;
 import win.doyto.query.test.role.RoleQuery;
 
 import java.lang.reflect.Field;
@@ -52,6 +54,18 @@ class DomainPathBuilderTest {
 
         BsonDocument result = bson.toBsonDocument();
         BsonDocument expected = BsonDocument.parse(readString("/query_user_with_roles.json"));
+        assertThat(result).isEqualTo(expected);
+    }
+
+    @Test
+    void buildSqlAndArgsForSubDomainWithTwoJointsAndQuery() throws NoSuchFieldException {
+        Field field = UserEntity.class.getDeclaredField("perms");
+        PermissionQuery permissionQuery = PermissionQuery.builder().valid(true).build();
+
+        Bson bson = buildLookUpForSubDomain(permissionQuery, PermEntity.class, field);
+
+        BsonDocument result = bson.toBsonDocument();
+        BsonDocument expected = BsonDocument.parse(readString("/query_user_with_perms.json"));
         assertThat(result).isEqualTo(expected);
     }
 }

@@ -27,6 +27,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static com.mongodb.client.model.Aggregates.*;
 import static win.doyto.query.config.GlobalConfiguration.*;
@@ -45,7 +46,7 @@ public class DomainPathBuilder {
     public static <V> Bson buildLookUpForSubDomain(DoytoQuery query, Class<V> viewClass, Field field) {
         String[] paths = field.getAnnotation(DomainPath.class).value();
         String viewName = field.getName();
-        String joinTableName = String.format(JOIN_TABLE_FORMAT, paths[0], paths[1]);
+        String $viewName = "$" + viewName;
 
         Document projectDoc = new Document();
         ColumnUtil.filterFields(viewClass).forEach(f -> projectDoc.append(f.getName(), PROJECTING));
@@ -53,14 +54,26 @@ public class DomainPathBuilder {
         int n = paths.length - 1;
         String[] tableNames = Arrays.stream(paths).map(path -> String.format(TABLE_FORMAT, path)).toArray(String[]::new);
         String[] joinIds = Arrays.stream(paths).map(path -> String.format(JOIN_ID_FORMAT, path)).toArray(String[]::new);
+        String[] joints = IntStream.range(0, n).mapToObj(i -> String.format(JOIN_TABLE_FORMAT, paths[i], paths[i + 1]))
+                                   .toArray(String[]::new);
 
         List<Bson> pipeline = Arrays.asList(
                 lookup0(tableNames[n], joinIds[n], MONGO_ID, viewName),
-                replaceRoot(new Document("$arrayElemAt", Arrays.asList("$" + viewName, 0))),
+                unwind($viewName),
+                replaceRoot($viewName),
                 match(buildFilter(query)),
                 project(projectDoc)
         );
-        return lookup0(joinTableName, MONGO_ID, joinIds[0], pipeline, viewName);
+
+        for (int i = n - 1; i > 0; i--) {
+            pipeline = Arrays.asList(
+                    lookup0(joints[i], joinIds[i], joinIds[i], pipeline, viewName),
+                    unwind($viewName),
+                    replaceRoot($viewName)
+            );
+        }
+
+        return lookup0(joints[0], MONGO_ID, joinIds[0], pipeline, viewName);
     }
 
     private static Bson lookup0(String from, String localField, String foreignField, String as) {
