@@ -18,38 +18,20 @@ package win.doyto.query.mongodb.test.join;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.mongodb.entity.MongoPersistable;
 
 import java.math.BigInteger;
-import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.EntityType;
 
 /**
- * UserEntity
+ * MenuEntity
  *
- * @author f0rb on 2022-05-20
+ * @author f0rb on 2022-05-21
  * @since 1.0.0
  */
 @Getter
 @Setter
-@Entity(type = EntityType.MONGO_DB, database = "doyto", name = "t_user")
-public class UserEntity extends MongoPersistable<BigInteger> {
-
-    private String username;
-    private String email;
-
-    // many-to-many
-    @DomainPath({"user", "role"})
-    private List<RoleEntity> roles;
-
-    // many-to-many
-    @DomainPath({"user", "role", "perm"})
-    private List<PermEntity> perms;
-
-    // many-to-many
-    @DomainPath({"user", "role", "perm", "menu"})
-    private List<MenuEntity> menus;
-
+public class MenuEntity extends MongoPersistable<BigInteger> {
+    private String menuName;
+    private String menuCode;
+    private Boolean valid;
 }
