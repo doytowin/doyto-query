@@ -1,0 +1,8 @@
+{
+  $lookup: {
+    from: "t_user",
+    localField: "_id",
+    foreignField: "createUserId",
+    as: "createdUsers"
+  }
+}

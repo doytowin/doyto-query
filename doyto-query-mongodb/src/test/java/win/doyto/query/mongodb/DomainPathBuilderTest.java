@@ -94,4 +94,15 @@ class DomainPathBuilderTest {
         BsonDocument expected = BsonDocument.parse(readString("/query_user_with_create_user.json"));
         assertThat(result).isEqualTo(expected);
     }
+
+    @Test
+    void buildDocForOneToMany() throws NoSuchFieldException {
+        Field field = UserEntity.class.getDeclaredField("createdUsers");
+
+        Bson bson = buildLookUpForSubDomain(new PageQuery(), UserEntity.class, field);
+
+        BsonDocument result = bson.toBsonDocument();
+        BsonDocument expected = BsonDocument.parse(readString("/query_user_with_created_users.json"));
+        assertThat(result).isEqualTo(expected);
+    }
 }

@@ -56,4 +56,8 @@ public class UserEntity extends MongoPersistable<BigInteger> {
     @DomainPath(value = "user", lastDomainIdColumn = "createUserId")
     private UserEntity createUser;
 
+    // one-to-many
+    @DomainPath(value = "user", lastDomainIdColumn = "createUserId")
+    private List<UserEntity> createdUsers;
+
 }

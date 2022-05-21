@@ -25,6 +25,7 @@ import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -59,8 +60,13 @@ public class DomainPathBuilder {
                                    .toArray(String[]::new);
 
         if (n == 0) {
-            // many-to-one
-            return lookup0(tableNames[0], domainPath.lastDomainIdColumn(), MONGO_ID, viewName);
+            if (Collection.class.isAssignableFrom(field.getType())) {
+                // one-to-many
+                return lookup0(tableNames[0], MONGO_ID, domainPath.lastDomainIdColumn(), viewName);
+            } else {
+                // many-to-one
+                return lookup0(tableNames[0], domainPath.lastDomainIdColumn(), MONGO_ID, viewName);
+            }
         }
 
         List<Bson> pipeline = Arrays.asList(
