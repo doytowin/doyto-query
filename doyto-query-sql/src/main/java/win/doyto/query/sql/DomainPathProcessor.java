@@ -19,7 +19,6 @@ package win.doyto.query.sql;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.CommonUtil;
 
@@ -28,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static win.doyto.query.config.GlobalConfiguration.*;
 import static win.doyto.query.sql.BuildHelper.buildWhere;
 import static win.doyto.query.sql.Constant.*;
 
@@ -38,9 +38,6 @@ import static win.doyto.query.sql.Constant.*;
  * @since 0.3.1
  */
 class DomainPathProcessor implements FieldProcessor.Processor {
-    private static final String JOIN_ID_FORMAT = GlobalConfiguration.instance().getJoinIdFormat();
-    private static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
-    private static final String JOIN_TABLE_FORMAT = GlobalConfiguration.instance().getJoinTableFormat();
     private final String[] domainPaths;
     private final String[] domainIds;
     private final String[] joinTables;
