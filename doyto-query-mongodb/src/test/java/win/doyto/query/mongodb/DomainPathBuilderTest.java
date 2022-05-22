@@ -28,6 +28,7 @@ import win.doyto.query.mongodb.test.join.RoleEntity;
 import win.doyto.query.mongodb.test.join.UserEntity;
 import win.doyto.query.test.MenuQuery;
 import win.doyto.query.test.PermissionQuery;
+import win.doyto.query.test.UserQuery;
 import win.doyto.query.test.role.RoleQuery;
 
 import java.lang.reflect.Field;
@@ -103,6 +104,18 @@ class DomainPathBuilderTest {
 
         BsonDocument result = bson.toBsonDocument();
         BsonDocument expected = BsonDocument.parse(readString("/query_user_with_created_users.json"));
+        assertThat(result).isEqualTo(expected);
+    }
+
+    @Test
+    void buildDocForSubDomainReverseWithThreeJointsAndQuery() throws NoSuchFieldException {
+        Field field = PermEntity.class.getDeclaredField("users");
+        UserQuery userQuery = UserQuery.builder().id(1).build();
+
+        Bson bson = buildLookUpForSubDomain(userQuery, UserEntity.class, field);
+
+        BsonDocument result = bson.toBsonDocument();
+        BsonDocument expected = BsonDocument.parse(readString("/query_perm_with_users.json"));
         assertThat(result).isEqualTo(expected);
     }
 }

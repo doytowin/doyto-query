@@ -17,6 +17,7 @@
 package win.doyto.query.mongodb.filter;
 
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.ArrayUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import win.doyto.query.annotation.DomainPath;
@@ -54,20 +55,26 @@ public class DomainPathBuilder {
         ColumnUtil.filterFields(viewClass).forEach(f -> projectDoc.append(f.getName(), PROJECTING));
 
         int n = paths.length - 1;
-        String[] tableNames = Arrays.stream(paths).map(path -> String.format(TABLE_FORMAT, path)).toArray(String[]::new);
-        String[] joinIds = Arrays.stream(paths).map(path -> String.format(JOIN_ID_FORMAT, path)).toArray(String[]::new);
-        String[] joints = IntStream.range(0, n).mapToObj(i -> String.format(JOIN_TABLE_FORMAT, paths[i], paths[i + 1]))
-                                   .toArray(String[]::new);
 
         if (n == 0) {
+            String tableName = String.format(TABLE_FORMAT, paths[0]);
             if (Collection.class.isAssignableFrom(field.getType())) {
                 // one-to-many
-                return lookup0(tableNames[0], MONGO_ID, domainPath.lastDomainIdColumn(), viewName);
+                return lookup0(tableName, MONGO_ID, domainPath.lastDomainIdColumn(), viewName);
             } else {
                 // many-to-one
-                return lookup0(tableNames[0], domainPath.lastDomainIdColumn(), MONGO_ID, viewName);
+                return lookup0(tableName, domainPath.lastDomainIdColumn(), MONGO_ID, viewName);
             }
         }
+        boolean needReverse = field.getName().contains(paths[0]);
+        String[] joints = IntStream.range(0, n).mapToObj(i -> String.format(JOIN_TABLE_FORMAT, paths[i], paths[i + 1]))
+                                   .toArray(String[]::new);
+        if (needReverse) {
+            ArrayUtils.reverse(paths);
+            ArrayUtils.reverse(joints);
+        }
+        String[] tableNames = Arrays.stream(paths).map(path -> String.format(TABLE_FORMAT, path)).toArray(String[]::new);
+        String[] joinIds = Arrays.stream(paths).map(path -> String.format(JOIN_ID_FORMAT, path)).toArray(String[]::new);
 
         List<Bson> pipeline = Arrays.asList(
                 lookup0(tableNames[n], joinIds[n], MONGO_ID, viewName),

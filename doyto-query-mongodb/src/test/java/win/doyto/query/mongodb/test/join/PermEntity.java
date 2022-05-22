@@ -18,9 +18,11 @@ package win.doyto.query.mongodb.test.join;
 
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.mongodb.entity.MongoPersistable;
 
 import java.math.BigInteger;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.EntityType;
 
@@ -36,4 +38,8 @@ import javax.persistence.EntityType;
 public class PermEntity extends MongoPersistable<BigInteger> {
     private String permName;
     private Boolean valid;
+
+    // many-to-many
+    @DomainPath({"user", "role", "perm"})
+    private List<UserEntity> users;
 }
