@@ -45,6 +45,7 @@ public class DomainPathBuilder {
     private static final String MONGO_ID = "_id";
     private static final int PROJECTING = 1;
 
+    @SuppressWarnings("java:S117")
     public static <V> Bson buildLookUpForSubDomain(DoytoQuery query, Class<V> viewClass, Field field) {
         DomainPath domainPath = field.getAnnotation(DomainPath.class);
         String[] paths = domainPath.value();
@@ -60,10 +61,10 @@ public class DomainPathBuilder {
             String tableName = String.format(TABLE_FORMAT, paths[0]);
             if (Collection.class.isAssignableFrom(field.getType())) {
                 // one-to-many
-                return lookup0(tableName, MONGO_ID, domainPath.lastDomainIdColumn(), viewName);
+                return lookup0(tableName, MONGO_ID, domainPath.lastDomainIdColumn(), project(projectDoc), viewName);
             } else {
                 // many-to-one
-                return lookup0(tableName, domainPath.lastDomainIdColumn(), MONGO_ID, viewName);
+                return lookup0(tableName, domainPath.lastDomainIdColumn(), MONGO_ID, project(projectDoc),viewName);
             }
         }
         boolean needReverse = field.getName().contains(paths[0]);
@@ -93,6 +94,10 @@ public class DomainPathBuilder {
         }
 
         return lookup0(joints[0], MONGO_ID, joinIds[0], pipeline, viewName);
+    }
+
+    private static Bson lookup0(String from, String localField, String foreignField, Bson project, String as) {
+        return lookup0(from, localField, foreignField, Collections.singletonList(project), as);
     }
 
     private static Bson lookup0(String from, String localField, String foreignField, String as) {

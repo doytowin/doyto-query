@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb;
+package win.doyto.query.mongodb.filter;
 
 import lombok.SneakyThrows;
 import org.bson.BsonDocument;
