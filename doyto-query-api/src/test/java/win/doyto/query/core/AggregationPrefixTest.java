@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb;
+package win.doyto.query.core;
 
 import org.junit.jupiter.api.Test;
-import win.doyto.query.core.AggregationPrefix;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
