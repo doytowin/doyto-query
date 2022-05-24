@@ -17,17 +17,24 @@
 package win.doyto.query.mongodb;
 
 import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoDatabase;
+import lombok.SneakyThrows;
+import org.bson.BsonArray;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StreamUtils;
 import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.mongodb.test.aggregate.QuantityByStatusQuery;
 import win.doyto.query.mongodb.test.aggregate.QuantityByStatusView;
 import win.doyto.query.mongodb.test.aggregate.QuantityHaving;
 import win.doyto.query.mongodb.test.aggregate.QuantityView;
 import win.doyto.query.mongodb.test.inventory.InventoryQuery;
+import win.doyto.query.mongodb.test.join.UserEntity;
+import win.doyto.query.mongodb.test.join.UserJoinQuery;
 
-import java.util.Arrays;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,6 +51,19 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
 
     MongoDataQueryClientTest(@Autowired MongoClient mongoClient) {
         this.dataQueryClient = new MongoDataQueryClient(mongoClient);
+    }
+
+    @SneakyThrows
+    private static String readString(String path) {
+        return StreamUtils.copyToString(MongoDataQueryClientTest.class.getResourceAsStream(path), Charset.defaultCharset());
+    }
+
+    @BeforeAll
+    static void beforeAll(@Autowired MongoClient mongoClient) {
+        MongoDatabase database = mongoClient.getDatabase("doyto");
+        String text = readString("/init_data.json");
+        BsonArray bsonValues = BsonArray.parse(text);
+        bsonValues.forEach(bsonValue -> database.runCommand(bsonValue.asDocument()));
     }
 
     @Test
@@ -70,8 +90,10 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
         List<QuantityByStatusView> views = dataQueryClient.aggregate(query, QuantityByStatusView.class);
         assertThat(views).hasSize(2)
                          .first()
-                         .extracting("sumQty", "status", "addToSetItem")
-                         .containsExactly(120, "A", Arrays.asList("notebook", "postcard", "journal"))
+                         .extracting("sumQty", "status")
+                         .containsExactly(120, "A");
+        assertThat(views.get(0).getAddToSetItem())
+                .contains("notebook", "postcard", "journal");
         ;
         assertThat(views.get(0).getPushItemStatuses())
                 .hasSize(3)
@@ -115,6 +137,23 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
                          .extracting("sumQty", "status")
                          .containsExactly(144, "C")
         ;
+    }
+
+    @Test
+    void queryUserWithCreatedUsersAndCreateUser() {
+        UserJoinQuery userQuery = UserJoinQuery
+                .builder()
+                .createdUsersQuery(new UserJoinQuery())
+                .createUserQuery(new UserJoinQuery())
+                .build();
+        List<UserEntity> views = dataQueryClient.query(userQuery);
+        assertThat(views).hasSize(4)
+                         .extracting(userEntity -> userEntity.getCreatedUsers().size())
+                         .containsExactly(4, 0, 0, 0);
+        assertThat(views)
+                .extracting(userEntity -> userEntity.getCreateUser().getUsername())
+                .containsExactly("f0rb", "f0rb", "f0rb", "f0rb");
+        assertThat(views).extracting(UserEntity::getRoles).containsOnlyNulls();
     }
 
 }

@@ -18,9 +18,7 @@ package win.doyto.query.mongodb;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoCollection;
 import lombok.SneakyThrows;
-import org.bson.Document;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,17 +36,14 @@ import java.util.List;
  * @author f0rb on 2022-01-25
  */
 @ActiveProfiles("test")
-@DataMongoTest(properties = {"spring.mongodb.embedded.version=4.0.21"})
+@DataMongoTest(properties = {"spring.mongodb.embedded.version=5.0.5"})
 abstract class MongoApplicationTest {
 
-    private MongoCollection<Document> collection;
     private MongoDataAccess<InventoryEntity, String, DoytoQuery> dataAccess;
 
     @BeforeEach
     void setUp(@Autowired MongoClient mongoClient) {
         dataAccess = new MongoDataAccess<>(mongoClient, InventoryEntity.class);
-        collection = dataAccess.getCollection();
-
         loadData("test/inventory/inventory.json");
     }
 
@@ -60,7 +55,7 @@ abstract class MongoApplicationTest {
 
     @AfterEach
     void tearDown() {
-        collection.drop();
+        dataAccess.getCollection().drop();
     }
 
 }

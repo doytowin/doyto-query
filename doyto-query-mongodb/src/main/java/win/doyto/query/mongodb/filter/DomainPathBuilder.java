@@ -45,19 +45,15 @@ public class DomainPathBuilder {
     private static final String MONGO_ID = "_id";
     private static final int PROJECTING = 1;
 
-    @SuppressWarnings("java:S117")
     public static <V> Bson buildLookUpForSubDomain(DoytoQuery query, Class<V> viewClass, Field field) {
         DomainPath domainPath = field.getAnnotation(DomainPath.class);
         String[] paths = domainPath.value();
         String viewName = field.getName();
-        String $viewName = "$" + viewName;
 
         Document projectDoc = new Document();
         ColumnUtil.filterFields(viewClass).forEach(f -> projectDoc.append(f.getName(), PROJECTING));
 
-        int n = paths.length - 1;
-
-        if (n == 0) {
+        if (paths.length == 1) {
             String tableName = String.format(TABLE_FORMAT, paths[0]);
             if (Collection.class.isAssignableFrom(field.getType())) {
                 // one-to-many
@@ -67,6 +63,15 @@ public class DomainPathBuilder {
                 return lookup0(tableName, domainPath.lastDomainIdColumn(), MONGO_ID, project(projectDoc),viewName);
             }
         }
+        return buildLookupForManyToMany(query, field, paths, projectDoc);
+    }
+
+    @SuppressWarnings("java:S117")
+    private static Bson buildLookupForManyToMany(DoytoQuery query, Field field, String[] paths, Document projectDoc) {
+        int n = paths.length - 1;
+        String viewName = field.getName();
+        String $viewName = "$" + viewName;
+
         boolean needReverse = field.getName().contains(paths[0]);
         String[] joints = IntStream.range(0, n).mapToObj(i -> String.format(JOIN_TABLE_FORMAT, paths[i], paths[i + 1]))
                                    .toArray(String[]::new);
@@ -78,7 +83,7 @@ public class DomainPathBuilder {
         String[] joinIds = Arrays.stream(paths).map(path -> String.format(JOIN_ID_FORMAT, path)).toArray(String[]::new);
 
         List<Bson> pipeline = Arrays.asList(
-                lookup0(tableNames[n], joinIds[n], MONGO_ID, viewName),
+                lookup0(tableNames[n], joinIds[n], MONGO_ID, Collections.emptyList(), viewName),
                 unwind($viewName),
                 replaceRoot($viewName),
                 match(buildFilter(query)),
@@ -98,10 +103,6 @@ public class DomainPathBuilder {
 
     private static Bson lookup0(String from, String localField, String foreignField, Bson project, String as) {
         return lookup0(from, localField, foreignField, Collections.singletonList(project), as);
-    }
-
-    private static Bson lookup0(String from, String localField, String foreignField, String as) {
-        return lookup0(from, localField, foreignField, Collections.emptyList(), as);
     }
 
     private static Bson lookup0(

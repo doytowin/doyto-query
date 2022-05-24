@@ -25,12 +25,15 @@ import win.doyto.query.core.*;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.mongodb.filter.MongoFilterBuilder;
 import win.doyto.query.util.BeanUtil;
+import win.doyto.query.util.CommonUtil;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 import static win.doyto.query.mongodb.MongoDataAccess.MONGO_ID;
+import static win.doyto.query.mongodb.filter.DomainPathBuilder.buildLookUpForSubDomain;
 
 /**
  * MongoDataQuery
@@ -55,7 +58,16 @@ public class MongoDataQueryClient implements DataQueryClient {
         AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
         List<Bson> list = new ArrayList<>();
         list.add(Aggregates.match(MongoFilterBuilder.buildFilter(query)));
-        list.add(md.getGroupBy());
+        for (Field field : md.getDomainFields()) {
+            Object domainQuery = CommonUtil.readField(query, field.getName() + "Query");
+            if (domainQuery instanceof DoytoQuery) {
+                Bson lookupDoc = buildLookUpForSubDomain((DoytoQuery) domainQuery, viewClass, field);
+                list.add(lookupDoc);
+            }
+        }
+        if (md.getGroupBy() != null) {
+            list.add(md.getGroupBy());
+        }
         if (query instanceof AggregationQuery) {
             Having having = ((AggregationQuery) query).getHaving();
             if (having != null) {

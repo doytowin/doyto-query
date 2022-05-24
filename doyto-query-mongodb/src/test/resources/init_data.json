@@ -1,0 +1,43 @@
+[
+  {
+    "insert": "t_user",
+    "ordered": true,
+    "documents": [
+      {
+        "_id": ObjectId("628b3a27f7a4ba009198a677"),
+        "username": "f0rb",
+        "email": "f0rb@163.com",
+        "mobile": "17778888881",
+        "nickname": "测试1",
+        "valid": true,
+        "userLevel": "高级",
+        "createUserId": ObjectId("628b3a27f7a4ba009198a677")
+      }, {
+        "username": "user2",
+        "email": "test2@qq.com",
+        "mobile": "17778888882",
+        "nickname": "测试2",
+        "valid": true,
+        "userLevel": "普通",
+        "createUserId": ObjectId("628b3a27f7a4ba009198a677")
+      }, {
+        "username": "user3",
+        "email": "test3@qq.com",
+        "mobile": "17778888883",
+        "nickname": "测试3",
+        "valid": true,
+        "memo": "memo",
+        "userLevel": "普通",
+        "createUserId": ObjectId("628b3a27f7a4ba009198a677")
+      }, {
+        "username": "user4",
+        "email": "test4@qq.com",
+        "mobile": "17778888884",
+        "nickname": "测试4",
+        "valid": true,
+        "userLevel": "普通",
+        "createUserId": ObjectId("628b3a27f7a4ba009198a677")
+      }
+    ]
+  }
+]

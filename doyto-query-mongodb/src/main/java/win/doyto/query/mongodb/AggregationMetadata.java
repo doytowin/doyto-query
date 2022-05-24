@@ -24,6 +24,7 @@ import com.mongodb.client.model.BsonField;
 import lombok.Getter;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.mongodb.filter.MongoGroupBuilder;
 import win.doyto.query.util.ColumnUtil;
@@ -47,11 +48,18 @@ public class AggregationMetadata {
     private final MongoCollection<Document> collection;
     private final Bson groupBy;
     private final Bson project;
+    private final Field[] domainFields;
 
     private <V> AggregationMetadata(Class<V> viewClass, MongoClient mongoClient) {
         this.collection = getCollection(mongoClient, viewClass.getAnnotation(Entity.class));
         this.groupBy = buildGroupBy(viewClass);
         this.project = buildProject(viewClass);
+        this.domainFields = buildDomainFields(viewClass);
+    }
+
+    private <V> Field[] buildDomainFields(Class<V> viewClass) {
+        return ColumnUtil.filterFields(viewClass, field -> field.isAnnotationPresent(DomainPath.class))
+                         .toArray(Field[]::new);
     }
 
     static AggregationMetadata build(Class<?> viewClass, MongoClient mongoClient) {
@@ -64,7 +72,12 @@ public class AggregationMetadata {
     }
 
     private static <V> Bson buildGroupBy(Class<V> viewClass) {
-        return Aggregates.group(buildGroupId(viewClass), buildAggregation(viewClass));
+        Document groupDoc = buildGroupId(viewClass);
+        List<BsonField> fieldAccumulators = buildAggregation(viewClass);
+        if (groupDoc.isEmpty() && fieldAccumulators.isEmpty()) {
+            return null;
+        }
+        return Aggregates.group(groupDoc, fieldAccumulators);
     }
 
     private static <V> List<BsonField> buildAggregation(Class<V> viewClass) {
@@ -75,7 +88,7 @@ public class AggregationMetadata {
                      .collect(Collectors.toList());
     }
 
-    private static <V> Bson buildGroupId(Class<V> viewClass) {
+    private static <V> Document buildGroupId(Class<V> viewClass) {
         Document id = new Document();
         Field[] fields = ColumnUtil.initFields(viewClass);
         for (Field field : fields) {
@@ -92,7 +105,11 @@ public class AggregationMetadata {
         Document columns = new Document(MONGO_ID, 0); // don't want to show _id
         for (Field field : fields) {
             String column = field.getName();
-            columns.append(column, "$" + column);
+            if (isManyToOneField(field)) {
+                columns.append(column, new Document("$arrayElemAt", Arrays.asList("$" + column, 0)));
+            } else {
+                columns.append(column, "$" + column);
+            }
             if (field.isAnnotationPresent(GroupBy.class)) {
                 String fieldName = field.getName();
                 columns.append(fieldName, "$_id." + fieldName); //grouped fields are in _id
@@ -100,6 +117,10 @@ public class AggregationMetadata {
         }
 
         return Aggregates.project(columns);
+    }
+
+    private static boolean isManyToOneField(Field field) {
+        return field.isAnnotationPresent(DomainPath.class) && !Collection.class.isAssignableFrom(field.getType());
     }
 
 }
