@@ -49,10 +49,12 @@ public class AggregationMetadata {
     private final Bson groupBy;
     private final Bson project;
     private final Field[] domainFields;
+    private final Document groupId;
 
     private <V> AggregationMetadata(Class<V> viewClass, MongoClient mongoClient) {
         this.collection = getCollection(mongoClient, viewClass.getAnnotation(Entity.class));
-        this.groupBy = buildGroupBy(viewClass);
+        this.groupId = buildGroupId(viewClass);
+        this.groupBy = buildGroupBy(viewClass, this.groupId);
         this.project = buildProject(viewClass);
         this.domainFields = buildDomainFields(viewClass);
     }
@@ -71,8 +73,7 @@ public class AggregationMetadata {
         return database.getCollection(mongoEntity.name());
     }
 
-    private static <V> Bson buildGroupBy(Class<V> viewClass) {
-        Document groupDoc = buildGroupId(viewClass);
+    private static <V> Bson buildGroupBy(Class<V> viewClass, Document groupDoc) {
         List<BsonField> fieldAccumulators = buildAggregation(viewClass);
         if (groupDoc.isEmpty() && fieldAccumulators.isEmpty()) {
             return null;

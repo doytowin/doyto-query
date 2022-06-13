@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static win.doyto.query.mongodb.MongoDataAccess.MONGO_ID;
 import static win.doyto.query.mongodb.filter.DomainPathBuilder.buildLookUpForSubDomain;
@@ -74,7 +75,7 @@ public class MongoDataQueryClient implements DataQueryClient {
                 list.add(buildHaving(having));
             }
         }
-        list.add(buildSort(query));
+        list.add(buildSort(query, md.getGroupId().keySet()));
         list.add(md.getProject());
         return md.getCollection().aggregate(list)
                  .map(document -> BeanUtil.parse(document.toJson(), viewClass))
@@ -85,10 +86,10 @@ public class MongoDataQueryClient implements DataQueryClient {
         return Aggregates.match(MongoFilterBuilder.buildFilter(having));
     }
 
-    private <Q extends DoytoQuery> Bson buildSort(Q query) {
+    private <Q extends DoytoQuery> Bson buildSort(Q query, Set<String> groupColumns) {
         Bson sort = SORT_BY_ID;
         if (query.getSort() != null) {
-            sort = MongoFilterBuilder.buildSort(query.getSort());
+            sort = MongoFilterBuilder.buildSort(query.getSort(), groupColumns);
         }
         return Aggregates.sort(sort);
     }
