@@ -93,7 +93,7 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
                          .extracting("sumQty", "status")
                          .containsExactly(120, "A");
         assertThat(views.get(0).getAddToSetItem())
-                .contains("notebook", "postcard", "journal");
+                .contains("notebook", "postcard", "journal")
         ;
         assertThat(views.get(0).getPushItemStatuses())
                 .hasSize(3)
@@ -149,10 +149,10 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
         List<UserEntity> views = dataQueryClient.query(userQuery);
         assertThat(views).hasSize(4)
                          .extracting(userEntity -> userEntity.getCreatedUsers().size())
-                         .containsExactly(4, 0, 0, 0);
+                         .containsExactly(3, 1, 0, 0);
         assertThat(views)
                 .extracting(userEntity -> userEntity.getCreateUser().getUsername())
-                .containsExactly("f0rb", "f0rb", "f0rb", "f0rb");
+                .containsExactly("f0rb", "f0rb", "f0rb", "user2");
         assertThat(views).extracting(UserEntity::getRoles).containsOnlyNulls();
     }
 

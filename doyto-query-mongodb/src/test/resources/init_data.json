@@ -12,7 +12,9 @@
         "valid": true,
         "userLevel": "高级",
         "createUserId": ObjectId("628b3a27f7a4ba009198a677")
-      }, {
+      },
+      {
+        "_id": ObjectId("628b3a27f7a4ba009198a678"),
         "username": "user2",
         "email": "test2@qq.com",
         "mobile": "17778888882",
@@ -20,7 +22,9 @@
         "valid": true,
         "userLevel": "普通",
         "createUserId": ObjectId("628b3a27f7a4ba009198a677")
-      }, {
+      },
+      {
+        "_id": ObjectId("628b3a27f7a4ba009198a679"),
         "username": "user3",
         "email": "test3@qq.com",
         "mobile": "17778888883",
@@ -29,14 +33,16 @@
         "memo": "memo",
         "userLevel": "普通",
         "createUserId": ObjectId("628b3a27f7a4ba009198a677")
-      }, {
+      },
+      {
+        "_id": ObjectId("628b3a27f7a4ba009198a67a"),
         "username": "user4",
         "email": "test4@qq.com",
         "mobile": "17778888884",
         "nickname": "测试4",
         "valid": true,
         "userLevel": "普通",
-        "createUserId": ObjectId("628b3a27f7a4ba009198a677")
+        "createUserId": ObjectId("628b3a27f7a4ba009198a678")
       }
     ]
   }
