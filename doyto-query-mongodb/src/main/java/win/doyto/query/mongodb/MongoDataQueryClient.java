@@ -21,6 +21,7 @@ import com.mongodb.client.model.Aggregates;
 import lombok.AllArgsConstructor;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.*;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.mongodb.filter.MongoFilterBuilder;
@@ -76,6 +77,10 @@ public class MongoDataQueryClient implements DataQueryClient {
             }
         }
         list.add(buildSort(query, md.getGroupId().keySet()));
+        if (query.needPaging()) {
+            list.add(Aggregates.skip(GlobalConfiguration.calcOffset(query)));
+            list.add(Aggregates.limit(query.getPageNumber()));
+        }
         list.add(md.getProject());
         return md.getCollection().aggregate(list)
                  .map(document -> BeanUtil.parse(document.toJson(), viewClass))

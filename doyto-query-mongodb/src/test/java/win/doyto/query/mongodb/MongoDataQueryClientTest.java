@@ -156,4 +156,12 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
         assertThat(views).extracting(UserEntity::getRoles).containsOnlyNulls();
     }
 
+    @Test
+    void supportPagingForAggregation() {
+        UserJoinQuery userQuery = UserJoinQuery.builder().pageNumber(2).pageSize(3).build();
+        List<UserEntity> views = dataQueryClient.query(userQuery);
+        assertThat(views).hasSize(1);
+        assertThat(views.get(0).getUsername()).isEqualTo("user4");
+    }
+
 }
