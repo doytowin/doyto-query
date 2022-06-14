@@ -63,16 +63,15 @@ public class DomainPathBuilder {
                 return lookup0(tableName, domainPath.lastDomainIdColumn(), MONGO_ID, project(projectDoc),viewName);
             }
         }
-        return buildLookupForManyToMany(query, field, paths, projectDoc);
+        return buildLookupForManyToMany(query, field.getName(), paths, projectDoc);
     }
 
     @SuppressWarnings("java:S117")
-    private static Bson buildLookupForManyToMany(DoytoQuery query, Field field, String[] paths, Document projectDoc) {
+    private static Bson buildLookupForManyToMany(DoytoQuery query, String viewName, String[] paths, Document projectDoc) {
         int n = paths.length - 1;
-        String viewName = field.getName();
         String $viewName = "$" + viewName;
 
-        boolean needReverse = field.getName().contains(paths[0]);
+        boolean needReverse = viewName.contains(paths[0]);
         String[] joints = IntStream.range(0, n).mapToObj(i -> String.format(JOIN_TABLE_FORMAT, paths[i], paths[i + 1]))
                                    .toArray(String[]::new);
         if (needReverse) {
@@ -105,7 +104,7 @@ public class DomainPathBuilder {
         return lookup0(from, localField, foreignField, Collections.singletonList(project), as);
     }
 
-    private static Bson lookup0(
+    public static Bson lookup0(
             String from, String localField, String foreignField, List<? extends Bson> pipeline, String as
     ) {
         Document lookupDoc = new Document()
@@ -119,4 +118,33 @@ public class DomainPathBuilder {
         return new Document("$lookup", lookupDoc);
     }
 
+    @SuppressWarnings("java:S117")
+    public static Bson buildLookUpForNestedQuery(String viewName, String[] paths) {
+        int n = paths.length - 1;
+        String $viewName = "$" + viewName;
+
+        boolean needReverse = viewName.contains(paths[0]);
+        String[] joints = IntStream.range(0, n).mapToObj(i -> String.format(JOIN_TABLE_FORMAT, paths[i], paths[i + 1]))
+                                   .toArray(String[]::new);
+        if (needReverse) {
+            ArrayUtils.reverse(paths);
+            ArrayUtils.reverse(joints);
+        }
+        String[] tableNames = Arrays.stream(paths).map(path -> String.format(TABLE_FORMAT, path)).toArray(String[]::new);
+        String[] joinIds = Arrays.stream(paths).map(path -> String.format(JOIN_ID_FORMAT, path)).toArray(String[]::new);
+
+        List<Bson> pipeline = Arrays.asList(
+                lookup0(tableNames[n], joinIds[n], MONGO_ID, Collections.emptyList(), viewName),
+                replaceRoot(new Document("$arrayElemAt", Arrays.asList($viewName, 0)))
+        );
+
+        for (int i = n - 1; i > 0; i--) {
+            pipeline = Arrays.asList(
+                    lookup0(joints[i], joinIds[i], joinIds[i], pipeline, viewName),
+                    replaceRoot(new Document("$arrayElemAt", Arrays.asList($viewName, 0)))
+            );
+        }
+
+        return lookup0(joints[0], MONGO_ID, joinIds[0], pipeline, viewName);
+    }
 }

@@ -33,6 +33,7 @@ import win.doyto.query.mongodb.test.aggregate.QuantityView;
 import win.doyto.query.mongodb.test.inventory.InventoryQuery;
 import win.doyto.query.mongodb.test.join.UserEntity;
 import win.doyto.query.mongodb.test.join.UserJoinQuery;
+import win.doyto.query.test.role.RoleQuery;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -164,4 +165,11 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
         assertThat(views.get(0).getUsername()).isEqualTo("user4");
     }
 
+    @Test
+    void supportQueryUserWithValidRole() {
+        UserJoinQuery userJoinQuery = UserJoinQuery.builder().role(RoleQuery.builder().valid(true).build()).build();
+        List<UserEntity> userEntities = dataQueryClient.query(userJoinQuery);
+        assertThat(userEntities).extracting("username")
+                .containsExactly("f0rb", "user3");
+    }
 }

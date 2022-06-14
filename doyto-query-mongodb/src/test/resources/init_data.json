@@ -45,5 +45,68 @@
         "createUserId": ObjectId("628b3a27f7a4ba009198a678")
       }
     ]
+  },
+  {
+    "insert": "t_role",
+    "ordered": true,
+    "documents": [
+      {
+        "_id": ObjectId("6285feedee051b404915c101"),
+        "createUserId": ObjectId("628b3a27f7a4ba009198a677"),
+        "createTime": ISODate("2022-05-19T16:23:04.311Z"),
+        "roleName": "admin",
+        "roleCode": "ADMIN",
+        "valid": true
+      },
+      {
+        "_id": ObjectId("6285feedee051b404915c102"),
+        "createUserId": ObjectId("628b3a27f7a4ba009198a678"),
+        "createTime": ISODate("2022-05-19T16:23:04.311Z"),
+        "roleName": "vip",
+        "roleCode": "VIP",
+        "valid": true
+      },
+      {
+        "_id": ObjectId("6285feedee051b404915c103"),
+        "createUserId": ObjectId("628b3a27f7a4ba009198a678"),
+        "createTime": ISODate("2022-05-19T16:23:04.311Z"),
+        "roleName": "vip2",
+        "roleCode": "VIP2",
+        "valid": false
+      },
+      {
+        "_id": ObjectId("6285feedee051b404915c104"),
+        "createTime": ISODate("2022-05-19T16:23:04.311Z"),
+        "roleName": "vip3",
+        "roleCode": "VIP3",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "insert": "j_user_and_role",
+    "ordered": true,
+    "documents": [
+      {
+        "user_id": ObjectId("628b3a27f7a4ba009198a677"),
+        "role_id": ObjectId("6285feedee051b404915c101")
+      },
+      {
+        "user_id": ObjectId("628b3a27f7a4ba009198a677"),
+        "role_id": ObjectId("6285feedee051b404915c102")
+      },
+      {
+        "user_id": ObjectId("628b3a27f7a4ba009198a677"),
+        "role_id": ObjectId("6285feedee051b404915c103")
+      },
+      {
+        "user_id": ObjectId("628b3a27f7a4ba009198a678"),
+        "role_id": ObjectId("6285feedee051b404915c103")
+      },
+      {
+        "user_id": ObjectId("628b3a27f7a4ba009198a679"),
+        "role_id": ObjectId("6285feedee051b404915c104")
+      }
+    ]
   }
 ]
