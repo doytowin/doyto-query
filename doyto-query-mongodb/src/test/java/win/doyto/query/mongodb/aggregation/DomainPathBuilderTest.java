@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb.filter;
+package win.doyto.query.mongodb.aggregation;
 
 import lombok.SneakyThrows;
 import org.bson.BsonDocument;
@@ -35,7 +35,7 @@ import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static win.doyto.query.mongodb.filter.DomainPathBuilder.buildLookUpForSubDomain;
+import static win.doyto.query.mongodb.aggregation.DomainPathBuilder.buildLookUpForSubDomain;
 
 /**
  * DomainPathBuilderTest

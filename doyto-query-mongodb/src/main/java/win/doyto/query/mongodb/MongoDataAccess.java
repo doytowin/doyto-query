@@ -47,6 +47,7 @@ import javax.persistence.Entity;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.in;
+import static win.doyto.query.mongodb.MongoConstant.MONGO_ID;
 
 /**
  * MongoDataAccess
@@ -55,7 +56,6 @@ import static com.mongodb.client.model.Filters.in;
  */
 @Slf4j
 public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery> implements DataAccess<E, I, Q> {
-    static final String MONGO_ID = "_id";
     private final Class<E> entityClass;
     @Getter
     private final MongoCollection<Document> collection;

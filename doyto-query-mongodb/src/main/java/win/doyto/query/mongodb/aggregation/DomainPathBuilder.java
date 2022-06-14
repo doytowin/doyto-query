@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb.filter;
+package win.doyto.query.mongodb.aggregation;
 
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.ArrayUtils;
@@ -33,6 +33,7 @@ import java.util.stream.IntStream;
 
 import static com.mongodb.client.model.Aggregates.*;
 import static win.doyto.query.config.GlobalConfiguration.*;
+import static win.doyto.query.mongodb.MongoConstant.MONGO_ID;
 import static win.doyto.query.mongodb.filter.MongoFilterBuilder.buildFilter;
 
 /**
@@ -42,7 +43,6 @@ import static win.doyto.query.mongodb.filter.MongoFilterBuilder.buildFilter;
  */
 @UtilityClass
 public class DomainPathBuilder {
-    private static final String MONGO_ID = "_id";
     private static final int PROJECTING = 1;
 
     public static <V> Bson buildLookUpForSubDomain(DoytoQuery query, Class<V> viewClass, Field field) {

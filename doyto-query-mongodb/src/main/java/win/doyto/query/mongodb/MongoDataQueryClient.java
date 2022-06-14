@@ -17,28 +17,20 @@
 package win.doyto.query.mongodb;
 
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.model.Aggregates;
 import lombok.AllArgsConstructor;
-import org.bson.Document;
 import org.bson.conversions.Bson;
-import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.core.*;
+import win.doyto.query.core.AggregationQuery;
+import win.doyto.query.core.DataQueryClient;
+import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.core.JoinQuery;
 import win.doyto.query.entity.Persistable;
-import win.doyto.query.mongodb.filter.DomainPathBuilder;
-import win.doyto.query.mongodb.filter.MongoFilterBuilder;
+import win.doyto.query.mongodb.aggregation.AggregationMetadata;
+import win.doyto.query.mongodb.aggregation.AggregationPipelineBuilder;
 import win.doyto.query.util.BeanUtil;
-import win.doyto.query.util.ColumnUtil;
-import win.doyto.query.util.CommonUtil;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-
-import static win.doyto.query.mongodb.MongoDataAccess.MONGO_ID;
-import static win.doyto.query.mongodb.filter.DomainPathBuilder.buildLookUpForSubDomain;
 
 /**
  * MongoDataQuery
@@ -47,9 +39,6 @@ import static win.doyto.query.mongodb.filter.DomainPathBuilder.buildLookUpForSub
  */
 @AllArgsConstructor
 public class MongoDataQueryClient implements DataQueryClient {
-
-    private static final Document SORT_BY_ID = new Document(MONGO_ID, 1);
-
     private MongoClient mongoClient;
 
     @Override
@@ -61,71 +50,10 @@ public class MongoDataQueryClient implements DataQueryClient {
     private <V, Q extends DoytoQuery> ArrayList<V>
     commonQuery(Q query, Class<V> viewClass) {
         AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
-        List<Bson> list = buildAggregationPipeline(query, viewClass, md);
+        List<Bson> list = AggregationPipelineBuilder.build(query, viewClass, md);
         return md.getCollection().aggregate(list)
                  .map(document -> BeanUtil.parse(document.toJson(), viewClass))
                  .into(new ArrayList<>());
-    }
-
-    private <V, Q extends DoytoQuery> List<Bson> buildAggregationPipeline(Q query, Class<V> viewClass, AggregationMetadata md) {
-        List<Bson> list = new ArrayList<>();
-
-        List<String> unsetFields = new ArrayList<>();
-
-        Field[] fields = ColumnUtil.initFields(query.getClass());
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(DomainPath.class)) {
-                Object value = CommonUtil.readFieldGetter(field, query);
-                if (value instanceof DoytoQuery) {
-                    String subDomainName = field.getName();
-                    String[] paths = field.getAnnotation(DomainPath.class).value();
-                    Bson lookupDoc = DomainPathBuilder.buildLookUpForNestedQuery(subDomainName, paths);
-                    list.add(lookupDoc);
-
-                    unsetFields.add(subDomainName);
-                }
-            }
-        }
-        list.add(Aggregates.match(MongoFilterBuilder.buildFilter(query)));
-        if (!unsetFields.isEmpty()) {
-            list.add(new Document("$unset", unsetFields));
-        }
-
-        for (Field field : md.getDomainFields()) {
-            Object domainQuery = CommonUtil.readField(query, field.getName() + "Query");
-            if (domainQuery instanceof DoytoQuery) {
-                Bson lookupDoc = buildLookUpForSubDomain((DoytoQuery) domainQuery, viewClass, field);
-                list.add(lookupDoc);
-            }
-        }
-        if (md.getGroupBy() != null) {
-            list.add(md.getGroupBy());
-        }
-        if (query instanceof AggregationQuery) {
-            Having having = ((AggregationQuery) query).getHaving();
-            if (having != null) {
-                list.add(buildHaving(having));
-            }
-        }
-        list.add(buildSort(query, md.getGroupId().keySet()));
-        if (query.needPaging()) {
-            list.add(Aggregates.skip(GlobalConfiguration.calcOffset(query)));
-            list.add(Aggregates.limit(query.getPageNumber()));
-        }
-        list.add(md.getProject());
-        return list;
-    }
-
-    private <H extends Having> Bson buildHaving(H having) {
-        return Aggregates.match(MongoFilterBuilder.buildFilter(having));
-    }
-
-    private <Q extends DoytoQuery> Bson buildSort(Q query, Set<String> groupColumns) {
-        Bson sort = SORT_BY_ID;
-        if (query.getSort() != null) {
-            sort = MongoFilterBuilder.buildSort(query.getSort(), groupColumns);
-        }
-        return Aggregates.sort(sort);
     }
 
     @Override

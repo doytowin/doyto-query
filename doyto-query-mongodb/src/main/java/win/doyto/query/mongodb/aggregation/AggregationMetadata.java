@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb;
+package win.doyto.query.mongodb.aggregation;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -34,7 +34,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import javax.persistence.Entity;
 
-import static win.doyto.query.mongodb.MongoDataAccess.MONGO_ID;
+import static win.doyto.query.mongodb.MongoConstant.MONGO_ID;
 
 /**
  * AggregationMetadata
@@ -64,7 +64,7 @@ public class AggregationMetadata {
                          .toArray(Field[]::new);
     }
 
-    static AggregationMetadata build(Class<?> viewClass, MongoClient mongoClient) {
+    public static AggregationMetadata build(Class<?> viewClass, MongoClient mongoClient) {
         return holder.computeIfAbsent(viewClass, clazz -> new AggregationMetadata(clazz, mongoClient));
     }
 
