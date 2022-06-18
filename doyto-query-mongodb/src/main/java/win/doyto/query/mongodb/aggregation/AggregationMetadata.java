@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import javax.persistence.Entity;
 
 import static win.doyto.query.mongodb.MongoConstant.MONGO_ID;
+import static win.doyto.query.mongodb.MongoConstant.ex;
 
 /**
  * AggregationMetadata
@@ -51,7 +52,7 @@ public class AggregationMetadata {
     private final Field[] domainFields;
     private final Document groupId;
 
-    private <V> AggregationMetadata(Class<V> viewClass, MongoClient mongoClient) {
+    <V> AggregationMetadata(Class<V> viewClass, MongoClient mongoClient) {
         this.collection = getCollection(mongoClient, viewClass.getAnnotation(Entity.class));
         this.groupId = buildGroupId(viewClass);
         this.groupBy = buildGroupBy(viewClass, this.groupId);
@@ -95,7 +96,7 @@ public class AggregationMetadata {
         for (Field field : fields) {
             if (field.isAnnotationPresent(GroupBy.class)) {
                 String fieldName = field.getName();
-                id.append(fieldName, "$" + fieldName);
+                id.append(fieldName, ex(fieldName));
             }
         }
         return id;
@@ -107,9 +108,9 @@ public class AggregationMetadata {
         for (Field field : fields) {
             String column = field.getName();
             if (isManyToOneField(field)) {
-                columns.append(column, new Document("$arrayElemAt", Arrays.asList("$" + column, 0)));
+                columns.append(column, new Document("$arrayElemAt", Arrays.asList(ex(column), 0)));
             } else {
-                columns.append(column, "$" + column);
+                columns.append(column, ex(column));
             }
             if (field.isAnnotationPresent(GroupBy.class)) {
                 String fieldName = field.getName();

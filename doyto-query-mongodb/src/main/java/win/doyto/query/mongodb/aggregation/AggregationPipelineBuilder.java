@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Set;
 
 import static win.doyto.query.mongodb.MongoConstant.MONGO_ID;
+import static win.doyto.query.mongodb.MongoConstant.ex;
 import static win.doyto.query.mongodb.aggregation.DomainPathBuilder.buildLookUpForSubDomain;
 
 /**
@@ -46,9 +47,12 @@ import static win.doyto.query.mongodb.aggregation.DomainPathBuilder.buildLookUpF
 public class AggregationPipelineBuilder {
     private static final Document SORT_BY_ID = new Document(MONGO_ID, 1);
 
+    @SuppressWarnings("java:S3776")
     public <V, Q extends DoytoQuery> List<Bson> build(Q query, Class<V> viewClass, AggregationMetadata md) {
-        List<Bson> list = new ArrayList<>();
+        List<Bson> stages = new ArrayList<>();
 
+        List<Field> lookupFields = new ArrayList<>();
+        List<String> unwindFields = new ArrayList<>();
         List<String> unsetFields = new ArrayList<>();
 
         Field[] fields = ColumnUtil.initFields(query.getClass());
@@ -57,42 +61,55 @@ public class AggregationPipelineBuilder {
                 Object value = CommonUtil.readFieldGetter(field, query);
                 if (value instanceof DoytoQuery) {
                     String subDomainName = field.getName();
-                    String[] paths = field.getAnnotation(DomainPath.class).value();
-                    Bson lookupDoc = DomainPathBuilder.buildLookUpForNestedQuery(subDomainName, paths);
-                    list.add(lookupDoc);
+                    DomainPath domainPath = field.getAnnotation(DomainPath.class);
 
+                    lookupFields.add(field);
+
+                    if (domainPath.value().length == 1) {
+                        unwindFields.add(subDomainName);
+                    }
                     unsetFields.add(subDomainName);
                 }
             }
         }
-        list.add(Aggregates.match(MongoFilterBuilder.buildFilter(query)));
+        for (Field lookupField : lookupFields) {
+            String subDomainName = lookupField.getName();
+            DomainPath domainPath = lookupField.getAnnotation(DomainPath.class);
+            stages.add(DomainPathBuilder.buildLookUpForNestedQuery(subDomainName, domainPath));
+        }
+        if (!unwindFields.isEmpty()) {
+            for (String unwindField : unwindFields) {
+                stages.add(new Document("$unwind", ex(unwindField)));
+            }
+        }
+        stages.add(Aggregates.match(MongoFilterBuilder.buildFilter(query)));
         if (!unsetFields.isEmpty()) {
-            list.add(new Document("$unset", unsetFields));
+            stages.add(new Document("$unset", unsetFields));
         }
 
         for (Field field : md.getDomainFields()) {
             Object domainQuery = CommonUtil.readField(query, field.getName() + "Query");
             if (domainQuery instanceof DoytoQuery) {
                 Bson lookupDoc = buildLookUpForSubDomain((DoytoQuery) domainQuery, viewClass, field);
-                list.add(lookupDoc);
+                stages.add(lookupDoc);
             }
         }
         if (md.getGroupBy() != null) {
-            list.add(md.getGroupBy());
+            stages.add(md.getGroupBy());
         }
         if (query instanceof AggregationQuery) {
             Having having = ((AggregationQuery) query).getHaving();
             if (having != null) {
-                list.add(buildHaving(having));
+                stages.add(buildHaving(having));
             }
         }
-        list.add(buildSort(query, md.getGroupId().keySet()));
+        stages.add(buildSort(query, md.getGroupId().keySet()));
         if (query.needPaging()) {
-            list.add(Aggregates.skip(GlobalConfiguration.calcOffset(query)));
-            list.add(Aggregates.limit(query.getPageNumber()));
+            stages.add(Aggregates.skip(GlobalConfiguration.calcOffset(query)));
+            stages.add(Aggregates.limit(query.getPageNumber()));
         }
-        list.add(md.getProject());
-        return list;
+        stages.add(md.getProject());
+        return stages;
     }
 
     private <H extends Having> Bson buildHaving(H having) {

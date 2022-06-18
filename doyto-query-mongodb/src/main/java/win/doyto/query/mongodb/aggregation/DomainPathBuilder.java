@@ -119,7 +119,14 @@ public class DomainPathBuilder {
     }
 
     @SuppressWarnings("java:S117")
-    public static Bson buildLookUpForNestedQuery(String viewName, String[] paths) {
+    public static Bson buildLookUpForNestedQuery(String viewName, DomainPath domainPath) {
+        String[] paths = domainPath.value();
+        if (paths.length == 1) {
+            String tableName = String.format(TABLE_FORMAT, paths[0]);
+            // one-to-many
+            return lookup0(tableName, domainPath.localField(), MONGO_ID, Collections.emptyList(), viewName);
+        }
+
         int n = paths.length - 1;
         String $viewName = "$" + viewName;
 
