@@ -56,7 +56,7 @@ public class AggregationMetadata {
         this.collection = getCollection(mongoClient, viewClass.getAnnotation(Entity.class));
         this.groupId = buildGroupId(viewClass);
         this.groupBy = buildGroupBy(viewClass, this.groupId);
-        this.project = buildProject(viewClass);
+        this.project = buildProject(viewClass, groupBy != null);
         this.domainFields = buildDomainFields(viewClass);
     }
 
@@ -102,9 +102,12 @@ public class AggregationMetadata {
         return id;
     }
 
-    private static <V> Bson buildProject(Class<V> viewClass) {
+    private static <V> Bson buildProject(Class<V> viewClass, boolean isAggregated) {
         Field[] fields = ColumnUtil.initFields(viewClass);
-        Document columns = new Document(MONGO_ID, 0); // don't want to show _id
+        Document columns = new Document();
+        if (isAggregated) {
+            columns.append(MONGO_ID, 0);// don't show _id when do aggregation
+        }
         for (Field field : fields) {
             String column = field.getName();
             if (isManyToOneField(field)) {

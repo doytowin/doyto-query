@@ -16,11 +16,9 @@
 
 package win.doyto.query.mongodb.aggregation;
 
-import lombok.SneakyThrows;
 import org.bson.BsonDocument;
 import org.bson.conversions.Bson;
 import org.junit.jupiter.api.Test;
-import org.springframework.util.StreamUtils;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.mongodb.test.join.MenuEntity;
 import win.doyto.query.mongodb.test.join.PermEntity;
@@ -32,10 +30,10 @@ import win.doyto.query.test.UserQuery;
 import win.doyto.query.test.role.RoleQuery;
 
 import java.lang.reflect.Field;
-import java.nio.charset.Charset;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static win.doyto.query.mongodb.aggregation.DomainPathBuilder.buildLookUpForSubDomain;
+import static win.doyto.query.mongodb.test.TestUtil.readString;
 
 /**
  * DomainPathBuilderTest
@@ -43,11 +41,6 @@ import static win.doyto.query.mongodb.aggregation.DomainPathBuilder.buildLookUpF
  * @author f0rb on 2022-05-19
  */
 class DomainPathBuilderTest {
-
-    @SneakyThrows
-    private static String readString(String name) {
-        return StreamUtils.copyToString(DomainPathBuilderTest.class.getResourceAsStream(name), Charset.defaultCharset());
-    }
 
     @Test
     void buildDocForSubDomainWithOneJointAndQuery() throws NoSuchFieldException {

@@ -17,14 +17,9 @@
 package win.doyto.query.mongodb;
 
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoDatabase;
-import lombok.SneakyThrows;
-import org.bson.BsonArray;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StreamUtils;
 import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.mongodb.test.aggregate.QuantityByStatusQuery;
 import win.doyto.query.mongodb.test.aggregate.QuantityByStatusView;
@@ -35,7 +30,6 @@ import win.doyto.query.mongodb.test.join.UserEntity;
 import win.doyto.query.mongodb.test.join.UserJoinQuery;
 import win.doyto.query.test.role.RoleQuery;
 
-import java.nio.charset.Charset;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,19 +46,6 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
 
     MongoDataQueryClientTest(@Autowired MongoClient mongoClient) {
         this.dataQueryClient = new MongoDataQueryClient(mongoClient);
-    }
-
-    @SneakyThrows
-    private static String readString(String path) {
-        return StreamUtils.copyToString(MongoDataQueryClientTest.class.getResourceAsStream(path), Charset.defaultCharset());
-    }
-
-    @BeforeAll
-    static void beforeAll(@Autowired MongoClient mongoClient) {
-        MongoDatabase database = mongoClient.getDatabase("doyto");
-        String text = readString("/init_data.json");
-        BsonArray bsonValues = BsonArray.parse(text);
-        bsonValues.forEach(bsonValue -> database.runCommand(bsonValue.asDocument()));
     }
 
     @Test

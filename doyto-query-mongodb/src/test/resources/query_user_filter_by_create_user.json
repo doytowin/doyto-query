@@ -25,7 +25,6 @@
   },
   {
     $project: {
-      "_id": 0,
       createUser: {
         "$arrayElemAt": ["$createUser", 0]
       },

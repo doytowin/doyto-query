@@ -18,8 +18,11 @@ package win.doyto.query.mongodb;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoDatabase;
 import lombok.SneakyThrows;
+import org.bson.BsonArray;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -29,6 +32,8 @@ import win.doyto.query.mongodb.test.inventory.InventoryEntity;
 import win.doyto.query.util.BeanUtil;
 
 import java.util.List;
+
+import static win.doyto.query.mongodb.test.TestUtil.readString;
 
 /**
  * MongoApplicationTest
@@ -40,6 +45,14 @@ import java.util.List;
 abstract class MongoApplicationTest {
 
     private MongoDataAccess<InventoryEntity, String, DoytoQuery> dataAccess;
+
+    @BeforeAll
+    static void beforeAll(@Autowired MongoClient mongoClient) {
+        MongoDatabase database = mongoClient.getDatabase("doyto");
+        String text = readString("/init_data.json");
+        BsonArray bsonValues = BsonArray.parse(text);
+        bsonValues.forEach(bsonValue -> database.runCommand(bsonValue.asDocument()));
+    }
 
     @BeforeEach
     void setUp(@Autowired MongoClient mongoClient) {
