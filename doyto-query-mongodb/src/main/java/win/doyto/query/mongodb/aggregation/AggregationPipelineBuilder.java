@@ -106,7 +106,7 @@ public class AggregationPipelineBuilder {
         stages.add(buildSort(query, md.getGroupId().keySet()));
         if (query.needPaging()) {
             stages.add(Aggregates.skip(GlobalConfiguration.calcOffset(query)));
-            stages.add(Aggregates.limit(query.getPageNumber()));
+            stages.add(Aggregates.limit(query.getPageSize()));
         }
         stages.add(md.getProject());
         return stages;
