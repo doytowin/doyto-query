@@ -64,7 +64,9 @@ public class MongoAssociationService implements AssociationService<ObjectId, Obj
 
     @Override
     public List<ObjectId> queryK2ByK1(ObjectId k1) {
-        return new ArrayList<>();
+        return collection.find(new Document(domainId1, k1))
+                         .map(document -> (ObjectId) document.get(domainId2))
+                         .into(new ArrayList<>());
     }
 
     @Override

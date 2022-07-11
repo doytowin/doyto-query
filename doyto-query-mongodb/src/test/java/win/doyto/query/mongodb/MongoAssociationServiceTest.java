@@ -47,4 +47,15 @@ class MongoAssociationServiceTest extends MongoApplicationTest {
                 new ObjectId("628b3a27f7a4ba009198a678")
         );
     }
+
+    @Test
+    void queryK2ByK1() {
+        ObjectId k1Id = new ObjectId("628b3a27f7a4ba009198a677");
+        List<ObjectId> k2List = associationService.queryK2ByK1(k1Id);
+        assertThat(k2List).containsExactly(
+                new ObjectId("6285feedee051b404915c101"),
+                new ObjectId("6285feedee051b404915c102"),
+                new ObjectId("6285feedee051b404915c103")
+        );
+    }
 }
