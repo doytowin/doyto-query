@@ -44,10 +44,13 @@ import static win.doyto.query.mongodb.test.TestUtil.readString;
 @DataMongoTest(properties = {"spring.mongodb.embedded.version=5.0.5"})
 abstract class MongoApplicationTest {
 
+    private static boolean initialized;
     private MongoDataAccess<InventoryEntity, String, DoytoQuery> dataAccess;
 
     @BeforeAll
     static void beforeAll(@Autowired MongoClient mongoClient) {
+        if (initialized) return;
+        initialized = true;
         MongoDatabase database = mongoClient.getDatabase("doyto");
         String text = readString("/init_data.json");
         BsonArray bsonValues = BsonArray.parse(text);
