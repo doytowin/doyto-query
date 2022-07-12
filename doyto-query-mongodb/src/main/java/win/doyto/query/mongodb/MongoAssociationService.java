@@ -23,6 +23,8 @@ import org.bson.types.ObjectId;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.AssociationService;
 import win.doyto.query.core.UniqueKey;
+import win.doyto.query.mongodb.session.MongoSessionSupplier;
+import win.doyto.query.mongodb.session.MongoSessionThreadLocalSupplier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +37,18 @@ import java.util.Set;
  */
 public class MongoAssociationService implements AssociationService<ObjectId, ObjectId> {
     private final MongoCollection<Document> collection;
+    private final MongoSessionSupplier mongoSessionSupplier;
     private final String domainId1;
     private final String domainId2;
 
-    public MongoAssociationService(MongoClient mongoClient, String database, String domain1, String domain2) {
+    public MongoAssociationService(MongoClient mongoClient,String database, String domain1, String domain2) {
+        this(mongoClient, MongoSessionThreadLocalSupplier.create(mongoClient), database, domain1, domain2);
+    }
+
+    public MongoAssociationService(MongoClient mongoClient, MongoSessionSupplier mongoSessionSupplier, String database, String domain1, String domain2) {
         String joinTable = String.format(GlobalConfiguration.JOIN_TABLE_FORMAT, domain1, domain2);
         this.collection = mongoClient.getDatabase(database).getCollection(joinTable);
+        this.mongoSessionSupplier = mongoSessionSupplier;
         this.domainId1 = String.format(GlobalConfiguration.JOIN_ID_FORMAT, domain1);
         this.domainId2 = String.format(GlobalConfiguration.JOIN_ID_FORMAT, domain2);
     }
@@ -57,14 +65,14 @@ public class MongoAssociationService implements AssociationService<ObjectId, Obj
 
     @Override
     public List<ObjectId> queryK1ByK2(ObjectId k2) {
-        return collection.find(new Document(domainId2, k2))
+        return collection.find(mongoSessionSupplier.get(), new Document(domainId2, k2))
                          .map(document -> (ObjectId) document.get(domainId1))
                          .into(new ArrayList<>());
     }
 
     @Override
     public List<ObjectId> queryK2ByK1(ObjectId k1) {
-        return collection.find(new Document(domainId1, k1))
+        return collection.find(mongoSessionSupplier.get(), new Document(domainId1, k1))
                          .map(document -> (ObjectId) document.get(domainId2))
                          .into(new ArrayList<>());
     }

@@ -26,6 +26,8 @@ import win.doyto.query.core.JoinQuery;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.mongodb.aggregation.AggregationMetadata;
 import win.doyto.query.mongodb.aggregation.AggregationPipelineBuilder;
+import win.doyto.query.mongodb.session.MongoSessionSupplier;
+import win.doyto.query.mongodb.session.MongoSessionThreadLocalSupplier;
 import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;
@@ -40,6 +42,11 @@ import java.util.List;
 @AllArgsConstructor
 public class MongoDataQueryClient implements DataQueryClient {
     private MongoClient mongoClient;
+    private final MongoSessionSupplier mongoSessionSupplier;
+
+    public MongoDataQueryClient(MongoClient mongoClient) {
+        this(mongoClient, MongoSessionThreadLocalSupplier.create(mongoClient));
+    }
 
     @Override
     public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
@@ -51,7 +58,7 @@ public class MongoDataQueryClient implements DataQueryClient {
     commonQuery(Q query, Class<V> viewClass) {
         AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
         List<Bson> list = AggregationPipelineBuilder.build(query, viewClass, md);
-        return md.getCollection().aggregate(list)
+        return md.getCollection().aggregate(mongoSessionSupplier.get(), list)
                  .map(document -> BeanUtil.parse(document.toJson(), viewClass))
                  .into(new ArrayList<>());
     }
