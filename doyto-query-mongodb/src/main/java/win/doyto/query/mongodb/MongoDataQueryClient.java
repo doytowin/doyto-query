@@ -17,6 +17,7 @@
 package win.doyto.query.mongodb;
 
 import com.mongodb.client.MongoClient;
+import com.mongodb.client.model.Aggregates;
 import lombok.AllArgsConstructor;
 import org.bson.conversions.Bson;
 import win.doyto.query.core.AggregationQuery;
@@ -66,7 +67,14 @@ public class MongoDataQueryClient implements DataQueryClient {
     @Override
     public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
     long count(Q query, Class<V> viewClass) {
-        return 0;
+        AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
+        List<Bson> list = AggregationPipelineBuilder.build(query, viewClass, md);
+        list.add(Aggregates.count());
+        return md.getCollection().aggregate(mongoSessionSupplier.get(), list)
+                .map(document ->
+                             document.getInteger("count"))
+                 .into(new ArrayList<>())
+                 .get(0);
     }
 
     @Override
