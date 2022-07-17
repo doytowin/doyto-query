@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -105,5 +106,11 @@ class MongoAssociationServiceTest extends MongoApplicationTest {
         associationService.reassociateForK1(k1Id, k2List);
         assertThat(associationService.queryK2ByK1(k1Id))
                 .containsExactlyInAnyOrderElementsOf(k2List);
+    }
+
+    @Test
+    void reassociateForK1WithEmpty() {
+        associationService.reassociateForK1(k1Id, Collections.emptyList());
+        assertThat(associationService.queryK2ByK1(k1Id)).isEmpty();
     }
 }

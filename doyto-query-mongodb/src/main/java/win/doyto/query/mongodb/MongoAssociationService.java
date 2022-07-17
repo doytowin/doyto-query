@@ -57,7 +57,10 @@ public class MongoAssociationService implements AssociationService<ObjectId, Obj
 
     @Override
     public int associate(Set<UniqueKey<ObjectId, ObjectId>> uniqueKeys) {
-        List<Document> list = new ArrayList<>();
+        if (uniqueKeys.isEmpty()) {
+            return 0;
+        }
+        List<Document> list = new ArrayList<>(uniqueKeys.size());
         for (UniqueKey<ObjectId, ObjectId> uniqueKey : uniqueKeys) {
             Document doc = new Document(domainId1, uniqueKey.getK1()).append(domainId2, uniqueKey.getK2());
             list.add(doc);
