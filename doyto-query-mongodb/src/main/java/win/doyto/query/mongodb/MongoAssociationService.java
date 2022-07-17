@@ -70,12 +70,17 @@ public class MongoAssociationService implements AssociationService<ObjectId, Obj
 
     @Override
     public int dissociate(Set<UniqueKey<ObjectId, ObjectId>> uniqueKeys) {
+        Bson filter = buildKeysFilter(uniqueKeys);
+        return (int) collection.deleteMany(mongoSessionSupplier.get(), filter).getDeletedCount();
+    }
+
+    private Bson buildKeysFilter(Set<UniqueKey<ObjectId, ObjectId>> uniqueKeys) {
         List<Bson> filters = new ArrayList<>(uniqueKeys.size());
         for (UniqueKey<ObjectId, ObjectId> uniqueKey : uniqueKeys) {
             Document doc = new Document(domainId1, uniqueKey.getK1()).append(domainId2, uniqueKey.getK2());
             filters.add(doc);
         }
-        return (int) collection.deleteMany(mongoSessionSupplier.get(), Filters.or(filters)).getDeletedCount();
+        return Filters.or(filters);
     }
 
     @Override
@@ -117,7 +122,8 @@ public class MongoAssociationService implements AssociationService<ObjectId, Obj
     }
 
     @Override
-    public long count(Set<UniqueKey<ObjectId, ObjectId>> set) {
-        return 0;
+    public long count(Set<UniqueKey<ObjectId, ObjectId>> uniqueKeys) {
+        Bson filter = buildKeysFilter(uniqueKeys);
+        return collection.countDocuments(mongoSessionSupplier.get(), filter);
     }
 }

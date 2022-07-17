@@ -20,10 +20,9 @@ import com.mongodb.client.MongoClient;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import win.doyto.query.core.UniqueKey;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -122,5 +121,14 @@ class MongoAssociationServiceTest extends MongoApplicationTest {
         associationService.reassociateForK2(k2Id, k1List);
         assertThat(associationService.queryK1ByK2(k2Id))
                 .containsExactlyInAnyOrderElementsOf(k1List);
+    }
+
+    @Test
+    void count() {
+        Set<UniqueKey<ObjectId, ObjectId>> uks = new HashSet<>();
+        uks.add(new UniqueKey<>(k1Id, k2Id));
+        uks.add(new UniqueKey<>(k1Id, new ObjectId("6285feedee051b404915c102")));
+        uks.add(new UniqueKey<>(k1Id, new ObjectId("6285feedee051b404915c104")));
+        assertThat(associationService.count(uks)).isEqualTo(2);
     }
 }
