@@ -1,0 +1,112 @@
+[
+  {
+    "insert": "t_user",
+    "ordered": true,
+    "documents": [
+      {
+        "_id": ObjectId("628b3a27f7a4ba009198a677"),
+        "username": "f0rb",
+        "email": "f0rb@163.com",
+        "mobile": "17778888881",
+        "nickname": "测试1",
+        "valid": true,
+        "userLevel": "高级",
+        "createUserId": ObjectId("628b3a27f7a4ba009198a677")
+      },
+      {
+        "_id": ObjectId("628b3a27f7a4ba009198a678"),
+        "username": "user2",
+        "email": "test2@qq.com",
+        "mobile": "17778888882",
+        "nickname": "测试2",
+        "valid": true,
+        "userLevel": "普通",
+        "createUserId": ObjectId("628b3a27f7a4ba009198a677")
+      },
+      {
+        "_id": ObjectId("628b3a27f7a4ba009198a679"),
+        "username": "user3",
+        "email": "test3@qq.com",
+        "mobile": "17778888883",
+        "nickname": "测试3",
+        "valid": true,
+        "memo": "memo",
+        "userLevel": "普通",
+        "createUserId": ObjectId("628b3a27f7a4ba009198a677")
+      },
+      {
+        "_id": ObjectId("628b3a27f7a4ba009198a67a"),
+        "username": "user4",
+        "email": "test4@qq.com",
+        "mobile": "17778888884",
+        "nickname": "测试4",
+        "valid": true,
+        "userLevel": "普通",
+        "createUserId": ObjectId("628b3a27f7a4ba009198a678")
+      }
+    ]
+  },
+  {
+    "insert": "t_role",
+    "ordered": true,
+    "documents": [
+      {
+        "_id": ObjectId("6285feedee051b404915c101"),
+        "createUserId": ObjectId("628b3a27f7a4ba009198a677"),
+        "createTime": ISODate("2022-05-19T16:23:04.311Z"),
+        "roleName": "admin",
+        "roleCode": "ADMIN",
+        "valid": true
+      },
+      {
+        "_id": ObjectId("6285feedee051b404915c102"),
+        "createUserId": ObjectId("628b3a27f7a4ba009198a678"),
+        "createTime": ISODate("2022-05-19T16:23:04.311Z"),
+        "roleName": "vip",
+        "roleCode": "VIP",
+        "valid": true
+      },
+      {
+        "_id": ObjectId("6285feedee051b404915c103"),
+        "createUserId": ObjectId("628b3a27f7a4ba009198a678"),
+        "createTime": ISODate("2022-05-19T16:23:04.311Z"),
+        "roleName": "vip2",
+        "roleCode": "VIP2",
+        "valid": false
+      },
+      {
+        "_id": ObjectId("6285feedee051b404915c104"),
+        "createTime": ISODate("2022-05-19T16:23:04.311Z"),
+        "roleName": "vip3",
+        "roleCode": "VIP3",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "insert": "j_user_and_role",
+    "ordered": true,
+    "documents": [
+      {
+        "user_id": ObjectId("628b3a27f7a4ba009198a677"),
+        "role_id": ObjectId("6285feedee051b404915c101")
+      },
+      {
+        "user_id": ObjectId("628b3a27f7a4ba009198a677"),
+        "role_id": ObjectId("6285feedee051b404915c102")
+      },
+      {
+        "user_id": ObjectId("628b3a27f7a4ba009198a677"),
+        "role_id": ObjectId("6285feedee051b404915c103")
+      },
+      {
+        "user_id": ObjectId("628b3a27f7a4ba009198a678"),
+        "role_id": ObjectId("6285feedee051b404915c103")
+      },
+      {
+        "user_id": ObjectId("628b3a27f7a4ba009198a679"),
+        "role_id": ObjectId("6285feedee051b404915c104")
+      }
+    ]
+  }
+]

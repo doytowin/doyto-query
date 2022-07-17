@@ -26,8 +26,10 @@ import win.doyto.query.mongodb.test.aggregate.QuantityByStatusView;
 import win.doyto.query.mongodb.test.aggregate.QuantityHaving;
 import win.doyto.query.mongodb.test.aggregate.QuantityView;
 import win.doyto.query.mongodb.test.inventory.InventoryQuery;
+import win.doyto.query.mongodb.test.join.UserEntity;
+import win.doyto.query.mongodb.test.join.UserJoinQuery;
+import win.doyto.query.test.role.RoleQuery;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,8 +72,10 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
         List<QuantityByStatusView> views = dataQueryClient.aggregate(query, QuantityByStatusView.class);
         assertThat(views).hasSize(2)
                          .first()
-                         .extracting("sumQty", "status", "addToSetItem")
-                         .containsExactly(120, "A", Arrays.asList("notebook", "postcard", "journal"))
+                         .extracting("sumQty", "status")
+                         .containsExactly(120, "A");
+        assertThat(views.get(0).getAddToSetItem())
+                .contains("notebook", "postcard", "journal")
         ;
         assertThat(views.get(0).getPushItemStatuses())
                 .hasSize(3)
@@ -117,4 +121,36 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
         ;
     }
 
+    @Test
+    void queryUserWithCreatedUsersAndCreateUser() {
+        UserJoinQuery userQuery = UserJoinQuery
+                .builder()
+                .createdUsersQuery(new UserJoinQuery())
+                .createUserQuery(new UserJoinQuery())
+                .build();
+        List<UserEntity> views = dataQueryClient.query(userQuery);
+        assertThat(views).hasSize(4)
+                         .extracting(userEntity -> userEntity.getCreatedUsers().size())
+                         .containsExactly(3, 1, 0, 0);
+        assertThat(views)
+                .extracting(userEntity -> userEntity.getCreateUser().getUsername())
+                .containsExactly("f0rb", "f0rb", "f0rb", "user2");
+        assertThat(views).extracting(UserEntity::getRoles).containsOnlyNulls();
+    }
+
+    @Test
+    void supportPagingForAggregation() {
+        UserJoinQuery userQuery = UserJoinQuery.builder().pageNumber(2).pageSize(3).build();
+        List<UserEntity> views = dataQueryClient.query(userQuery);
+        assertThat(views).hasSize(1);
+        assertThat(views.get(0).getUsername()).isEqualTo("user4");
+    }
+
+    @Test
+    void supportQueryUserWithValidRole() {
+        UserJoinQuery userJoinQuery = UserJoinQuery.builder().role(RoleQuery.builder().valid(true).build()).build();
+        List<UserEntity> userEntities = dataQueryClient.query(userJoinQuery);
+        assertThat(userEntities).extracting("username")
+                .containsExactly("f0rb", "user3");
+    }
 }

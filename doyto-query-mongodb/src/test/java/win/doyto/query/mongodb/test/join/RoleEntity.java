@@ -14,32 +14,28 @@
  * limitations under the License.
  */
 
-package win.doyto.query.annotation;
+package win.doyto.query.mongodb.test.join;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import lombok.Getter;
+import lombok.Setter;
+import win.doyto.query.mongodb.entity.MongoPersistable;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.math.BigInteger;
+import javax.persistence.Entity;
+import javax.persistence.EntityType;
 
 /**
- * DomainPath
+ * RoleEntity
  *
- * @author f0rb on 2022-04-08
- * @since 0.3.1
+ * @author f0rb on 2022-05-20
  */
-@Target(FIELD)
-@Retention(RUNTIME)
-public @interface DomainPath {
-    /**
-     * To describe how to route from main domain
-     * to the current annotated domain.
-     *
-     * @return paths array
-     */
-    String[] value();
+@Getter
+@Setter
+@Entity(type = EntityType.MONGO_DB, database = "doyto", name = "t_role")
+public class RoleEntity extends MongoPersistable<BigInteger> {
 
-    String lastDomainIdColumn() default "id";
+    private String roleName;
+    private String roleCode;
+    private Boolean valid;
 
-    String localField() default "id";
 }

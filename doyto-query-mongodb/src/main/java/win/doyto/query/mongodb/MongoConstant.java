@@ -14,32 +14,22 @@
  * limitations under the License.
  */
 
-package win.doyto.query.annotation;
+package win.doyto.query.mongodb;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import lombok.experimental.UtilityClass;
 
 /**
- * DomainPath
+ * MongoConstant
  *
- * @author f0rb on 2022-04-08
- * @since 0.3.1
+ * @author f0rb on 2022-06-14
+ * @since 1.0.0
  */
-@Target(FIELD)
-@Retention(RUNTIME)
-public @interface DomainPath {
-    /**
-     * To describe how to route from main domain
-     * to the current annotated domain.
-     *
-     * @return paths array
-     */
-    String[] value();
+@UtilityClass
+public class MongoConstant {
+    public static final String MONGO_ID = "_id";
 
-    String lastDomainIdColumn() default "id";
+    public static String ex(String field) {
+        return "$" + field;
+    }
 
-    String localField() default "id";
 }

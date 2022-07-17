@@ -48,6 +48,9 @@ public class TestQuery extends PageQuery {
     private Integer idLt;
     private Integer idLe;
 
+    @DomainPath(value = "user", localField = "createUserId")
+    private UserQuery createUser;
+
     private String username;
     private String usernameEq;
     private String usernameContain;

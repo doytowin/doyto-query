@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb;
+package win.doyto.query.mongodb.aggregation;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -24,6 +24,7 @@ import com.mongodb.client.model.BsonField;
 import lombok.Getter;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.mongodb.filter.MongoGroupBuilder;
 import win.doyto.query.util.ColumnUtil;
@@ -33,7 +34,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import javax.persistence.Entity;
 
-import static win.doyto.query.mongodb.MongoDataAccess.MONGO_ID;
+import static win.doyto.query.mongodb.MongoConstant.MONGO_ID;
+import static win.doyto.query.mongodb.MongoConstant.ex;
 
 /**
  * AggregationMetadata
@@ -47,14 +49,23 @@ public class AggregationMetadata {
     private final MongoCollection<Document> collection;
     private final Bson groupBy;
     private final Bson project;
+    private final Field[] domainFields;
+    private final Document groupId;
 
-    private <V> AggregationMetadata(Class<V> viewClass, MongoClient mongoClient) {
+    <V> AggregationMetadata(Class<V> viewClass, MongoClient mongoClient) {
         this.collection = getCollection(mongoClient, viewClass.getAnnotation(Entity.class));
-        this.groupBy = buildGroupBy(viewClass);
-        this.project = buildProject(viewClass);
+        this.groupId = buildGroupId(viewClass);
+        this.groupBy = buildGroupBy(viewClass, this.groupId);
+        this.project = buildProject(viewClass, groupBy != null);
+        this.domainFields = buildDomainFields(viewClass);
     }
 
-    static AggregationMetadata build(Class<?> viewClass, MongoClient mongoClient) {
+    private <V> Field[] buildDomainFields(Class<V> viewClass) {
+        return ColumnUtil.filterFields(viewClass, field -> field.isAnnotationPresent(DomainPath.class))
+                         .toArray(Field[]::new);
+    }
+
+    public static AggregationMetadata build(Class<?> viewClass, MongoClient mongoClient) {
         return holder.computeIfAbsent(viewClass, clazz -> new AggregationMetadata(clazz, mongoClient));
     }
 
@@ -63,8 +74,12 @@ public class AggregationMetadata {
         return database.getCollection(mongoEntity.name());
     }
 
-    private static <V> Bson buildGroupBy(Class<V> viewClass) {
-        return Aggregates.group(buildGroupId(viewClass), buildAggregation(viewClass));
+    private static <V> Bson buildGroupBy(Class<V> viewClass, Document groupDoc) {
+        List<BsonField> fieldAccumulators = buildAggregation(viewClass);
+        if (groupDoc.isEmpty() && fieldAccumulators.isEmpty()) {
+            return null;
+        }
+        return Aggregates.group(groupDoc, fieldAccumulators);
     }
 
     private static <V> List<BsonField> buildAggregation(Class<V> viewClass) {
@@ -75,24 +90,31 @@ public class AggregationMetadata {
                      .collect(Collectors.toList());
     }
 
-    private static <V> Bson buildGroupId(Class<V> viewClass) {
+    private static <V> Document buildGroupId(Class<V> viewClass) {
         Document id = new Document();
         Field[] fields = ColumnUtil.initFields(viewClass);
         for (Field field : fields) {
             if (field.isAnnotationPresent(GroupBy.class)) {
                 String fieldName = field.getName();
-                id.append(fieldName, "$" + fieldName);
+                id.append(fieldName, ex(fieldName));
             }
         }
         return id;
     }
 
-    private static <V> Bson buildProject(Class<V> viewClass) {
+    private static <V> Bson buildProject(Class<V> viewClass, boolean isAggregated) {
         Field[] fields = ColumnUtil.initFields(viewClass);
-        Document columns = new Document(MONGO_ID, 0); // don't want to show _id
+        Document columns = new Document();
+        if (isAggregated) {
+            columns.append(MONGO_ID, 0);// don't show _id when do aggregation
+        }
         for (Field field : fields) {
             String column = field.getName();
-            columns.append(column, "$" + column);
+            if (isManyToOneField(field)) {
+                columns.append(column, new Document("$arrayElemAt", Arrays.asList(ex(column), 0)));
+            } else {
+                columns.append(column, ex(column));
+            }
             if (field.isAnnotationPresent(GroupBy.class)) {
                 String fieldName = field.getName();
                 columns.append(fieldName, "$_id." + fieldName); //grouped fields are in _id
@@ -100,6 +122,10 @@ public class AggregationMetadata {
         }
 
         return Aggregates.project(columns);
+    }
+
+    private static boolean isManyToOneField(Field field) {
+        return field.isAnnotationPresent(DomainPath.class) && !Collection.class.isAssignableFrom(field.getType());
     }
 
 }

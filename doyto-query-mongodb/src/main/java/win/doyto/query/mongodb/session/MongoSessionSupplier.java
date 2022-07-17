@@ -14,32 +14,22 @@
  * limitations under the License.
  */
 
-package win.doyto.query.annotation;
+package win.doyto.query.mongodb.session;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import com.mongodb.client.ClientSession;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.io.Closeable;
+import java.util.function.Supplier;
 
 /**
- * DomainPath
+ * MongoSessionProvider
  *
- * @author f0rb on 2022-04-08
- * @since 0.3.1
+ * @author f0rb on 2022-07-11
  */
-@Target(FIELD)
-@Retention(RUNTIME)
-public @interface DomainPath {
-    /**
-     * To describe how to route from main domain
-     * to the current annotated domain.
-     *
-     * @return paths array
-     */
-    String[] value();
+public interface MongoSessionSupplier extends Supplier<ClientSession>, Closeable {
 
-    String lastDomainIdColumn() default "id";
+    ClientSession get();
 
-    String localField() default "id";
+    void close();
+
 }

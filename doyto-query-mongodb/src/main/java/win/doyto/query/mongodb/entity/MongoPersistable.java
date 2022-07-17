@@ -43,6 +43,7 @@ public abstract class MongoPersistable<I extends Serializable> implements Persis
         ObjectIdMapper.initIdMapper(this.getClass());
     }
 
+    @GeneratedValue
     @JsonProperty("_id")
     @JsonSerialize(using = ObjectIdSerializer.class)
     @JsonDeserialize(using = ObjectIdDeserializer.class)

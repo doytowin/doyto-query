@@ -14,32 +14,24 @@
  * limitations under the License.
  */
 
-package win.doyto.query.annotation;
+package win.doyto.query.mongodb.test;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import lombok.SneakyThrows;
+import org.springframework.util.StreamUtils;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.nio.charset.Charset;
 
 /**
- * DomainPath
+ * TestUtil
  *
- * @author f0rb on 2022-04-08
- * @since 0.3.1
+ * @author f0rb on 2022-06-15
+ * @since 1.0.0
  */
-@Target(FIELD)
-@Retention(RUNTIME)
-public @interface DomainPath {
-    /**
-     * To describe how to route from main domain
-     * to the current annotated domain.
-     *
-     * @return paths array
-     */
-    String[] value();
+public class TestUtil {
 
-    String lastDomainIdColumn() default "id";
+    @SneakyThrows
+    public static String readString(String name) {
+        return StreamUtils.copyToString(TestUtil.class.getResourceAsStream(name), Charset.defaultCharset());
+    }
 
-    String localField() default "id";
 }
