@@ -85,7 +85,8 @@ public class MongoAssociationService implements AssociationService<ObjectId, Obj
 
     @Override
     public int deleteByK2(ObjectId k2) {
-        return 0;
+        return (int) collection.deleteMany(mongoSessionSupplier.get(), new Document(domainId2, k2))
+                               .getDeletedCount();
     }
 
     @Override

@@ -34,6 +34,7 @@ class MongoAssociationServiceTest extends MongoApplicationTest {
 
     private final MongoAssociationService associationService;
     private final ObjectId k1Id = new ObjectId("628b3a27f7a4ba009198a677");
+    private final ObjectId k2Id = new ObjectId("6285feedee051b404915c103");
 
     public MongoAssociationServiceTest(@Autowired MongoClient mongoClient) {
         associationService = new MongoAssociationService(mongoClient, "doyto", "user", "role");
@@ -41,7 +42,6 @@ class MongoAssociationServiceTest extends MongoApplicationTest {
 
     @Test
     void queryK1ByK2() {
-        ObjectId k2Id = new ObjectId("6285feedee051b404915c103");
         List<ObjectId> k1List = associationService.queryK1ByK2(k2Id);
         assertThat(k1List).containsExactly(
                 new ObjectId("628b3a27f7a4ba009198a677"),
@@ -63,5 +63,11 @@ class MongoAssociationServiceTest extends MongoApplicationTest {
     void deleteByK1() {
         int cnt = associationService.deleteByK1(k1Id);
         assertThat(cnt).isEqualTo(3);
+    }
+
+    @Test
+    void deleteByK2() {
+        int cnt = associationService.deleteByK2(k2Id);
+        assertThat(cnt).isEqualTo(2);
     }
 }
