@@ -21,6 +21,7 @@ import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -83,6 +84,16 @@ class MongoAssociationServiceTest extends MongoApplicationTest {
         assertThat(associationService.queryK2ByK1(k1Id)).containsExactly(
                 new ObjectId("6285feedee051b404915c101"),
                 new ObjectId("6285feedee051b404915c102")
+        );
+    }
+
+    @Test
+    void dissociateMulti() {
+        associationService.dissociate(associationService.buildUniqueKeys(
+                k1Id, Arrays.asList(new ObjectId("6285feedee051b404915c102"),
+                                    new ObjectId("6285feedee051b404915c103"))));
+        assertThat(associationService.queryK2ByK1(k1Id)).containsExactly(
+                new ObjectId("6285feedee051b404915c101")
         );
     }
 }

@@ -18,6 +18,7 @@ package win.doyto.query.mongodb;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -30,8 +31,6 @@ import win.doyto.query.mongodb.session.MongoSessionThreadLocalSupplier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import static com.mongodb.client.model.Filters.and;
 
 /**
  * MongoAssociationService
@@ -73,7 +72,7 @@ public class MongoAssociationService implements AssociationService<ObjectId, Obj
             Document doc = new Document(domainId1, uniqueKey.getK1()).append(domainId2, uniqueKey.getK2());
             filters.add(doc);
         }
-        return (int) collection.deleteMany(mongoSessionSupplier.get(), and(filters)).getDeletedCount();
+        return (int) collection.deleteMany(mongoSessionSupplier.get(), Filters.or(filters)).getDeletedCount();
     }
 
     @Override
