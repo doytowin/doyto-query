@@ -153,4 +153,11 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
         assertThat(userEntities).extracting("username")
                 .containsExactly("f0rb", "user3");
     }
+
+    @Test
+    void supportCountUserWithValidRole() {
+        UserJoinQuery userJoinQuery = UserJoinQuery.builder().role(RoleQuery.builder().valid(true).build()).build();
+        long count = dataQueryClient.count(userJoinQuery);
+        assertThat(count).isEqualTo(2);
+    }
 }
