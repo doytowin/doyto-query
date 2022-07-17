@@ -22,6 +22,7 @@ import com.mongodb.client.MongoClient;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,8 +34,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MongoSessionThreadLocalSupplier implements MongoSessionSupplier {
 
-    private static final ThreadLocal<ClientSession> CLIENT_SESSION_THREAD_LOCAL = new ThreadLocal<>();
-    private static final Map<MongoClient, MongoSessionSupplier> MONGO_SESSION_SUPPLIER_MAP = new ConcurrentHashMap<>(4);
+    private static final ThreadLocal<Map<MongoClient, ClientSession>> CLIENT_SESSION_THREAD_LOCAL = new ThreadLocal<>();
+    private static final int INITIAL_CAPACITY = 4;
+    private static final Map<MongoClient, MongoSessionSupplier> MONGO_SESSION_SUPPLIER_MAP = new ConcurrentHashMap<>(INITIAL_CAPACITY);
 
     private MongoClient mongoClient;
 
@@ -44,22 +46,23 @@ public class MongoSessionThreadLocalSupplier implements MongoSessionSupplier {
 
     @Override
     public ClientSession get() {
-        ClientSession clientSession = CLIENT_SESSION_THREAD_LOCAL.get();
-        if (clientSession == null) {
-            ClientSessionOptions options = ClientSessionOptions.builder().causallyConsistent(true).build();
-            clientSession = mongoClient.startSession(options);
-            CLIENT_SESSION_THREAD_LOCAL.set(clientSession);
+        Map<MongoClient, ClientSession> map = CLIENT_SESSION_THREAD_LOCAL.get();
+        if (map == null) {
+            map = new HashMap<>(INITIAL_CAPACITY);
+            CLIENT_SESSION_THREAD_LOCAL.set(map);
         }
-
-        return clientSession;
+        return map.computeIfAbsent(mongoClient, c -> c.startSession(
+                ClientSessionOptions.builder().causallyConsistent(true).build())
+        );
     }
 
     @Override
     public void close() {
-        ClientSession clientSession = CLIENT_SESSION_THREAD_LOCAL.get();
-        if (clientSession != null) {
+        Map<MongoClient, ClientSession> map = CLIENT_SESSION_THREAD_LOCAL.get();
+        for (ClientSession clientSession : map.values()) {
             clientSession.close();
         }
+        map.clear();
         CLIENT_SESSION_THREAD_LOCAL.remove();
     }
 }

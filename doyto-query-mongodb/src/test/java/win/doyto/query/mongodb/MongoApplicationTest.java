@@ -21,13 +21,13 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import lombok.SneakyThrows;
 import org.bson.BsonArray;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.mongodb.test.TransactionInvocationInterceptor;
 import win.doyto.query.mongodb.test.inventory.InventoryEntity;
 import win.doyto.query.util.BeanUtil;
 
@@ -41,37 +41,30 @@ import static win.doyto.query.mongodb.test.TestUtil.readString;
  * @author f0rb on 2022-01-25
  */
 @ActiveProfiles("test")
-@DataMongoTest(properties = {"spring.mongodb.embedded.version=5.0.5"})
+@SpringBootTest
+@ExtendWith(TransactionInvocationInterceptor.class)
 abstract class MongoApplicationTest {
 
     private static boolean initialized;
-    private MongoDataAccess<InventoryEntity, String, DoytoQuery> dataAccess;
+    private static MongoDataAccess<InventoryEntity, String, DoytoQuery> dataAccess;
 
     @BeforeAll
-    static void beforeAll(@Autowired MongoClient mongoClient) {
+    static synchronized void beforeAll(@Autowired MongoClient mongoClient) {
         if (initialized) return;
         initialized = true;
         MongoDatabase database = mongoClient.getDatabase("doyto");
         String text = readString("/init_data.json");
         BsonArray bsonValues = BsonArray.parse(text);
         bsonValues.forEach(bsonValue -> database.runCommand(bsonValue.asDocument()));
-    }
-
-    @BeforeEach
-    void setUp(@Autowired MongoClient mongoClient) {
         dataAccess = new MongoDataAccess<>(mongoClient, InventoryEntity.class);
         loadData("test/inventory/inventory.json");
     }
 
     @SneakyThrows
-    protected void loadData(String path) {
+    protected static void loadData(String path) {
         List<InventoryEntity> data = BeanUtil.loadJsonData(path, new TypeReference<List<InventoryEntity>>() {});
         dataAccess.batchInsert(data);
     }
 
-    @AfterEach
-    void tearDown() {
-        dataAccess.getCollection().drop();
-    }
 
 }
