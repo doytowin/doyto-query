@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MongoAssociationServiceTest extends MongoApplicationTest {
 
     private final MongoAssociationService associationService;
+    private final ObjectId k1Id = new ObjectId("628b3a27f7a4ba009198a677");
 
     public MongoAssociationServiceTest(@Autowired MongoClient mongoClient) {
         associationService = new MongoAssociationService(mongoClient, "doyto", "user", "role");
@@ -50,12 +51,17 @@ class MongoAssociationServiceTest extends MongoApplicationTest {
 
     @Test
     void queryK2ByK1() {
-        ObjectId k1Id = new ObjectId("628b3a27f7a4ba009198a677");
         List<ObjectId> k2List = associationService.queryK2ByK1(k1Id);
         assertThat(k2List).containsExactly(
                 new ObjectId("6285feedee051b404915c101"),
                 new ObjectId("6285feedee051b404915c102"),
                 new ObjectId("6285feedee051b404915c103")
         );
+    }
+
+    @Test
+    void deleteByK1() {
+        int cnt = associationService.deleteByK1(k1Id);
+        assertThat(cnt).isEqualTo(3);
     }
 }
