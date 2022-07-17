@@ -113,4 +113,14 @@ class MongoAssociationServiceTest extends MongoApplicationTest {
         associationService.reassociateForK1(k1Id, Collections.emptyList());
         assertThat(associationService.queryK2ByK1(k1Id)).isEmpty();
     }
+
+    @Test
+    void reassociateForK2() {
+        List<ObjectId> k1List = Arrays.asList(
+                new ObjectId("628b3a27f7a4ba009198a679"),
+                new ObjectId("628b3a27f7a4ba009198a67a"));
+        associationService.reassociateForK2(k2Id, k1List);
+        assertThat(associationService.queryK1ByK2(k2Id))
+                .containsExactlyInAnyOrderElementsOf(k1List);
+    }
 }
