@@ -103,7 +103,8 @@ public class MongoAssociationService implements AssociationService<ObjectId, Obj
 
     @Override
     public int reassociateForK1(ObjectId k1, List<ObjectId> list) {
-        return 0;
+        deleteByK1(k1);
+        return associate(buildUniqueKeys(k1, list));
     }
 
     @Override
