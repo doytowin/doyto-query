@@ -76,4 +76,13 @@ class MongoAssociationServiceTest extends MongoApplicationTest {
         associationService.associate(k1Id, new ObjectId("6285feedee051b404915c104"));
         assertThat(associationService.queryK2ByK1(k1Id)).hasSize(4);
     }
+
+    @Test
+    void dissociateOne() {
+        associationService.dissociate(k1Id, new ObjectId("6285feedee051b404915c103"));
+        assertThat(associationService.queryK2ByK1(k1Id)).containsExactly(
+                new ObjectId("6285feedee051b404915c101"),
+                new ObjectId("6285feedee051b404915c102")
+        );
+    }
 }
