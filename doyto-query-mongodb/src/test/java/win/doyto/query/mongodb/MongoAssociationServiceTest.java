@@ -70,4 +70,10 @@ class MongoAssociationServiceTest extends MongoApplicationTest {
         int cnt = associationService.deleteByK2(k2Id);
         assertThat(cnt).isEqualTo(2);
     }
+
+    @Test
+    void associateOne() {
+        associationService.associate(k1Id, new ObjectId("6285feedee051b404915c104"));
+        assertThat(associationService.queryK2ByK1(k1Id)).hasSize(4);
+    }
 }
