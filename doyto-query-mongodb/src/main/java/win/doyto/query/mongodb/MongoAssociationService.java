@@ -110,18 +110,6 @@ public class MongoAssociationService implements AssociationService<ObjectId, Obj
     }
 
     @Override
-    public int reassociateForK1(ObjectId k1, List<ObjectId> list) {
-        deleteByK1(k1);
-        return associate(buildUniqueKeys(k1, list));
-    }
-
-    @Override
-    public int reassociateForK2(ObjectId k2, List<ObjectId> list) {
-        deleteByK2(k2);
-        return associate(buildUniqueKeys(list, k2));
-    }
-
-    @Override
     public long count(Set<UniqueKey<ObjectId, ObjectId>> uniqueKeys) {
         Bson filter = buildKeysFilter(uniqueKeys);
         return collection.countDocuments(mongoSessionSupplier.get(), filter);

@@ -56,9 +56,15 @@ public interface AssociationService<K1, K2> {
 
     int deleteByK2(K2 k2);
 
-    int reassociateForK1(K1 k1, List<K2> list);
+    default int reassociateForK1(K1 k1, List<K2> list) {
+        deleteByK1(k1);
+        return associate(buildUniqueKeys(k1, list));
+    }
 
-    int reassociateForK2(K2 k2, List<K1> list);
+    default int reassociateForK2(K2 k2, List<K1> list) {
+        deleteByK2(k2);
+        return associate(buildUniqueKeys(list, k2));
+    }
 
     long count(Set<UniqueKey<K1, K2>> set);
 
