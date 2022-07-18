@@ -19,6 +19,7 @@ package win.doyto.query.mongodb;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.model.Aggregates;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.bson.conversions.Bson;
 import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DataQueryClient;
@@ -42,6 +43,7 @@ import java.util.List;
  */
 @AllArgsConstructor
 public class MongoDataQueryClient implements DataQueryClient {
+    public static final String COUNT_KEY = "count";
     private MongoClient mongoClient;
     private final MongoSessionSupplier mongoSessionSupplier;
 
@@ -69,12 +71,11 @@ public class MongoDataQueryClient implements DataQueryClient {
     long count(Q query, Class<V> viewClass) {
         AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
         List<Bson> list = AggregationPipelineBuilder.build(query, viewClass, md);
-        list.add(Aggregates.count());
-        return md.getCollection().aggregate(mongoSessionSupplier.get(), list)
-                .map(document ->
-                             document.getInteger("count"))
-                 .into(new ArrayList<>())
-                 .get(0);
+        list.set(list.size() - 1, Aggregates.count(COUNT_KEY));
+        Integer count = md.getCollection().aggregate(mongoSessionSupplier.get(), list)
+                          .map(document -> document.getInteger(COUNT_KEY, -1))
+                          .first();
+        return ObjectUtils.defaultIfNull(count, 0);
     }
 
     @Override
