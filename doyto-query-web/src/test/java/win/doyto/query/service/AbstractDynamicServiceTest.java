@@ -54,7 +54,7 @@ class AbstractDynamicServiceTest {
         testService.setCacheList("");
         testService.get(1);
 
-        Thread.sleep(5L);
+        Thread.sleep(10L);
 
         testService.get(1);
         verify(testService.dataAccess, times(1)).get(IdWrapper.build(1));

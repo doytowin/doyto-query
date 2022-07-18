@@ -44,7 +44,7 @@ class CacheWrapperTest {
         assertNull(cacheWrapper.execute("t", cacheInvoker));
         assertNull(cacheWrapper.execute("t2", cacheInvoker));
 
-        Thread.sleep(5L);
+        Thread.sleep(10L);
 
         assertNull(cacheWrapper.execute("t", cacheInvoker));
         assertNull(cacheWrapper.execute("t2", cacheInvoker));
@@ -73,7 +73,7 @@ class CacheWrapperTest {
         CacheInvoker<Object> cacheInvoker = times::incrementAndGet;
         assertEquals(1, cacheWrapper.execute("hello", cacheInvoker));
 
-        Thread.sleep(5L);
+        Thread.sleep(10L);
 
         assertEquals(2, cacheWrapper.execute("hello", cacheInvoker));
     }
