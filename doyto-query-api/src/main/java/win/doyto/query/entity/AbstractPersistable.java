@@ -42,4 +42,8 @@ public abstract class AbstractPersistable<I extends Serializable> implements Per
     @Null(groups = CreateGroup.class)
     @NotNull(groups = {UpdateGroup.class, PatchGroup.class})
     protected I id;
+
+    public void setId(I id) {
+        this.id = id;
+    }
 }
