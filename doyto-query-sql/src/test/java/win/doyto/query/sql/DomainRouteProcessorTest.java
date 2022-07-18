@@ -19,10 +19,7 @@ package win.doyto.query.sql;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
-import win.doyto.query.test.MenuQuery;
-import win.doyto.query.test.PermissionQuery;
-import win.doyto.query.test.UserLevel;
-import win.doyto.query.test.UserQuery;
+import win.doyto.query.test.*;
 import win.doyto.query.test.role.RoleQuery;
 
 import java.util.ArrayList;
@@ -217,4 +214,14 @@ class DomainRouteProcessorTest {
         assertThat(argList).containsExactly("%test%", true);
     }
 
+    @Test
+    void supportForeignOneToManyQuery() {
+        DomainPathProcessor domainPathProcessor = buildProcessor(TestQuery.class, "createUser");
+        UserQuery createUserQuery = UserQuery.builder().id(1).build();
+
+        String sql = domainPathProcessor.process(argList, createUserQuery);
+
+        assertThat(sql).isEqualTo("create_user_id IN (SELECT id FROM t_user WHERE id = ?)");
+        assertThat(argList).containsExactly(1);
+    }
 }
