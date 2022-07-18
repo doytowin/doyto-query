@@ -19,6 +19,7 @@ package win.doyto.query.web.role;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import win.doyto.query.test.role.RoleEntity;
 import win.doyto.query.validation.PatchGroup;
 import win.doyto.query.validation.UpdateGroup;
 import win.doyto.query.web.component.ListValidator;
