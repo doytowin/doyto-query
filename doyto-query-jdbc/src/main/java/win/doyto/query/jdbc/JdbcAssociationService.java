@@ -68,6 +68,9 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
 
     @Override
     public int associate(Set<UniqueKey<K1, K2>> uniqueKeys) {
+        if (uniqueKeys.isEmpty()) {
+            return 0;
+        }
         SqlAndArgs sqlAndArgs = sqlBuilder.buildInsert(uniqueKeys, userIdProvider.getUserId());
         return databaseOperations.update(sqlAndArgs);
     }
@@ -105,29 +108,13 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
     @Override
     @Transactional
     public int reassociateForK1(K1 k1, List<K2> list) {
-        deleteByK1(k1);
-        if (list.isEmpty()) {
-            return 0;
-        }
-        return associate(k1, list);
-    }
-
-    private int associate(K1 k1, List<K2> k2List) {
-        return associate(buildUniqueKeys(k1, k2List));
+        return AssociationService.super.reassociateForK1(k1, list);
     }
 
     @Override
     @Transactional
     public int reassociateForK2(K2 k2, List<K1> list) {
-        deleteByK2(k2);
-        if (list.isEmpty()) {
-            return 0;
-        }
-        return associate(list, k2);
-    }
-
-    private int associate(List<K1> k1List, K2 k2) {
-        return associate(buildUniqueKeys(k1List, k2));
+        return AssociationService.super.reassociateForK2(k2, list);
     }
 
     @Override
