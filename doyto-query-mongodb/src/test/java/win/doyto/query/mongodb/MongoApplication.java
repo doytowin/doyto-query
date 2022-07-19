@@ -16,18 +16,11 @@
 
 package win.doyto.query.mongodb;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoDatabase;
-import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.config.*;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.runtime.Network;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bson.BsonTimestamp;
-import org.bson.Document;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -41,7 +34,6 @@ import org.springframework.context.annotation.Configuration;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 
 /**
  * MongoApplication
@@ -92,53 +84,6 @@ public class MongoApplication {
             }
 
             return builder.build();
-        }
-    }
-
-    @Slf4j
-    @Configuration
-    @AllArgsConstructor
-    static class UTConfig implements InitializingBean {
-
-        MongodExecutable embeddedMongoServer;
-        MongodConfig mongodConfig;
-
-        public void afterPropertiesSet() throws Exception {
-            String host = mongodConfig.net().getBindIp() + ":" + mongodConfig.net().getPort();
-            String uri = String.format("mongodb://%s/admin?ReadPreference=primary", host);
-            try (MongoClient mongoClient = MongoClients.create(uri)) {
-                MongoDatabase admin = mongoClient.getDatabase("admin");
-                initReplica(host, admin);
-                waitUntilReplicaReady(admin);
-            }
-        }
-
-        private void initReplica(String host, MongoDatabase admin) {
-            Document initDoc = new Document();
-            initDoc.append("_id", mongodConfig.replication().getReplSetName());
-            Document member0 = new Document();
-            member0.append("_id", 0);
-            member0.append("host", host);
-            initDoc.append("members", Arrays.asList(member0));
-
-            Document replSetInitiate = new Document("replSetInitiate", initDoc);
-            admin.runCommand(replSetInitiate);
-        }
-
-        private void waitUntilReplicaReady(MongoDatabase admin) throws InterruptedException {
-            Document document;
-            do {
-                document = getReplicaStatus(admin);
-            } while (isReplicaInitializing(document));
-        }
-
-        private boolean isReplicaInitializing(Document document) {
-            return document.get("lastStableRecoveryTimestamp", BsonTimestamp.class).getTime() == 0;
-        }
-
-        private Document getReplicaStatus(MongoDatabase admin) {
-            Document replSetGetStatus = new Document("replSetGetStatus", "1");
-            return admin.runCommand(replSetGetStatus);
         }
     }
 
