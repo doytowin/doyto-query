@@ -24,7 +24,6 @@ import org.bson.conversions.Bson;
 import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.core.DoytoQuery;
-import win.doyto.query.core.JoinQuery;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.mongodb.aggregation.AggregationMetadata;
 import win.doyto.query.mongodb.aggregation.AggregationPipelineBuilder;
@@ -52,7 +51,7 @@ public class MongoDataQueryClient implements DataQueryClient {
     }
 
     @Override
-    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    public <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
     List<V> query(Q query, Class<V> viewClass) {
         return commonQuery(query, viewClass);
     }
@@ -67,7 +66,7 @@ public class MongoDataQueryClient implements DataQueryClient {
     }
 
     @Override
-    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    public <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
     long count(Q query, Class<V> viewClass) {
         AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
         List<Bson> list = AggregationPipelineBuilder.build(query, viewClass, md);
