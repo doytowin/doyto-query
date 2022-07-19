@@ -19,7 +19,11 @@ package win.doyto.query.web.demo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import win.doyto.query.core.DataQueryClient;
+import win.doyto.query.jdbc.JdbcDataQueryClient;
 import win.doyto.query.web.WebMvcConfigurerAdapter;
 
 /**
@@ -33,5 +37,10 @@ import win.doyto.query.web.WebMvcConfigurerAdapter;
 public class DemoApplication extends WebMvcConfigurerAdapter {
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class);
+    }
+
+    @Bean
+    public DataQueryClient jdbcDataQueryClient(JdbcOperations jdbcOperations) {
+        return new JdbcDataQueryClient(jdbcOperations);
     }
 }
