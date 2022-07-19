@@ -1,0 +1,28 @@
+[
+  {
+    "insert": "j_role_and_perm",
+    "ordered": true,
+    "documents": [
+      {
+        "role_id": ObjectId("6285feedee051b404915c101"),
+        "perm_id": ObjectId("62d679023ca3de428d590f3d")
+      },
+      {
+        "role_id": ObjectId("6285feedee051b404915c101"),
+        "perm_id": ObjectId("62d679023ca3de428d590f3e")
+      },
+      {
+        "role_id": ObjectId("6285feedee051b404915c101"),
+        "perm_id": ObjectId("62d679023ca3de428d590f3f")
+      },
+      {
+        "role_id": ObjectId("6285feedee051b404915c102"),
+        "perm_id": ObjectId("62d679023ca3de428d590f3d")
+      },
+      {
+        "role_id": ObjectId("6285feedee051b404915c103"),
+        "perm_id": ObjectId("62d679023ca3de428d590f40")
+      }
+    ]
+  }
+]
