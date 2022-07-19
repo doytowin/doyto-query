@@ -20,6 +20,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
@@ -43,11 +44,13 @@ class DomainPathProcessor implements FieldProcessor.Processor {
     private final String[] joinTables;
     private final String lastDomain;
     private final String lastDomainIdColumn;
+    private final String localFieldColumn;
 
     public DomainPathProcessor(Field field) {
         DomainPath domainPath = field.getAnnotation(DomainPath.class);
         domainPaths = domainPath.value();
         lastDomainIdColumn = domainPath.lastDomainIdColumn();
+        localFieldColumn = ColumnUtil.convertColumn(domainPath.localField());
         boolean reverse = field.getName().contains(domainPaths[0]);
         domainIds = prepareDomainIds();
         joinTables = prepareJoinTables();
@@ -77,7 +80,7 @@ class DomainPathProcessor implements FieldProcessor.Processor {
 
     private String buildClause(List<Object> argList, DoytoQuery query) {
         int current = domainIds.length - 1;
-        StringBuilder subQueryBuilder = new StringBuilder(ID);
+        StringBuilder subQueryBuilder = new StringBuilder(localFieldColumn);
         if (current > 0) {
             subQueryBuilder.append(IN).append(OP);
             while (true) {
