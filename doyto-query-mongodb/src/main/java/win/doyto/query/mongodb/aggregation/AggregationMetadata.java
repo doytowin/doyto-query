@@ -31,6 +31,7 @@ import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javax.persistence.Entity;
 
@@ -44,7 +45,7 @@ import static win.doyto.query.mongodb.MongoConstant.ex;
  */
 @Getter
 public class AggregationMetadata {
-    private static final Map<Class<?>, AggregationMetadata> holder = new HashMap<>();
+    private static final Map<Class<?>, AggregationMetadata> holder = new ConcurrentHashMap<>();
 
     private final MongoCollection<Document> collection;
     private final Bson groupBy;
