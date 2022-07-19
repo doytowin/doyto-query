@@ -21,8 +21,8 @@ import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static win.doyto.query.sql.Constant.SEPARATOR;
@@ -34,7 +34,7 @@ import static win.doyto.query.sql.Constant.SEPARATOR;
  */
 @SuppressWarnings("java:S1874")
 public class EntityMetadata {
-    private static final Map<Class<?>, EntityMetadata> holder = new HashMap<>();
+    private static final Map<Class<?>, EntityMetadata> holder = new ConcurrentHashMap<>();
 
     @Getter
     private final String columnsForSelect;
