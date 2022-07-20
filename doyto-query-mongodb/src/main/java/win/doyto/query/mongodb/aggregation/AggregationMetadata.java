@@ -26,8 +26,14 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.GroupBy;
+import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.core.AggregationQuery;
+import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.core.Having;
+import win.doyto.query.mongodb.filter.MongoFilterBuilder;
 import win.doyto.query.mongodb.filter.MongoGroupBuilder;
 import win.doyto.query.util.ColumnUtil;
+import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -37,6 +43,8 @@ import javax.persistence.Entity;
 
 import static win.doyto.query.mongodb.MongoConstant.MONGO_ID;
 import static win.doyto.query.mongodb.MongoConstant.ex;
+import static win.doyto.query.mongodb.MongoDataQueryClient.COUNT_KEY;
+import static win.doyto.query.mongodb.aggregation.DomainPathBuilder.buildLookUpForSubDomain;
 
 /**
  * AggregationMetadata
@@ -46,7 +54,9 @@ import static win.doyto.query.mongodb.MongoConstant.ex;
 @Getter
 public class AggregationMetadata {
     private static final Map<Class<?>, AggregationMetadata> holder = new ConcurrentHashMap<>();
+    private static final Bson SORT_BY_ID = new Document(MONGO_ID, 1);
 
+    private final Class<?> viewClass;
     private final MongoCollection<Document> collection;
     private final Bson groupBy;
     private final Bson project;
@@ -54,6 +64,7 @@ public class AggregationMetadata {
     private final Document groupId;
 
     <V> AggregationMetadata(Class<V> viewClass, MongoClient mongoClient) {
+        this.viewClass = viewClass;
         this.collection = getCollection(mongoClient, viewClass.getAnnotation(Entity.class));
         this.groupId = buildGroupId(viewClass);
         this.groupBy = buildGroupBy(viewClass, this.groupId);
@@ -61,7 +72,7 @@ public class AggregationMetadata {
         this.domainFields = buildDomainFields(viewClass);
     }
 
-    private <V> Field[] buildDomainFields(Class<V> viewClass) {
+    private static <V> Field[] buildDomainFields(Class<V> viewClass) {
         return ColumnUtil.filterFields(viewClass, field -> field.isAnnotationPresent(DomainPath.class))
                          .toArray(Field[]::new);
     }
@@ -76,14 +87,14 @@ public class AggregationMetadata {
     }
 
     private static <V> Bson buildGroupBy(Class<V> viewClass, Document groupDoc) {
-        List<BsonField> fieldAccumulators = buildAggregation(viewClass);
+        List<BsonField> fieldAccumulators = collectAccumulators(viewClass);
         if (groupDoc.isEmpty() && fieldAccumulators.isEmpty()) {
             return null;
         }
         return Aggregates.group(groupDoc, fieldAccumulators);
     }
 
-    private static <V> List<BsonField> buildAggregation(Class<V> viewClass) {
+    private static <V> List<BsonField> collectAccumulators(Class<V> viewClass) {
         Field[] fields = ColumnUtil.initFields(viewClass);
         return Arrays.stream(fields)
                      .map(MongoGroupBuilder::getBsonField)
@@ -129,4 +140,91 @@ public class AggregationMetadata {
         return field.isAnnotationPresent(DomainPath.class) && !Collection.class.isAssignableFrom(field.getType());
     }
 
+    public <Q extends DoytoQuery> List<Bson> buildAggregation(Q query) {
+        List<Bson> pipeline = build(query);
+        pipeline.add(this.getProject());
+        return pipeline;
+    }
+
+    public <Q extends DoytoQuery> List<Bson> buildCount(Q query) {
+        List<Bson> pipeline = build(query);
+        pipeline.add(Aggregates.count(COUNT_KEY));
+        return pipeline;
+    }
+
+    @SuppressWarnings("java:S3776")
+    private <Q extends DoytoQuery> List<Bson> build(Q query) {
+        List<Bson> pipeline = new ArrayList<>();
+
+        List<Field> lookupFields = new ArrayList<>();
+        List<String> unwindFields = new ArrayList<>();
+        List<String> unsetFields = new ArrayList<>();
+
+        Field[] fields = ColumnUtil.initFields(query.getClass());
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(DomainPath.class)) {
+                Object value = CommonUtil.readFieldGetter(field, query);
+                if (value instanceof DoytoQuery) {
+                    String subDomainName = field.getName();
+                    DomainPath domainPath = field.getAnnotation(DomainPath.class);
+
+                    lookupFields.add(field);
+
+                    if (domainPath.value().length == 1) {
+                        unwindFields.add(subDomainName);
+                    }
+                    unsetFields.add(subDomainName);
+                }
+            }
+        }
+        for (Field lookupField : lookupFields) {
+            String subDomainName = lookupField.getName();
+            DomainPath domainPath = lookupField.getAnnotation(DomainPath.class);
+            pipeline.add(DomainPathBuilder.buildLookUpForNestedQuery(subDomainName, domainPath));
+        }
+        if (!unwindFields.isEmpty()) {
+            for (String unwindField : unwindFields) {
+                pipeline.add(new Document("$unwind", ex(unwindField)));
+            }
+        }
+        pipeline.add(Aggregates.match(MongoFilterBuilder.buildFilter(query)));
+        if (!unsetFields.isEmpty()) {
+            pipeline.add(new Document("$unset", unsetFields));
+        }
+
+        for (Field field : this.getDomainFields()) {
+            Object domainQuery = CommonUtil.readField(query, field.getName() + "Query");
+            if (domainQuery instanceof DoytoQuery) {
+                Bson lookupDoc = buildLookUpForSubDomain((DoytoQuery) domainQuery, this.getViewClass() , field);
+                pipeline.add(lookupDoc);
+            }
+        }
+        if (this.getGroupBy() != null) {
+            pipeline.add(this.getGroupBy());
+        }
+        if (query instanceof AggregationQuery) {
+            Having having = ((AggregationQuery) query).getHaving();
+            if (having != null) {
+                pipeline.add(buildHaving(having));
+            }
+        }
+        pipeline.add(buildSort(query, this.getGroupId().keySet()));
+        if (query.needPaging()) {
+            pipeline.add(Aggregates.skip(GlobalConfiguration.calcOffset(query)));
+            pipeline.add(Aggregates.limit(query.getPageSize()));
+        }
+        return pipeline;
+    }
+
+    private <H extends Having> Bson buildHaving(H having) {
+        return Aggregates.match(MongoFilterBuilder.buildFilter(having));
+    }
+
+    private <Q extends DoytoQuery> Bson buildSort(Q query, Set<String> groupColumns) {
+        Bson sort = SORT_BY_ID;
+        if (query.getSort() != null) {
+            sort = MongoFilterBuilder.buildSort(query.getSort(), groupColumns);
+        }
+        return Aggregates.sort(sort);
+    }
 }

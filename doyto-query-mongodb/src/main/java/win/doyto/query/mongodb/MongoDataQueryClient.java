@@ -17,7 +17,6 @@
 package win.doyto.query.mongodb;
 
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.model.Aggregates;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.bson.conversions.Bson;
@@ -27,7 +26,6 @@ import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.JoinQuery;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.mongodb.aggregation.AggregationMetadata;
-import win.doyto.query.mongodb.aggregation.AggregationPipelineBuilder;
 import win.doyto.query.mongodb.session.MongoSessionSupplier;
 import win.doyto.query.mongodb.session.MongoSessionThreadLocalSupplier;
 import win.doyto.query.util.BeanUtil;
@@ -57,11 +55,12 @@ public class MongoDataQueryClient implements DataQueryClient {
         return commonQuery(query, viewClass);
     }
 
-    private <V, Q extends DoytoQuery> ArrayList<V>
+    private <V, Q extends DoytoQuery> List<V>
     commonQuery(Q query, Class<V> viewClass) {
         AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
-        List<Bson> list = AggregationPipelineBuilder.build(query, viewClass, md);
-        return md.getCollection().aggregate(mongoSessionSupplier.get(), list)
+        List<Bson> pipeline = md.buildAggregation(query);
+        return md.getCollection()
+                 .aggregate(mongoSessionSupplier.get(), pipeline)
                  .map(document -> BeanUtil.parse(document.toJson(), viewClass))
                  .into(new ArrayList<>());
     }
@@ -70,10 +69,10 @@ public class MongoDataQueryClient implements DataQueryClient {
     public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
     long count(Q query, Class<V> viewClass) {
         AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
-        List<Bson> list = AggregationPipelineBuilder.build(query, viewClass, md);
-        list.set(list.size() - 1, Aggregates.count(COUNT_KEY));
-        Integer count = md.getCollection().aggregate(mongoSessionSupplier.get(), list)
-                          .map(document -> document.getInteger(COUNT_KEY, -1))
+        List<Bson> pipeline = md.buildCount(query);
+        Integer count = md.getCollection()
+                          .aggregate(mongoSessionSupplier.get(), pipeline)
+                          .map(document -> document.getInteger(COUNT_KEY))
                           .first();
         return ObjectUtils.defaultIfNull(count, 0);
     }
