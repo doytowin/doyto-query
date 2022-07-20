@@ -45,7 +45,7 @@ import static win.doyto.query.mongodb.aggregation.DomainPathBuilder.buildLookUpF
  */
 @UtilityClass
 public class AggregationPipelineBuilder {
-    private static final Document SORT_BY_ID = new Document(MONGO_ID, 1);
+    private static final Bson SORT_BY_ID = Aggregates.sort(new Document(MONGO_ID, 1));
 
     @SuppressWarnings("java:S3776")
     public <V, Q extends DoytoQuery> List<Bson> build(Q query, Class<V> viewClass, AggregationMetadata md) {
@@ -117,10 +117,10 @@ public class AggregationPipelineBuilder {
     }
 
     private <Q extends DoytoQuery> Bson buildSort(Q query, Set<String> groupColumns) {
-        Bson sort = SORT_BY_ID;
-        if (query.getSort() != null) {
-            sort = MongoFilterBuilder.buildSort(query.getSort(), groupColumns);
+        if (query.getSort() == null) {
+            return SORT_BY_ID;
         }
+        Bson sort = MongoFilterBuilder.buildSort(query.getSort(), groupColumns);
         return Aggregates.sort(sort);
     }
 }
