@@ -24,6 +24,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.support.NoOpCache;
 import org.springframework.context.annotation.Lazy;
@@ -42,6 +43,7 @@ import win.doyto.query.memory.MemoryDataAccess;
 import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -90,7 +92,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
 
     @SuppressWarnings("unchecked")
     @Resource
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+    public void setBeanFactory(AutowireCapableBeanFactory beanFactory) throws BeansException {
         ClassLoader classLoader = beanFactory.getClass().getClassLoader();
         try {
             EntityType entityType = EntityType.RELATIONAL;
@@ -102,7 +104,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
                 Class<?> mongoDataAccessClass = classLoader.loadClass("win.doyto.query.mongodb.MongoDataAccess");
                 tryCreateEmbeddedMongoServerFirst(beanFactory);
                 Object mongoClient = beanFactory.getBean("mongo");
-                dataAccess = (DataAccess<E, I, Q>) ConstructorUtils.invokeConstructor(mongoDataAccessClass, mongoClient, entityClass);
+                tryCreateMongoDataAccess(beanFactory, mongoDataAccessClass, mongoClient);
             } else {// using JdbcDataAccess as default DataAccess
                 Class<?> jdbcDataAccessClass = classLoader.loadClass("win.doyto.query.jdbc.JdbcDataAccess");
                 Object jdbcOperations = beanFactory.getBean("jdbcTemplate");
@@ -110,6 +112,17 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
             }
         } catch (Exception e) {
             throw new BeanInitializationException("Failed to create DataAccess for " + entityClass.getName(), e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void tryCreateMongoDataAccess(AutowireCapableBeanFactory beanFactory, Class<?> mongoDataAccessClass, Object mongoClient)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        try {
+            Object mongoSessionSupplier = beanFactory.getBean("mongoSessionSupplier");
+            dataAccess = (DataAccess<E, I, Q>) ConstructorUtils.invokeConstructor(mongoDataAccessClass, mongoClient, entityClass, mongoSessionSupplier);
+        } catch (BeansException e) {
+            dataAccess = (DataAccess<E, I, Q>) ConstructorUtils.invokeConstructor(mongoDataAccessClass, mongoClient, entityClass);
         }
     }
 
