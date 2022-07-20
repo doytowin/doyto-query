@@ -47,13 +47,9 @@ class ObjectIdMapperTest {
     }
 
     @Test
-    void setNullForEntity() {
-        ObjectIdMapper.initIdMapper(ShortEntity.class);
-
-        ObjectId objectId = new ObjectId();
-        Object id = ObjectIdMapper.convert(ShortEntity.class, objectId);
-
-        assertNull(id);
+    void shouldThrowForUnsupportedIdType() {
+        assertThrowsExactly(UnsupportedIdTypeException.class, () ->
+                ObjectIdMapper.initIdMapper(ShortEntity.class));
     }
 
     static class BigIntegerEntity extends MongoPersistable<BigInteger> {
