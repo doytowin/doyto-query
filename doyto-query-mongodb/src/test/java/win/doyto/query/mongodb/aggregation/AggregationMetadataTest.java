@@ -16,8 +16,6 @@
 
 package win.doyto.query.mongodb.aggregation;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoDatabase;
 import org.bson.BsonArray;
 import org.bson.BsonDocument;
 import org.bson.conversions.Bson;
@@ -30,9 +28,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static win.doyto.query.mongodb.test.TestUtil.readString;
 
 /**
@@ -44,12 +39,9 @@ import static win.doyto.query.mongodb.test.TestUtil.readString;
 class AggregationMetadataTest {
     @Test
     void supportOneToManySubQuery() {
-        MongoClient mongoClient = mock(MongoClient.class);
-        when(mongoClient.getDatabase(anyString())).thenReturn(mock(MongoDatabase.class));
-
         UserQuery createUserQuery = UserQuery.builder().username("f0rb").build();
         TestQuery query = TestQuery.builder().createUser(createUserQuery).build();
-        AggregationMetadata md = new AggregationMetadata(UserEntity.class, mongoClient);
+        AggregationMetadata<Object> md = new AggregationMetadata<>(UserEntity.class, null);
 
         List<Bson> pipeline = md.buildAggregation(query);
 

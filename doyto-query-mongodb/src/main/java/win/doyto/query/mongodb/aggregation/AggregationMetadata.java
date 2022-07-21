@@ -16,9 +16,6 @@
 
 package win.doyto.query.mongodb.aggregation;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.BsonField;
 import lombok.Getter;
@@ -38,12 +35,10 @@ import win.doyto.query.util.CommonUtil;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-import javax.persistence.Entity;
 
-import static win.doyto.query.mongodb.MongoConstant.MONGO_ID;
-import static win.doyto.query.mongodb.MongoConstant.ex;
-import static win.doyto.query.mongodb.MongoDataQueryClient.COUNT_KEY;
+import static win.doyto.query.mongodb.MongoConstant.*;
 import static win.doyto.query.mongodb.aggregation.DomainPathBuilder.buildLookUpForSubDomain;
 
 /**
@@ -52,38 +47,35 @@ import static win.doyto.query.mongodb.aggregation.DomainPathBuilder.buildLookUpF
  * @author f0rb on 2022-01-27
  */
 @Getter
-public class AggregationMetadata {
-    private static final Map<Class<?>, AggregationMetadata> holder = new ConcurrentHashMap<>();
+public class AggregationMetadata<C> {
+    private static final Map<Class<?>, AggregationMetadata<?>> holder = new ConcurrentHashMap<>();
     private static final Bson SORT_BY_ID = new Document(MONGO_ID, 1);
 
     private final Class<?> viewClass;
-    private final MongoCollection<Document> collection;
+    private final C collection;
     private final Bson groupBy;
     private final Bson project;
     private final Field[] domainFields;
     private final Document groupId;
 
-    <V> AggregationMetadata(Class<V> viewClass, MongoClient mongoClient) {
+    <V> AggregationMetadata(Class<V> viewClass, C collection) {
         this.viewClass = viewClass;
-        this.collection = getCollection(mongoClient, viewClass.getAnnotation(Entity.class));
+        this.collection = collection;
         this.groupId = buildGroupId(viewClass);
         this.groupBy = buildGroupBy(viewClass, this.groupId);
         this.project = buildProject(viewClass, groupBy != null);
         this.domainFields = buildDomainFields(viewClass);
     }
 
+    @SuppressWarnings("unchecked")
+    public static <C> AggregationMetadata<C> build(Class<?> viewClass, Function<Class<?>, C> collectionProvider) {
+        return (AggregationMetadata<C>) holder.computeIfAbsent(viewClass, clazz
+                -> new AggregationMetadata<>(clazz, collectionProvider.apply(clazz)));
+    }
+
     private static <V> Field[] buildDomainFields(Class<V> viewClass) {
         return ColumnUtil.filterFields(viewClass, field -> field.isAnnotationPresent(DomainPath.class))
                          .toArray(Field[]::new);
-    }
-
-    public static AggregationMetadata build(Class<?> viewClass, MongoClient mongoClient) {
-        return holder.computeIfAbsent(viewClass, clazz -> new AggregationMetadata(clazz, mongoClient));
-    }
-
-    private static MongoCollection<Document> getCollection(MongoClient mongoClient, Entity mongoEntity) {
-        MongoDatabase database = mongoClient.getDatabase(mongoEntity.database());
-        return database.getCollection(mongoEntity.name());
     }
 
     private static <V> Bson buildGroupBy(Class<V> viewClass, Document groupDoc) {

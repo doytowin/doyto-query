@@ -17,14 +17,16 @@
 package win.doyto.query.mongodb;
 
 import com.mongodb.client.MongoClient;
-import lombok.AllArgsConstructor;
+import com.mongodb.client.MongoCollection;
 import org.apache.commons.lang3.ObjectUtils;
+import org.bson.Document;
 import org.bson.conversions.Bson;
 import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.mongodb.aggregation.AggregationMetadata;
+import win.doyto.query.mongodb.aggregation.CollectionProvider;
 import win.doyto.query.mongodb.session.MongoSessionSupplier;
 import win.doyto.query.mongodb.session.MongoSessionThreadLocalSupplier;
 import win.doyto.query.util.BeanUtil;
@@ -33,19 +35,24 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static win.doyto.query.mongodb.MongoConstant.COUNT_KEY;
+
 /**
  * MongoDataQuery
  *
  * @author f0rb on 2022-01-25
  */
-@AllArgsConstructor
 public class MongoDataQueryClient implements DataQueryClient {
-    public static final String COUNT_KEY = "count";
-    private MongoClient mongoClient;
     private final MongoSessionSupplier mongoSessionSupplier;
+    private final CollectionProvider collectionProvider;
 
     public MongoDataQueryClient(MongoClient mongoClient) {
         this(mongoClient, MongoSessionThreadLocalSupplier.create(mongoClient));
+    }
+
+    public MongoDataQueryClient(MongoClient mongoClient, MongoSessionSupplier mongoSessionSupplier) {
+        this.mongoSessionSupplier = mongoSessionSupplier;
+        this.collectionProvider = new CollectionProvider(mongoClient);
     }
 
     @Override
@@ -56,7 +63,8 @@ public class MongoDataQueryClient implements DataQueryClient {
 
     private <V, Q extends DoytoQuery> List<V>
     commonQuery(Q query, Class<V> viewClass) {
-        AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
+        AggregationMetadata<MongoCollection<Document>> md =
+                AggregationMetadata.build(viewClass, collectionProvider);
         List<Bson> pipeline = md.buildAggregation(query);
         return md.getCollection()
                  .aggregate(mongoSessionSupplier.get(), pipeline)
@@ -67,7 +75,8 @@ public class MongoDataQueryClient implements DataQueryClient {
     @Override
     public <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
     long count(Q query, Class<V> viewClass) {
-        AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
+        AggregationMetadata<MongoCollection<Document>> md =
+                AggregationMetadata.build(viewClass, collectionProvider);
         List<Bson> pipeline = md.buildCount(query);
         Integer count = md.getCollection()
                           .aggregate(mongoSessionSupplier.get(), pipeline)
