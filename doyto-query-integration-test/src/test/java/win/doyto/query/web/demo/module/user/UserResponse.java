@@ -18,6 +18,10 @@ package win.doyto.query.web.demo.module.user;
 
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.entity.Persistable;
+
+import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 /**
  * UserResponse
@@ -26,7 +30,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class UserResponse {
+@Entity(name = "t_user")
+public class UserResponse implements Persistable<Long> {
     private Long id;
     private String username;
     private String email;
@@ -35,6 +40,7 @@ public class UserResponse {
     private Boolean valid;
     private String memo;
     private UserLevel userLevel;
+    @Transient
     private String address;
 
 }
