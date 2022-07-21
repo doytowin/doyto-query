@@ -58,14 +58,20 @@ public class ColumnUtil {
     }
 
     public static Field[] initFields(Class<?> queryClass, Consumer<Field> fieldConsumer) {
-        classFieldsMap.computeIfAbsent(queryClass, c -> {
-            Field[] fields = filterFields(c, ColumnUtil::shouldRetain).toArray(Field[]::new);
-            if (fieldConsumer != null) {
-                Arrays.stream(fields).forEach(fieldConsumer);
+        Field[] fields = classFieldsMap.get(queryClass);
+        if (fields == null) {
+            synchronized (classFieldsMap) {
+                fields = classFieldsMap.get(queryClass);
+                if (fields == null) {
+                    fields = filterFields(queryClass, ColumnUtil::shouldRetain).toArray(Field[]::new);
+                    if (fieldConsumer != null) {
+                        Arrays.stream(fields).forEach(fieldConsumer);
+                    }
+                    classFieldsMap.put(queryClass, fields);
+                }
             }
-            return fields;
-        });
-        return classFieldsMap.get(queryClass);
+        }
+        return fields;
     }
 
     public static Stream<Field> filterFields(Class<?> entityClass) {
