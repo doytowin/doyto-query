@@ -27,6 +27,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class MongoConstant {
     public static final String MONGO_ID = "_id";
+    public static final String COUNT_KEY = "count";
 
     public static String ex(String field) {
         return "$" + field;

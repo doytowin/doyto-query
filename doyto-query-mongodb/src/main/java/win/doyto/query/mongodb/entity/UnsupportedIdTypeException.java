@@ -14,24 +14,15 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb.session;
-
-import com.mongodb.client.ClientSession;
-import com.mongodb.client.MongoClient;
-
-import java.io.Closeable;
-import java.util.function.Supplier;
+package win.doyto.query.mongodb.entity;
 
 /**
- * MongoSessionProvider
+ * UnsupportedIdTypeException
  *
- * @author f0rb on 2022-07-11
+ * @author f0rb on 2022-07-20
  */
-public interface MongoSessionSupplier extends Supplier<ClientSession>, Closeable {
-
-    MongoClient getMongoClient();
-
-    ClientSession get();
-
-    void close();
+public class UnsupportedIdTypeException extends RuntimeException {
+    public UnsupportedIdTypeException(Class<?> type) {
+        super("Unsupported type for ObjectId: " + type.getName());
+    }
 }

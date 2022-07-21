@@ -16,8 +16,6 @@
 
 package win.doyto.query.mongodb.aggregation;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoDatabase;
 import org.bson.BsonArray;
 import org.bson.BsonDocument;
 import org.bson.conversions.Bson;
@@ -30,28 +28,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static win.doyto.query.mongodb.test.TestUtil.readString;
 
 /**
- * AggregationPipelineBuilderTest
+ * AggregationMetadataTest
  *
  * @author f0rb on 2022-06-14
  * @since 1.0.0
  */
-class AggregationPipelineBuilderTest {
+class AggregationMetadataTest {
     @Test
     void supportOneToManySubQuery() {
-        MongoClient mongoClient = mock(MongoClient.class);
-        when(mongoClient.getDatabase(anyString())).thenReturn(mock(MongoDatabase.class));
-
         UserQuery createUserQuery = UserQuery.builder().username("f0rb").build();
         TestQuery query = TestQuery.builder().createUser(createUserQuery).build();
-        AggregationMetadata md = new AggregationMetadata(UserEntity.class, mongoClient);
+        AggregationMetadata<Object> md = new AggregationMetadata<>(UserEntity.class, null);
 
-        List<Bson> pipeline = AggregationPipelineBuilder.build(query, UserEntity.class, md);
+        List<Bson> pipeline = md.buildAggregation(query);
 
         List<BsonDocument> result = pipeline.stream().map(Bson::toBsonDocument).collect(Collectors.toList());
         BsonArray expected = BsonArray.parse(readString("/query_user_filter_by_create_user.json"));
