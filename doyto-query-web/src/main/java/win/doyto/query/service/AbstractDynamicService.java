@@ -103,8 +103,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
             if (entityType == EntityType.MONGO_DB) {
                 Class<?> mongoDataAccessClass = classLoader.loadClass("win.doyto.query.mongodb.MongoDataAccess");
                 tryCreateEmbeddedMongoServerFirst(beanFactory);
-                Object mongoClient = beanFactory.getBean("mongo");
-                tryCreateMongoDataAccess(beanFactory, mongoDataAccessClass, mongoClient);
+                tryCreateMongoDataAccess(beanFactory, mongoDataAccessClass);
             } else {// using JdbcDataAccess as default DataAccess
                 Class<?> jdbcDataAccessClass = classLoader.loadClass("win.doyto.query.jdbc.JdbcDataAccess");
                 Object jdbcOperations = beanFactory.getBean("jdbcTemplate");
@@ -116,13 +115,13 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     }
 
     @SuppressWarnings("unchecked")
-    private void tryCreateMongoDataAccess(AutowireCapableBeanFactory beanFactory, Class<?> mongoDataAccessClass, Object mongoClient)
+    private void tryCreateMongoDataAccess(AutowireCapableBeanFactory beanFactory, Class<?> mongoDataAccessClass)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         try {
             Object mongoSessionSupplier = beanFactory.getBean("mongoSessionSupplier");
-            dataAccess = (DataAccess<E, I, Q>) ConstructorUtils.invokeConstructor(mongoDataAccessClass, mongoClient, entityClass, mongoSessionSupplier);
+            dataAccess = (DataAccess<E, I, Q>) ConstructorUtils.invokeConstructor(mongoDataAccessClass, entityClass, mongoSessionSupplier);
         } catch (BeansException e) {
-            dataAccess = (DataAccess<E, I, Q>) ConstructorUtils.invokeConstructor(mongoDataAccessClass, mongoClient, entityClass);
+            dataAccess = (DataAccess<E, I, Q>) ConstructorUtils.invokeConstructor(mongoDataAccessClass, entityClass);
         }
     }
 

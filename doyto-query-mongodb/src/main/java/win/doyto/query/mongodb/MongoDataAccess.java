@@ -66,13 +66,14 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
     private final AggregationMetadata<MongoCollection<Document>> md;
 
     public MongoDataAccess(MongoClient mongoClient, Class<E> entityClass) {
-        this(mongoClient, entityClass, MongoSessionThreadLocalSupplier.create(mongoClient));
+        this(entityClass, MongoSessionThreadLocalSupplier.create(mongoClient));
     }
 
-    public MongoDataAccess(MongoClient mongoClient, Class<E> entityClass, MongoSessionSupplier mongoSessionSupplier) {
+    public MongoDataAccess(Class<E> entityClass, MongoSessionSupplier mongoSessionSupplier) {
         this.entityClass = entityClass;
         this.mongoSessionSupplier = mongoSessionSupplier;
-        this.md = AggregationMetadata.build(entityClass, new CollectionProvider(mongoClient));
+        CollectionProvider collectionProvider = new CollectionProvider(mongoSessionSupplier.getMongoClient());
+        this.md = AggregationMetadata.build(entityClass, collectionProvider);
         this.collection = md.getCollection();
     }
 

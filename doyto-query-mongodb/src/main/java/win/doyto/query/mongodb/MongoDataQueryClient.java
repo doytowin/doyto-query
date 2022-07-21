@@ -47,12 +47,12 @@ public class MongoDataQueryClient implements DataQueryClient {
     private final CollectionProvider collectionProvider;
 
     public MongoDataQueryClient(MongoClient mongoClient) {
-        this(mongoClient, MongoSessionThreadLocalSupplier.create(mongoClient));
+        this(MongoSessionThreadLocalSupplier.create(mongoClient));
     }
 
-    public MongoDataQueryClient(MongoClient mongoClient, MongoSessionSupplier mongoSessionSupplier) {
+    public MongoDataQueryClient(MongoSessionSupplier mongoSessionSupplier) {
         this.mongoSessionSupplier = mongoSessionSupplier;
-        this.collectionProvider = new CollectionProvider(mongoClient);
+        this.collectionProvider = new CollectionProvider(mongoSessionSupplier.getMongoClient());
     }
 
     @Override
