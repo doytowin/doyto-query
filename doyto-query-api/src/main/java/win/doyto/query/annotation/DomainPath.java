@@ -32,14 +32,23 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface DomainPath {
     /**
-     * To describe how to route from main domain
-     * to the current annotated domain.
+     * To describe how to route from the host domain to the target domain.
      *
      * @return paths array
      */
     String[] value();
 
-    String lastDomainIdColumn() default "id";
-
+    /**
+     * The field in this domain to maintain the relationship with the target domain.
+     *
+     * @return name of the local field
+     */
     String localField() default "id";
+
+    /**
+     * The field in another domain to maintain the relationship with this domain.
+     *
+     * @return name of the foreign field
+     */
+    String foreignField() default "id";
 }

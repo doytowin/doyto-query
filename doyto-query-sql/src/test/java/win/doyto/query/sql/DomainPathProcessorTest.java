@@ -30,12 +30,12 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * DomainRouteProcessorTest
+ * DomainPathProcessorTest
  *
  * @author f0rb on 2022-04-23
  */
 @ResourceLock(value = "mapCamelCaseToUnderscore")
-class DomainRouteProcessorTest {
+class DomainPathProcessorTest {
 
     List<Object> argList = new ArrayList<>();
 
@@ -204,12 +204,24 @@ class DomainRouteProcessorTest {
 
     @Test
     void supportSelfOneToManyQuery() {
-        DomainPathProcessor domainPathProcessor = buildProcessor(MenuQuery.class, "menuParentQuery");
+        DomainPathProcessor domainPathProcessor = buildProcessor(MenuQuery.class, "parentQuery");
         MenuQuery parentQuery = MenuQuery.builder().nameLike("test").valid(true).build();
 
         String sql = domainPathProcessor.process(argList, parentQuery);
 
         String expected = "id IN (SELECT parent_id FROM t_menu WHERE name LIKE ? AND valid = ?)";
+        assertThat(sql).isEqualTo(expected);
+        assertThat(argList).containsExactly("%test%", true);
+    }
+
+    @Test
+    void supportSelfManyToOneQuery() {
+        DomainPathProcessor domainPathProcessor = buildProcessor(MenuQuery.class, "childrenQuery");
+        MenuQuery parentQuery = MenuQuery.builder().nameLike("test").valid(true).build();
+
+        String sql = domainPathProcessor.process(argList, parentQuery);
+
+        String expected = "parent_id IN (SELECT id FROM t_menu WHERE name LIKE ? AND valid = ?)";
         assertThat(sql).isEqualTo(expected);
         assertThat(argList).containsExactly("%test%", true);
     }

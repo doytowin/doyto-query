@@ -51,7 +51,7 @@ public class RoleView implements Persistable<Integer> {
     private List<PermView> perms;
 
     // many-to-one
-    @DomainPath(value = "user", lastDomainIdColumn = "create_user_id")
+    @DomainPath(value = "user", localField = "create_user_id")
     private UserView createUser;
 
 }

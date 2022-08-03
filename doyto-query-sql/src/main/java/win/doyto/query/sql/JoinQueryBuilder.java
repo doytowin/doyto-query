@@ -102,11 +102,10 @@ public class JoinQueryBuilder {
         LinkedList<Object> queryArgs = new LinkedList<>();
         String clause;
         if (domains.length == 1) {
-            String mainFKColumn = domainPath.lastDomainIdColumn();
             if (Collection.class.isAssignableFrom(joinField.getType())) {
-                clause = buildQueryManyForEachMainDomain(mainFKColumn, subTableName, subColumns);
+                clause = buildQueryManyForEachMainDomain(domainPath.foreignField(), subTableName, subColumns);
             } else {
-                clause = buildQueryOneForEachMainDomain(mainTableName, mainFKColumn, subTableName, subColumns);
+                clause = buildQueryOneForEachMainDomain(mainTableName, domainPath.localField(), subTableName, subColumns);
             }
         } else {
             boolean reverse = !mainTableName.equals(subTableName);
