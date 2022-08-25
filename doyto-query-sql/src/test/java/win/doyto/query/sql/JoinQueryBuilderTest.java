@@ -299,4 +299,30 @@ class JoinQueryBuilderTest {
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(true, 1, 10);
     }
+
+    @Test
+    void buildSqlAndArgsForManyToManyAggregation() throws NoSuchFieldException {
+        Field field = UserView.class.getDeclaredField("roleStat");
+
+        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+                field, Arrays.asList(1, 2, 3), RoleStatView.class);
+
+        String expected = "\nSELECT ? AS PK_FOR_JOIN, count(*) AS count FROM t_role\n" +
+                " WHERE id IN (\n" +
+                "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
+                " )\n" +
+                "UNION ALL\n" +
+                "SELECT ? AS PK_FOR_JOIN, count(*) AS count FROM t_role\n" +
+                " WHERE id IN (\n" +
+                "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
+                " )\n" +
+                "UNION ALL\n" +
+                "SELECT ? AS PK_FOR_JOIN, count(*) AS count FROM t_role\n" +
+                " WHERE id IN (\n" +
+                "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
+                " )";
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 2, 3, 3);
+    }
+
 }

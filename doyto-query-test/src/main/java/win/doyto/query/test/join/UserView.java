@@ -58,4 +58,8 @@ public class UserView implements Persistable<Long> {
     @DomainPath(value = "role", foreignField = "create_user_id")
     private List<RoleView> createRoles;
 
+    // many-to-many aggregation
+    @DomainPath({"user", "role"})
+    private RoleStatView roleStat;
+
 }
