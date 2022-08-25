@@ -129,7 +129,9 @@ public class JdbcDataQueryClient implements DataQueryClient {
     @SuppressWarnings("unchecked")
     private <I, R> Map<I, List<R>> queryIntoMainEntity(Class<I> keyClass, Class<R> joinEntityClass, SqlAndArgs sqlAndArgs) {
         RowMapper<R> joinRowMapper = (RowMapper<R>) holder.computeIfAbsent(joinEntityClass, BeanPropertyRowMapper::new);
-        return databaseOperations.query(sqlAndArgs, new JoinRowMapperResultSetExtractor<>(keyClass, joinRowMapper));
+        JoinRowMapperResultSetExtractor<I, R> resultSetExtractor =
+                new JoinRowMapperResultSetExtractor<>(JoinQueryBuilder.KEY_COLUMN, keyClass, joinRowMapper);
+        return databaseOperations.query(sqlAndArgs, resultSetExtractor);
     }
 
     private <E extends Persistable<I>, I extends Serializable, R>
