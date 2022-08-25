@@ -18,40 +18,19 @@ package win.doyto.query.test.join;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.entity.Persistable;
 
-import java.util.List;
-import javax.persistence.Id;
+import java.io.Serializable;
+import javax.persistence.Entity;
 
 /**
- * UserEntity
+ * RoleStatView
  *
- * @author f0rb on 2020-04-01
+ * @author f0rb on 2022/8/25
+ * @since 1.0.0
  */
 @Getter
 @Setter
-public class RoleView implements Persistable<Integer> {
-
-    @Id
-    private Integer id;
-
-    private String roleName;
-
-    private String roleCode;
-
-    private Boolean valid;
-
-    // many-to-many
-    @DomainPath({"user", "role"})
-    private List<UserView> users;
-
-    // many-to-many
-    @DomainPath({"role", "perm"})
-    private List<PermView> perms;
-
-    // many-to-one
-    @DomainPath(value = "user", localField = "create_user_id")
-    private UserView createUser;
-
+@Entity(name = "role")
+public class RoleStatView implements Serializable {
+    private Integer count;
 }

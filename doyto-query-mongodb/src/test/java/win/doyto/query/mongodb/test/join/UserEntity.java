@@ -53,11 +53,11 @@ public class UserEntity extends MongoPersistable<BigInteger> {
     private List<MenuEntity> menus;
 
     // many-to-one
-    @DomainPath(value = "user", lastDomainIdColumn = "createUserId")
+    @DomainPath(value = "user", localField = "createUserId")
     private UserEntity createUser;
 
     // one-to-many
-    @DomainPath(value = "user", lastDomainIdColumn = "createUserId")
+    @DomainPath(value = "user", foreignField = "createUserId")
     private List<UserEntity> createdUsers;
 
 }

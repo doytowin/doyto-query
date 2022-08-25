@@ -51,11 +51,15 @@ public class UserView implements Persistable<Long> {
     private List<MenuView> menus;
 
     // many-to-one
-    @DomainPath(value = "user", lastDomainIdColumn = "create_user_id")
+    @DomainPath(value = "user", localField = "create_user_id")
     private UserView createUser;
 
     // one-to-many
-    @DomainPath(value = "role", lastDomainIdColumn = "create_user_id")
+    @DomainPath(value = "role", foreignField = "create_user_id")
     private List<RoleView> createRoles;
+
+    // many-to-many aggregation
+    @DomainPath({"user", "role"})
+    private RoleStatView roleStat;
 
 }

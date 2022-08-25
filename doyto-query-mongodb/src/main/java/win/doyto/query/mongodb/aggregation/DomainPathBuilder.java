@@ -26,7 +26,6 @@ import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -55,13 +54,7 @@ public class DomainPathBuilder {
 
         if (paths.length == 1) {
             String tableName = String.format(TABLE_FORMAT, paths[0]);
-            if (Collection.class.isAssignableFrom(field.getType())) {
-                // one-to-many
-                return lookup0(tableName, MONGO_ID, domainPath.lastDomainIdColumn(), project(projectDoc), viewName);
-            } else {
-                // many-to-one
-                return lookup0(tableName, domainPath.lastDomainIdColumn(), MONGO_ID, project(projectDoc),viewName);
-            }
+            return lookup0(tableName, domainPath.localField(), domainPath.foreignField(), Collections.singletonList(project(projectDoc)), viewName);
         }
         return buildLookupForManyToMany(query, field.getName(), paths, projectDoc);
     }
@@ -100,22 +93,22 @@ public class DomainPathBuilder {
         return lookup0(joints[0], MONGO_ID, joinIds[0], pipeline, viewName);
     }
 
-    private static Bson lookup0(String from, String localField, String foreignField, Bson project, String as) {
-        return lookup0(from, localField, foreignField, Collections.singletonList(project), as);
-    }
-
     public static Bson lookup0(
             String from, String localField, String foreignField, List<? extends Bson> pipeline, String as
     ) {
         Document lookupDoc = new Document()
                 .append("from", from)
-                .append("localField", localField)
-                .append("foreignField", foreignField);
+                .append("localField", mapIdField(localField))
+                .append("foreignField", mapIdField(foreignField));
         if (!pipeline.isEmpty()) {
             lookupDoc.append("pipeline", pipeline);
         }
         lookupDoc.append("as", as);
         return new Document("$lookup", lookupDoc);
+    }
+
+    private static String mapIdField(String field) {
+        return "id".equals(field) ? MONGO_ID : field;
     }
 
     @SuppressWarnings("java:S117")

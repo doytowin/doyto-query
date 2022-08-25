@@ -36,8 +36,11 @@ import win.doyto.query.core.PageQuery;
 @AllArgsConstructor
 public class MenuQuery extends PageQuery {
 
-    @DomainPath(value = "menu", lastDomainIdColumn = "parent_id")
-    private MenuQuery menuParentQuery;
+    @DomainPath(value = "menu", foreignField = "parent_id")
+    private MenuQuery parentQuery;
+
+    @DomainPath(value = "menu", localField = "parent_id")
+    private MenuQuery childrenQuery;
 
     @DomainPath({"user", "role", "perm", "menu"})
     private UserQuery user;

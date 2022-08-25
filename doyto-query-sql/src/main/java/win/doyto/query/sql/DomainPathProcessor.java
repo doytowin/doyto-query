@@ -43,13 +43,13 @@ class DomainPathProcessor implements FieldProcessor.Processor {
     private final String[] domainIds;
     private final String[] joinTables;
     private final String lastDomain;
-    private final String lastDomainIdColumn;
+    private final String foreignFieldColumn;
     private final String localFieldColumn;
 
     public DomainPathProcessor(Field field) {
         DomainPath domainPath = field.getAnnotation(DomainPath.class);
         domainPaths = domainPath.value();
-        lastDomainIdColumn = domainPath.lastDomainIdColumn();
+        foreignFieldColumn = ColumnUtil.convertColumn(domainPath.foreignField());
         localFieldColumn = ColumnUtil.convertColumn(domainPath.localField());
         boolean reverse = field.getName().contains(domainPaths[0]);
         domainIds = prepareDomainIds();
@@ -129,7 +129,7 @@ class DomainPathProcessor implements FieldProcessor.Processor {
         String table = String.format(TABLE_FORMAT, lastDomain);
         String where = BuildHelper.buildWhere(query, argList);
         subQueryBuilder.append(IN).append(OP)
-                       .append(SELECT).append(lastDomainIdColumn).append(FROM).append(table).append(where)
+                       .append(SELECT).append(foreignFieldColumn).append(FROM).append(table).append(where)
                        .append(CP);
     }
 
