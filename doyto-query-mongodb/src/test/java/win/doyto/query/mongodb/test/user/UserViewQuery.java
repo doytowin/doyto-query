@@ -14,30 +14,40 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb.test.inventory;
+package win.doyto.query.mongodb.test.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.RelationalQuery;
+import win.doyto.query.mongodb.test.role.RoleViewQuery;
+
+import java.math.BigInteger;
 
 /**
- * InventoryQuery
+ * UserViewQuery
  *
- * @author f0rb on 2021-11-23
+ * @author f0rb on 2022-03-26
  */
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @SuperBuilder
-public class InventoryQuery extends PageQuery {
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserViewQuery extends PageQuery implements RelationalQuery<UserView, BigInteger> {
 
-    private String itemContain;
-    private String status;
-    private SizeQuery size;
-    private ConditionOr condition;
+    @DomainPath({"user", "role"})
+    private RoleViewQuery role;
 
+    private UserViewQuery createUserQuery;
+    private UserViewQuery createdUsersQuery;
+
+    @Override
+    public Class<UserView> getDomainClass() {
+        return UserView.class;
+    }
 }

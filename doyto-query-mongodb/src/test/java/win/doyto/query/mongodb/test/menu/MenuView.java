@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb.test.join;
+package win.doyto.query.mongodb.test.menu;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,14 +23,14 @@ import win.doyto.query.mongodb.entity.MongoPersistable;
 import java.math.BigInteger;
 
 /**
- * MenuEntity
+ * MenuView
  *
  * @author f0rb on 2022-05-21
  * @since 1.0.0
  */
 @Getter
 @Setter
-public class MenuEntity extends MongoPersistable<BigInteger> {
+public class MenuView extends MongoPersistable<BigInteger> {
     private String menuName;
     private String menuCode;
     private Boolean valid;

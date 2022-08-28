@@ -14,32 +14,34 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb.test.join;
+package win.doyto.query.mongodb.test.role;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.mongodb.entity.MongoPersistable;
+import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.RelationalQuery;
 
 import java.math.BigInteger;
-import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.EntityType;
 
 /**
- * PermEntity
+ * RoleViewQuery
  *
- * @author f0rb on 2022-05-21
+ * @author f0rb on 2022/8/28
  * @since 1.0.0
  */
 @Getter
 @Setter
-@Entity(type = EntityType.MONGO_DB, database = "doyto", name = "t_perm")
-public class PermEntity extends MongoPersistable<BigInteger> {
-    private String permName;
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+public class RoleViewQuery extends PageQuery implements RelationalQuery<RoleView, BigInteger> {
     private Boolean valid;
 
-    // many-to-many
-    @DomainPath({"user", "role", "perm"})
-    private List<UserEntity> users;
+    @Override
+    public Class<RoleView> getDomainClass() {
+        return RoleView.class;
+    }
 }

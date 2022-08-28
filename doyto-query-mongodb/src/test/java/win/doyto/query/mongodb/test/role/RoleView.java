@@ -14,30 +14,28 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb.test.inventory;
+package win.doyto.query.mongodb.test.role;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.mongodb.entity.MongoPersistable;
+
+import java.math.BigInteger;
+import javax.persistence.Entity;
+import javax.persistence.EntityType;
 
 /**
- * InventoryQuery
+ * RoleView
  *
- * @author f0rb on 2021-11-23
+ * @author f0rb on 2022-05-20
  */
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
-public class InventoryQuery extends PageQuery {
+@Entity(type = EntityType.MONGO_DB, database = "doyto", name = "t_role")
+public class RoleView extends MongoPersistable<BigInteger> {
 
-    private String itemContain;
-    private String status;
-    private SizeQuery size;
-    private ConditionOr condition;
+    private String roleName;
+    private String roleCode;
+    private Boolean valid;
 
 }
