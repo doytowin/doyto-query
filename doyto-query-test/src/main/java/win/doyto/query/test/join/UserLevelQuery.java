@@ -25,7 +25,7 @@ import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.PageQuery;
 
 /**
- * UserJoinQuery
+ * UserLevelQuery
  *
  * @author f0rb on 2022-03-26
  */

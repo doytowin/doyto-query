@@ -30,7 +30,7 @@ import win.doyto.query.test.UserQuery;
 import win.doyto.query.test.role.RoleQuery;
 
 /**
- * UserJoinQuery
+ * UserViewQuery
  *
  * @author f0rb on 2022-03-26
  */
@@ -39,7 +39,7 @@ import win.doyto.query.test.role.RoleQuery;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserJoinQuery extends PageQuery implements RelationalQuery<UserView, Long> {
+public class UserViewQuery extends PageQuery implements RelationalQuery<UserView, Long> {
 
     @DomainPath({"user", "role"})
     private RoleQuery role;

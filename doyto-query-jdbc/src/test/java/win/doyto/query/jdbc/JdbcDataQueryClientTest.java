@@ -67,8 +67,8 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
     void pageForJoin() {
         RoleQuery roleQuery = RoleQuery.builder().roleName("vip").build();
         RoleQuery rolesQuery = RoleQuery.builder().roleNameLike("vip").build();
-        UserJoinQuery userJoinQuery = UserJoinQuery.builder().role(roleQuery).rolesQuery(rolesQuery).build();
-        PageList<UserView> page = jdbcDataQueryClient.page(userJoinQuery);
+        UserViewQuery userViewQuery = UserViewQuery.builder().role(roleQuery).rolesQuery(rolesQuery).build();
+        PageList<UserView> page = jdbcDataQueryClient.page(userViewQuery);
         assertThat(page.getTotal()).isEqualTo(2);
         assertThat(page.getList()).extracting(UserView::getUsername).containsExactly("f0rb", "user4");
         assertThat(page.getList()).extracting(it -> it.getRoles().size()).containsExactly(1, 1);
@@ -76,9 +76,9 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
 
     @Test
     void queryUserWithRoles() {
-        UserJoinQuery userJoinQuery = UserJoinQuery.builder().rolesQuery(new RoleQuery()).permsQuery(new PermissionQuery()).build();
+        UserViewQuery userViewQuery = UserViewQuery.builder().rolesQuery(new RoleQuery()).permsQuery(new PermissionQuery()).build();
 
-        List<UserView> users = jdbcDataQueryClient.query(userJoinQuery);
+        List<UserView> users = jdbcDataQueryClient.query(userViewQuery);
 
         assertThat(users).extracting("roles")
                          .extractingResultOf("size", Integer.class)
@@ -94,7 +94,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
 
     @Test
     void shouldNotQuerySubDomainWhenItsQueryFieldIsNull() {
-        List<UserView> users = jdbcDataQueryClient.query(UserJoinQuery.builder().build());
+        List<UserView> users = jdbcDataQueryClient.query(UserViewQuery.builder().build());
         assertThat(users).hasSize(4);
         assertThat(users).extracting("roles").containsOnlyNulls();
         assertThat(users).extracting("perms").containsOnlyNulls();
@@ -137,14 +137,14 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
      */
     @Test
     void queryUserWithGrantedMenusAndCreatedRolesAndCreateUser() {
-        UserJoinQuery userJoinQuery = UserJoinQuery
+        UserViewQuery userViewQuery = UserViewQuery
                 .builder()
                 .menusQuery(new MenuQuery())
                 .createUserQuery(new UserQuery())
                 .createRolesQuery(new RoleQuery())
                 .build();
 
-        List<UserView> users = jdbcDataQueryClient.query(userJoinQuery);
+        List<UserView> users = jdbcDataQueryClient.query(userViewQuery);
 
         assertThat(users).extracting("menus")
                          .extractingResultOf("size", Integer.class)
