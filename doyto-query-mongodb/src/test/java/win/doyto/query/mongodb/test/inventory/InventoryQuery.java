@@ -21,8 +21,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.JoinQuery;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.RelationalQuery;
 import win.doyto.query.mongodb.test.aggregate.QuantityView;
 
 /**
@@ -35,7 +35,7 @@ import win.doyto.query.mongodb.test.aggregate.QuantityView;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class InventoryQuery extends PageQuery implements JoinQuery<QuantityView, String> {
+public class InventoryQuery extends PageQuery implements RelationalQuery<QuantityView, String> {
 
     private String itemContain;
     private String status;

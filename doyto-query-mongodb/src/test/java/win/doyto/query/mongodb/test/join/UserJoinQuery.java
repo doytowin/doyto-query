@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.core.JoinQuery;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.RelationalQuery;
 import win.doyto.query.test.role.RoleQuery;
 
 import java.math.BigInteger;
@@ -38,7 +38,7 @@ import java.math.BigInteger;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserJoinQuery extends PageQuery implements JoinQuery<UserEntity, BigInteger> {
+public class UserJoinQuery extends PageQuery implements RelationalQuery<UserEntity, BigInteger> {
 
     @DomainPath({"user", "role"})
     private RoleQuery role;
