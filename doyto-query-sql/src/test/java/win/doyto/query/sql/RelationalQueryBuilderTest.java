@@ -62,19 +62,19 @@ class RelationalQueryBuilderTest {
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 2, 3), PermView.class);
 
-        String expected = "\nSELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
+        String expected = "\nSELECT ? AS MAIN_ENTITY_ID, id, permName, valid FROM t_perm\n" +
                 " WHERE id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
                 " ))\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, permName, valid FROM t_perm\n" +
                 " WHERE id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
                 " ))\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, permName, valid FROM t_perm\n" +
                 " WHERE id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
@@ -90,14 +90,14 @@ class RelationalQueryBuilderTest {
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 3), MenuView.class);
 
-        String expected = "\nSELECT ? AS PK_FOR_JOIN, id, menuName, platform FROM t_menu\n" +
+        String expected = "\nSELECT ? AS MAIN_ENTITY_ID, id, menuName, platform FROM t_menu\n" +
                 " WHERE id IN (\n" +
                 "  SELECT menu_id FROM j_perm_and_menu WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
                 " )))\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, menuName, platform FROM t_menu\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, menuName, platform FROM t_menu\n" +
                 " WHERE id IN (\n" +
                 "  SELECT menu_id FROM j_perm_and_menu WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
@@ -114,12 +114,12 @@ class RelationalQueryBuilderTest {
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 3), UserView.class);
 
-        String expected = "\nSELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+        String expected = "\nSELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 " WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id = ?\n" +
                 " )\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 " WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id = ?\n" +
                 " )";
@@ -135,13 +135,13 @@ class RelationalQueryBuilderTest {
                 field, Arrays.asList(1, 3), UserView.class);
 
         String expected = "\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 " WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_role_and_perm WHERE perm_id = ?\n" +
                 " ))\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 " WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_role_and_perm WHERE perm_id = ?\n" +
@@ -158,21 +158,21 @@ class RelationalQueryBuilderTest {
                 field, Arrays.asList(1, 3, 4), UserView.class);
 
         String expected = "\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 " WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_role_and_perm WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM j_perm_and_menu WHERE menu_id = ?\n" +
                 " )))\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 " WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_role_and_perm WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM j_perm_and_menu WHERE menu_id = ?\n" +
                 " )))\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 " WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_role_and_perm WHERE perm_id IN (\n" +
@@ -194,19 +194,19 @@ class RelationalQueryBuilderTest {
         );
 
         String expected = "\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 " WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id = ?\n" +
                 " ) AND email LIKE ?\n" +
                 " ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 " WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id = ?\n" +
                 " ) AND email LIKE ?\n" +
                 " ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 " WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id = ?\n" +
                 " ) AND email LIKE ?\n" +
@@ -228,21 +228,21 @@ class RelationalQueryBuilderTest {
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 permissionQuery, PermView.class, field, Arrays.asList(1, 2, 3));
 
-        String expected = "\nSELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
+        String expected = "\nSELECT ? AS MAIN_ENTITY_ID, id, permName, valid FROM t_perm\n" +
                 " WHERE id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
                 " )) AND valid = ?\n" +
                 " ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, permName, valid FROM t_perm\n" +
                 " WHERE id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
                 " )) AND valid = ?\n" +
                 " ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, permName, valid FROM t_perm\n" +
                 " WHERE id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
@@ -259,12 +259,12 @@ class RelationalQueryBuilderTest {
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 new UserQuery(), UserView.class, field, Arrays.asList(1, 3));
 
-        String expected = "\nSELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+        String expected = "\nSELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 " WHERE id = (\n" +
                 "  SELECT create_user_id FROM t_role WHERE id = ?\n" +
                 " )\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 " WHERE id = (\n" +
                 "  SELECT create_user_id FROM t_role WHERE id = ?\n" +
                 " )";
@@ -280,9 +280,9 @@ class RelationalQueryBuilderTest {
                 new UserQuery(), RoleView.class, field, Arrays.asList(1, 3));
 
         String expected = "\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, roleName, roleCode, valid FROM t_role WHERE create_user_id = ?" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, roleName, roleCode, valid FROM t_role WHERE create_user_id = ?" +
                 "\nUNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, roleName, roleCode, valid FROM t_role WHERE create_user_id = ?";
+                "SELECT ? AS MAIN_ENTITY_ID, id, roleName, roleCode, valid FROM t_role WHERE create_user_id = ?";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
     }
@@ -307,17 +307,17 @@ class RelationalQueryBuilderTest {
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 2, 3), RoleStatView.class);
 
-        String expected = "\nSELECT ? AS PK_FOR_JOIN, count(*) AS count FROM t_role\n" +
+        String expected = "\nSELECT ? AS MAIN_ENTITY_ID, count(*) AS count FROM t_role\n" +
                 " WHERE id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
                 " )\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, count(*) AS count FROM t_role\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, count(*) AS count FROM t_role\n" +
                 " WHERE id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
                 " )\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, count(*) AS count FROM t_role\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, count(*) AS count FROM t_role\n" +
                 " WHERE id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
                 " )";

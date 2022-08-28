@@ -46,7 +46,7 @@ import static win.doyto.query.sql.Constant.*;
 @UtilityClass
 public class RelationalQueryBuilder {
 
-    public static final String KEY_COLUMN = "PK_FOR_JOIN";
+    public static final String KEY_COLUMN = "MAIN_ENTITY_ID";
 
     public static SqlAndArgs buildSelectAndArgs(DoytoQuery q, Class<?> entityClass) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
