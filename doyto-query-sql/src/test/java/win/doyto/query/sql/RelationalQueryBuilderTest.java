@@ -33,12 +33,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * JoinQueryBuilderTest
+ * RelationalQueryBuilderTest
  *
  * @author f0rb on 2021-12-11
  */
 @ResourceLock(value = "mapCamelCaseToUnderscore")
-class JoinQueryBuilderTest {
+class RelationalQueryBuilderTest {
     @BeforeEach
     void setUp() {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
@@ -51,7 +51,7 @@ class JoinQueryBuilderTest {
 
     @Test
     void supportAggregateQuery() {
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(new PageQuery(), MaxIdView.class);
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(new PageQuery(), MaxIdView.class);
         assertEquals("SELECT max(id) AS maxId, first(createUserId) AS firstCreateUserId FROM user", sqlAndArgs.getSql());
     }
 
@@ -59,7 +59,7 @@ class JoinQueryBuilderTest {
     void buildSqlAndArgsForSubDomain() throws NoSuchFieldException {
         Field field = UserView.class.getDeclaredField("perms");
 
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 2, 3), PermView.class);
 
         String expected = "\nSELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
@@ -87,7 +87,7 @@ class JoinQueryBuilderTest {
     void buildSqlAndArgsForSubDomain_FourDomains() throws NoSuchFieldException {
         Field field = UserView.class.getDeclaredField("menus");
 
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 3), MenuView.class);
 
         String expected = "\nSELECT ? AS PK_FOR_JOIN, id, menuName, platform FROM t_menu\n" +
@@ -111,7 +111,7 @@ class JoinQueryBuilderTest {
     void buildJoinSqlForReversePath_TwoDomains() throws NoSuchFieldException {
         Field field = RoleView.class.getDeclaredField("users");
 
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 3), UserView.class);
 
         String expected = "\nSELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
@@ -131,7 +131,7 @@ class JoinQueryBuilderTest {
     void buildJoinSqlForReversePath_ThreeDomains() throws NoSuchFieldException {
         Field field = PermView.class.getDeclaredField("users");
 
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 3), UserView.class);
 
         String expected = "\n" +
@@ -154,7 +154,7 @@ class JoinQueryBuilderTest {
     void buildJoinSqlForReversePath_FourDomains() throws NoSuchFieldException {
         Field field = MenuView.class.getDeclaredField("users");
 
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 3, 4), UserView.class);
 
         String expected = "\n" +
@@ -186,7 +186,7 @@ class JoinQueryBuilderTest {
     void buildReverseJoinWithQuery() throws NoSuchFieldException {
         Field field = RoleView.class.getDeclaredField("users");
 
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 UserQuery.builder().emailLike("@163")
                          .pageSize(10).sort("id,DESC")
                          .build(),
@@ -225,7 +225,7 @@ class JoinQueryBuilderTest {
 
         PermissionQuery permissionQuery = PermissionQuery.builder().valid(true)
                                                          .pageSize(10).sort("id,DESC").build();
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 permissionQuery, PermView.class, field, Arrays.asList(1, 2, 3));
 
         String expected = "\nSELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
@@ -256,7 +256,7 @@ class JoinQueryBuilderTest {
     void buildSqlAndArgsForManyToOne() throws NoSuchFieldException {
         Field field = RoleView.class.getDeclaredField("createUser");
 
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 new UserQuery(), UserView.class, field, Arrays.asList(1, 3));
 
         String expected = "\nSELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
@@ -276,7 +276,7 @@ class JoinQueryBuilderTest {
     void buildSqlAndArgsForOneToMany() throws NoSuchFieldException {
         Field field = UserView.class.getDeclaredField("createRoles");
 
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 new UserQuery(), RoleView.class, field, Arrays.asList(1, 3));
 
         String expected = "\n" +
@@ -290,7 +290,7 @@ class JoinQueryBuilderTest {
     @Test
     void supportHaving() {
         UserLevelHaving having = UserLevelHaving.builder().countGt(1).countLt(10).build();
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(
                 UserLevelQuery.builder().having(having).valid(true).build(), UserLevelCountView.class);
 
         String expected = "SELECT userLevel, valid, count(*) AS count FROM t_user WHERE valid = ? " +
@@ -304,7 +304,7 @@ class JoinQueryBuilderTest {
     void buildSqlAndArgsForManyToManyAggregation() throws NoSuchFieldException {
         Field field = UserView.class.getDeclaredField("roleStat");
 
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 2, 3), RoleStatView.class);
 
         String expected = "\nSELECT ? AS PK_FOR_JOIN, count(*) AS count FROM t_role\n" +

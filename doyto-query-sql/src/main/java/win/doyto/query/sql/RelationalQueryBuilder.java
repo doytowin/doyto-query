@@ -39,12 +39,12 @@ import static win.doyto.query.sql.BuildHelper.*;
 import static win.doyto.query.sql.Constant.*;
 
 /**
- * JoinQueryBuilder
+ * RelationalQueryBuilder
  *
  * @author f0rb on 2019-06-09
  */
 @UtilityClass
-public class JoinQueryBuilder {
+public class RelationalQueryBuilder {
 
     public static final String KEY_COLUMN = "PK_FOR_JOIN";
 
@@ -198,7 +198,7 @@ public class JoinQueryBuilder {
 
     private static String buildSubDomainColumns(Class<?> joinEntityClass) {
         return FieldUtils.getAllFieldsList(joinEntityClass).stream()
-                         .filter(JoinQueryBuilder::filterForJoinEntity)
+                         .filter(RelationalQueryBuilder::filterForJoinEntity)
                          .map(ColumnUtil::selectAs)
                          .collect(Collectors.joining(SEPARATOR));
     }
