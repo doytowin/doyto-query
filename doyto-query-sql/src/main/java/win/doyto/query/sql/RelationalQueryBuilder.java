@@ -114,9 +114,9 @@ public class RelationalQueryBuilder {
 
         String condition = buildCondition(AND, query, queryArgs);
         if (!condition.isEmpty()) {
-            sqlBuilder.append(condition).append(LF);
+            sqlBuilder.append(condition);
         }
-        sqlBuilder.append(buildOrderBy(query));
+        sqlBuilder.append(buildOrderBy(query, "\nORDER BY "));
         String clause = buildPaging(sqlBuilder.toString(), query);
 
         return buildSqlAndArgsForJoin(clause, mainIds, queryArgs);
@@ -142,7 +142,7 @@ public class RelationalQueryBuilder {
         return new StringBuilder()
                 .append(SELECT).append(PLACE_HOLDER).append(AS).append(KEY_COLUMN).append(SEPARATOR).append(subColumns)
                 .append(FROM).append(subTableName)
-                .append(WHERE).append(mainFKColumn).append(EQUAL_HOLDER);
+                .append(WHERE_).append(mainFKColumn).append(EQUAL_HOLDER);
 
     }
 
@@ -151,10 +151,10 @@ public class RelationalQueryBuilder {
     ) {
         return new StringBuilder()
                 .append(SELECT).append(PLACE_HOLDER).append(AS).append(KEY_COLUMN).append(SEPARATOR).append(subColumns)
-                .append(FROM).append(subTableName).append(LF)
-                .append(WHERE).append(ID).append(EQUAL).append(OP).append(LF).append(SPACE).append(SPACE)
+                .append(FROM).append(subTableName)
+                .append(WHERE_).append(ID).append(EQUAL).append(OP).append(LF).append(SPACE).append(SPACE)
                 .append(SELECT).append(mainFKColumn).append(FROM).append(mainTableName)
-                .append(WHERE).append(ID).append(EQUAL_HOLDER).append(LF).append(SPACE).append(CP);
+                .append(WHERE).append(ID).append(EQUAL_HOLDER).append(LF).append(CP);
     }
 
     private static StringBuilder buildQueryForEachMainDomain(
@@ -187,8 +187,8 @@ public class RelationalQueryBuilder {
         StringBuilder sqlBuilder = new StringBuilder();
         sqlBuilder.append(SELECT).append(PLACE_HOLDER).append(AS).append(KEY_COLUMN)
                   .append(SEPARATOR).append(columns)
-                  .append(FROM).append(targetDomainTable).append(LF)
-                  .append(WHERE).append(ID);
+                  .append(FROM).append(targetDomainTable)
+                  .append(WHERE_).append(ID);
         // nested query for medium domains
         for (int i = n - 1; i >= 0; i--) {
             sqlBuilder.append(IN).append(OP).append(LF).append(SPACE + SPACE)

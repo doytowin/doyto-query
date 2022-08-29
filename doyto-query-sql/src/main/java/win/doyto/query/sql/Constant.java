@@ -21,7 +21,7 @@ package win.doyto.query.sql;
  *
  * @author f0rb on 2019-06-03
  */
-@SuppressWarnings("java:S1214")
+@SuppressWarnings({"java:S1214", "java:S115"})
 interface Constant {
     String SEPARATOR = ", ";
     String PLACE_HOLDER = "?";
@@ -37,10 +37,7 @@ interface Constant {
     String DELETE_FROM = "DELETE" + FROM;
     String AND = " AND ";
     String IN = " IN ";
-    String ON = " ON ";
     String AS = " AS ";
-    String CONN = ".";
-    String INNER_JOIN = " INNER JOIN ";
     String LF = "\n";
     String ID = "id";
     String UNION_ALL = "\nUNION ALL\n";
@@ -50,4 +47,5 @@ interface Constant {
     String INSERT_INTO = "INSERT INTO ";
     String VALUES = " VALUES ";
     String HAVING_PREFIX = "_having_";
+    String WHERE_ = "\nWHERE ";
 }
