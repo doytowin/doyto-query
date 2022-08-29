@@ -41,8 +41,20 @@ import static win.doyto.query.sql.RelationalQueryBuilder.*;
 
 /**
  * JdbcDataQueryClient
+ * <p>An JDBC implementation for {@link DataQueryClient}
  *
- * @author f0rb on 2021-12-28
+ * <ul>
+ * History names:
+ * <li>JoinQueryExecutor
+ * <li>JoinQueryService
+ * <li>ComplexQueryService
+ * <li>JdbcComplexQueryService
+ * <li>JdbcComplexDataQuery
+ * <li>JdbcDataQuery
+ * </ul>
+ *
+ * @author f0rb on 2019-06-09
+ * @since 0.1.3
  */
 public class JdbcDataQueryClient implements DataQueryClient {
 
