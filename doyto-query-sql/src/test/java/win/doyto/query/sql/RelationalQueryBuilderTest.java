@@ -25,6 +25,7 @@ import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.menu.MenuView;
 import win.doyto.query.test.perm.PermView;
 import win.doyto.query.test.perm.PermissionQuery;
+import win.doyto.query.test.role.RoleQuery;
 import win.doyto.query.test.role.RoleStatView;
 import win.doyto.query.test.role.RoleView;
 import win.doyto.query.test.user.*;
@@ -288,6 +289,24 @@ class RelationalQueryBuilderTest {
                 "SELECT ? AS MAIN_ENTITY_ID, id, roleName, roleCode, valid FROM t_role WHERE create_user_id = ?";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
+    }
+
+    @Test
+    void buildSqlAndArgsForOneToManyWithConditionsAndOrderByAndPaging() throws NoSuchFieldException {
+        Field field = UserView.class.getDeclaredField("createRoles");
+
+        RoleQuery roleQuery = RoleQuery.builder().valid(true).sort("id,desc").pageSize(5).build();
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
+                roleQuery, RoleView.class, field, Arrays.asList(1, 3));
+
+        String expected = "\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, roleName, roleCode, valid FROM t_role WHERE create_user_id = ? AND valid = ?\n" +
+                " ORDER BY id desc LIMIT 5 OFFSET 0" +
+                "\nUNION ALL\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, roleName, roleCode, valid FROM t_role WHERE create_user_id = ? AND valid = ?\n" +
+                " ORDER BY id desc LIMIT 5 OFFSET 0";
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, true, 3, 3, true);
     }
 
     @Test

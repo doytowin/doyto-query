@@ -103,7 +103,7 @@ public class RelationalQueryBuilder {
         String clause;
         if (domains.length == 1) {
             if (Collection.class.isAssignableFrom(joinField.getType())) {
-                clause = buildQueryManyForEachMainDomain(domainPath.foreignField(), subTableName, subColumns);
+                clause = buildQueryManyForEachMainDomain(query, queryArgs, domainPath.foreignField(), subTableName, subColumns);
             } else {
                 clause = buildQueryOneForEachMainDomain(mainTableName, domainPath.localField(), subTableName, subColumns);
             }
@@ -129,11 +129,20 @@ public class RelationalQueryBuilder {
     }
 
     private static String buildQueryManyForEachMainDomain(
+            DoytoQuery query, LinkedList<Object> queryArgs,
             String mainFKColumn, String subTableName, String subColumns
     ) {
-        return SELECT + PLACE_HOLDER + AS + KEY_COLUMN + SEPARATOR + subColumns +
-                FROM + subTableName +
-                WHERE + mainFKColumn + EQUAL_HOLDER;
+        StringBuilder sqlBuilder = new StringBuilder()
+                .append(SELECT).append(PLACE_HOLDER).append(AS).append(KEY_COLUMN).append(SEPARATOR).append(subColumns)
+                .append(FROM).append(subTableName)
+                .append(WHERE).append(mainFKColumn).append(EQUAL_HOLDER);
+
+        String condition = buildCondition(AND, query, queryArgs);
+        if (!condition.isEmpty()) {
+            sqlBuilder.append(condition).append(LF);
+        }
+        sqlBuilder.append(buildOrderBy(query));
+        return buildPaging(sqlBuilder.toString(), query);
     }
 
     private static String buildQueryOneForEachMainDomain(
