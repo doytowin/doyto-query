@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 import win.doyto.query.core.PageList;
 import win.doyto.query.test.menu.MenuQuery;
+import win.doyto.query.test.menu.MenuView;
 import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.role.RoleQuery;
 import win.doyto.query.test.role.RoleView;
@@ -71,6 +72,13 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
         assertThat(page.getTotal()).isEqualTo(2);
         assertThat(page.getList()).extracting(UserView::getUsername).containsExactly("f0rb", "user4");
         assertThat(page.getList()).extracting(it -> it.getRoles().size()).containsExactly(1, 1);
+    }
+
+    @Test
+    void pageForJoinWithSize10() {
+        PageList<MenuView> page = jdbcDataQueryClient.page(MenuQuery.builder().build(), MenuView.class);
+        assertThat(page.getTotal()).isEqualTo(12);
+        assertThat(page.getList()).hasSize(10);
     }
 
     @Test

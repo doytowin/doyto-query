@@ -37,6 +37,7 @@ public interface DataQueryClient {
 
     default <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
     PageList<V> page(Q query, Class<V> viewClass) {
+        query.forcePaging();
         return new PageList<>(query(query, viewClass), count(query, viewClass));
     }
 
