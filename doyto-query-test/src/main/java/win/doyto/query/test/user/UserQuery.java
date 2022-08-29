@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test;
+package win.doyto.query.test.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,29 +23,47 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.test.perm.PermissionQuery;
+import win.doyto.query.test.role.RoleQuery;
 
 /**
- * MenuQuery
+ * TestQuery
  *
- * @author f0rb on 2019-05-28
+ * @author f0rb
  */
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MenuQuery extends PageQuery {
+@SuppressWarnings("unused")
+public class UserQuery extends PageQuery {
+    private Integer id;
 
-    @DomainPath(value = "menu", foreignField = "parent_id")
-    private MenuQuery parentQuery;
+    @DomainPath({"user", "role"})
+    private RoleQuery role;
+    private RoleQuery roleQuery;
 
-    @DomainPath(value = "menu", localField = "parent_id")
-    private MenuQuery childrenQuery;
+    @DomainPath({"user", "role", "perm"})
+    private PermissionQuery perm;
+    private PermissionQuery permQuery;
 
-    @DomainPath({"user", "role", "perm", "menu"})
-    private UserQuery user;
+    private String username;
 
-    private String nameLike;
+    private String usernameOrEmailOrMobile;
 
-    private Boolean valid;
+    private String mobile;
+
+    private String usernameLike;
+
+    private String emailLike;
+
+    private boolean memoNull;
+
+    private UserLevel userLevel;
+
+
+    public void setAccount(String account) {
+        this.usernameOrEmailOrMobile = account;
+    }
 }

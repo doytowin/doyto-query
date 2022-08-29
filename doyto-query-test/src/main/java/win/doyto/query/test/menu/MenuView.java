@@ -14,25 +14,31 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.join;
+package win.doyto.query.test.menu;
 
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.entity.Persistable;
+import win.doyto.query.test.user.UserView;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import java.util.List;
+import javax.persistence.Id;
 
 /**
- * MaxIdView
+ * MenuView
  *
- * @author f0rb on 2021-12-11
+ * @author f0rb on 2022-04-13
  */
 @Getter
 @Setter
-@Entity(name = "user")
-public class MaxIdView {
-    @Column(name = "max(id)")
-    private Integer maxId;
+public class MenuView implements Persistable<Long> {
 
-    private Integer firstCreateUserId;
+    @Id
+    private Long id;
+    private String menuName;
+    private String platform;
+
+    @DomainPath({"user", "role", "perm", "menu"})
+    private List<UserView> users;
 }

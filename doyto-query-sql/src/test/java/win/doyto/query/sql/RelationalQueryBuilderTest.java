@@ -22,9 +22,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.PageQuery;
-import win.doyto.query.test.PermissionQuery;
-import win.doyto.query.test.UserQuery;
-import win.doyto.query.test.join.*;
+import win.doyto.query.test.menu.MenuView;
+import win.doyto.query.test.perm.PermView;
+import win.doyto.query.test.perm.PermissionQuery;
+import win.doyto.query.test.role.RoleStatView;
+import win.doyto.query.test.role.RoleView;
+import win.doyto.query.test.user.*;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;

@@ -14,44 +14,39 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.join;
+package win.doyto.query.test.menu;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.entity.Persistable;
-
-import java.util.List;
-import javax.persistence.Id;
+import win.doyto.query.core.PageQuery;
+import win.doyto.query.test.user.UserQuery;
 
 /**
- * UserEntity
+ * MenuQuery
  *
- * @author f0rb on 2020-04-01
+ * @author f0rb on 2019-05-28
  */
 @Getter
 @Setter
-public class RoleView implements Persistable<Integer> {
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public class MenuQuery extends PageQuery {
 
-    @Id
-    private Integer id;
+    @DomainPath(value = "menu", foreignField = "parent_id")
+    private MenuQuery parentQuery;
 
-    private String roleName;
+    @DomainPath(value = "menu", localField = "parent_id")
+    private MenuQuery childrenQuery;
 
-    private String roleCode;
+    @DomainPath({"user", "role", "perm", "menu"})
+    private UserQuery user;
+
+    private String nameLike;
 
     private Boolean valid;
-
-    // many-to-many
-    @DomainPath({"user", "role"})
-    private List<UserView> users;
-
-    // many-to-many
-    @DomainPath({"role", "perm"})
-    private List<PermView> perms;
-
-    // many-to-one
-    @DomainPath(value = "user", localField = "create_user_id")
-    private UserView createUser;
-
 }

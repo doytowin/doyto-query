@@ -22,7 +22,7 @@ import org.bson.conversions.Bson;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.mongodb.test.user.UserView;
 import win.doyto.query.test.TestQuery;
-import win.doyto.query.test.UserQuery;
+import win.doyto.query.test.user.UserQuery;
 
 import java.util.List;
 import java.util.stream.Collectors;

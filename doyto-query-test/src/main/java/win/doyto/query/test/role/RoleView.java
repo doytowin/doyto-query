@@ -14,30 +14,46 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.join;
+package win.doyto.query.test.role;
 
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.test.perm.PermView;
+import win.doyto.query.test.user.UserView;
 
 import java.util.List;
 import javax.persistence.Id;
 
 /**
- * MenuView
+ * UserEntity
  *
- * @author f0rb on 2022-04-13
+ * @author f0rb on 2020-04-01
  */
 @Getter
 @Setter
-public class MenuView implements Persistable<Long> {
+public class RoleView implements Persistable<Integer> {
 
     @Id
-    private Long id;
-    private String menuName;
-    private String platform;
+    private Integer id;
 
-    @DomainPath({"user", "role", "perm", "menu"})
+    private String roleName;
+
+    private String roleCode;
+
+    private Boolean valid;
+
+    // many-to-many
+    @DomainPath({"user", "role"})
     private List<UserView> users;
+
+    // many-to-many
+    @DomainPath({"role", "perm"})
+    private List<PermView> perms;
+
+    // many-to-one
+    @DomainPath(value = "user", localField = "create_user_id")
+    private UserView createUser;
+
 }

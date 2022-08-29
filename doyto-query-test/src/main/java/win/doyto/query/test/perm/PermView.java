@@ -14,33 +14,32 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test;
+package win.doyto.query.test.perm;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.core.PageQuery;
-import win.doyto.query.test.role.RoleQuery;
+import win.doyto.query.entity.Persistable;
+import win.doyto.query.test.user.UserView;
+
+import java.util.List;
+import javax.persistence.Id;
 
 /**
- * PermissionQuery
+ * PermView
  *
- * @author f0rb on 2019-05-28
+ * @author f0rb on 2022-03-26
  */
 @Getter
 @Setter
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class PermissionQuery extends PageQuery {
-    @DomainPath({"role", "perm"})
-    private RoleQuery role;
+public class PermView implements Persistable<Long> {
+
+    @Id
+    private Long id;
+    private String permName;
+    private Boolean valid;
 
     @DomainPath({"user", "role", "perm"})
-    private UserQuery user;
+    private List<UserView> users;
 
-    private Boolean valid;
 }

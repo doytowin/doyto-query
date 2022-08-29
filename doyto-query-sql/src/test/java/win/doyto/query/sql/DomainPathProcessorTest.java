@@ -19,8 +19,12 @@ package win.doyto.query.sql;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
-import win.doyto.query.test.*;
+import win.doyto.query.test.TestQuery;
+import win.doyto.query.test.menu.MenuQuery;
+import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.role.RoleQuery;
+import win.doyto.query.test.user.UserLevel;
+import win.doyto.query.test.user.UserQuery;
 
 import java.util.ArrayList;
 import java.util.Arrays;

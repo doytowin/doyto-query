@@ -14,30 +14,23 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.join;
+package win.doyto.query.test.role;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.AggregationQuery;
-import win.doyto.query.core.PageQuery;
+
+import java.io.Serializable;
+import javax.persistence.Entity;
 
 /**
- * UserLevelQuery
+ * RoleStatView
  *
- * @author f0rb on 2022-03-26
+ * @author f0rb on 2022/8/25
+ * @since 1.0.0
  */
 @Getter
 @Setter
-@SuperBuilder
-@AllArgsConstructor
-@NoArgsConstructor
-public class UserLevelQuery extends PageQuery implements AggregationQuery {
-
-    private UserLevelHaving having;
-
-    private Boolean valid;
-
+@Entity(name = "role")
+public class RoleStatView implements Serializable {
+    private Integer count;
 }

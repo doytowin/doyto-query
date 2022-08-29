@@ -14,14 +14,25 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test;
+package win.doyto.query.test.user;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
 
 /**
- * TestEnum
+ * MaxIdView
  *
- * @author f0rb on 2019-05-29
+ * @author f0rb on 2021-12-11
  */
-@SuppressWarnings({"java:S115", "unused"})
-public enum UserLevel {
-    普通, 高级
+@Getter
+@Setter
+@Entity(name = "user")
+public class MaxIdView {
+    @Column(name = "max(id)")
+    private Integer maxId;
+
+    private Integer firstCreateUserId;
 }

@@ -14,23 +14,34 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.join;
+package win.doyto.query.test.perm;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.io.Serializable;
-import javax.persistence.Entity;
+import lombok.experimental.SuperBuilder;
+import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.core.PageQuery;
+import win.doyto.query.test.role.RoleQuery;
+import win.doyto.query.test.user.UserQuery;
 
 /**
- * RoleStatView
+ * PermissionQuery
  *
- * @author f0rb on 2022/8/25
- * @since 1.0.0
+ * @author f0rb on 2019-05-28
  */
 @Getter
 @Setter
-@Entity(name = "role")
-public class RoleStatView implements Serializable {
-    private Integer count;
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public class PermissionQuery extends PageQuery {
+    @DomainPath({"role", "perm"})
+    private RoleQuery role;
+
+    @DomainPath({"user", "role", "perm"})
+    private UserQuery user;
+
+    private Boolean valid;
 }

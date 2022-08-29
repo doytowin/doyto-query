@@ -24,9 +24,8 @@ import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.core.RelationalQuery;
-import win.doyto.query.test.PermissionQuery;
-import win.doyto.query.test.UserQuery;
-import win.doyto.query.test.join.RoleView;
+import win.doyto.query.test.perm.PermissionQuery;
+import win.doyto.query.test.user.UserQuery;
 
 import java.util.List;
 

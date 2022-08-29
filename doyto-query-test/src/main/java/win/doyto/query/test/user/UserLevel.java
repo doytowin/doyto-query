@@ -14,32 +14,14 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.join;
-
-import lombok.Getter;
-import lombok.Setter;
-import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.test.UserLevel;
-
-import javax.persistence.Entity;
+package win.doyto.query.test.user;
 
 /**
- * UserLevelCountView
+ * TestEnum
  *
- * @author f0rb on 2022-05-16
- * @since 0.3.1
+ * @author f0rb on 2019-05-29
  */
-@Getter
-@Setter
-@Entity(name = "t_user")
-public class UserLevelCountView {
-
-    @GroupBy
-    private UserLevel userLevel;
-
-    @GroupBy
-    private Boolean valid;
-
-    private Long count;
-
+@SuppressWarnings({"java:S115", "unused"})
+public enum UserLevel {
+    普通, 高级
 }

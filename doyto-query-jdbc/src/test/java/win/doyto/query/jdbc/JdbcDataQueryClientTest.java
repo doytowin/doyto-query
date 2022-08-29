@@ -22,12 +22,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 import win.doyto.query.core.PageList;
-import win.doyto.query.test.MenuQuery;
-import win.doyto.query.test.PermissionQuery;
-import win.doyto.query.test.UserLevel;
-import win.doyto.query.test.UserQuery;
-import win.doyto.query.test.join.*;
+import win.doyto.query.test.menu.MenuQuery;
+import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.role.RoleQuery;
+import win.doyto.query.test.role.RoleView;
+import win.doyto.query.test.user.*;
 
 import java.util.List;
 
