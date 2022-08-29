@@ -14,44 +14,24 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.join;
+package win.doyto.query.mongodb.test.menu;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.entity.Persistable;
+import win.doyto.query.mongodb.entity.MongoPersistable;
 
-import java.util.List;
-import javax.persistence.Id;
+import java.math.BigInteger;
 
 /**
- * UserEntity
+ * MenuView
  *
- * @author f0rb on 2020-04-01
+ * @author f0rb on 2022-05-21
+ * @since 1.0.0
  */
 @Getter
 @Setter
-public class RoleView implements Persistable<Integer> {
-
-    @Id
-    private Integer id;
-
-    private String roleName;
-
-    private String roleCode;
-
+public class MenuView extends MongoPersistable<BigInteger> {
+    private String menuName;
+    private String menuCode;
     private Boolean valid;
-
-    // many-to-many
-    @DomainPath({"user", "role"})
-    private List<UserView> users;
-
-    // many-to-many
-    @DomainPath({"role", "perm"})
-    private List<PermView> perms;
-
-    // many-to-one
-    @DomainPath(value = "user", localField = "create_user_id")
-    private UserView createUser;
-
 }

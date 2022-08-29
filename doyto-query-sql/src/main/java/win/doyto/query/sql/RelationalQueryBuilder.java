@@ -39,14 +39,14 @@ import static win.doyto.query.sql.BuildHelper.*;
 import static win.doyto.query.sql.Constant.*;
 
 /**
- * JoinQueryBuilder
+ * RelationalQueryBuilder
  *
  * @author f0rb on 2019-06-09
  */
 @UtilityClass
-public class JoinQueryBuilder {
+public class RelationalQueryBuilder {
 
-    public static final String KEY_COLUMN = "PK_FOR_JOIN";
+    public static final String KEY_COLUMN = "MAIN_ENTITY_ID";
 
     public static SqlAndArgs buildSelectAndArgs(DoytoQuery q, Class<?> entityClass) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
@@ -100,17 +100,25 @@ public class JoinQueryBuilder {
         String subTableName = String.format(TABLE_FORMAT, domains[0]);
         String subColumns = buildSubDomainColumns(joinEntityClass);
         LinkedList<Object> queryArgs = new LinkedList<>();
-        String clause;
+        StringBuilder sqlBuilder;
         if (domains.length == 1) {
             if (Collection.class.isAssignableFrom(joinField.getType())) {
-                clause = buildQueryManyForEachMainDomain(domainPath.foreignField(), subTableName, subColumns);
+                sqlBuilder = buildQueryManyForEachMainDomain(domainPath.foreignField(), subTableName, subColumns);
             } else {
-                clause = buildQueryOneForEachMainDomain(mainTableName, domainPath.localField(), subTableName, subColumns);
+                sqlBuilder = buildQueryOneForEachMainDomain(mainTableName, domainPath.localField(), subTableName, subColumns);
             }
         } else {
             boolean reverse = !mainTableName.equals(subTableName);
-            clause = buildQueryForEachMainDomain(query, queryArgs, subColumns, domains, reverse);
+            sqlBuilder = buildQueryForEachMainDomain(subColumns, domains, reverse);
         }
+
+        String condition = buildCondition(AND, query, queryArgs);
+        if (!condition.isEmpty()) {
+            sqlBuilder.append(condition);
+        }
+        sqlBuilder.append(buildOrderBy(query, "\nORDER BY "));
+        String clause = buildPaging(sqlBuilder.toString(), query);
+
         return buildSqlAndArgsForJoin(clause, mainIds, queryArgs);
     }
 
@@ -128,28 +136,30 @@ public class JoinQueryBuilder {
         );
     }
 
-    private static String buildQueryManyForEachMainDomain(
+    private static StringBuilder buildQueryManyForEachMainDomain(
             String mainFKColumn, String subTableName, String subColumns
     ) {
-        return SELECT + PLACE_HOLDER + AS + KEY_COLUMN + SEPARATOR + subColumns +
-                FROM + subTableName +
-                WHERE + mainFKColumn + EQUAL_HOLDER;
+        return new StringBuilder()
+                .append(SELECT).append(PLACE_HOLDER).append(AS).append(KEY_COLUMN).append(SEPARATOR).append(subColumns)
+                .append(FROM).append(subTableName)
+                .append(WHERE_).append(mainFKColumn).append(EQUAL_HOLDER);
+
     }
 
-    private static String buildQueryOneForEachMainDomain(
+    private static StringBuilder buildQueryOneForEachMainDomain(
             String mainTableName, String mainFKColumn, String subTableName, String subColumns
     ) {
-        return SELECT + PLACE_HOLDER + AS + KEY_COLUMN + SEPARATOR + subColumns +
-                FROM + subTableName + LF +
-                WHERE + ID + EQUAL + OP + LF + SPACE + SPACE +
-                SELECT + mainFKColumn + FROM + mainTableName +
-                WHERE + ID + EQUAL_HOLDER + LF + SPACE + CP;
+        return new StringBuilder()
+                .append(SELECT).append(PLACE_HOLDER).append(AS).append(KEY_COLUMN).append(SEPARATOR).append(subColumns)
+                .append(FROM).append(subTableName)
+                .append(WHERE_).append(ID).append(EQUAL).append(OP).append(LF).append(SPACE).append(SPACE)
+                .append(SELECT).append(mainFKColumn).append(FROM).append(mainTableName)
+                .append(WHERE).append(ID).append(EQUAL_HOLDER).append(LF).append(CP);
     }
 
-    private static String buildQueryForEachMainDomain(
-            DoytoQuery query, LinkedList<Object> queryArgs, String columns,
-            String[] domains, boolean reverse) {
-
+    private static StringBuilder buildQueryForEachMainDomain(
+            String columns, String[] domains, boolean reverse
+    ) {
         int size = domains.length;
         int n = size - 1;
         String[] joinTables = new String[n];
@@ -177,8 +187,8 @@ public class JoinQueryBuilder {
         StringBuilder sqlBuilder = new StringBuilder();
         sqlBuilder.append(SELECT).append(PLACE_HOLDER).append(AS).append(KEY_COLUMN)
                   .append(SEPARATOR).append(columns)
-                  .append(FROM).append(targetDomainTable).append(LF)
-                  .append(WHERE).append(ID);
+                  .append(FROM).append(targetDomainTable)
+                  .append(WHERE_).append(ID);
         // nested query for medium domains
         for (int i = n - 1; i >= 0; i--) {
             sqlBuilder.append(IN).append(OP).append(LF).append(SPACE + SPACE)
@@ -188,17 +198,12 @@ public class JoinQueryBuilder {
         sqlBuilder.append(EQUAL_HOLDER).append(LF).append(SPACE);
         IntStream.range(0, n).mapToObj(i -> CP).forEach(sqlBuilder::append);
 
-        String condition = buildCondition(AND, query, queryArgs);
-        if (!condition.isEmpty()) {
-            sqlBuilder.append(condition).append(LF);
-        }
-        sqlBuilder.append(buildOrderBy(query));
-        return buildPaging(sqlBuilder.toString(), query);
+        return sqlBuilder;
     }
 
     private static String buildSubDomainColumns(Class<?> joinEntityClass) {
         return FieldUtils.getAllFieldsList(joinEntityClass).stream()
-                         .filter(JoinQueryBuilder::filterForJoinEntity)
+                         .filter(RelationalQueryBuilder::filterForJoinEntity)
                          .map(ColumnUtil::selectAs)
                          .collect(Collectors.joining(SEPARATOR));
     }

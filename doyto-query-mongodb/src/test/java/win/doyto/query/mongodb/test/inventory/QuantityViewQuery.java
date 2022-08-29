@@ -14,18 +14,29 @@
  * limitations under the License.
  */
 
-package win.doyto.query.core;
+package win.doyto.query.mongodb.test.inventory;
 
-import win.doyto.query.entity.Persistable;
-
-import java.io.Serializable;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.RelationalQuery;
+import win.doyto.query.mongodb.test.aggregate.QuantityView;
 
 /**
- * JoinQuery
+ * QuantityViewQuery
  *
- * @author f0rb on 2022-03-26
- * @since 0.3.1
+ * @author f0rb on 2022/8/28
+ * @since 1.0.0
  */
-public interface JoinQuery<V extends Persistable<I>, I extends Serializable> extends DoytoQuery {
-    Class<V> getDomainClass();
+@Getter
+@Setter
+@NoArgsConstructor
+@SuperBuilder
+public class QuantityViewQuery extends InventoryQuery implements RelationalQuery<QuantityView, String> {
+
+    @Override
+    public Class<QuantityView> getDomainClass() {
+        return QuantityView.class;
+    }
 }

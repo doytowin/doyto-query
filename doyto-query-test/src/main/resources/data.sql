@@ -16,6 +16,9 @@ INSERT INTO t_menu (platform, parent_id, menu_name, memo, valid) VALUES ('00', 2
 INSERT INTO t_menu (platform, parent_id, menu_name, memo, valid) VALUES ('00', 3, 'Role List', 'Menu for Role List', true);
 INSERT INTO t_menu (platform, parent_id, menu_name, memo, valid) VALUES ('00', 4, 'Permission List', 'Menu for Permission List', true);
 INSERT INTO t_menu (platform, parent_id, menu_name, memo, valid) VALUES ('02', 0, 'root', 'root menu', true);
+INSERT INTO t_menu (platform, parent_id, menu_name, memo, valid) VALUES ('00', 4, 'Permission Op1', 'Menu for Permission Op1', true);
+INSERT INTO t_menu (platform, parent_id, menu_name, memo, valid) VALUES ('00', 4, 'Permission Op2', 'Menu for Permission Op2', true);
+INSERT INTO t_menu (platform, parent_id, menu_name, memo, valid) VALUES ('00', 4, 'Permission Op3', 'Menu for Permission Op3', true);
 
 INSERT INTO t_role (role_name, role_code, create_user_id) VALUES ('admin', 'ADMIN', 1);
 INSERT INTO t_role (role_name, role_code, create_user_id) VALUES ('vip', 'VIP', 2);

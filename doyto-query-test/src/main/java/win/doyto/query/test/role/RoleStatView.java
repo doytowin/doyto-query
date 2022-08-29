@@ -14,32 +14,23 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb.test.join;
+package win.doyto.query.test.role;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.mongodb.entity.MongoPersistable;
 
-import java.math.BigInteger;
-import java.util.List;
+import java.io.Serializable;
 import javax.persistence.Entity;
-import javax.persistence.EntityType;
 
 /**
- * PermEntity
+ * RoleStatView
  *
- * @author f0rb on 2022-05-21
+ * @author f0rb on 2022/8/25
  * @since 1.0.0
  */
 @Getter
 @Setter
-@Entity(type = EntityType.MONGO_DB, database = "doyto", name = "t_perm")
-public class PermEntity extends MongoPersistable<BigInteger> {
-    private String permName;
-    private Boolean valid;
-
-    // many-to-many
-    @DomainPath({"user", "role", "perm"})
-    private List<UserEntity> users;
+@Entity(name = "role")
+public class RoleStatView implements Serializable {
+    private Integer count;
 }

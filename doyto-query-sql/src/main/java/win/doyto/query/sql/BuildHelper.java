@@ -85,10 +85,14 @@ public class BuildHelper {
     }
 
     public static String buildOrderBy(DoytoQuery pageQuery) {
+        return buildOrderBy(pageQuery, " ORDER BY ");
+    }
+
+    static String buildOrderBy(DoytoQuery pageQuery, String orderBy) {
         if (pageQuery.getSort() == null) {
             return EMPTY;
         }
-        return " ORDER BY " + PTN_SORT.matcher(pageQuery.getSort()).replaceAll(" $1").replace(";", SEPARATOR);
+        return orderBy + PTN_SORT.matcher(pageQuery.getSort()).replaceAll(" $1").replace(";", SEPARATOR);
     }
 
     public static String buildPaging(String sql, DoytoQuery pageQuery) {

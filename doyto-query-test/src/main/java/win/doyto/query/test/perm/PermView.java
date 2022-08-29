@@ -14,24 +14,32 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb.test.join;
+package win.doyto.query.test.perm;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.mongodb.entity.MongoPersistable;
+import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.entity.Persistable;
+import win.doyto.query.test.user.UserView;
 
-import java.math.BigInteger;
+import java.util.List;
+import javax.persistence.Id;
 
 /**
- * MenuEntity
+ * PermView
  *
- * @author f0rb on 2022-05-21
- * @since 1.0.0
+ * @author f0rb on 2022-03-26
  */
 @Getter
 @Setter
-public class MenuEntity extends MongoPersistable<BigInteger> {
-    private String menuName;
-    private String menuCode;
+public class PermView implements Persistable<Long> {
+
+    @Id
+    private Long id;
+    private String permName;
     private Boolean valid;
+
+    @DomainPath({"user", "role", "perm"})
+    private List<UserView> users;
+
 }

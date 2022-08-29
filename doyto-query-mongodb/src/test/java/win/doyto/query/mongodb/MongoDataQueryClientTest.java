@@ -25,10 +25,10 @@ import win.doyto.query.mongodb.test.aggregate.QuantityByStatusQuery;
 import win.doyto.query.mongodb.test.aggregate.QuantityByStatusView;
 import win.doyto.query.mongodb.test.aggregate.QuantityHaving;
 import win.doyto.query.mongodb.test.aggregate.QuantityView;
-import win.doyto.query.mongodb.test.inventory.InventoryQuery;
-import win.doyto.query.mongodb.test.join.UserEntity;
-import win.doyto.query.mongodb.test.join.UserJoinQuery;
-import win.doyto.query.test.role.RoleQuery;
+import win.doyto.query.mongodb.test.inventory.QuantityViewQuery;
+import win.doyto.query.mongodb.test.role.RoleViewQuery;
+import win.doyto.query.mongodb.test.user.UserView;
+import win.doyto.query.mongodb.test.user.UserViewQuery;
 
 import java.util.List;
 
@@ -50,8 +50,7 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
 
     @Test
     void aggregateQuery() {
-        InventoryQuery inventoryQuery = InventoryQuery.builder().build();
-        List<QuantityView> views = dataQueryClient.query(inventoryQuery, QuantityView.class);
+        List<QuantityView> views = dataQueryClient.query(QuantityViewQuery.builder().build());
         assertThat(views).hasSize(1)
                          .first()
                          .hasFieldOrPropertyWithValue("count", 5L)
@@ -123,41 +122,43 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
 
     @Test
     void queryUserWithCreatedUsersAndCreateUser() {
-        UserJoinQuery userQuery = UserJoinQuery
+        UserViewQuery userViewQuery = UserViewQuery
                 .builder()
-                .createdUsersQuery(new UserJoinQuery())
-                .createUserQuery(new UserJoinQuery())
+                .createdUsersQuery(new UserViewQuery())
+                .createUserQuery(new UserViewQuery())
                 .build();
-        List<UserEntity> views = dataQueryClient.query(userQuery);
+        List<UserView> views = dataQueryClient.query(userViewQuery);
         assertThat(views).hasSize(4)
                          .extracting(userEntity -> userEntity.getCreatedUsers().size())
                          .containsExactly(3, 1, 0, 0);
         assertThat(views)
                 .extracting(userEntity -> userEntity.getCreateUser().getUsername())
                 .containsExactly("f0rb", "f0rb", "f0rb", "user2");
-        assertThat(views).extracting(UserEntity::getRoles).containsOnlyNulls();
+        assertThat(views).extracting(UserView::getRoles).containsOnlyNulls();
     }
 
     @Test
     void supportPagingForAggregation() {
-        UserJoinQuery userQuery = UserJoinQuery.builder().pageNumber(2).pageSize(3).build();
-        List<UserEntity> views = dataQueryClient.query(userQuery);
+        UserViewQuery userViewQuery = UserViewQuery.builder().pageNumber(2).pageSize(3).build();
+        List<UserView> views = dataQueryClient.query(userViewQuery);
         assertThat(views).hasSize(1);
         assertThat(views.get(0).getUsername()).isEqualTo("user4");
     }
 
     @Test
     void supportQueryUserWithValidRole() {
-        UserJoinQuery userJoinQuery = UserJoinQuery.builder().role(RoleQuery.builder().valid(true).build()).build();
-        List<UserEntity> userEntities = dataQueryClient.query(userJoinQuery);
+        RoleViewQuery roleViewQuery = RoleViewQuery.builder().valid(true).build();
+        UserViewQuery userViewQuery = UserViewQuery.builder().role(roleViewQuery).build();
+        List<UserView> userEntities = dataQueryClient.query(userViewQuery);
         assertThat(userEntities).extracting("username")
-                .containsExactly("f0rb", "user3");
+                                .containsExactly("f0rb", "user3");
     }
 
     @Test
     void supportCountUserWithValidRole() {
-        UserJoinQuery userJoinQuery = UserJoinQuery.builder().role(RoleQuery.builder().valid(true).build()).build();
-        long count = dataQueryClient.count(userJoinQuery);
+        RoleViewQuery roleViewQuery = RoleViewQuery.builder().valid(true).build();
+        UserViewQuery userViewQuery = UserViewQuery.builder().role(roleViewQuery).build();
+        long count = dataQueryClient.count(userViewQuery);
         assertThat(count).isEqualTo(2);
     }
 }

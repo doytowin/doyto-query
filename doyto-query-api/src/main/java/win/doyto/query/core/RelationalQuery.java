@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.join;
+package win.doyto.query.core;
 
-import lombok.Getter;
-import lombok.Setter;
+import win.doyto.query.entity.Persistable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import java.io.Serializable;
 
 /**
- * MaxIdView
+ * RelationalQuery
  *
- * @author f0rb on 2021-12-11
+ * @author f0rb on 2022-03-26
+ * @since 0.3.1
  */
-@Getter
-@Setter
-@Entity(name = "user")
-public class MaxIdView {
-    @Column(name = "max(id)")
-    private Integer maxId;
-
-    private Integer firstCreateUserId;
+public interface RelationalQuery<V extends Persistable<I>, I extends Serializable> extends DoytoQuery {
+    Class<V> getDomainClass();
 }

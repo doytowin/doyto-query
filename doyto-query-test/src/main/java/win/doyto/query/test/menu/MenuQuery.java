@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.mongodb.test.join;
+package win.doyto.query.test.menu;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,32 +22,31 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.core.JoinQuery;
 import win.doyto.query.core.PageQuery;
-import win.doyto.query.test.role.RoleQuery;
-
-import java.math.BigInteger;
+import win.doyto.query.test.user.UserQuery;
 
 /**
- * UserJoinQuery
+ * MenuQuery
  *
- * @author f0rb on 2022-03-26
+ * @author f0rb on 2019-05-28
  */
 @Getter
 @Setter
 @SuperBuilder
-@AllArgsConstructor
 @NoArgsConstructor
-public class UserJoinQuery extends PageQuery implements JoinQuery<UserEntity, BigInteger> {
+@AllArgsConstructor
+public class MenuQuery extends PageQuery {
 
-    @DomainPath({"user", "role"})
-    private RoleQuery role;
+    @DomainPath(value = "menu", foreignField = "parent_id")
+    private MenuQuery parentQuery;
 
-    private UserJoinQuery createUserQuery;
-    private UserJoinQuery createdUsersQuery;
+    @DomainPath(value = "menu", localField = "parent_id")
+    private MenuQuery childrenQuery;
 
-    @Override
-    public Class<UserEntity> getDomainClass() {
-        return UserEntity.class;
-    }
+    @DomainPath({"user", "role", "perm", "menu"})
+    private UserQuery user;
+
+    private String nameLike;
+
+    private Boolean valid;
 }

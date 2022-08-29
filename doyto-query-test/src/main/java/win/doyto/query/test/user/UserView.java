@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.join;
+package win.doyto.query.test.user;
 
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.test.menu.MenuView;
+import win.doyto.query.test.perm.PermView;
+import win.doyto.query.test.role.RoleStatView;
+import win.doyto.query.test.role.RoleView;
 
 import java.util.List;
 import javax.persistence.Id;

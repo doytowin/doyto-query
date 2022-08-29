@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.join;
+package win.doyto.query.test.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.core.JoinQuery;
+import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.PageQuery;
-import win.doyto.query.test.MenuQuery;
-import win.doyto.query.test.PermissionQuery;
-import win.doyto.query.test.UserQuery;
-import win.doyto.query.test.role.RoleQuery;
 
 /**
- * UserJoinQuery
+ * UserLevelQuery
  *
  * @author f0rb on 2022-03-26
  */
@@ -39,21 +34,10 @@ import win.doyto.query.test.role.RoleQuery;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserJoinQuery extends PageQuery implements JoinQuery<UserView, Long> {
+public class UserLevelQuery extends PageQuery implements AggregationQuery {
 
-    @DomainPath({"user", "role"})
-    private RoleQuery role;
+    private UserLevelHaving having;
 
-    private RoleQuery rolesQuery;
+    private Boolean valid;
 
-    private PermissionQuery permsQuery;
-
-    private MenuQuery menusQuery;
-    private UserQuery createUserQuery;
-    private RoleQuery createRolesQuery;
-
-    @Override
-    public Class<UserView> getDomainClass() {
-        return UserView.class;
-    }
 }

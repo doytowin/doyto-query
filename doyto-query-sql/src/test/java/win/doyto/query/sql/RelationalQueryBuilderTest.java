@@ -22,9 +22,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.PageQuery;
-import win.doyto.query.test.PermissionQuery;
-import win.doyto.query.test.UserQuery;
-import win.doyto.query.test.join.*;
+import win.doyto.query.test.menu.MenuView;
+import win.doyto.query.test.perm.PermView;
+import win.doyto.query.test.perm.PermissionQuery;
+import win.doyto.query.test.role.RoleQuery;
+import win.doyto.query.test.role.RoleStatView;
+import win.doyto.query.test.role.RoleView;
+import win.doyto.query.test.user.*;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -33,12 +37,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * JoinQueryBuilderTest
+ * RelationalQueryBuilderTest
  *
  * @author f0rb on 2021-12-11
  */
 @ResourceLock(value = "mapCamelCaseToUnderscore")
-class JoinQueryBuilderTest {
+class RelationalQueryBuilderTest {
     @BeforeEach
     void setUp() {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
@@ -51,7 +55,7 @@ class JoinQueryBuilderTest {
 
     @Test
     void supportAggregateQuery() {
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(new PageQuery(), MaxIdView.class);
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(new PageQuery(), MaxIdView.class);
         assertEquals("SELECT max(id) AS maxId, first(createUserId) AS firstCreateUserId FROM user", sqlAndArgs.getSql());
     }
 
@@ -59,23 +63,23 @@ class JoinQueryBuilderTest {
     void buildSqlAndArgsForSubDomain() throws NoSuchFieldException {
         Field field = UserView.class.getDeclaredField("perms");
 
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 2, 3), PermView.class);
 
-        String expected = "\nSELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
-                " WHERE id IN (\n" +
+        String expected = "\nSELECT ? AS MAIN_ENTITY_ID, id, permName, valid FROM t_perm\n" +
+                "WHERE id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
                 " ))\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
-                " WHERE id IN (\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, permName, valid FROM t_perm\n" +
+                "WHERE id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
                 " ))\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
-                " WHERE id IN (\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, permName, valid FROM t_perm\n" +
+                "WHERE id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
                 " ))";
@@ -87,18 +91,18 @@ class JoinQueryBuilderTest {
     void buildSqlAndArgsForSubDomain_FourDomains() throws NoSuchFieldException {
         Field field = UserView.class.getDeclaredField("menus");
 
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 3), MenuView.class);
 
-        String expected = "\nSELECT ? AS PK_FOR_JOIN, id, menuName, platform FROM t_menu\n" +
-                " WHERE id IN (\n" +
+        String expected = "\nSELECT ? AS MAIN_ENTITY_ID, id, menuName, platform FROM t_menu\n" +
+                "WHERE id IN (\n" +
                 "  SELECT menu_id FROM j_perm_and_menu WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
                 " )))\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, menuName, platform FROM t_menu\n" +
-                " WHERE id IN (\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, menuName, platform FROM t_menu\n" +
+                "WHERE id IN (\n" +
                 "  SELECT menu_id FROM j_perm_and_menu WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
@@ -111,16 +115,16 @@ class JoinQueryBuilderTest {
     void buildJoinSqlForReversePath_TwoDomains() throws NoSuchFieldException {
         Field field = RoleView.class.getDeclaredField("users");
 
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 3), UserView.class);
 
-        String expected = "\nSELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
-                " WHERE id IN (\n" +
+        String expected = "\nSELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
+                "WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id = ?\n" +
                 " )\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
-                " WHERE id IN (\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
+                "WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id = ?\n" +
                 " )";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
@@ -131,18 +135,18 @@ class JoinQueryBuilderTest {
     void buildJoinSqlForReversePath_ThreeDomains() throws NoSuchFieldException {
         Field field = PermView.class.getDeclaredField("users");
 
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 3), UserView.class);
 
         String expected = "\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
-                " WHERE id IN (\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
+                "WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_role_and_perm WHERE perm_id = ?\n" +
                 " ))\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
-                " WHERE id IN (\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
+                "WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_role_and_perm WHERE perm_id = ?\n" +
                 " ))";
@@ -154,26 +158,26 @@ class JoinQueryBuilderTest {
     void buildJoinSqlForReversePath_FourDomains() throws NoSuchFieldException {
         Field field = MenuView.class.getDeclaredField("users");
 
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 3, 4), UserView.class);
 
         String expected = "\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
-                " WHERE id IN (\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
+                "WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_role_and_perm WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM j_perm_and_menu WHERE menu_id = ?\n" +
                 " )))\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
-                " WHERE id IN (\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
+                "WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_role_and_perm WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM j_perm_and_menu WHERE menu_id = ?\n" +
                 " )))\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
-                " WHERE id IN (\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
+                "WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_role_and_perm WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM j_perm_and_menu WHERE menu_id = ?\n" +
@@ -186,7 +190,7 @@ class JoinQueryBuilderTest {
     void buildReverseJoinWithQuery() throws NoSuchFieldException {
         Field field = RoleView.class.getDeclaredField("users");
 
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 UserQuery.builder().emailLike("@163")
                          .pageSize(10).sort("id,DESC")
                          .build(),
@@ -194,23 +198,23 @@ class JoinQueryBuilderTest {
         );
 
         String expected = "\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
-                " WHERE id IN (\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
+                "WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id = ?\n" +
                 " ) AND email LIKE ?\n" +
-                " ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
+                "ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
-                " WHERE id IN (\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
+                "WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id = ?\n" +
                 " ) AND email LIKE ?\n" +
-                " ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
+                "ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
-                " WHERE id IN (\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
+                "WHERE id IN (\n" +
                 "  SELECT user_id FROM j_user_and_role WHERE role_id = ?\n" +
                 " ) AND email LIKE ?\n" +
-                " ORDER BY id DESC LIMIT 10 OFFSET 0";
+                "ORDER BY id DESC LIMIT 10 OFFSET 0";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, "%@163%", 2, 2, "%@163%", 3, 3, "%@163%");
     }
@@ -225,29 +229,29 @@ class JoinQueryBuilderTest {
 
         PermissionQuery permissionQuery = PermissionQuery.builder().valid(true)
                                                          .pageSize(10).sort("id,DESC").build();
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 permissionQuery, PermView.class, field, Arrays.asList(1, 2, 3));
 
-        String expected = "\nSELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
-                " WHERE id IN (\n" +
+        String expected = "\nSELECT ? AS MAIN_ENTITY_ID, id, permName, valid FROM t_perm\n" +
+                "WHERE id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
                 " )) AND valid = ?\n" +
-                " ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
+                "ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
-                " WHERE id IN (\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, permName, valid FROM t_perm\n" +
+                "WHERE id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
                 " )) AND valid = ?\n" +
-                " ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
+                "ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, permName, valid FROM t_perm\n" +
-                " WHERE id IN (\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, permName, valid FROM t_perm\n" +
+                "WHERE id IN (\n" +
                 "  SELECT perm_id FROM j_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
                 " )) AND valid = ?\n" +
-                " ORDER BY id DESC LIMIT 10 OFFSET 0";
+                "ORDER BY id DESC LIMIT 10 OFFSET 0";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, true, 2, 2, true, 3, 3, true);
     }
@@ -256,18 +260,41 @@ class JoinQueryBuilderTest {
     void buildSqlAndArgsForManyToOne() throws NoSuchFieldException {
         Field field = RoleView.class.getDeclaredField("createUser");
 
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 new UserQuery(), UserView.class, field, Arrays.asList(1, 3));
 
-        String expected = "\nSELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
-                " WHERE id = (\n" +
+        String expected = "\nSELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
+                "WHERE id = (\n" +
                 "  SELECT create_user_id FROM t_role WHERE id = ?\n" +
-                " )\n" +
-                "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, username, email FROM t_user\n" +
-                " WHERE id = (\n" +
+                ")" +
+                "\nUNION ALL\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
+                "WHERE id = (\n" +
                 "  SELECT create_user_id FROM t_role WHERE id = ?\n" +
-                " )";
+                ")";
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
+    }
+
+    @Test
+    void buildSqlAndArgsForManyToOneWithConditionsAndOrderByAndPaging() throws NoSuchFieldException {
+        Field field = RoleView.class.getDeclaredField("createUser");
+
+        UserQuery userQuery = UserQuery.builder().memoNull(true).sort("id,desc").pageSize(5).build();
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
+                userQuery, UserView.class, field, Arrays.asList(1, 3));
+
+        String expected = "\nSELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
+                "WHERE id = (\n" +
+                "  SELECT create_user_id FROM t_role WHERE id = ?\n" +
+                ") AND memo IS NULL\n" +
+                "ORDER BY id desc LIMIT 5 OFFSET 0" +
+                "\nUNION ALL\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
+                "WHERE id = (\n" +
+                "  SELECT create_user_id FROM t_role WHERE id = ?\n" +
+                ") AND memo IS NULL\n" +
+                "ORDER BY id desc LIMIT 5 OFFSET 0";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
     }
@@ -276,21 +303,43 @@ class JoinQueryBuilderTest {
     void buildSqlAndArgsForOneToMany() throws NoSuchFieldException {
         Field field = UserView.class.getDeclaredField("createRoles");
 
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 new UserQuery(), RoleView.class, field, Arrays.asList(1, 3));
 
         String expected = "\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, roleName, roleCode, valid FROM t_role WHERE create_user_id = ?" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, roleName, roleCode, valid FROM t_role\n" +
+                "WHERE create_user_id = ?" +
                 "\nUNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, id, roleName, roleCode, valid FROM t_role WHERE create_user_id = ?";
+                "SELECT ? AS MAIN_ENTITY_ID, id, roleName, roleCode, valid FROM t_role\n" +
+                "WHERE create_user_id = ?";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
     }
 
     @Test
+    void buildSqlAndArgsForOneToManyWithConditionsAndOrderByAndPaging() throws NoSuchFieldException {
+        Field field = UserView.class.getDeclaredField("createRoles");
+
+        RoleQuery roleQuery = RoleQuery.builder().valid(true).sort("id,desc").pageSize(5).build();
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
+                roleQuery, RoleView.class, field, Arrays.asList(1, 3));
+
+        String expected = "\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, roleName, roleCode, valid FROM t_role\n" +
+                "WHERE create_user_id = ? AND valid = ?\n" +
+                "ORDER BY id desc LIMIT 5 OFFSET 0" +
+                "\nUNION ALL\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, roleName, roleCode, valid FROM t_role\n" +
+                "WHERE create_user_id = ? AND valid = ?\n" +
+                "ORDER BY id desc LIMIT 5 OFFSET 0";
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, true, 3, 3, true);
+    }
+
+    @Test
     void supportHaving() {
         UserLevelHaving having = UserLevelHaving.builder().countGt(1).countLt(10).build();
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(
                 UserLevelQuery.builder().having(having).valid(true).build(), UserLevelCountView.class);
 
         String expected = "SELECT userLevel, valid, count(*) AS count FROM t_user WHERE valid = ? " +
@@ -304,21 +353,21 @@ class JoinQueryBuilderTest {
     void buildSqlAndArgsForManyToManyAggregation() throws NoSuchFieldException {
         Field field = UserView.class.getDeclaredField("roleStat");
 
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 2, 3), RoleStatView.class);
 
-        String expected = "\nSELECT ? AS PK_FOR_JOIN, count(*) AS count FROM t_role\n" +
-                " WHERE id IN (\n" +
+        String expected = "\nSELECT ? AS MAIN_ENTITY_ID, count(*) AS count FROM t_role\n" +
+                "WHERE id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
                 " )\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, count(*) AS count FROM t_role\n" +
-                " WHERE id IN (\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, count(*) AS count FROM t_role\n" +
+                "WHERE id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
                 " )\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS PK_FOR_JOIN, count(*) AS count FROM t_role\n" +
-                " WHERE id IN (\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, count(*) AS count FROM t_role\n" +
+                "WHERE id IN (\n" +
                 "  SELECT role_id FROM j_user_and_role WHERE user_id = ?\n" +
                 " )";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);

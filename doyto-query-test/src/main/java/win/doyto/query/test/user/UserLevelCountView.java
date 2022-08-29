@@ -14,23 +14,31 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.join;
+package win.doyto.query.test.user;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.core.Having;
+import win.doyto.query.annotation.GroupBy;
+
+import javax.persistence.Entity;
 
 /**
- * UserLevelHaving
+ * UserLevelCountView
  *
  * @author f0rb on 2022-05-16
  * @since 0.3.1
  */
 @Getter
 @Setter
-@Builder
-public class UserLevelHaving implements Having {
-    private Integer countGt;
-    private Integer countLt;
+@Entity(name = "t_user")
+public class UserLevelCountView {
+
+    @GroupBy
+    private UserLevel userLevel;
+
+    @GroupBy
+    private Boolean valid;
+
+    private Long count;
+
 }

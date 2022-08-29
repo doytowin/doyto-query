@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.role;
+package win.doyto.query.mongodb.test.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,40 +24,30 @@ import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.core.RelationalQuery;
-import win.doyto.query.test.perm.PermissionQuery;
-import win.doyto.query.test.user.UserQuery;
+import win.doyto.query.mongodb.test.role.RoleViewQuery;
 
-import java.util.List;
+import java.math.BigInteger;
 
 /**
- * UserQuery
+ * UserViewQuery
  *
- * @author f0rb on 2020-04-01
+ * @author f0rb on 2022-03-26
  */
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @SuperBuilder
-public class RoleQuery extends PageQuery implements RelationalQuery<RoleView, Integer> {
-    private Integer id;
-    private List<Integer> idIn;
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserViewQuery extends PageQuery implements RelationalQuery<UserView, BigInteger> {
 
     @DomainPath({"user", "role"})
-    private UserQuery user;
+    private RoleViewQuery role;
 
-    private String roleName;
-    private String roleNameLike;
-    private Boolean valid;
-
-    private UserQuery usersQuery;
-
-    private PermissionQuery permsQuery;
-
-    private UserQuery createUserQuery;
+    private UserViewQuery createUserQuery;
+    private UserViewQuery createdUsersQuery;
 
     @Override
-    public Class<RoleView> getDomainClass() {
-        return RoleView.class;
+    public Class<UserView> getDomainClass() {
+        return UserView.class;
     }
 }

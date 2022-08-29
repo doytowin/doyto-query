@@ -20,9 +20,9 @@ import org.bson.BsonArray;
 import org.bson.BsonDocument;
 import org.bson.conversions.Bson;
 import org.junit.jupiter.api.Test;
-import win.doyto.query.mongodb.test.join.UserEntity;
+import win.doyto.query.mongodb.test.user.UserView;
 import win.doyto.query.test.TestQuery;
-import win.doyto.query.test.UserQuery;
+import win.doyto.query.test.user.UserQuery;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,7 +41,7 @@ class AggregationMetadataTest {
     void supportOneToManySubQuery() {
         UserQuery createUserQuery = UserQuery.builder().username("f0rb").build();
         TestQuery query = TestQuery.builder().createUser(createUserQuery).build();
-        AggregationMetadata<Object> md = new AggregationMetadata<>(UserEntity.class, null);
+        AggregationMetadata<Object> md = new AggregationMetadata<>(UserView.class, null);
 
         List<Bson> pipeline = md.buildAggregation(query);
 

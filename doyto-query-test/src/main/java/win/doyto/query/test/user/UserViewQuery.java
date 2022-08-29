@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test;
+package win.doyto.query.test.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,46 +23,36 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.RelationalQuery;
+import win.doyto.query.test.menu.MenuQuery;
+import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.role.RoleQuery;
 
 /**
- * TestQuery
+ * UserViewQuery
  *
- * @author f0rb
+ * @author f0rb on 2022-03-26
  */
 @Getter
 @Setter
 @SuperBuilder
-@NoArgsConstructor
 @AllArgsConstructor
-@SuppressWarnings("unused")
-public class UserQuery extends PageQuery {
-    private Integer id;
+@NoArgsConstructor
+public class UserViewQuery extends PageQuery implements RelationalQuery<UserView, Long> {
 
     @DomainPath({"user", "role"})
     private RoleQuery role;
-    private RoleQuery roleQuery;
 
-    @DomainPath({"user", "role", "perm"})
-    private PermissionQuery perm;
-    private PermissionQuery permQuery;
+    private RoleQuery rolesQuery;
 
-    private String username;
+    private PermissionQuery permsQuery;
 
-    private String usernameOrEmailOrMobile;
+    private MenuQuery menusQuery;
+    private UserQuery createUserQuery;
+    private RoleQuery createRolesQuery;
 
-    private String mobile;
-
-    private String usernameLike;
-
-    private String emailLike;
-
-    private boolean memoNull;
-
-    private UserLevel userLevel;
-
-
-    public void setAccount(String account) {
-        this.usernameOrEmailOrMobile = account;
+    @Override
+    public Class<UserView> getDomainClass() {
+        return UserView.class;
     }
 }
