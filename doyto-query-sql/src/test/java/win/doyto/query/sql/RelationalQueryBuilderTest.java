@@ -277,6 +277,29 @@ class RelationalQueryBuilderTest {
     }
 
     @Test
+    void buildSqlAndArgsForManyToOneWithConditionsAndOrderByAndPaging() throws NoSuchFieldException {
+        Field field = RoleView.class.getDeclaredField("createUser");
+
+        UserQuery userQuery = UserQuery.builder().memoNull(true).sort("id,desc").pageSize(5).build();
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
+                userQuery, UserView.class, field, Arrays.asList(1, 3));
+
+        String expected = "\nSELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
+                " WHERE id = (\n" +
+                "  SELECT create_user_id FROM t_role WHERE id = ?\n" +
+                " ) AND memo IS NULL\n" +
+                " ORDER BY id desc LIMIT 5 OFFSET 0" +
+                "\nUNION ALL\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
+                " WHERE id = (\n" +
+                "  SELECT create_user_id FROM t_role WHERE id = ?\n" +
+                " ) AND memo IS NULL\n" +
+                " ORDER BY id desc LIMIT 5 OFFSET 0";
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
+    }
+
+    @Test
     void buildSqlAndArgsForOneToMany() throws NoSuchFieldException {
         Field field = UserView.class.getDeclaredField("createRoles");
 
