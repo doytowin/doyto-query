@@ -33,10 +33,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -152,7 +149,9 @@ public class JdbcDataQueryClient implements DataQueryClient {
 
     private <E extends Persistable<I>, I extends Serializable, R>
     void writeSingleResultToMainDomain(Field joinField, Map<I, List<R>> map, E e) {
-        List<R> list = map.getOrDefault(e.getId(), new ArrayList<>());
-        CommonUtil.writeField(joinField, e, list.isEmpty() ? null : list.get(0));
+        List<R> list = map.getOrDefault(e.getId(), Collections.emptyList());
+        if (!list.isEmpty()) {
+            CommonUtil.writeField(joinField, e, list.get(0));
+        }
     }
 }
