@@ -40,7 +40,7 @@ import static win.doyto.query.mongodb.test.TestUtil.readString;
  */
 class AggregationMetadataTest {
     @Test
-    void supportOneToManySubQuery() {
+    void supportRelativeQueryForOneToMany() {
         UserQuery createUserQuery = UserQuery.builder().username("f0rb").build();
         TestQuery query = TestQuery.builder().createUser(createUserQuery).build();
         AggregationMetadata<Object> md = new AggregationMetadata<>(UserView.class, null);
