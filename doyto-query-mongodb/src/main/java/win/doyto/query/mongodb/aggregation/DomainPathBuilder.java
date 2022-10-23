@@ -27,6 +27,7 @@ import win.doyto.query.util.ColumnUtil;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -74,13 +75,15 @@ public class DomainPathBuilder {
         String[] tableNames = Arrays.stream(paths).map(path -> String.format(TABLE_FORMAT, path)).toArray(String[]::new);
         String[] joinIds = Arrays.stream(paths).map(path -> String.format(JOIN_ID_FORMAT, path)).toArray(String[]::new);
 
-        List<Bson> pipeline = Arrays.asList(
-                lookup0(tableNames[n], joinIds[n], MONGO_ID, Collections.emptyList(), viewName),
-                unwind($viewName),
-                replaceRoot($viewName),
-                match(buildFilter(query)),
-                project(projectDoc)
-        );
+        List<Bson> pipeline = new LinkedList<>();
+        pipeline.add(lookup0(tableNames[n], joinIds[n], MONGO_ID, Collections.emptyList(), viewName));
+        pipeline.add(unwind($viewName));
+        pipeline.add(replaceRoot($viewName));
+        Bson filter = buildFilter(query);
+        if (!filter.toBsonDocument().isEmpty()) {
+            pipeline.add(match(filter));
+        }
+        pipeline.add(project(projectDoc));
 
         for (int i = n - 1; i > 0; i--) {
             pipeline = Arrays.asList(

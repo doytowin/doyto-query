@@ -180,7 +180,10 @@ public class AggregationMetadata<C> {
                 pipeline.add(new Document("$unwind", ex(unwindField)));
             }
         }
-        pipeline.add(Aggregates.match(MongoFilterBuilder.buildFilter(query)));
+        Bson filter = MongoFilterBuilder.buildFilter(query);
+        if (!filter.toBsonDocument().isEmpty()) {
+            pipeline.add(Aggregates.match(filter));
+        }
         if (!unsetFields.isEmpty()) {
             pipeline.add(new Document("$unset", unsetFields));
         }

@@ -1,8 +1,5 @@
 [
   {
-    "$match": {}
-  },
-  {
     $lookup: {
       from: "j_user_and_role",
       localField: "_id",
@@ -23,9 +20,6 @@
           $replaceRoot: {
             newRoot: "$roles"
           }
-        },
-        {
-          $match: {}
         },
         {
           $project: {
