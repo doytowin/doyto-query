@@ -50,7 +50,7 @@ class DomainPathBuilderTest {
         Bson bson = buildLookUpForSubDomain(roleQuery, RoleView.class, field);
 
         BsonDocument result = bson.toBsonDocument();
-        BsonDocument expected = BsonDocument.parse(readString("/query_user_with_roles.json"));
+        BsonDocument expected = BsonDocument.parse(readString("/query_roles_in_user.json"));
         assertThat(result).isEqualTo(expected);
     }
 
@@ -62,7 +62,7 @@ class DomainPathBuilderTest {
         Bson bson = buildLookUpForSubDomain(permissionQuery, PermView.class, field);
 
         BsonDocument result = bson.toBsonDocument();
-        BsonDocument expected = BsonDocument.parse(readString("/query_user_with_perms.json"));
+        BsonDocument expected = BsonDocument.parse(readString("/query_perms_in_user.json"));
         assertThat(result).isEqualTo(expected);
     }
 
@@ -74,7 +74,7 @@ class DomainPathBuilderTest {
         Bson bson = buildLookUpForSubDomain(menuQuery, MenuView.class, field);
 
         BsonDocument result = bson.toBsonDocument();
-        BsonDocument expected = BsonDocument.parse(readString("/query_user_with_menus.json"));
+        BsonDocument expected = BsonDocument.parse(readString("/query_menus_in_user.json"));
         assertThat(result).isEqualTo(expected);
     }
 
@@ -85,7 +85,7 @@ class DomainPathBuilderTest {
         Bson bson = buildLookUpForSubDomain(new PageQuery(), UserView.class, field);
 
         BsonDocument result = bson.toBsonDocument();
-        BsonDocument expected = BsonDocument.parse(readString("/query_user_with_create_user.json"));
+        BsonDocument expected = BsonDocument.parse(readString("/query_create_user_in_user.json"));
         assertThat(result).isEqualTo(expected);
     }
 
@@ -96,7 +96,7 @@ class DomainPathBuilderTest {
         Bson bson = buildLookUpForSubDomain(new PageQuery(), UserView.class, field);
 
         BsonDocument result = bson.toBsonDocument();
-        BsonDocument expected = BsonDocument.parse(readString("/query_user_with_created_users.json"));
+        BsonDocument expected = BsonDocument.parse(readString("/query_created_users_in_user.json"));
         assertThat(result).isEqualTo(expected);
     }
 
@@ -108,7 +108,7 @@ class DomainPathBuilderTest {
         Bson bson = buildLookUpForSubDomain(userQuery, UserView.class, field);
 
         BsonDocument result = bson.toBsonDocument();
-        BsonDocument expected = BsonDocument.parse(readString("/query_perm_with_users.json"));
+        BsonDocument expected = BsonDocument.parse(readString("/query_users_in_perm.json"));
         assertThat(result).isEqualTo(expected);
     }
 }
