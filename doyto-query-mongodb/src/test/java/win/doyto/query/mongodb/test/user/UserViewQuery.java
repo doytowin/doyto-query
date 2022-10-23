@@ -43,6 +43,8 @@ public class UserViewQuery extends PageQuery implements RelationalQuery<UserView
     @DomainPath({"user", "role"})
     private RoleViewQuery role;
 
+    private RoleViewQuery rolesQuery;
+
     private UserViewQuery createUserQuery;
     private UserViewQuery createdUsersQuery;
 

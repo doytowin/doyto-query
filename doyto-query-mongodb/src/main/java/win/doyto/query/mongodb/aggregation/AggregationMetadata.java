@@ -33,6 +33,7 @@ import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -187,7 +188,12 @@ public class AggregationMetadata<C> {
         for (Field field : this.getDomainFields()) {
             Object domainQuery = CommonUtil.readField(query, field.getName() + "Query");
             if (domainQuery instanceof DoytoQuery) {
-                Bson lookupDoc = buildLookUpForSubDomain((DoytoQuery) domainQuery, this.getViewClass() , field);
+                Class<?> relatedViewClass = field.getType();
+                if (Collection.class.isAssignableFrom(field.getType())) {
+                    ParameterizedType type = (ParameterizedType) field.getGenericType();
+                    relatedViewClass = (Class<?>) type.getActualTypeArguments()[0];
+                }
+                Bson lookupDoc = buildLookUpForSubDomain((DoytoQuery) domainQuery, relatedViewClass, field);
                 pipeline.add(lookupDoc);
             }
         }
