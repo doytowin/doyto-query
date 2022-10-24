@@ -20,7 +20,9 @@ import org.bson.BsonArray;
 import org.bson.BsonDocument;
 import org.bson.conversions.Bson;
 import org.junit.jupiter.api.Test;
+import win.doyto.query.mongodb.test.role.RoleViewQuery;
 import win.doyto.query.mongodb.test.user.UserView;
+import win.doyto.query.mongodb.test.user.UserViewQuery;
 import win.doyto.query.test.TestQuery;
 import win.doyto.query.test.user.UserQuery;
 
@@ -38,7 +40,7 @@ import static win.doyto.query.mongodb.test.TestUtil.readString;
  */
 class AggregationMetadataTest {
     @Test
-    void supportOneToManySubQuery() {
+    void supportRelativeQueryForOneToMany() {
         UserQuery createUserQuery = UserQuery.builder().username("f0rb").build();
         TestQuery query = TestQuery.builder().createUser(createUserQuery).build();
         AggregationMetadata<Object> md = new AggregationMetadata<>(UserView.class, null);
@@ -47,6 +49,19 @@ class AggregationMetadataTest {
 
         List<BsonDocument> result = pipeline.stream().map(Bson::toBsonDocument).collect(Collectors.toList());
         BsonArray expected = BsonArray.parse(readString("/query_user_filter_by_create_user.json"));
+        assertThat(result).isEqualTo(expected);
+    }
+
+    @Test
+    void supportRelativeQueryForManyToMany() {
+        RoleViewQuery rolesQuery = RoleViewQuery.builder().build();
+        UserViewQuery userViewQuery = UserViewQuery.builder().rolesQuery(rolesQuery).build();
+        AggregationMetadata<Object> md = new AggregationMetadata<>(UserView.class, null);
+
+        List<Bson> pipeline = md.buildAggregation(userViewQuery);
+
+        List<BsonDocument> result = pipeline.stream().map(Bson::toBsonDocument).collect(Collectors.toList());
+        BsonArray expected = BsonArray.parse(readString("/query_user_with_roles.json"));
         assertThat(result).isEqualTo(expected);
     }
 }

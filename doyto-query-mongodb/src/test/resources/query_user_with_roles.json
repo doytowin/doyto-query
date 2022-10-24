@@ -1,38 +1,58 @@
-{
-  $lookup: {
-    from: "j_user_and_role",
-    localField: "_id",
-    foreignField: "user_id",
-    pipeline: [
-      {
-        $lookup: {
-          from: "t_role",
-          localField: "role_id",
-          foreignField: "_id",
-          as: "roles"
+[
+  {
+    $lookup: {
+      from: "j_user_and_role",
+      localField: "_id",
+      foreignField: "user_id",
+      pipeline: [
+        {
+          $lookup: {
+            from: "t_role",
+            localField: "role_id",
+            foreignField: "_id",
+            as: "roles"
+          }
+        },
+        {
+          $unwind: "$roles"
+        },
+        {
+          $replaceRoot: {
+            newRoot: "$roles"
+          }
+        },
+        {
+          $project: {
+            "roleName": 1,
+            "roleCode": 1,
+            "valid": 1
+          }
         }
+      ],
+      as: "roles"
+    }
+  },
+  {
+    $sort: {
+      "_id": 1
+    }
+  },
+  {
+    $project: {
+      createUser: {
+        "$arrayElemAt": [
+          "$createUser",
+          0
+        ]
       },
-      {
-        $unwind: "$roles"
-      },
-      {
-        $replaceRoot: {
-          newRoot: "$roles"
-        }
-      },
-      {
-        $match: {
-          valid: true
-        }
-      },
-      {
-        $project: {
-          "roleName": 1,
-          "roleCode": 1,
-          "valid": 1
-        }
-      }
-    ],
-    as: "roles"
+      createdUsers: "$createdUsers",
+      id: "$id",
+      objectId: "$objectId",
+      username: "$username",
+      email: "$email",
+      roles: "$roles",
+      perms: "$perms",
+      menus: "$menus"
+    }
   }
-}
+]

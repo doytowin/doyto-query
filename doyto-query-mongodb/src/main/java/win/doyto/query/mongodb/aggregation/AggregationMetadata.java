@@ -27,12 +27,14 @@ import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Having;
+import win.doyto.query.mongodb.filter.EmptyBson;
 import win.doyto.query.mongodb.filter.MongoFilterBuilder;
 import win.doyto.query.mongodb.filter.MongoGroupBuilder;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -179,7 +181,10 @@ public class AggregationMetadata<C> {
                 pipeline.add(new Document("$unwind", ex(unwindField)));
             }
         }
-        pipeline.add(Aggregates.match(MongoFilterBuilder.buildFilter(query)));
+        Bson filter = MongoFilterBuilder.buildFilter(query);
+        if (!(filter instanceof EmptyBson)) {
+            pipeline.add(Aggregates.match(filter));
+        }
         if (!unsetFields.isEmpty()) {
             pipeline.add(new Document("$unset", unsetFields));
         }
@@ -187,7 +192,12 @@ public class AggregationMetadata<C> {
         for (Field field : this.getDomainFields()) {
             Object domainQuery = CommonUtil.readField(query, field.getName() + "Query");
             if (domainQuery instanceof DoytoQuery) {
-                Bson lookupDoc = buildLookUpForSubDomain((DoytoQuery) domainQuery, this.getViewClass() , field);
+                Class<?> relatedViewClass = field.getType();
+                if (Collection.class.isAssignableFrom(field.getType())) {
+                    ParameterizedType type = (ParameterizedType) field.getGenericType();
+                    relatedViewClass = (Class<?>) type.getActualTypeArguments()[0];
+                }
+                Bson lookupDoc = buildLookUpForSubDomain((DoytoQuery) domainQuery, relatedViewClass, field);
                 pipeline.add(lookupDoc);
             }
         }
