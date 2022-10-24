@@ -48,11 +48,13 @@ public class MongoAssociationService implements AssociationService<ObjectId, Obj
     }
 
     public MongoAssociationService(MongoSessionSupplier mongoSessionSupplier, String database, String domain1, String domain2) {
-        String joinTable = String.format(GlobalConfiguration.JOIN_TABLE_FORMAT, domain1, domain2);
+        String joinTableFormat = GlobalConfiguration.instance().getJoinTableFormat();
+        String joinTable = String.format(joinTableFormat, domain1, domain2);
         this.collection = mongoSessionSupplier.getMongoClient().getDatabase(database).getCollection(joinTable);
         this.mongoSessionSupplier = mongoSessionSupplier;
-        this.domainId1 = String.format(GlobalConfiguration.JOIN_ID_FORMAT, domain1);
-        this.domainId2 = String.format(GlobalConfiguration.JOIN_ID_FORMAT, domain2);
+        String joinIdFormat = GlobalConfiguration.instance().getJoinIdFormat();
+        this.domainId1 = String.format(joinIdFormat, domain1);
+        this.domainId2 = String.format(joinIdFormat, domain2);
     }
 
     @Override

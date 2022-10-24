@@ -34,9 +34,6 @@ import java.util.function.Function;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GlobalConfiguration {
-    public static final String JOIN_ID_FORMAT = GlobalConfiguration.instance().getJoinIdFormat();
-    public static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
-    public static final String JOIN_TABLE_FORMAT = GlobalConfiguration.instance().getJoinTableFormat();
 
     private boolean mapCamelCaseToUnderscore = true;
     private boolean ignoreCacheException = true;
