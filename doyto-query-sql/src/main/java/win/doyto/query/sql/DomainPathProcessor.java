@@ -19,6 +19,7 @@ package win.doyto.query.sql;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
@@ -28,7 +29,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static win.doyto.query.config.GlobalConfiguration.*;
 import static win.doyto.query.sql.BuildHelper.buildWhere;
 import static win.doyto.query.sql.Constant.*;
 
@@ -39,6 +39,7 @@ import static win.doyto.query.sql.Constant.*;
  * @since 0.3.1
  */
 class DomainPathProcessor implements FieldProcessor.Processor {
+    private static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
     private final String[] domainPaths;
     private final String[] domainIds;
     private final String[] joinTables;
@@ -52,8 +53,8 @@ class DomainPathProcessor implements FieldProcessor.Processor {
         foreignFieldColumn = ColumnUtil.convertColumn(domainPath.foreignField());
         localFieldColumn = ColumnUtil.convertColumn(domainPath.localField());
         boolean reverse = field.getName().contains(domainPaths[0]);
-        domainIds = prepareDomainIds();
-        joinTables = prepareJoinTables();
+        domainIds = prepareDomainIds(GlobalConfiguration.instance().getJoinIdFormat());
+        joinTables = prepareJoinTables(GlobalConfiguration.instance().getJoinTableFormat());
         if (reverse) {
             lastDomain = domainPaths[0];
         } else {
@@ -63,13 +64,13 @@ class DomainPathProcessor implements FieldProcessor.Processor {
         }
     }
 
-    private String[] prepareDomainIds() {
-        return Arrays.stream(domainPaths).map(domain -> String.format(JOIN_ID_FORMAT, domain)).toArray(String[]::new);
+    private String[] prepareDomainIds(String joinIdFormat) {
+        return Arrays.stream(domainPaths).map(domain -> String.format(joinIdFormat, domain)).toArray(String[]::new);
     }
 
-    private String[] prepareJoinTables() {
+    private String[] prepareJoinTables(String joinTableFormat) {
         return IntStream.range(0, domainPaths.length - 1)
-                .mapToObj(i -> String.format(JOIN_TABLE_FORMAT, domainPaths[i], domainPaths[i + 1]))
+                .mapToObj(i -> String.format(joinTableFormat, domainPaths[i], domainPaths[i + 1]))
                 .toArray(String[]::new);
     }
 

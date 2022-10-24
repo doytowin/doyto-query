@@ -56,7 +56,7 @@ class DomainPathProcessorTest {
         String sql = domainPathProcessor.process(argList, roleQuery);
 
         String expected = "id IN (" +
-                "SELECT user_id FROM j_user_and_role WHERE role_id IN (" +
+                "SELECT user_id FROM a_user_and_role WHERE role_id IN (" +
                 "SELECT id FROM t_role WHERE id = ? AND valid = ?" +
                 "))";
         assertThat(sql).isEqualTo(expected);
@@ -70,7 +70,7 @@ class DomainPathProcessorTest {
         String sql = domainPathProcessor.process(argList, new RoleQuery());
 
         String expected = "id IN (" +
-                "SELECT perm_id FROM j_role_and_perm WHERE role_id IN (" +
+                "SELECT perm_id FROM a_role_and_perm WHERE role_id IN (" +
                 "SELECT id FROM t_role" +
                 "))";
         assertThat(sql).isEqualTo(expected);
@@ -85,7 +85,7 @@ class DomainPathProcessorTest {
         String sql = domainPathProcessor.process(argList, roleQuery);
 
         String expected = "id IN (" +
-                "SELECT perm_id FROM j_role_and_perm WHERE role_id IN (" +
+                "SELECT perm_id FROM a_role_and_perm WHERE role_id IN (" +
                 "SELECT id FROM t_role WHERE id = ? AND valid = ?" +
                 "))";
         assertThat(sql).isEqualTo(expected);
@@ -100,7 +100,7 @@ class DomainPathProcessorTest {
         String sql = domainPathProcessor.process(argList, roleQuery);
 
         String expected = "id IN (" +
-                "SELECT perm_id FROM j_role_and_perm WHERE role_id IN (" +
+                "SELECT perm_id FROM a_role_and_perm WHERE role_id IN (" +
                 "SELECT id FROM t_role WHERE id IN (?, ?, ?)" +
                 "))";
         assertThat(sql).isEqualTo(expected);
@@ -115,7 +115,7 @@ class DomainPathProcessorTest {
         String sql = domainPathProcessor.process(argList, roleQuery);
 
         String expected = "id IN (" +
-                "SELECT perm_id FROM j_role_and_perm WHERE role_id IN (" +
+                "SELECT perm_id FROM a_role_and_perm WHERE role_id IN (" +
                 "SELECT id FROM t_role WHERE id IN (null)" +
                 "))";
 
@@ -130,8 +130,8 @@ class DomainPathProcessorTest {
         String sql = domainPathProcessor.process(argList, new PermissionQuery());
 
         String expected = "id IN (" +
-                "SELECT user_id FROM j_user_and_role WHERE role_id IN (" +
-                "SELECT role_id FROM j_role_and_perm WHERE perm_id IN (" +
+                "SELECT user_id FROM a_user_and_role WHERE role_id IN (" +
+                "SELECT role_id FROM a_role_and_perm WHERE perm_id IN (" +
                 "SELECT id FROM t_perm" +
                 ")))";
         assertThat(sql).isEqualTo(expected);
@@ -145,8 +145,8 @@ class DomainPathProcessorTest {
         String sql = domainPathProcessor.process(argList, new UserQuery());
 
         String expected = "id IN (" +
-                "SELECT perm_id FROM j_role_and_perm WHERE role_id IN (" +
-                "SELECT role_id FROM j_user_and_role WHERE user_id IN (" +
+                "SELECT perm_id FROM a_role_and_perm WHERE role_id IN (" +
+                "SELECT role_id FROM a_user_and_role WHERE user_id IN (" +
                 "SELECT id FROM t_user" +
                 ")))";
         assertThat(sql).isEqualTo(expected);
@@ -160,8 +160,8 @@ class DomainPathProcessorTest {
 
         String sql = domainPathProcessor.process(argList, userQuery);
 
-        String expected = "id IN (SELECT perm_id FROM j_role_and_perm WHERE role_id IN " +
-                "(SELECT role_id FROM j_user_and_role WHERE user_id IN (" +
+        String expected = "id IN (SELECT perm_id FROM a_role_and_perm WHERE role_id IN " +
+                "(SELECT role_id FROM a_user_and_role WHERE user_id IN (" +
                 "SELECT id FROM t_user WHERE id = ?" +
                 ")))";
         assertThat(sql).isEqualTo(expected);
@@ -175,8 +175,8 @@ class DomainPathProcessorTest {
 
         String sql = domainPathProcessor.process(argList, userQuery);
 
-        String expected = "id IN (SELECT perm_id FROM j_role_and_perm WHERE role_id IN " +
-                "(SELECT role_id FROM j_user_and_role WHERE user_id IN " +
+        String expected = "id IN (SELECT perm_id FROM a_role_and_perm WHERE role_id IN " +
+                "(SELECT role_id FROM a_user_and_role WHERE user_id IN " +
                 "(SELECT id FROM t_user WHERE username LIKE ? AND user_level = ?)))";
         assertThat(sql).isEqualTo(expected);
         assertThat(argList).containsExactly("%test%", UserLevel.普通.ordinal());
@@ -194,13 +194,13 @@ class DomainPathProcessorTest {
         String sql = domainPathProcessor.process(argList, userQuery);
 
         String expected = "id IN (" +
-                "SELECT menu_id FROM j_perm_and_menu WHERE perm_id IN (" +
+                "SELECT menu_id FROM a_perm_and_menu WHERE perm_id IN (" +
                 "SELECT id FROM t_perm WHERE valid = ?" +
                 "\nINTERSECT\n" +
-                "SELECT perm_id FROM j_role_and_perm WHERE role_id IN (" +
+                "SELECT perm_id FROM a_role_and_perm WHERE role_id IN (" +
                 "SELECT id FROM t_role WHERE role_name LIKE ? AND valid = ?" +
                 "\nINTERSECT\n" +
-                "SELECT role_id FROM j_user_and_role WHERE user_id IN (" +
+                "SELECT role_id FROM a_user_and_role WHERE user_id IN (" +
                 "SELECT id FROM t_user WHERE id = ?))))";
         assertThat(sql).isEqualTo(expected);
         assertThat(argList).containsExactly(true, "%vip%", true, 1);

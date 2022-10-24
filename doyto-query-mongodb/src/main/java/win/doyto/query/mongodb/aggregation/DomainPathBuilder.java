@@ -21,6 +21,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.mongodb.filter.EmptyBson;
 import win.doyto.query.mongodb.filter.MongoFilterBuilder;
@@ -34,7 +35,6 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static com.mongodb.client.model.Aggregates.*;
-import static win.doyto.query.config.GlobalConfiguration.*;
 import static win.doyto.query.mongodb.MongoConstant.MONGO_ID;
 
 /**
@@ -44,6 +44,9 @@ import static win.doyto.query.mongodb.MongoConstant.MONGO_ID;
  */
 @UtilityClass
 public class DomainPathBuilder {
+    private static final String JOIN_ID_FORMAT = GlobalConfiguration.instance().getJoinIdFormat();
+    private static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
+    private static final String JOIN_TABLE_FORMAT = GlobalConfiguration.instance().getJoinTableFormat();
     private static final int PROJECTING = 1;
 
     public static <V> Bson buildLookUpForSubDomain(DoytoQuery query, Class<V> viewClass, Field field) {

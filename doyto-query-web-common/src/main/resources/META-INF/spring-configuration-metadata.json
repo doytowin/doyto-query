@@ -28,7 +28,7 @@
     {
       "name": "doyto.query.config.join-table-format",
       "type": "java.lang.String",
-      "description": "Join table format for multiple tables query. Default: j_%s_and_%s. Since 0.3.1."
+      "description": "Join table format for multiple tables query. Default: a_%s_and_%s. Since 0.3.1."
     },
     {
       "name": "doyto.query.config.join-id-format",

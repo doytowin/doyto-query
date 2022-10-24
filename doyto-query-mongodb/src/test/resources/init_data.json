@@ -84,7 +84,7 @@
     ]
   },
   {
-    "insert": "j_user_and_role",
+    "insert": "a_user_and_role",
     "ordered": true,
     "documents": [
       {

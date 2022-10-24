@@ -20,6 +20,7 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Having;
@@ -34,7 +35,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static win.doyto.query.config.GlobalConfiguration.*;
 import static win.doyto.query.sql.BuildHelper.*;
 import static win.doyto.query.sql.Constant.*;
 
@@ -46,6 +46,9 @@ import static win.doyto.query.sql.Constant.*;
 @UtilityClass
 public class RelationalQueryBuilder {
 
+    private static final String JOIN_ID_FORMAT = GlobalConfiguration.instance().getJoinIdFormat();
+    private static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
+    private static final String JOIN_TABLE_FORMAT = GlobalConfiguration.instance().getJoinTableFormat();
     public static final String KEY_COLUMN = "MAIN_ENTITY_ID";
 
     public static SqlAndArgs buildSelectAndArgs(DoytoQuery q, Class<?> entityClass) {
