@@ -22,6 +22,8 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.mongodb.filter.EmptyBson;
+import win.doyto.query.mongodb.filter.MongoFilterBuilder;
 import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
@@ -34,7 +36,6 @@ import java.util.stream.IntStream;
 import static com.mongodb.client.model.Aggregates.*;
 import static win.doyto.query.config.GlobalConfiguration.*;
 import static win.doyto.query.mongodb.MongoConstant.MONGO_ID;
-import static win.doyto.query.mongodb.filter.MongoFilterBuilder.buildFilter;
 
 /**
  * DomainPathBuilder
@@ -79,8 +80,8 @@ public class DomainPathBuilder {
         pipeline.add(lookup0(tableNames[n], joinIds[n], MONGO_ID, Collections.emptyList(), viewName));
         pipeline.add(unwind($viewName));
         pipeline.add(replaceRoot($viewName));
-        Bson filter = buildFilter(query);
-        if (!filter.toBsonDocument().isEmpty()) {
+        Bson filter = MongoFilterBuilder.buildFilter(query);
+        if (!(filter instanceof EmptyBson)) {
             pipeline.add(match(filter));
         }
         pipeline.add(project(projectDoc));

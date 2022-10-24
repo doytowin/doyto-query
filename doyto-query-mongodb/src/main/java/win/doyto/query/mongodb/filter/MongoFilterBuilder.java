@@ -20,7 +20,6 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
-import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import win.doyto.query.core.DoytoQuery;
@@ -51,7 +50,7 @@ public class MongoFilterBuilder {
 
     private static final Map<QuerySuffix, BiFunction<String, Object, Bson>> suffixFuncMap;
     private static final Pattern SORT_PTN = Pattern.compile("(\\w+)(,asc|,desc)?");
-    private static final BsonDocument EMPTY_DOCUMENT = new BsonDocument();
+    private static final Bson EMPTY_DOCUMENT = new EmptyBson();
 
     static {
         suffixFuncMap = new EnumMap<>(QuerySuffix.class);

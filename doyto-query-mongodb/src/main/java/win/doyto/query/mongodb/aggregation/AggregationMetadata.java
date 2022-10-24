@@ -27,6 +27,7 @@ import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Having;
+import win.doyto.query.mongodb.filter.EmptyBson;
 import win.doyto.query.mongodb.filter.MongoFilterBuilder;
 import win.doyto.query.mongodb.filter.MongoGroupBuilder;
 import win.doyto.query.util.ColumnUtil;
@@ -181,7 +182,7 @@ public class AggregationMetadata<C> {
             }
         }
         Bson filter = MongoFilterBuilder.buildFilter(query);
-        if (!filter.toBsonDocument().isEmpty()) {
+        if (!(filter instanceof EmptyBson)) {
             pipeline.add(Aggregates.match(filter));
         }
         if (!unsetFields.isEmpty()) {
