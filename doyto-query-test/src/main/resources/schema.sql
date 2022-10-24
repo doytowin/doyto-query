@@ -69,9 +69,9 @@ create table t_role(
   primary key (id)
 );
 
-drop table j_user_and_role if exists;
-create table j_user_and_role (user_id bigint, role_id int, create_user_id bigint);
-alter table j_user_and_role add constraint j_user_and_role_unique_constraint unique (user_id, role_id);
+drop table a_user_and_role if exists;
+create table a_user_and_role (user_id bigint, role_id int, create_user_id bigint);
+alter table a_user_and_role add constraint a_user_and_role_unique_constraint unique (user_id, role_id);
 
 drop table t_perm if exists;
 CREATE TABLE t_perm
@@ -82,10 +82,10 @@ CREATE TABLE t_perm
   primary key (id)
 );
 
-drop table j_role_and_perm if exists;
-create table j_role_and_perm (role_id int, perm_id int);
-alter table j_role_and_perm add constraint j_role_and_perm_unique_constraint unique (role_id, perm_id);
+drop table a_role_and_perm if exists;
+create table a_role_and_perm (role_id int, perm_id int);
+alter table a_role_and_perm add constraint a_role_and_perm_unique_constraint unique (role_id, perm_id);
 
-drop table j_perm_and_menu if exists;
-create table j_perm_and_menu (perm_id int, menu_id int);
-alter table j_perm_and_menu add constraint j_perm_and_menu_unique_constraint unique (perm_id, menu_id);
+drop table a_perm_and_menu if exists;
+create table a_perm_and_menu (perm_id int, menu_id int);
+alter table a_perm_and_menu add constraint a_perm_and_menu_unique_constraint unique (perm_id, menu_id);
