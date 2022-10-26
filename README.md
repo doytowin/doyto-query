@@ -47,7 +47,7 @@ Then with the development of DoytoQuery, the idea developed into a new ORM theor
 - Seamless integration with Spring WebMvc.
 - Support for relational databases and MongoDB.
 
-## Architecture for 0.3.x
+## Architecture for 0.3.x and newer
 
 <img alt="architecture-0.3.x" src="docs/images/architecture-0.3.x.2.png" width="50%">
 
@@ -74,10 +74,10 @@ Then with the development of DoytoQuery, the idea developed into a new ORM theor
   - [doyto-query-dialect](https://github.com/doytowin/doyto-query-dialect)
 
 - Projects
-  - [Demo](https://github.com/f0rb/doyto-query-demo)
+  - [Demo](https://github.com/doytowin/doyto-query-demo)
   - [Idea plugin](https://github.com/doytowin/doyto-query-intellij-plugin)
-  - [I18n management service](https://github.com/f0rb/doyto-service-i18n)
-  - [Code generator service](https://gitee.com/doyto/doyto-service-generator)
+  - [I18n management service](https://github.com/doytowin/doyto-service-i18n)
+  - [Code generator service](https://github.com/doytowin/doyto-service-generator)
 
 - Documentation
   -  [https://query.doyto.win/](https://query.doyto.win/)
