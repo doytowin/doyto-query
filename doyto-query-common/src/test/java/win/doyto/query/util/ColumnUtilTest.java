@@ -18,7 +18,6 @@ package win.doyto.query.util;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
-import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.TestChildQuery;
 import win.doyto.query.test.TestEntity;
@@ -87,22 +86,18 @@ class ColumnUtilTest {
      */
     @Test
     void supportAggregateColumnResolving() {
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
-
         assertEquals("max(id)", ColumnUtil.resolveColumn("maxId"));
         assertEquals("min(id)", ColumnUtil.resolveColumn("minId"));
         assertEquals("sum(qty)", ColumnUtil.resolveColumn("sumQty"));
         assertEquals("avg(qty)", ColumnUtil.resolveColumn("avgQty"));
         assertEquals("first(id)", ColumnUtil.resolveColumn("firstId"));
         assertEquals("last(id)", ColumnUtil.resolveColumn("lastId"));
-        assertEquals("stddev(salesAmount)", ColumnUtil.resolveColumn("stdDevSalesAmount"));
-        assertEquals("stddev_pop(salesAmount)", ColumnUtil.resolveColumn("stdDevPopSalesAmount"));
-        assertEquals("stddev_samp(salesAmount)", ColumnUtil.resolveColumn("stdDevSampSalesAmount"));
-        assertEquals("addToSet(salesAmount)", ColumnUtil.resolveColumn("addToSetSalesAmount"));
-        assertEquals("push(salesAmount)", ColumnUtil.resolveColumn("pushSalesAmount"));
+        assertEquals("stddev(sales_amount)", ColumnUtil.resolveColumn("stdDevSalesAmount"));
+        assertEquals("stddev_pop(sales_amount)", ColumnUtil.resolveColumn("stdDevPopSalesAmount"));
+        assertEquals("stddev_samp(sales_amount)", ColumnUtil.resolveColumn("stdDevSampSalesAmount"));
+        assertEquals("addToSet(sales_amount)", ColumnUtil.resolveColumn("addToSetSalesAmount"));
+        assertEquals("push(sales_amount)", ColumnUtil.resolveColumn("pushSalesAmount"));
         assertEquals("count(*)", ColumnUtil.resolveColumn("count"));
         assertEquals("count(id)", ColumnUtil.resolveColumn("countId"));
-
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
     }
 }

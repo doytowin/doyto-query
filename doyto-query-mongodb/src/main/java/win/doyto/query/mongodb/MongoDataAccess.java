@@ -20,7 +20,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Projections;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +33,7 @@ import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.mongodb.aggregation.AggregationMetadata;
-import win.doyto.query.mongodb.aggregation.AggregationPipelineBuilder;
+import win.doyto.query.mongodb.aggregation.CollectionProvider;
 import win.doyto.query.mongodb.entity.ObjectIdAware;
 import win.doyto.query.mongodb.entity.ObjectIdMapper;
 import win.doyto.query.mongodb.filter.MongoFilterBuilder;
@@ -47,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.persistence.Entity;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.in;
@@ -60,24 +58,23 @@ import static win.doyto.query.mongodb.MongoConstant.MONGO_ID;
  */
 @Slf4j
 public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery> implements DataAccess<E, I, Q> {
-    private final MongoClient mongoClient;
     private final Class<E> entityClass;
     @Getter
     private final MongoCollection<Document> collection;
 
     private final MongoSessionSupplier mongoSessionSupplier;
+    private final AggregationMetadata<MongoCollection<Document>> md;
 
     public MongoDataAccess(MongoClient mongoClient, Class<E> entityClass) {
-        this(mongoClient, entityClass, MongoSessionThreadLocalSupplier.create(mongoClient));
+        this(entityClass, MongoSessionThreadLocalSupplier.create(mongoClient));
     }
 
-    public MongoDataAccess(MongoClient mongoClient, Class<E> entityClass, MongoSessionSupplier mongoSessionSupplier) {
-        this.mongoClient = mongoClient;
+    public MongoDataAccess(Class<E> entityClass, MongoSessionSupplier mongoSessionSupplier) {
         this.entityClass = entityClass;
-        Entity entity = entityClass.getAnnotation(Entity.class);
-        MongoDatabase database = mongoClient.getDatabase(entity.database());
-        this.collection = database.getCollection(entity.name());
         this.mongoSessionSupplier = mongoSessionSupplier;
+        CollectionProvider collectionProvider = new CollectionProvider(mongoSessionSupplier.getMongoClient());
+        this.md = AggregationMetadata.build(entityClass, collectionProvider);
+        this.collection = md.getCollection();
     }
 
     private void setObjectId(E entity, Document document) {
@@ -97,8 +94,7 @@ public class MongoDataAccess<E extends Persistable<I>, I extends Serializable, Q
 
     @Override
     public List<E> query(Q query) {
-        AggregationMetadata md = AggregationMetadata.build(entityClass, mongoClient);
-        List<Bson> pipeline = AggregationPipelineBuilder.build(query, entityClass, md);
+        List<Bson> pipeline = md.buildAggregation(query);
         return md.getCollection().aggregate(mongoSessionSupplier.get(), pipeline)
                  .map(document -> BeanUtil.parse(document.toJson(), entityClass))
                  .into(new ArrayList<>());

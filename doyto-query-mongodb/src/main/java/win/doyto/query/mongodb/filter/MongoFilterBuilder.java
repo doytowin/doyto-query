@@ -50,6 +50,7 @@ public class MongoFilterBuilder {
 
     private static final Map<QuerySuffix, BiFunction<String, Object, Bson>> suffixFuncMap;
     private static final Pattern SORT_PTN = Pattern.compile("(\\w+)(,asc|,desc)?");
+    private static final Bson EMPTY_DOCUMENT = new EmptyBson();
 
     static {
         suffixFuncMap = new EnumMap<>(QuerySuffix.class);
@@ -81,7 +82,7 @@ public class MongoFilterBuilder {
         buildFilter(query, prefix, filters);
         switch (filters.size()) {
             case 0:
-                return new Document();
+                return EMPTY_DOCUMENT;
             case 1:
                 return filters.get(0);
             default:

@@ -45,7 +45,7 @@ public class ObjectIdMapper {
             } else if (idType.isAssignableFrom(BigInteger.class)) {
                 setIdFunc = objectId -> new BigInteger(objectId.toHexString(), 16);
             } else {
-                setIdFunc = objectId -> null;
+                throw new UnsupportedIdTypeException(idType);
             }
             return setIdFunc;
         });

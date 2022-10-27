@@ -42,6 +42,7 @@ import win.doyto.query.memory.MemoryDataAccess;
 import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -101,8 +102,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
             if (entityType == EntityType.MONGO_DB) {
                 Class<?> mongoDataAccessClass = classLoader.loadClass("win.doyto.query.mongodb.MongoDataAccess");
                 tryCreateEmbeddedMongoServerFirst(beanFactory);
-                Object mongoClient = beanFactory.getBean("mongo");
-                dataAccess = (DataAccess<E, I, Q>) ConstructorUtils.invokeConstructor(mongoDataAccessClass, mongoClient, entityClass);
+                tryCreateMongoDataAccess(beanFactory, mongoDataAccessClass);
             } else {// using JdbcDataAccess as default DataAccess
                 Class<?> jdbcDataAccessClass = classLoader.loadClass("win.doyto.query.jdbc.JdbcDataAccess");
                 Object jdbcOperations = beanFactory.getBean("jdbcTemplate");
@@ -110,6 +110,18 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
             }
         } catch (Exception e) {
             throw new BeanInitializationException("Failed to create DataAccess for " + entityClass.getName(), e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void tryCreateMongoDataAccess(BeanFactory beanFactory, Class<?> mongoDataAccessClass)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        try {
+            Object mongoSessionSupplier = beanFactory.getBean("mongoSessionSupplier");
+            dataAccess = (DataAccess<E, I, Q>) ConstructorUtils.invokeConstructor(mongoDataAccessClass, entityClass, mongoSessionSupplier);
+        } catch (BeansException e) {
+            Object mongoClient = beanFactory.getBean("mongo");
+            dataAccess = (DataAccess<E, I, Q>) ConstructorUtils.invokeConstructor(mongoDataAccessClass, mongoClient, entityClass);
         }
     }
 

@@ -21,20 +21,21 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.mongodb.filter.EmptyBson;
+import win.doyto.query.mongodb.filter.MongoFilterBuilder;
 import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.IntStream;
 
 import static com.mongodb.client.model.Aggregates.*;
-import static win.doyto.query.config.GlobalConfiguration.*;
 import static win.doyto.query.mongodb.MongoConstant.MONGO_ID;
-import static win.doyto.query.mongodb.filter.MongoFilterBuilder.buildFilter;
 
 /**
  * DomainPathBuilder
@@ -43,6 +44,9 @@ import static win.doyto.query.mongodb.filter.MongoFilterBuilder.buildFilter;
  */
 @UtilityClass
 public class DomainPathBuilder {
+    private static final String JOIN_ID_FORMAT = GlobalConfiguration.instance().getJoinIdFormat();
+    private static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
+    private static final String JOIN_TABLE_FORMAT = GlobalConfiguration.instance().getJoinTableFormat();
     private static final int PROJECTING = 1;
 
     public static <V> Bson buildLookUpForSubDomain(DoytoQuery query, Class<V> viewClass, Field field) {
@@ -55,13 +59,7 @@ public class DomainPathBuilder {
 
         if (paths.length == 1) {
             String tableName = String.format(TABLE_FORMAT, paths[0]);
-            if (Collection.class.isAssignableFrom(field.getType())) {
-                // one-to-many
-                return lookup0(tableName, MONGO_ID, domainPath.lastDomainIdColumn(), project(projectDoc), viewName);
-            } else {
-                // many-to-one
-                return lookup0(tableName, domainPath.lastDomainIdColumn(), MONGO_ID, project(projectDoc),viewName);
-            }
+            return lookup0(tableName, domainPath.localField(), domainPath.foreignField(), Collections.singletonList(project(projectDoc)), viewName);
         }
         return buildLookupForManyToMany(query, field.getName(), paths, projectDoc);
     }
@@ -81,13 +79,15 @@ public class DomainPathBuilder {
         String[] tableNames = Arrays.stream(paths).map(path -> String.format(TABLE_FORMAT, path)).toArray(String[]::new);
         String[] joinIds = Arrays.stream(paths).map(path -> String.format(JOIN_ID_FORMAT, path)).toArray(String[]::new);
 
-        List<Bson> pipeline = Arrays.asList(
-                lookup0(tableNames[n], joinIds[n], MONGO_ID, Collections.emptyList(), viewName),
-                unwind($viewName),
-                replaceRoot($viewName),
-                match(buildFilter(query)),
-                project(projectDoc)
-        );
+        List<Bson> pipeline = new LinkedList<>();
+        pipeline.add(lookup0(tableNames[n], joinIds[n], MONGO_ID, Collections.emptyList(), viewName));
+        pipeline.add(unwind($viewName));
+        pipeline.add(replaceRoot($viewName));
+        Bson filter = MongoFilterBuilder.buildFilter(query);
+        if (!(filter instanceof EmptyBson)) {
+            pipeline.add(match(filter));
+        }
+        pipeline.add(project(projectDoc));
 
         for (int i = n - 1; i > 0; i--) {
             pipeline = Arrays.asList(
@@ -100,22 +100,22 @@ public class DomainPathBuilder {
         return lookup0(joints[0], MONGO_ID, joinIds[0], pipeline, viewName);
     }
 
-    private static Bson lookup0(String from, String localField, String foreignField, Bson project, String as) {
-        return lookup0(from, localField, foreignField, Collections.singletonList(project), as);
-    }
-
     public static Bson lookup0(
             String from, String localField, String foreignField, List<? extends Bson> pipeline, String as
     ) {
         Document lookupDoc = new Document()
                 .append("from", from)
-                .append("localField", localField)
-                .append("foreignField", foreignField);
+                .append("localField", mapIdField(localField))
+                .append("foreignField", mapIdField(foreignField));
         if (!pipeline.isEmpty()) {
             lookupDoc.append("pipeline", pipeline);
         }
         lookupDoc.append("as", as);
         return new Document("$lookup", lookupDoc);
+    }
+
+    private static String mapIdField(String field) {
+        return "id".equals(field) ? MONGO_ID : field;
     }
 
     @SuppressWarnings("java:S117")

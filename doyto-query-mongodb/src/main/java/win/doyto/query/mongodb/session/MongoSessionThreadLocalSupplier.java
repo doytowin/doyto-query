@@ -21,6 +21,7 @@ import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoClient;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +39,7 @@ public class MongoSessionThreadLocalSupplier implements MongoSessionSupplier {
     private static final int INITIAL_CAPACITY = 4;
     private static final Map<MongoClient, MongoSessionSupplier> MONGO_SESSION_SUPPLIER_MAP = new ConcurrentHashMap<>(INITIAL_CAPACITY);
 
+    @Getter
     private MongoClient mongoClient;
 
     public static MongoSessionSupplier create(MongoClient mongoClient) {

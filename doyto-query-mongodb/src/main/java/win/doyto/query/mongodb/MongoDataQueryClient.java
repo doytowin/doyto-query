@@ -17,17 +17,16 @@
 package win.doyto.query.mongodb;
 
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.model.Aggregates;
-import lombok.AllArgsConstructor;
+import com.mongodb.client.MongoCollection;
 import org.apache.commons.lang3.ObjectUtils;
+import org.bson.Document;
 import org.bson.conversions.Bson;
 import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.core.DoytoQuery;
-import win.doyto.query.core.JoinQuery;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.mongodb.aggregation.AggregationMetadata;
-import win.doyto.query.mongodb.aggregation.AggregationPipelineBuilder;
+import win.doyto.query.mongodb.aggregation.CollectionProvider;
 import win.doyto.query.mongodb.session.MongoSessionSupplier;
 import win.doyto.query.mongodb.session.MongoSessionThreadLocalSupplier;
 import win.doyto.query.util.BeanUtil;
@@ -36,44 +35,52 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static win.doyto.query.mongodb.MongoConstant.COUNT_KEY;
+
 /**
  * MongoDataQuery
  *
  * @author f0rb on 2022-01-25
  */
-@AllArgsConstructor
 public class MongoDataQueryClient implements DataQueryClient {
-    public static final String COUNT_KEY = "count";
-    private MongoClient mongoClient;
     private final MongoSessionSupplier mongoSessionSupplier;
+    private final CollectionProvider collectionProvider;
 
     public MongoDataQueryClient(MongoClient mongoClient) {
-        this(mongoClient, MongoSessionThreadLocalSupplier.create(mongoClient));
+        this(MongoSessionThreadLocalSupplier.create(mongoClient));
+    }
+
+    public MongoDataQueryClient(MongoSessionSupplier mongoSessionSupplier) {
+        this.mongoSessionSupplier = mongoSessionSupplier;
+        this.collectionProvider = new CollectionProvider(mongoSessionSupplier.getMongoClient());
     }
 
     @Override
-    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    public <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
     List<V> query(Q query, Class<V> viewClass) {
         return commonQuery(query, viewClass);
     }
 
-    private <V, Q extends DoytoQuery> ArrayList<V>
+    private <V, Q extends DoytoQuery> List<V>
     commonQuery(Q query, Class<V> viewClass) {
-        AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
-        List<Bson> list = AggregationPipelineBuilder.build(query, viewClass, md);
-        return md.getCollection().aggregate(mongoSessionSupplier.get(), list)
+        AggregationMetadata<MongoCollection<Document>> md =
+                AggregationMetadata.build(viewClass, collectionProvider);
+        List<Bson> pipeline = md.buildAggregation(query);
+        return md.getCollection()
+                 .aggregate(mongoSessionSupplier.get(), pipeline)
                  .map(document -> BeanUtil.parse(document.toJson(), viewClass))
                  .into(new ArrayList<>());
     }
 
     @Override
-    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    public <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
     long count(Q query, Class<V> viewClass) {
-        AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
-        List<Bson> list = AggregationPipelineBuilder.build(query, viewClass, md);
-        list.set(list.size() - 1, Aggregates.count(COUNT_KEY));
-        Integer count = md.getCollection().aggregate(mongoSessionSupplier.get(), list)
-                          .map(document -> document.getInteger(COUNT_KEY, -1))
+        AggregationMetadata<MongoCollection<Document>> md =
+                AggregationMetadata.build(viewClass, collectionProvider);
+        List<Bson> pipeline = md.buildCount(query);
+        Integer count = md.getCollection()
+                          .aggregate(mongoSessionSupplier.get(), pipeline)
+                          .map(document -> document.getInteger(COUNT_KEY))
                           .first();
         return ObjectUtils.defaultIfNull(count, 0);
     }

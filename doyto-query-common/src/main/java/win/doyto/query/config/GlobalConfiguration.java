@@ -34,15 +34,12 @@ import java.util.function.Function;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GlobalConfiguration {
-    public static final String JOIN_ID_FORMAT = GlobalConfiguration.instance().getJoinIdFormat();
-    public static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
-    public static final String JOIN_TABLE_FORMAT = GlobalConfiguration.instance().getJoinTableFormat();
 
     private boolean mapCamelCaseToUnderscore = true;
     private boolean ignoreCacheException = true;
     private String joinIdFormat = "%s_id";
     private String tableFormat = "t_%s";
-    private String joinTableFormat = "j_%s_and_%s";
+    private String joinTableFormat = "a_%s_and_%s";
     private Dialect dialect = (sql, limit, offset) -> sql + " LIMIT " + limit + " OFFSET " + offset;
     private Function<Integer, Integer> startPageNumberAdjuster;
 
