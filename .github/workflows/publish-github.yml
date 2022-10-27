@@ -5,7 +5,7 @@ on:
   push:
     branches: [ package ]
   release:
-    types: [created]
+    types: [ created, edited ]
 
 jobs:
   release:
