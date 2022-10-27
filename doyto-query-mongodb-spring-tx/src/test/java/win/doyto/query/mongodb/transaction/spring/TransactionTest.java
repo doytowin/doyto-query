@@ -67,6 +67,7 @@ class TransactionTest {
     @Test
     void rollback() {
         ObjectId roleId2 = new ObjectId("6285feedee051b404915c102");
+        assertThat(transactionEnabledService.queryPermsBy(roleId2)).hasSize(1);
         try {
             transactionEnabledService.reassociateForRole(roleId2, new ArrayList<>());
             fail();

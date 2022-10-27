@@ -35,7 +35,8 @@
     <properties>
         <revision>1.0.0-SNAPSHOT</revision>
 
-        <spring-boot.version>2.7.1</spring-boot.version>
+        <spring-boot.version>2.7.5</spring-boot.version>
+        <embedded-mongo.version>3.5.1</embedded-mongo.version>
 
         <sourceDirectory>src/main/java</sourceDirectory>
         <skipDeploy>false</skipDeploy>
@@ -55,6 +56,7 @@
         <module>doyto-query-web</module>
         <module>doyto-query-jdbc</module>
         <module>doyto-query-mongodb</module>
+        <module>doyto-query-mongodb-spring-tx</module>
         <module>doyto-query-integration-test</module>
     </modules>
 
