@@ -29,8 +29,6 @@
         "$arrayElemAt": ["$createUser", 0]
       },
       createdUsers: "$createdUsers",
-      id: "$id",
-      objectId: "$objectId",
       username: "$username",
       email: "$email",
       roles: "$roles",
