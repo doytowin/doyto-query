@@ -374,4 +374,14 @@ class RelationalQueryBuilderTest {
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 2, 3, 3);
     }
 
+    @Test
+    void buildCountAndArgs() {
+        UserQuery testJoinQuery = UserQuery.builder().memoNull(true).pageSize(5).sort("userLevel,asc").build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildCountAndArgs(testJoinQuery, UserLevelCountView.class);
+
+        String expected = "SELECT COUNT(DISTINCT(userLevel, valid)) FROM t_user WHERE memo IS NULL";
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+    }
+
 }
