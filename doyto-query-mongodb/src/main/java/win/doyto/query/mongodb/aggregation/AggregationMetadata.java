@@ -39,6 +39,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import javax.persistence.GeneratedValue;
 
 import static win.doyto.query.mongodb.MongoConstant.*;
 import static win.doyto.query.mongodb.aggregation.DomainPathBuilder.buildLookUpForSubDomain;
@@ -115,6 +116,9 @@ public class AggregationMetadata<C> {
             columns.append(MONGO_ID, 0);// don't show _id when do aggregation
         }
         for (Field field : fields) {
+            if (field.isAnnotationPresent(GeneratedValue.class)) {
+                continue;
+            }
             String column = field.getName();
             if (isManyToOneField(field)) {
                 columns.append(column, new Document("$arrayElemAt", Arrays.asList(ex(column), 0)));
