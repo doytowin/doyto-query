@@ -25,9 +25,7 @@ import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.core.DoytoQuery;
-import win.doyto.query.core.JoinQuery;
 import win.doyto.query.entity.Persistable;
-import win.doyto.query.sql.JoinQueryBuilder;
 import win.doyto.query.sql.SqlAndArgs;
 import win.doyto.query.util.CommonUtil;
 
@@ -36,16 +34,31 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
+import static win.doyto.query.sql.RelationalQueryBuilder.*;
 
 /**
  * JdbcDataQueryClient
+ * <p>An JDBC implementation for {@link DataQueryClient}
  *
- * @author f0rb on 2021-12-28
+ * <ul>
+ * History names:
+ * <li>JoinQueryExecutor
+ * <li>JoinQueryService
+ * <li>ComplexQueryService
+ * <li>JdbcComplexQueryService
+ * <li>JdbcComplexDataQuery
+ * <li>JdbcDataQuery
+ * </ul>
+ *
+ * @author f0rb on 2019-06-09
+ * @since 0.1.3
  */
 public class JdbcDataQueryClient implements DataQueryClient {
 
-    private static final Map<Class<?>, RowMapper<?>> holder = new HashMap<>();
+    private static final Map<Class<?>, RowMapper<?>> holder = new ConcurrentHashMap<>();
     private final DatabaseOperations databaseOperations;
 
     public JdbcDataQueryClient(JdbcOperations jdbcOperations) {
@@ -54,19 +67,19 @@ public class JdbcDataQueryClient implements DataQueryClient {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    public <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
     List<V> query(Q query, @NonNull Class<V> viewClass) {
         RowMapper<V> rowMapper = (RowMapper<V>) holder.computeIfAbsent(viewClass, BeanPropertyRowMapper::new);
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(query, viewClass);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, viewClass);
         List<V> mainEntities = databaseOperations.query(sqlAndArgs, rowMapper);
         querySubEntities(viewClass, mainEntities, query);
         return mainEntities;
     }
 
     @Override
-    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    public <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
     long count(Q query, Class<V> viewClass) {
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildCountAndArgs(query, viewClass);
+        SqlAndArgs sqlAndArgs = buildCountAndArgs(query, viewClass);
         return databaseOperations.count(sqlAndArgs);
     }
 
@@ -74,7 +87,7 @@ public class JdbcDataQueryClient implements DataQueryClient {
     @Override
     public <V, Q extends AggregationQuery> List<V> aggregate(Q query, Class<V> viewClass) {
         RowMapper<V> rowMapper = (RowMapper<V>) holder.computeIfAbsent(viewClass, BeanPropertyRowMapper::new);
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSelectAndArgs(query, viewClass);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, viewClass);
         return databaseOperations.query(sqlAndArgs, rowMapper);
     }
 
@@ -111,7 +124,7 @@ public class JdbcDataQueryClient implements DataQueryClient {
     private <E extends Persistable<I>, I extends Serializable, R>
     void queryEntitiesForJoinField(Field joinField, List<E> mainEntities, List<I> mainIds, DoytoQuery query, Class<I> keyClass) {
         Class<R> joinEntityClass = resolveActualReturnClass(joinField);
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(query, joinEntityClass, joinField, mainIds);
+        SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(query, joinEntityClass, joinField, mainIds);
         Map<I, List<R>> subDomainMap = queryIntoMainEntity(keyClass, joinEntityClass, sqlAndArgs);
         mainEntities.forEach(e -> writeResultToMainDomain(joinField, subDomainMap, e));
     }
@@ -126,7 +139,9 @@ public class JdbcDataQueryClient implements DataQueryClient {
     @SuppressWarnings("unchecked")
     private <I, R> Map<I, List<R>> queryIntoMainEntity(Class<I> keyClass, Class<R> joinEntityClass, SqlAndArgs sqlAndArgs) {
         RowMapper<R> joinRowMapper = (RowMapper<R>) holder.computeIfAbsent(joinEntityClass, BeanPropertyRowMapper::new);
-        return databaseOperations.query(sqlAndArgs, new JoinRowMapperResultSetExtractor<>(keyClass, joinRowMapper));
+        JoinRowMapperResultSetExtractor<I, R> resultSetExtractor =
+                new JoinRowMapperResultSetExtractor<>(KEY_COLUMN, keyClass, joinRowMapper);
+        return databaseOperations.query(sqlAndArgs, resultSetExtractor);
     }
 
     private <E extends Persistable<I>, I extends Serializable, R>
@@ -139,14 +154,16 @@ public class JdbcDataQueryClient implements DataQueryClient {
     private <E extends Persistable<I>, I extends Serializable, R>
     void queryEntityForJoinField(Field joinField, List<E> mainEntities, List<I> mainIds, DoytoQuery query, Class<I> keyClass) {
         Class<R> joinEntityClass = (Class<R>) joinField.getType();
-        SqlAndArgs sqlAndArgs = JoinQueryBuilder.buildSqlAndArgsForSubDomain(query, joinEntityClass, joinField, mainIds);
+        SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(query, joinEntityClass, joinField, mainIds);
         Map<I, List<R>> subDomainMap = queryIntoMainEntity(keyClass, joinEntityClass, sqlAndArgs);
         mainEntities.forEach(e -> writeSingleResultToMainDomain(joinField, subDomainMap, e));
     }
 
     private <E extends Persistable<I>, I extends Serializable, R>
     void writeSingleResultToMainDomain(Field joinField, Map<I, List<R>> map, E e) {
-        List<R> list = map.getOrDefault(e.getId(), new ArrayList<>());
-        CommonUtil.writeField(joinField, e, list.isEmpty() ? null : list.get(0));
+        List<R> list = map.getOrDefault(e.getId(), Collections.emptyList());
+        if (!list.isEmpty()) {
+            CommonUtil.writeField(joinField, e, list.get(0));
+        }
     }
 }

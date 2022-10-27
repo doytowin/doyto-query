@@ -1,0 +1,74 @@
+{
+  $lookup: {
+    from: "a_user_and_role",
+    localField: "_id",
+    foreignField: "user_id",
+    pipeline: [
+      {
+        $lookup: {
+          from: "a_role_and_perm",
+          localField: "role_id",
+          foreignField: "role_id",
+          pipeline: [
+            {
+              $lookup: {
+                from: "a_perm_and_menu",
+                localField: "perm_id",
+                foreignField: "perm_id",
+                pipeline: [
+                  {
+                    $lookup: {
+                      from: "t_menu",
+                      localField: "menu_id",
+                      foreignField: "_id",
+                      as: "menus"
+                    }
+                  },
+                  {
+                    $unwind: "$menus"
+                  },
+                  {
+                    $replaceRoot: {
+                      newRoot: "$menus"
+                    }
+                  },
+                  {
+                    $match: {
+                      valid: true
+                    }
+                  },
+                  {
+                    $project: {
+                      "menuName": 1,
+                      "menuCode": 1,
+                      "valid": 1
+                    }
+                  }
+                ],
+                as: "menus"
+              }
+            },
+            {
+              $unwind: "$menus"
+            },
+            {
+              $replaceRoot: {
+                newRoot: "$menus"
+              }
+            }
+          ],
+          as: "menus"
+        }
+      },
+      {
+        $unwind: "$menus"
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$menus"
+        }
+      }
+    ],
+    as: "menus"
+  }
+}

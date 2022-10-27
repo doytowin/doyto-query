@@ -17,74 +17,72 @@
 package win.doyto.query.mongodb;
 
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.model.Aggregates;
-import lombok.AllArgsConstructor;
+import com.mongodb.client.MongoCollection;
+import org.apache.commons.lang3.ObjectUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import win.doyto.query.core.*;
+import win.doyto.query.core.AggregationQuery;
+import win.doyto.query.core.DataQueryClient;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.entity.Persistable;
-import win.doyto.query.mongodb.filter.MongoFilterBuilder;
+import win.doyto.query.mongodb.aggregation.AggregationMetadata;
+import win.doyto.query.mongodb.aggregation.CollectionProvider;
+import win.doyto.query.mongodb.session.MongoSessionSupplier;
+import win.doyto.query.mongodb.session.MongoSessionThreadLocalSupplier;
 import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static win.doyto.query.mongodb.MongoDataAccess.MONGO_ID;
+import static win.doyto.query.mongodb.MongoConstant.COUNT_KEY;
 
 /**
  * MongoDataQuery
  *
  * @author f0rb on 2022-01-25
  */
-@AllArgsConstructor
 public class MongoDataQueryClient implements DataQueryClient {
+    private final MongoSessionSupplier mongoSessionSupplier;
+    private final CollectionProvider collectionProvider;
 
-    private static final Document SORT_BY_ID = new Document(MONGO_ID, 1);
+    public MongoDataQueryClient(MongoClient mongoClient) {
+        this(MongoSessionThreadLocalSupplier.create(mongoClient));
+    }
 
-    private MongoClient mongoClient;
+    public MongoDataQueryClient(MongoSessionSupplier mongoSessionSupplier) {
+        this.mongoSessionSupplier = mongoSessionSupplier;
+        this.collectionProvider = new CollectionProvider(mongoSessionSupplier.getMongoClient());
+    }
 
     @Override
-    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    public <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
     List<V> query(Q query, Class<V> viewClass) {
         return commonQuery(query, viewClass);
     }
 
-    private <V, Q extends DoytoQuery> ArrayList<V>
+    private <V, Q extends DoytoQuery> List<V>
     commonQuery(Q query, Class<V> viewClass) {
-        AggregationMetadata md = AggregationMetadata.build(viewClass, mongoClient);
-        List<Bson> list = new ArrayList<>();
-        list.add(Aggregates.match(MongoFilterBuilder.buildFilter(query)));
-        list.add(md.getGroupBy());
-        if (query instanceof AggregationQuery) {
-            Having having = ((AggregationQuery) query).getHaving();
-            if (having != null) {
-                list.add(buildHaving(having));
-            }
-        }
-        list.add(buildSort(query));
-        list.add(md.getProject());
-        return md.getCollection().aggregate(list)
+        AggregationMetadata<MongoCollection<Document>> md =
+                AggregationMetadata.build(viewClass, collectionProvider);
+        List<Bson> pipeline = md.buildAggregation(query);
+        return md.getCollection()
+                 .aggregate(mongoSessionSupplier.get(), pipeline)
                  .map(document -> BeanUtil.parse(document.toJson(), viewClass))
                  .into(new ArrayList<>());
     }
 
-    private <H extends Having> Bson buildHaving(H having) {
-        return Aggregates.match(MongoFilterBuilder.buildFilter(having));
-    }
-
-    private <Q extends DoytoQuery> Bson buildSort(Q query) {
-        Bson sort = SORT_BY_ID;
-        if (query.getSort() != null) {
-            sort = MongoFilterBuilder.buildSort(query.getSort());
-        }
-        return Aggregates.sort(sort);
-    }
-
     @Override
-    public <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    public <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
     long count(Q query, Class<V> viewClass) {
-        return 0;
+        AggregationMetadata<MongoCollection<Document>> md =
+                AggregationMetadata.build(viewClass, collectionProvider);
+        List<Bson> pipeline = md.buildCount(query);
+        Integer count = md.getCollection()
+                          .aggregate(mongoSessionSupplier.get(), pipeline)
+                          .map(document -> document.getInteger(COUNT_KEY))
+                          .first();
+        return ObjectUtils.defaultIfNull(count, 0);
     }
 
     @Override

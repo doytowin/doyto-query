@@ -39,8 +39,8 @@ public class GlobalConfiguration {
     private boolean ignoreCacheException = true;
     private String joinIdFormat = "%s_id";
     private String tableFormat = "t_%s";
-    private String joinTableFormat = "j_%s_and_%s";
-    private Dialect dialect = (sql, limit, offset) ->  sql + " LIMIT " + limit + " OFFSET " + offset;
+    private String joinTableFormat = "a_%s_and_%s";
+    private Dialect dialect = (sql, limit, offset) -> sql + " LIMIT " + limit + " OFFSET " + offset;
     private Function<Integer, Integer> startPageNumberAdjuster;
 
     public static int adjustStartPageNumber(Integer page) {

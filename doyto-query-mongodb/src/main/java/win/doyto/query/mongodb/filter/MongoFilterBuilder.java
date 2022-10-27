@@ -30,10 +30,7 @@ import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,6 +50,7 @@ public class MongoFilterBuilder {
 
     private static final Map<QuerySuffix, BiFunction<String, Object, Bson>> suffixFuncMap;
     private static final Pattern SORT_PTN = Pattern.compile("(\\w+)(,asc|,desc)?");
+    private static final Bson EMPTY_DOCUMENT = new EmptyBson();
 
     static {
         suffixFuncMap = new EnumMap<>(QuerySuffix.class);
@@ -84,7 +82,7 @@ public class MongoFilterBuilder {
         buildFilter(query, prefix, filters);
         switch (filters.size()) {
             case 0:
-                return new Document();
+                return EMPTY_DOCUMENT;
             case 1:
                 return filters.get(0);
             default:
@@ -158,10 +156,17 @@ public class MongoFilterBuilder {
     }
 
     public static Bson buildSort(String sort) {
+        return buildSort(sort, Collections.emptySet());
+    }
+
+    public static Bson buildSort(String sort, Set<String> groupColumns) {
         List<Bson> sortList = new ArrayList<>();
         Matcher matcher = SORT_PTN.matcher(sort.toLowerCase());
         while (matcher.find()) {
             String filedName = matcher.group(1);
+            if (groupColumns.contains(filedName)) {
+                filedName = "_id." + filedName;
+            }
             String direction = matcher.group(2);
             boolean isDesc = StringUtils.equals(direction, ",desc");
             sortList.add(isDesc ? descending(filedName) : ascending(filedName));

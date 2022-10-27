@@ -35,7 +35,8 @@
     <properties>
         <revision>1.0.0-ALPHA</revision>
 
-        <spring-boot.version>2.6.7</spring-boot.version>
+        <spring-boot.version>2.7.5</spring-boot.version>
+        <embedded-mongo.version>3.5.1</embedded-mongo.version>
 
         <sourceDirectory>src/main/java</sourceDirectory>
         <skipDeploy>false</skipDeploy>
@@ -169,7 +170,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
-                <version>1.1.0</version>
+                <version>1.2.7</version>
                 <configuration>
                     <updatePomFile>true</updatePomFile>
                     <flattenMode>bom</flattenMode>

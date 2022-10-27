@@ -23,7 +23,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.PageQuery;
-import win.doyto.query.test.PermissionQuery;
+import win.doyto.query.test.perm.PermissionQuery;
 
 /**
  * UserQuery

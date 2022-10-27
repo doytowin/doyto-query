@@ -22,11 +22,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.core.JoinQuery;
 import win.doyto.query.core.PageQuery;
-import win.doyto.query.test.PermissionQuery;
-import win.doyto.query.test.UserQuery;
-import win.doyto.query.test.join.RoleView;
+import win.doyto.query.core.RelationalQuery;
+import win.doyto.query.test.perm.PermissionQuery;
+import win.doyto.query.test.user.UserQuery;
 
 import java.util.List;
 
@@ -40,7 +39,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class RoleQuery extends PageQuery implements JoinQuery<RoleView, Integer> {
+public class RoleQuery extends PageQuery implements RelationalQuery<RoleView, Integer> {
     private Integer id;
     private List<Integer> idIn;
 

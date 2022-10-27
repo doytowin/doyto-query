@@ -3,25 +3,51 @@
 [![Code Lines](https://sonarcloud.io/api/project_badges/measure?project=win.doyto%3Adoyto-query&metric=ncloc)](https://sonarcloud.io/component_measures?id=win.doyto%3Adoyto-query&metric=ncloc)
 [![Coverage Status](https://sonarcloud.io/api/project_badges/measure?project=win.doyto%3Adoyto-query&metric=coverage)](https://sonarcloud.io/component_measures?id=win.doyto%3Adoyto-query&metric=coverage)
 
-DoytoQuery - A Java implementation of the 2nd generation ORM Framework
+DoytoQuery - The best and the last ORM framework in Java.
 ---
 
-## Concepts about the 2nd generation ORM Framework
+## Introduction
 
-**Mapping SQL statements to objects for database access operations**
+DoytoQuery is a powerful and easy-to-use ORM framework in Java. 
+It comes out from an idea which is mapping a query object directly to a WHERE clause in SQL to query database.
+Then with the development of DoytoQuery, the idea developed into a new ORM theory.
+
+## The Modern ORM Theory
+
+1. We can define a query object mapping query statements.
+    - For SQL, see [QueryBuilderTest](https://github.com/doytowin/doyto-query/blob/main/doyto-query-sql/src/test/java/win/doyto/query/sql/QueryBuilderTest.java)
+    - For MongoDB, see [MongoFilterBuilderTest](https://github.com/doytowin/doyto-query/blob/main/doyto-query-mongodb/src/test/java/win/doyto/query/mongodb/filter/MongoFilterBuilderTest.java)
+2. We can define an entity object and cooperate with the query object to complete the CRUD operations of single-table.
+    - For SQL, see [CrudBuilderTest](https://github.com/doytowin/doyto-query/blob/main/doyto-query-sql/src/test/java/win/doyto/query/sql/CrudBuilderTest.java)
+    - For MongoDB, see [MongoDataAccessTest](https://github.com/doytowin/doyto-query/blob/edb365345912a84ee2a0f6c2c0d757e25ba1db7a/doyto-query-mongodb/src/test/java/win/doyto/query/mongodb/MongoDataAccessTest.java)
+3. **Data Manipulation Language can be classified into three categories**, corresponding to three different interfaces:
+    1. CRUD for business tables: [DataAccess](https://github.com/doytowin/doyto-query/blob/main/doyto-query-api/src/main/java/win/doyto/query/core/DataAccess.java)
+    2. CRD for association tables: [AssociationService](https://github.com/doytowin/doyto-query/blob/main/doyto-query-api/src/main/java/win/doyto/query/core/AssociationService.java)
+    3. Aggregate/Relational query: [DataQueryClient](https://github.com/doytowin/doyto-query/blob/main/doyto-query-api/src/main/java/win/doyto/query/core/DataQueryClient.java)
 
 ## Features
-- Mapping query fields to query conditions in four ways:
-  - @QueryField 
-  - Suffix deduction
-  - @NestedQueries
-  - `Or` interface
-  
-- CRUD SQL building from Query object and Entity object.
-  
-- Complex Query SQL building from Query object and View object.
 
-## Architecture for 0.3.x
+- Data Access Layer
+  - CRUD operations for single/sharding table.
+  - CRD operations for association table.
+  - Entity Query with relational entities and views.
+- Service Layer
+  - CRUD methods.
+  - Second-Level Cache.
+  - UserId Injection.
+  - EntityAspect Extensions.
+- Controller Layer
+  - Support for RESTFul API.
+  - ErrorCode Pre-definition.
+  - Exception Assertion.
+  - Exception Handler.
+  - JsonResponse Wrapper.
+  - Request/Entity/Response Transition.
+  - Group Validation.
+- Seamless integration with Spring WebMvc.
+- Support for relational databases and MongoDB.
+
+## Architecture for 0.3.x and newer
 
 <img alt="architecture-0.3.x" src="docs/images/architecture-0.3.x.2.png" width="50%">
 
@@ -48,10 +74,10 @@ DoytoQuery - A Java implementation of the 2nd generation ORM Framework
   - [doyto-query-dialect](https://github.com/doytowin/doyto-query-dialect)
 
 - Projects
-  - [Demo](https://github.com/f0rb/doyto-query-demo)
+  - [Demo](https://github.com/doytowin/doyto-query-demo)
   - [Idea plugin](https://github.com/doytowin/doyto-query-intellij-plugin)
-  - [I18n management service](https://github.com/f0rb/doyto-service-i18n)
-  - [Code generator service](https://gitee.com/doyto/doyto-service-generator)
+  - [I18n management service](https://github.com/doytowin/doyto-service-i18n)
+  - [Code generator service](https://github.com/doytowin/doyto-service-generator)
 
 - Documentation
   -  [https://query.doyto.win/](https://query.doyto.win/)

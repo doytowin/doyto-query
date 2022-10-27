@@ -1,0 +1,56 @@
+[
+  {
+    $lookup: {
+      from: "a_user_and_role",
+      localField: "_id",
+      foreignField: "user_id",
+      pipeline: [
+        {
+          $lookup: {
+            from: "t_role",
+            localField: "role_id",
+            foreignField: "_id",
+            as: "roles"
+          }
+        },
+        {
+          $unwind: "$roles"
+        },
+        {
+          $replaceRoot: {
+            newRoot: "$roles"
+          }
+        },
+        {
+          $project: {
+            "roleName": 1,
+            "roleCode": 1,
+            "valid": 1
+          }
+        }
+      ],
+      as: "roles"
+    }
+  },
+  {
+    $sort: {
+      "_id": 1
+    }
+  },
+  {
+    $project: {
+      createUser: {
+        "$arrayElemAt": [
+          "$createUser",
+          0
+        ]
+      },
+      createdUsers: "$createdUsers",
+      username: "$username",
+      email: "$email",
+      roles: "$roles",
+      perms: "$perms",
+      menus: "$menus"
+    }
+  }
+]

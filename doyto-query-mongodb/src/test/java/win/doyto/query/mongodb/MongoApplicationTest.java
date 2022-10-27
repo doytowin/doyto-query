@@ -18,15 +18,14 @@ package win.doyto.query.mongodb;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoCollection;
 import lombok.SneakyThrows;
-import org.bson.Document;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.mongodb.test.TransactionInvocationInterceptor;
 import win.doyto.query.mongodb.test.inventory.InventoryEntity;
 import win.doyto.query.util.BeanUtil;
 
@@ -38,29 +37,26 @@ import java.util.List;
  * @author f0rb on 2022-01-25
  */
 @ActiveProfiles("test")
-@DataMongoTest(properties = {"spring.mongodb.embedded.version=4.0.21"})
+@SpringBootTest
+@ExtendWith(TransactionInvocationInterceptor.class)
 abstract class MongoApplicationTest {
 
-    private MongoCollection<Document> collection;
-    private MongoDataAccess<InventoryEntity, String, DoytoQuery> dataAccess;
+    private static boolean initialized;
+    private static MongoDataAccess<InventoryEntity, String, DoytoQuery> dataAccess;
 
-    @BeforeEach
-    void setUp(@Autowired MongoClient mongoClient) {
+    @BeforeAll
+    static synchronized void beforeAll(@Autowired MongoClient mongoClient) {
+        if (initialized) return;
         dataAccess = new MongoDataAccess<>(mongoClient, InventoryEntity.class);
-        collection = dataAccess.getCollection();
-
         loadData("test/inventory/inventory.json");
+        initialized = true;
     }
 
     @SneakyThrows
-    protected void loadData(String path) {
+    protected static void loadData(String path) {
         List<InventoryEntity> data = BeanUtil.loadJsonData(path, new TypeReference<List<InventoryEntity>>() {});
         dataAccess.batchInsert(data);
     }
 
-    @AfterEach
-    void tearDown() {
-        collection.drop();
-    }
 
 }

@@ -22,35 +22,36 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * DataQuery
+ * DataQueryClient
  *
  * @author f0rb on 2021-12-26
  * @since 0.3.1
  */
 public interface DataQueryClient {
 
-    <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
     List<V> query(Q query, Class<V> viewClass);
 
-    <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
     long count(Q query, Class<V> viewClass);
 
-    default <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    default <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
     PageList<V> page(Q query, Class<V> viewClass) {
+        query.forcePaging();
         return new PageList<>(query(query, viewClass), count(query, viewClass));
     }
 
-    default <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    default <V extends Persistable<I>, I extends Serializable, Q extends RelationalQuery<V, I>>
     List<V> query(Q query) {
         return query(query, query.getDomainClass());
     }
 
-    default <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    default <V extends Persistable<I>, I extends Serializable, Q extends RelationalQuery<V, I>>
     long count(Q query) {
         return count(query, query.getDomainClass());
     }
 
-    default <V extends Persistable<I>, I extends Serializable, Q extends JoinQuery<V, I>>
+    default <V extends Persistable<I>, I extends Serializable, Q extends RelationalQuery<V, I>>
     PageList<V> page(Q query) {
         return page(query, query.getDomainClass());
     }

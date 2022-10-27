@@ -24,6 +24,8 @@ import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.QueryField;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.test.perm.PermissionQuery;
+import win.doyto.query.test.user.UserQuery;
 
 import java.util.Date;
 import java.util.List;
@@ -47,6 +49,9 @@ public class TestQuery extends PageQuery {
     private List<Integer> idNotIn;
     private Integer idLt;
     private Integer idLe;
+
+    @DomainPath(value = "user", localField = "createUserId")
+    private UserQuery createUser;
 
     private String username;
     private String usernameEq;

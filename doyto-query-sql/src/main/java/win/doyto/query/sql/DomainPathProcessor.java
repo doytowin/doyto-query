@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
@@ -38,22 +39,22 @@ import static win.doyto.query.sql.Constant.*;
  * @since 0.3.1
  */
 class DomainPathProcessor implements FieldProcessor.Processor {
-    private static final String JOIN_ID_FORMAT = GlobalConfiguration.instance().getJoinIdFormat();
     private static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
-    private static final String JOIN_TABLE_FORMAT = GlobalConfiguration.instance().getJoinTableFormat();
     private final String[] domainPaths;
     private final String[] domainIds;
     private final String[] joinTables;
     private final String lastDomain;
-    private final String lastDomainIdColumn;
+    private final String foreignFieldColumn;
+    private final String localFieldColumn;
 
     public DomainPathProcessor(Field field) {
         DomainPath domainPath = field.getAnnotation(DomainPath.class);
         domainPaths = domainPath.value();
-        lastDomainIdColumn = domainPath.lastDomainIdColumn();
+        foreignFieldColumn = ColumnUtil.convertColumn(domainPath.foreignField());
+        localFieldColumn = ColumnUtil.convertColumn(domainPath.localField());
         boolean reverse = field.getName().contains(domainPaths[0]);
-        domainIds = prepareDomainIds();
-        joinTables = prepareJoinTables();
+        domainIds = prepareDomainIds(GlobalConfiguration.instance().getJoinIdFormat());
+        joinTables = prepareJoinTables(GlobalConfiguration.instance().getJoinTableFormat());
         if (reverse) {
             lastDomain = domainPaths[0];
         } else {
@@ -63,13 +64,13 @@ class DomainPathProcessor implements FieldProcessor.Processor {
         }
     }
 
-    private String[] prepareDomainIds() {
-        return Arrays.stream(domainPaths).map(domain -> String.format(JOIN_ID_FORMAT, domain)).toArray(String[]::new);
+    private String[] prepareDomainIds(String joinIdFormat) {
+        return Arrays.stream(domainPaths).map(domain -> String.format(joinIdFormat, domain)).toArray(String[]::new);
     }
 
-    private String[] prepareJoinTables() {
+    private String[] prepareJoinTables(String joinTableFormat) {
         return IntStream.range(0, domainPaths.length - 1)
-                .mapToObj(i -> String.format(JOIN_TABLE_FORMAT, domainPaths[i], domainPaths[i + 1]))
+                .mapToObj(i -> String.format(joinTableFormat, domainPaths[i], domainPaths[i + 1]))
                 .toArray(String[]::new);
     }
 
@@ -80,7 +81,7 @@ class DomainPathProcessor implements FieldProcessor.Processor {
 
     private String buildClause(List<Object> argList, DoytoQuery query) {
         int current = domainIds.length - 1;
-        StringBuilder subQueryBuilder = new StringBuilder(ID);
+        StringBuilder subQueryBuilder = new StringBuilder(localFieldColumn);
         if (current > 0) {
             subQueryBuilder.append(IN).append(OP);
             while (true) {
@@ -129,7 +130,7 @@ class DomainPathProcessor implements FieldProcessor.Processor {
         String table = String.format(TABLE_FORMAT, lastDomain);
         String where = BuildHelper.buildWhere(query, argList);
         subQueryBuilder.append(IN).append(OP)
-                       .append(SELECT).append(lastDomainIdColumn).append(FROM).append(table).append(where)
+                       .append(SELECT).append(foreignFieldColumn).append(FROM).append(table).append(where)
                        .append(CP);
     }
 

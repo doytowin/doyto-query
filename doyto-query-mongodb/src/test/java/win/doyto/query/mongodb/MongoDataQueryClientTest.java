@@ -25,9 +25,11 @@ import win.doyto.query.mongodb.test.aggregate.QuantityByStatusQuery;
 import win.doyto.query.mongodb.test.aggregate.QuantityByStatusView;
 import win.doyto.query.mongodb.test.aggregate.QuantityHaving;
 import win.doyto.query.mongodb.test.aggregate.QuantityView;
-import win.doyto.query.mongodb.test.inventory.InventoryQuery;
+import win.doyto.query.mongodb.test.inventory.QuantityViewQuery;
+import win.doyto.query.mongodb.test.role.RoleViewQuery;
+import win.doyto.query.mongodb.test.user.UserView;
+import win.doyto.query.mongodb.test.user.UserViewQuery;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,8 +50,7 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
 
     @Test
     void aggregateQuery() {
-        InventoryQuery inventoryQuery = InventoryQuery.builder().build();
-        List<QuantityView> views = dataQueryClient.query(inventoryQuery, QuantityView.class);
+        List<QuantityView> views = dataQueryClient.query(QuantityViewQuery.builder().build());
         assertThat(views).hasSize(1)
                          .first()
                          .hasFieldOrPropertyWithValue("count", 5L)
@@ -70,8 +71,10 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
         List<QuantityByStatusView> views = dataQueryClient.aggregate(query, QuantityByStatusView.class);
         assertThat(views).hasSize(2)
                          .first()
-                         .extracting("sumQty", "status", "addToSetItem")
-                         .containsExactly(120, "A", Arrays.asList("notebook", "postcard", "journal"))
+                         .extracting("sumQty", "status")
+                         .containsExactly(120, "A");
+        assertThat(views.get(0).getAddToSetItem())
+                .contains("notebook", "postcard", "journal")
         ;
         assertThat(views.get(0).getPushItemStatuses())
                 .hasSize(3)
@@ -117,4 +120,45 @@ class MongoDataQueryClientTest extends MongoApplicationTest {
         ;
     }
 
+    @Test
+    void queryUserWithCreatedUsersAndCreateUser() {
+        UserViewQuery userViewQuery = UserViewQuery
+                .builder()
+                .createdUsersQuery(new UserViewQuery())
+                .createUserQuery(new UserViewQuery())
+                .build();
+        List<UserView> views = dataQueryClient.query(userViewQuery);
+        assertThat(views).hasSize(4)
+                         .extracting(userEntity -> userEntity.getCreatedUsers().size())
+                         .containsExactly(3, 1, 0, 0);
+        assertThat(views)
+                .extracting(userEntity -> userEntity.getCreateUser().getUsername())
+                .containsExactly("f0rb", "f0rb", "f0rb", "user2");
+        assertThat(views).extracting(UserView::getRoles).containsOnlyNulls();
+    }
+
+    @Test
+    void supportPagingForAggregation() {
+        UserViewQuery userViewQuery = UserViewQuery.builder().pageNumber(2).pageSize(3).build();
+        List<UserView> views = dataQueryClient.query(userViewQuery);
+        assertThat(views).hasSize(1);
+        assertThat(views.get(0).getUsername()).isEqualTo("user4");
+    }
+
+    @Test
+    void supportQueryUserWithValidRole() {
+        RoleViewQuery roleViewQuery = RoleViewQuery.builder().valid(true).build();
+        UserViewQuery userViewQuery = UserViewQuery.builder().role(roleViewQuery).build();
+        List<UserView> userEntities = dataQueryClient.query(userViewQuery);
+        assertThat(userEntities).extracting("username")
+                                .containsExactly("f0rb", "user3");
+    }
+
+    @Test
+    void supportCountUserWithValidRole() {
+        RoleViewQuery roleViewQuery = RoleViewQuery.builder().valid(true).build();
+        UserViewQuery userViewQuery = UserViewQuery.builder().role(roleViewQuery).build();
+        long count = dataQueryClient.count(userViewQuery);
+        assertThat(count).isEqualTo(2);
+    }
 }

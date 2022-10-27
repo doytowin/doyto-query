@@ -1,0 +1,55 @@
+{
+  $lookup: {
+    from: "a_role_and_perm",
+    localField: "_id",
+    foreignField: "perm_id",
+    pipeline: [
+      {
+        $lookup: {
+          from: "a_user_and_role",
+          localField: "role_id",
+          foreignField: "role_id",
+          pipeline: [
+            {
+              $lookup: {
+                from: "t_user",
+                localField: "user_id",
+                foreignField: "_id",
+                as: "users"
+              }
+            },
+            {
+              $unwind: "$users"
+            },
+            {
+              $replaceRoot: {
+                newRoot: "$users"
+              }
+            },
+            {
+              $match: {
+                id: 1
+              }
+            },
+            {
+              $project: {
+                "email": 1,
+                "username": 1
+              }
+            }
+          ],
+          as: "users"
+        }
+      },
+      {
+        $unwind: "$users"
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$users"
+        }
+      }
+    ],
+    as: "users"
+  }
+}
