@@ -29,15 +29,15 @@ With the development of DoytoQuery, the idea formed a new ORM theory.
 
 - Data Access Layer
   - CRUD operations for single/sharding table.
-  - CRD operations for association table.
-  - Entity Query with relational entities and views.
+  - CRD operations for associative table.
+  - Query with related entities and views.
 - Service Layer
   - CRUD methods.
   - Second-Level Cache.
   - UserId Injection.
   - EntityAspect Extensions.
 - Controller Layer
-  - Support for RESTFul API.
+  - Support RESTFul API.
   - ErrorCode Pre-definition.
   - Exception Assertion.
   - Exception Handler.
@@ -69,7 +69,7 @@ we can define a query object to query data from database as follows:
 @AllArgsConstructor
 public class UserQuery extends PageQuery {
     private String username;
-    private String emailEnd;
+    private String emailLike;
     private Boolean valid;
 }
 ```
@@ -78,7 +78,7 @@ and invoke the [`DataAccess#query(Q)`](https://github.com/doytowin/doyto-query/b
 @Service
 public class UserService extends AbstractCrudService<UserEntity, Long, UserQuery> {
     public List<UserEntity> findValidGmailUsers() {
-        UserQuery userQuery = UserQuery.builder().emailEnd("@gmail.com").valid(true).pageSize(10).build();
+        UserQuery userQuery = UserQuery.builder().emailLike("@gmail.com").valid(true).pageSize(10).build();
         // Executed SQL: SELECT username, email, valid, id FROM t_user WHERE email LIKE ? AND valid = ? LIMIT 10 OFFSET 0
         // Parameters  : %@gmail.com%(java.lang.String), true(java.lang.Boolean)
         return dataAccess.query(userQuery);
