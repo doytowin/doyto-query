@@ -137,6 +137,10 @@ public class CommonUtil {
         return StringUtils.isBlank(like) ? like : escape(like) + "%";
     }
 
+    public static String escapeEnd(String like) {
+        return StringUtils.isBlank(like) ? like : "%" + escape(like);
+    }
+
     private static String escape(String like) {
         return like.replaceAll("[%|_]", "\\\\$0");
     }
