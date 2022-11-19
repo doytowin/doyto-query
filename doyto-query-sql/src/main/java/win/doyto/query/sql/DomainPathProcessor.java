@@ -56,12 +56,11 @@ class DomainPathProcessor implements FieldProcessor.Processor {
         domainIds = prepareDomainIds(GlobalConfiguration.instance().getJoinIdFormat());
         joinTables = prepareJoinTables(GlobalConfiguration.instance().getJoinTableFormat());
         if (reverse) {
-            lastDomain = domainPaths[0];
-        } else {
             ArrayUtils.reverse(domainIds);
             ArrayUtils.reverse(joinTables);
-            lastDomain = domainPaths[domainPaths.length - 1];
+            ArrayUtils.reverse(domainPaths);
         }
+        lastDomain = domainPaths[domainPaths.length - 1];
     }
 
     private String[] prepareDomainIds(String joinIdFormat) {
@@ -80,13 +79,13 @@ class DomainPathProcessor implements FieldProcessor.Processor {
     }
 
     private String buildClause(List<Object> argList, DoytoQuery query) {
-        int current = domainIds.length - 1;
         StringBuilder subQueryBuilder = new StringBuilder(localFieldColumn);
-        if (current > 0) {
+        if (domainIds.length > 1) {
+            int current = 0;
             subQueryBuilder.append(IN).append(OP);
             while (true) {
-                buildStartForCurrentDomain(subQueryBuilder, domainIds[current], joinTables[current - 1]);
-                if (--current <= 0) {
+                buildStartForCurrentDomain(subQueryBuilder, domainIds[current], joinTables[current]);
+                if (++current >= domainIds.length - 1) {
                     break;
                 }
                 buildWhereForCurrentDomain(subQueryBuilder, domainIds[current]);
@@ -125,7 +124,7 @@ class DomainPathProcessor implements FieldProcessor.Processor {
             List<Object> argList, DoytoQuery query
     ) {
         if (domainIds.length > 1) {
-            subQueryBuilder.append(WHERE).append(domainIds[0]);
+            subQueryBuilder.append(WHERE).append(domainIds[domainIds.length - 1]);
         }
         String table = String.format(TABLE_FORMAT, lastDomain);
         String where = BuildHelper.buildWhere(query, argList);
