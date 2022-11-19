@@ -37,6 +37,7 @@
 
         <spring-boot.version>2.7.5</spring-boot.version>
         <embedded-mongo.version>3.5.1</embedded-mongo.version>
+        <hsqldb.version>2.7.1</hsqldb.version>
 
         <sourceDirectory>src/main/java</sourceDirectory>
         <skipDeploy>false</skipDeploy>
