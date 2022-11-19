@@ -20,6 +20,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
+import org.junit.jupiter.params.provider.CsvSource;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.menu.MenuView;
@@ -131,9 +134,10 @@ class RelationalQueryBuilderTest {
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
     }
 
-    @Test
-    void buildJoinSqlForReversePath_ThreeDomains() throws NoSuchFieldException {
-        Field field = PermView.class.getDeclaredField("users");
+    @ParameterizedTest(name = "{index}: {0}")
+    @CsvSource(value = {"Reverse Path, users", "Reverse Sign, userViews"})
+    void buildJoinSqlForReversePath_ThreeDomains(ArgumentsAccessor arguments) throws NoSuchFieldException {
+        Field field = PermView.class.getDeclaredField(arguments.getString(1));
 
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 field, Arrays.asList(1, 3), UserView.class);
