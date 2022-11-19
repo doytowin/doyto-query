@@ -25,9 +25,9 @@ import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static win.doyto.query.sql.BuildHelper.buildWhere;
 import static win.doyto.query.sql.Constant.*;
@@ -40,22 +40,25 @@ import static win.doyto.query.sql.Constant.*;
  */
 class DomainPathProcessor implements FieldProcessor.Processor {
     private static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
+    private static final String REVERSE_SIGN = "~";
     private final String[] domainPaths;
     private final String[] domainIds;
     private final String[] joinTables;
     private final String lastDomain;
     private final String foreignFieldColumn;
     private final String localFieldColumn;
+    private final int lastDomainIndex;
 
     public DomainPathProcessor(Field field) {
         DomainPath domainPath = field.getAnnotation(DomainPath.class);
         domainPaths = domainPath.value();
         foreignFieldColumn = ColumnUtil.convertColumn(domainPath.foreignField());
         localFieldColumn = ColumnUtil.convertColumn(domainPath.localField());
-        boolean reverse = field.getName().contains(domainPaths[0]);
         domainIds = prepareDomainIds(GlobalConfiguration.instance().getJoinIdFormat());
-        joinTables = prepareJoinTables(GlobalConfiguration.instance().getJoinTableFormat());
-        if (reverse) {
+        lastDomainIndex = domainIds.length - 1;
+
+        joinTables = prepareJoinTablesWithReverseSign(domainPaths);
+        if (!Arrays.asList(domainPaths).contains(REVERSE_SIGN) && field.getName().contains(domainPaths[0])) {
             ArrayUtils.reverse(domainIds);
             ArrayUtils.reverse(joinTables);
             ArrayUtils.reverse(domainPaths);
@@ -63,14 +66,39 @@ class DomainPathProcessor implements FieldProcessor.Processor {
         lastDomain = domainPaths[domainPaths.length - 1];
     }
 
-    private String[] prepareDomainIds(String joinIdFormat) {
-        return Arrays.stream(domainPaths).map(domain -> String.format(joinIdFormat, domain)).toArray(String[]::new);
+    /**
+     * Transform domain paths to join-tables
+     * <p>
+     * Examples:
+     * <ul>
+     *   <li>["perm", "~", "role"] -> ["perm_id","role_id"]/["a_role_and_perm"]</li>
+     *   <li>["perm", "~", "role", "~", "user"] -> [ "perm_id","role_id","user_id"]/["a_role_and_perm","a_user_and_role"]</li>
+     * </ul>
+     * </p>
+     */
+    private static String[] prepareJoinTablesWithReverseSign(String[] domainPaths) {
+        String joinTableFormat = GlobalConfiguration.instance().getJoinTableFormat();
+        List<String> joinTableList = new ArrayList<>();
+        int i = 0;
+        while (i < domainPaths.length - 1) {
+            String domain = domainPaths[i];
+            String nextDomain = domainPaths[i + 1];
+            if (REVERSE_SIGN.equals(nextDomain)) {
+                nextDomain = domain;
+                domain = domainPaths[i + 2];
+                i++;
+            }
+            joinTableList.add(String.format(joinTableFormat, domain, nextDomain));
+            i++;
+        }
+        return joinTableList.toArray(new String[0]);
     }
 
-    private String[] prepareJoinTables(String joinTableFormat) {
-        return IntStream.range(0, domainPaths.length - 1)
-                .mapToObj(i -> String.format(joinTableFormat, domainPaths[i], domainPaths[i + 1]))
-                .toArray(String[]::new);
+    private String[] prepareDomainIds(String joinIdFormat) {
+        return Arrays.stream(domainPaths)
+                     .filter(path -> !REVERSE_SIGN.equals(path))
+                     .map(domain -> String.format(joinIdFormat, domain))
+                     .toArray(String[]::new);
     }
 
     @Override
@@ -85,7 +113,7 @@ class DomainPathProcessor implements FieldProcessor.Processor {
             subQueryBuilder.append(IN).append(OP);
             while (true) {
                 buildStartForCurrentDomain(subQueryBuilder, domainIds[current], joinTables[current]);
-                if (++current >= domainIds.length - 1) {
+                if (++current >= lastDomainIndex) {
                     break;
                 }
                 buildWhereForCurrentDomain(subQueryBuilder, domainIds[current]);
@@ -124,7 +152,7 @@ class DomainPathProcessor implements FieldProcessor.Processor {
             List<Object> argList, DoytoQuery query
     ) {
         if (domainIds.length > 1) {
-            subQueryBuilder.append(WHERE).append(domainIds[domainIds.length - 1]);
+            subQueryBuilder.append(WHERE).append(domainIds[lastDomainIndex]);
         }
         String table = String.format(TABLE_FORMAT, lastDomain);
         String where = BuildHelper.buildWhere(query, argList);

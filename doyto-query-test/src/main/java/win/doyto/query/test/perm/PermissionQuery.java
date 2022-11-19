@@ -38,9 +38,15 @@ import win.doyto.query.test.user.UserQuery;
 @AllArgsConstructor
 public class PermissionQuery extends PageQuery {
     @DomainPath({"role", "perm"})
+    private RoleQuery role0;
+
+    @DomainPath({"perm", "~", "role"})
     private RoleQuery role;
 
     @DomainPath({"user", "role", "perm"})
+    private UserQuery user0;
+
+    @DomainPath({"perm", "~", "role", "~", "user"})
     private UserQuery user;
 
     private Boolean valid;

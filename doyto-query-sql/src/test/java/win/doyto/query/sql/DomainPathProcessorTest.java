@@ -19,6 +19,9 @@ package win.doyto.query.sql;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
+import org.junit.jupiter.params.provider.CsvSource;
 import win.doyto.query.test.TestQuery;
 import win.doyto.query.test.menu.MenuQuery;
 import win.doyto.query.test.perm.PermissionQuery;
@@ -107,9 +110,10 @@ class DomainPathProcessorTest {
         assertThat(argList).containsExactly(1, 2, 3);
     }
 
-    @Test
-    void buildSubQueryWithNullCollection() {
-        DomainPathProcessor domainPathProcessor = buildProcessor(PermissionQuery.class, "role");
+    @ParameterizedTest(name = "{index}: {0}")
+    @CsvSource(value = {"Reverse Path, role", "Reverse Sign, role0"})
+    void buildSubQueryWithNullCollection(ArgumentsAccessor arguments) {
+        DomainPathProcessor domainPathProcessor = buildProcessor(PermissionQuery.class, arguments.getString(1));
         RoleQuery roleQuery = RoleQuery.builder().idIn(Collections.emptyList()).build();
 
         String sql = domainPathProcessor.process(argList, roleQuery);
@@ -138,9 +142,10 @@ class DomainPathProcessorTest {
         assertThat(argList).isEmpty();
     }
 
-    @Test
-    void supportReverseNestedQueryWithThreeDomains() {
-        DomainPathProcessor domainPathProcessor = buildProcessor(PermissionQuery.class, "user");
+    @ParameterizedTest(name = "{index}: {0}")
+    @CsvSource(value = {"Reverse Path, user", "Reverse Sign, user0"})
+    void supportReverseNestedQueryWithThreeDomains(ArgumentsAccessor arguments) {
+        DomainPathProcessor domainPathProcessor = buildProcessor(PermissionQuery.class, arguments.getString(1));
 
         String sql = domainPathProcessor.process(argList, new UserQuery());
 
