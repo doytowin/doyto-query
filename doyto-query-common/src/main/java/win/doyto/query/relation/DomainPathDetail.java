@@ -56,6 +56,14 @@ public class DomainPathDetail {
     private final String[] joinTables;
     private final String targetTable;
 
+    public int getLastDomainIndex() {
+        return domainPath.length - 1;
+    }
+
+    public boolean onlyOneDomain() {
+        return domainPath.length == 1;
+    }
+
     public static DomainPathDetail buildBy(DomainPath domainPathAnno) {
         return buildBy(domainPathAnno, ColumnUtil::convertColumn);
     }
@@ -73,7 +81,10 @@ public class DomainPathDetail {
         String foreignFieldColumn = fieldConvertor.apply(foreignField);
         String localFieldColumn = fieldConvertor.apply(localField);
         String[] domainPath = prepareDomainPath(originDomainPath);
-        String[] joinIds = prepareDomainIds(domainPath);
+        String[] joinIds = prepareJoinIds(domainPath);
+        if (domainPath.length == 1) {
+            joinIds[0] = foreignField.equals("id") ? localFieldColumn : foreignFieldColumn;
+        }
         String[] joinTables = prepareJoinTablesWithReverseSign(originDomainPath);
         String targetTable = prepareTargetTable(domainPath);
         return new DomainPathDetail(domainPath, localFieldColumn, foreignFieldColumn, joinIds, joinTables, targetTable);
@@ -90,7 +101,7 @@ public class DomainPathDetail {
                      .toArray(String[]::new);
     }
 
-    private static String[] prepareDomainIds(String[] domainPath) {
+    private static String[] prepareJoinIds(String[] domainPath) {
         String joinIdFormat = GlobalConfiguration.instance().getJoinIdFormat();
         return Arrays.stream(domainPath)
                      .map(domain -> String.format(joinIdFormat, domain))
@@ -113,9 +124,5 @@ public class DomainPathDetail {
             i++;
         }
         return joinTableList.toArray(new String[0]);
-    }
-
-    public int getLastDomainIndex() {
-        return joinIds.length - 1;
     }
 }

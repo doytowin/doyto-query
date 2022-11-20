@@ -81,6 +81,8 @@ class DomainPathDetailTest {
         DomainPathDetail domainPathDetail = DomainPathDetail.buildBy(domainPathAnno, s -> s.equals("id") ? "_id" : s);
         assertThat(domainPathDetail.getLocalFieldColumn()).isEqualTo("_id");
         assertThat(domainPathDetail.getForeignFieldColumn()).isEqualTo("create_user_id");
+        assertThat(domainPathDetail.getJoinIds()[0]).isEqualTo("create_user_id");
+        assertThat(domainPathDetail.onlyOneDomain()).isTrue();
     }
 
 }
