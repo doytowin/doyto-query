@@ -1,8 +1,10 @@
 name: Release
 
 on:
+  push:
+    branches: [ release ]
   release:
-    types: [created]
+    types: [ created, edited ]
 
 jobs:
   release:

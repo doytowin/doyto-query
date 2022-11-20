@@ -35,7 +35,10 @@
     <properties>
         <revision>1.0.0-SNAPSHOT</revision>
 
-        <spring-boot.version>2.7.1</spring-boot.version>
+        <spring-boot.version>2.7.5</spring-boot.version>
+        <embedded-mongo.version>3.5.2</embedded-mongo.version>
+        <hsqldb.version>2.7.1</hsqldb.version>
+        <snakeyaml.version>1.33</snakeyaml.version>
 
         <sourceDirectory>src/main/java</sourceDirectory>
         <skipDeploy>false</skipDeploy>
