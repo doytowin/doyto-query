@@ -16,10 +16,14 @@
 
 package win.doyto.query.relation;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.test.user.UserView;
 
+import java.lang.reflect.Field;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,10 +67,20 @@ class DomainPathDetailTest {
     @ParameterizedTest
     @MethodSource("domainPathProvider")
     void shouldResolveDomainPath(String[] originDomainPath, String[] domainPath, String[] joinIds, String[] joinTables) {
-        DomainPathDetail domainPathDetail = DomainPathDetail.buildBy(originDomainPath, "id", "id");
+        DomainPathDetail domainPathDetail = DomainPathDetail.buildBy(originDomainPath, "id", "id", s -> s);
         assertThat(domainPathDetail.getDomainPath()).isEqualTo(domainPath);
         assertThat(domainPathDetail.getJoinIds()).isEqualTo(joinIds);
         assertThat(domainPathDetail.getJoinTables()).isEqualTo(joinTables);
+    }
+
+    @Test
+    void shouldConvertFieldByFunc() throws NoSuchFieldException {
+        Field field = UserView.class.getDeclaredField("createRoles");
+        DomainPath domainPathAnno = field.getAnnotation(DomainPath.class);
+
+        DomainPathDetail domainPathDetail = DomainPathDetail.buildBy(domainPathAnno, s -> s.equals("id") ? "_id" : s);
+        assertThat(domainPathDetail.getLocalFieldColumn()).isEqualTo("_id");
+        assertThat(domainPathDetail.getForeignFieldColumn()).isEqualTo("create_user_id");
     }
 
 }

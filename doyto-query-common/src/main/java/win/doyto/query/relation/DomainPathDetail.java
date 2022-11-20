@@ -25,6 +25,7 @@ import win.doyto.query.util.ColumnUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 /**
  * DomainPathDetail
@@ -56,12 +57,21 @@ public class DomainPathDetail {
     private final String targetTable;
 
     public static DomainPathDetail buildBy(DomainPath domainPathAnno) {
-        return buildBy(domainPathAnno.value(), domainPathAnno.localField(), domainPathAnno.foreignField());
+        return buildBy(domainPathAnno, ColumnUtil::convertColumn);
     }
 
-    public static DomainPathDetail buildBy(String[] originDomainPath, String localField, String foreignField) {
-        String foreignFieldColumn = ColumnUtil.convertColumn(foreignField);
-        String localFieldColumn = ColumnUtil.convertColumn(localField);
+    public static DomainPathDetail buildBy(DomainPath domainPathAnno, UnaryOperator<String> columnConverter) {
+        return buildBy(
+                domainPathAnno.value(),
+                domainPathAnno.localField(),
+                domainPathAnno.foreignField(),
+                columnConverter
+        );
+    }
+
+    public static DomainPathDetail buildBy(String[] originDomainPath, String localField, String foreignField, UnaryOperator<String> fieldConvertor) {
+        String foreignFieldColumn = fieldConvertor.apply(foreignField);
+        String localFieldColumn = fieldConvertor.apply(localField);
         String[] domainPath = prepareDomainPath(originDomainPath);
         String[] joinIds = prepareDomainIds(domainPath);
         String[] joinTables = prepareJoinTablesWithReverseSign(originDomainPath);
