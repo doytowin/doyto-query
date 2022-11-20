@@ -36,7 +36,6 @@
         <revision>1.0.0-SNAPSHOT</revision>
 
         <spring-boot.version>2.7.5</spring-boot.version>
-        <embedded-mongo.version>3.5.2</embedded-mongo.version>
         <hsqldb.version>2.7.1</hsqldb.version>
         <snakeyaml.version>1.33</snakeyaml.version>
 
@@ -57,7 +56,6 @@
         <module>doyto-query-web-common</module>
         <module>doyto-query-web</module>
         <module>doyto-query-jdbc</module>
-        <module>doyto-query-mongodb</module>
         <module>doyto-query-integration-test</module>
     </modules>
 
