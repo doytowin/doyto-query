@@ -38,12 +38,10 @@ import static win.doyto.query.sql.Constant.*;
 class DomainPathProcessor implements FieldProcessor.Processor {
     private static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
     private final DomainPathDetail domainPathDetail;
-    private final String[] domainIds;
 
     public DomainPathProcessor(Field field) {
         DomainPath domainPath = field.getAnnotation(DomainPath.class);
         domainPathDetail = DomainPathDetail.buildBy(domainPath);
-        domainIds = domainPathDetail.getJoinIds();
     }
 
     @Override
@@ -52,10 +50,11 @@ class DomainPathProcessor implements FieldProcessor.Processor {
     }
 
     private String buildClause(List<Object> argList, DoytoQuery query) {
-        String[] joinTables = domainPathDetail.getJoinTables();
         StringBuilder subQueryBuilder = new StringBuilder(domainPathDetail.getLocalFieldColumn());
-        if (domainIds.length > 1) {
-            int lastDomainIndex = domainIds.length - 1;
+        int lastDomainIndex = domainPathDetail.getLastDomainIndex();
+        if (lastDomainIndex > 0) {
+            String[] domainIds = domainPathDetail.getJoinIds();
+            String[] joinTables = domainPathDetail.getJoinTables();
             int current = 0;
             subQueryBuilder.append(IN).append(OP);
             while (true) {
@@ -66,9 +65,10 @@ class DomainPathProcessor implements FieldProcessor.Processor {
                 buildWhereForCurrentDomain(subQueryBuilder, domainIds[current]);
                 buildQueryForCurrentDomain(subQueryBuilder, domainPathDetail.getDomainPath()[current], argList, query);
             }
+            subQueryBuilder.append(WHERE).append(domainIds[lastDomainIndex]);
         }
-        buildQueryForLastDomain(subQueryBuilder, argList, query);
-        appendTailParenthesis(subQueryBuilder, joinTables.length);
+        buildQueryForLastDomain(subQueryBuilder, BuildHelper.buildWhere(query, argList));
+        appendTailParenthesis(subQueryBuilder, lastDomainIndex);
         return subQueryBuilder.toString();
     }
 
@@ -95,13 +95,8 @@ class DomainPathProcessor implements FieldProcessor.Processor {
     }
 
     private void buildQueryForLastDomain(
-            StringBuilder subQueryBuilder, List<Object> argList, DoytoQuery query
+            StringBuilder subQueryBuilder, String where
     ) {
-        int lastDomainIndex = domainIds.length - 1;
-        if (domainIds.length > 1) {
-            subQueryBuilder.append(WHERE).append(domainIds[lastDomainIndex]);
-        }
-        String where = BuildHelper.buildWhere(query, argList);
         subQueryBuilder.append(IN).append(OP)
                        .append(SELECT).append(domainPathDetail.getForeignFieldColumn())
                        .append(FROM).append(domainPathDetail.getTargetTable()).append(where)

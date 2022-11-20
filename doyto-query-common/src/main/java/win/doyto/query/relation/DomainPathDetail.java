@@ -104,4 +104,8 @@ public class DomainPathDetail {
         }
         return joinTableList.toArray(new String[0]);
     }
+
+    public int getLastDomainIndex() {
+        return joinIds.length - 1;
+    }
 }
