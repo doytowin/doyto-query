@@ -43,7 +43,7 @@ public class MenuQuery extends PageQuery {
     @DomainPath(value = "menu", localField = "parent_id")
     private MenuQuery childrenQuery;
 
-    @DomainPath({"user", "role", "perm", "menu"})
+    @DomainPath({"menu", "~", "perm",  "~", "role", "~", "user"})
     private UserQuery user;
 
     private String nameLike;

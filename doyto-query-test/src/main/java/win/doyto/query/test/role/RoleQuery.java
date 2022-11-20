@@ -43,7 +43,7 @@ public class RoleQuery extends PageQuery implements RelationalQuery<RoleView, In
     private Integer id;
     private List<Integer> idIn;
 
-    @DomainPath({"user", "role"})
+    @DomainPath({"role", "~", "user"})
     private UserQuery user;
 
     private String roleName;

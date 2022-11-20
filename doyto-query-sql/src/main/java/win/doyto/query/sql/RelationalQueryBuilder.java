@@ -110,8 +110,7 @@ public class RelationalQueryBuilder {
                 sqlBuilder = buildQueryOneForEachMainDomain(mainTableName, domainPath.localField(), subTableName, subColumns);
             }
         } else {
-            boolean reverse = !mainTableName.equals(subTableName);
-            DomainPathDetail domainPathDetail = DomainPathDetail.buildBy(domainPath, reverse);
+            DomainPathDetail domainPathDetail = DomainPathDetail.buildBy(domainPath);
             sqlBuilder = buildQueryForEachMainDomain(subColumns, domainPathDetail);
         }
 

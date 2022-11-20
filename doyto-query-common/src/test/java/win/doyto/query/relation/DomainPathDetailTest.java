@@ -63,7 +63,7 @@ class DomainPathDetailTest {
     @ParameterizedTest
     @MethodSource("domainPathProvider")
     void shouldResolveDomainPath(String[] originDomainPath, String[] domainPath, String[] joinIds, String[] joinTables) {
-        DomainPathDetail domainPathDetail = DomainPathDetail.buildBy(originDomainPath, "id", "id", false);
+        DomainPathDetail domainPathDetail = DomainPathDetail.buildBy(originDomainPath, "id", "id");
         assertThat(domainPathDetail.getDomainPath()).isEqualTo(domainPath);
         assertThat(domainPathDetail.getJoinIds()).isEqualTo(joinIds);
         assertThat(domainPathDetail.getJoinTables()).isEqualTo(joinTables);

@@ -39,9 +39,6 @@ public class PermView implements Persistable<Long> {
     private String permName;
     private Boolean valid;
 
-    @DomainPath({"user", "role", "perm"})
-    private List<UserView> userViews;
-
     @DomainPath({"perm", "~", "role", "~", "user"})
     private List<UserView> users;
 

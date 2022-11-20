@@ -45,7 +45,7 @@ public class RoleView implements Persistable<Integer> {
     private Boolean valid;
 
     // many-to-many
-    @DomainPath({"user", "role"})
+    @DomainPath({"role", "~", "user"})
     private List<UserView> users;
 
     // many-to-many

@@ -18,7 +18,6 @@ package win.doyto.query.relation;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.commons.lang3.ArrayUtils;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.util.ColumnUtil;
@@ -56,21 +55,16 @@ public class DomainPathDetail {
     private final String[] joinTables;
     private final String targetTable;
 
-    public static DomainPathDetail buildBy(DomainPath domainPathAnno, boolean reverse) {
-        return buildBy(domainPathAnno.value(), domainPathAnno.localField(), domainPathAnno.foreignField(), reverse);
+    public static DomainPathDetail buildBy(DomainPath domainPathAnno) {
+        return buildBy(domainPathAnno.value(), domainPathAnno.localField(), domainPathAnno.foreignField());
     }
 
-    public static DomainPathDetail buildBy(String[] originDomainPath, String localField, String foreignField, boolean reverse) {
+    public static DomainPathDetail buildBy(String[] originDomainPath, String localField, String foreignField) {
         String foreignFieldColumn = ColumnUtil.convertColumn(foreignField);
         String localFieldColumn = ColumnUtil.convertColumn(localField);
         String[] domainPath = prepareDomainPath(originDomainPath);
         String[] joinIds = prepareDomainIds(domainPath);
         String[] joinTables = prepareJoinTablesWithReverseSign(originDomainPath);
-        if (!Arrays.asList(originDomainPath).contains(REVERSE_SIGN) && reverse) {
-            ArrayUtils.reverse(joinIds);
-            ArrayUtils.reverse(joinTables);
-            ArrayUtils.reverse(domainPath);
-        }
         String targetTable = prepareTargetTable(domainPath);
         return new DomainPathDetail(domainPath, localFieldColumn, foreignFieldColumn, joinIds, joinTables, targetTable);
     }

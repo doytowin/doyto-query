@@ -42,8 +42,7 @@ class DomainPathProcessor implements FieldProcessor.Processor {
 
     public DomainPathProcessor(Field field) {
         DomainPath domainPath = field.getAnnotation(DomainPath.class);
-        boolean reverse = field.getName().contains(domainPath.value()[0]);
-        domainPathDetail = DomainPathDetail.buildBy(domainPath, reverse);
+        domainPathDetail = DomainPathDetail.buildBy(domainPath);
         domainIds = domainPathDetail.getJoinIds();
     }
 
