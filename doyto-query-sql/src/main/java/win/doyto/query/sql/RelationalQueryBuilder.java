@@ -25,6 +25,7 @@ import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Having;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.relation.DomainPathDetail;
 import win.doyto.query.util.ColumnUtil;
 
 import java.io.Serializable;
@@ -110,7 +111,7 @@ public class RelationalQueryBuilder {
             }
         } else {
             boolean reverse = !mainTableName.equals(subTableName);
-            DomainPathDetail domainPathDetail = new DomainPathDetail(domainPath, reverse);
+            DomainPathDetail domainPathDetail = DomainPathDetail.buildBy(domainPath, reverse);
             sqlBuilder = buildQueryForEachMainDomain(subColumns, domainPathDetail);
         }
 

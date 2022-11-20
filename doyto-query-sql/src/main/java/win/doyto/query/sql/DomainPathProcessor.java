@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.relation.DomainPathDetail;
 import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
@@ -42,7 +43,7 @@ class DomainPathProcessor implements FieldProcessor.Processor {
     public DomainPathProcessor(Field field) {
         DomainPath domainPath = field.getAnnotation(DomainPath.class);
         boolean reverse = field.getName().contains(domainPath.value()[0]);
-        domainPathDetail = new DomainPathDetail(domainPath, reverse);
+        domainPathDetail = DomainPathDetail.buildBy(domainPath, reverse);
         domainIds = domainPathDetail.getJoinIds();
     }
 

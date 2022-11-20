@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql;
+package win.doyto.query.relation;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.commons.lang3.ArrayUtils;
 import win.doyto.query.annotation.DomainPath;
@@ -43,54 +44,65 @@ import java.util.List;
  * @since 1.0.0
  */
 @Getter
+@AllArgsConstructor
 public class DomainPathDetail {
 
-    private static final String JOIN_ID_FORMAT = GlobalConfiguration.instance().getJoinIdFormat();
-    private static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
-    private static final String JOIN_TABLE_FORMAT = GlobalConfiguration.instance().getJoinTableFormat();
     private static final String REVERSE_SIGN = "~";
 
     private final String[] domainPath;
+    private final String localFieldColumn;
+    private final String foreignFieldColumn;
     private final String[] joinIds;
     private final String[] joinTables;
     private final String targetTable;
-    private final String foreignFieldColumn;
-    private final String localFieldColumn;
 
-    DomainPathDetail(DomainPath domainPathAnno, boolean reverse) {
-        String[] originDomainPath = domainPathAnno.value();
-        foreignFieldColumn = ColumnUtil.convertColumn(domainPathAnno.foreignField());
-        localFieldColumn = ColumnUtil.convertColumn(domainPathAnno.localField());
+    public static DomainPathDetail buildBy(DomainPath domainPathAnno, boolean reverse) {
+        return buildBy(domainPathAnno.value(), domainPathAnno.localField(), domainPathAnno.foreignField(), reverse);
+    }
 
-        domainPath = Arrays.stream(originDomainPath)
-                           .filter(path -> !REVERSE_SIGN.equals(path))
-                           .toArray(String[]::new);
-        joinIds = prepareDomainIds(domainPath);
-        joinTables = prepareJoinTablesWithReverseSign(originDomainPath);
+    public static DomainPathDetail buildBy(String[] originDomainPath, String localField, String foreignField, boolean reverse) {
+        String foreignFieldColumn = ColumnUtil.convertColumn(foreignField);
+        String localFieldColumn = ColumnUtil.convertColumn(localField);
+        String[] domainPath = prepareDomainPath(originDomainPath);
+        String[] joinIds = prepareDomainIds(domainPath);
+        String[] joinTables = prepareJoinTablesWithReverseSign(originDomainPath);
         if (!Arrays.asList(originDomainPath).contains(REVERSE_SIGN) && reverse) {
             ArrayUtils.reverse(joinIds);
             ArrayUtils.reverse(joinTables);
             ArrayUtils.reverse(domainPath);
         }
-        targetTable = String.format(TABLE_FORMAT, domainPath[domainPath.length - 1]);
+        String targetTable = prepareTargetTable(domainPath);
+        return new DomainPathDetail(domainPath, localFieldColumn, foreignFieldColumn, joinIds, joinTables, targetTable);
     }
 
-    private static String[] prepareDomainIds(String[] domainPath) {
-        return Arrays.stream(domainPath)
-                     .map(domain -> String.format(DomainPathDetail.JOIN_ID_FORMAT, domain))
+    private static String prepareTargetTable(String[] domainPath) {
+        String tableFormat = GlobalConfiguration.instance().getTableFormat();
+        return String.format(tableFormat, domainPath[domainPath.length - 1]);
+    }
+
+    private static String[] prepareDomainPath(String[] originDomainPath) {
+        return Arrays.stream(originDomainPath)
+                     .filter(path -> !REVERSE_SIGN.equals(path))
                      .toArray(String[]::new);
     }
 
-    private static String[] prepareJoinTablesWithReverseSign(String[] domainPaths) {
+    private static String[] prepareDomainIds(String[] domainPath) {
+        String joinIdFormat = GlobalConfiguration.instance().getJoinIdFormat();
+        return Arrays.stream(domainPath)
+                     .map(domain -> String.format(joinIdFormat, domain))
+                     .toArray(String[]::new);
+    }
+
+    private static String[] prepareJoinTablesWithReverseSign(String[] domainPath) {
         String joinTableFormat = GlobalConfiguration.instance().getJoinTableFormat();
         List<String> joinTableList = new ArrayList<>();
         int i = 0;
-        while (i < domainPaths.length - 1) {
-            String domain = domainPaths[i];
-            String nextDomain = domainPaths[i + 1];
+        while (i < domainPath.length - 1) {
+            String domain = domainPath[i];
+            String nextDomain = domainPath[i + 1];
             if (REVERSE_SIGN.equals(nextDomain)) {
                 nextDomain = domain;
-                domain = domainPaths[i + 2];
+                domain = domainPath[i + 2];
                 i++;
             }
             joinTableList.add(String.format(joinTableFormat, domain, nextDomain));
@@ -98,5 +110,4 @@ public class DomainPathDetail {
         }
         return joinTableList.toArray(new String[0]);
     }
-
 }
