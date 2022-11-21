@@ -140,4 +140,12 @@ class SqlQuerySuffixTest {
         assertTrue(SqlQuerySuffix.NotLike.shouldIgnore(1));
     }
 
+    @Test
+    void buildEnd() {
+        ArrayList<Object> argList = new ArrayList<>();
+        String andSql = SqlQuerySuffix.buildConditionForField("emailEnd", argList, "@doyto.win");
+        assertThat(andSql).isEqualTo("email LIKE ?");
+        assertThat(argList).containsExactly("%@doyto.win");
+    }
+
 }

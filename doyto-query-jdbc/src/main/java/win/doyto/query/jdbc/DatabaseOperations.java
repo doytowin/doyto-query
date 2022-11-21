@@ -34,7 +34,7 @@ public interface DatabaseOperations {
 
     long count(SqlAndArgs sqlAndArgs);
 
-    Number insert(SqlAndArgs sqlAndArgs);
+    <I> I insert(SqlAndArgs sqlAndArgs, Class<I> idClass);
 
     int update(SqlAndArgs sqlAndArgs);
 

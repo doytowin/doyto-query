@@ -33,7 +33,6 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
@@ -56,8 +55,8 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     private final SqlBuilder<E> sqlBuilder;
     private final String[] columnsForSelect;
     private final boolean isGeneratedId;
-    private final BiConsumer<E, Number> setIdFunc;
     private final SingleColumnRowMapper<I> idRowMapper = new SingleColumnRowMapper<>();
+    private final Class<I> idClass;
 
     public JdbcDataAccess(JdbcOperations jdbcOperations, Class<E> entityClass) {
         this(new DatabaseTemplate(jdbcOperations), entityClass, new BeanPropertyRowMapper<>(entityClass));
@@ -73,15 +72,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
 
         Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
         this.isGeneratedId = idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class);
-
-        Class<?> idClass = BeanUtil.getIdClass(entityClass);
-        if (idClass.isAssignableFrom(Integer.class)) {
-            setIdFunc = (e, key) -> e.setId((I) (Integer) key.intValue());
-        } else if (idClass.isAssignableFrom(Long.class)) {
-            setIdFunc = (e, key) -> e.setId((I) (Long) key.longValue());
-        } else {
-            setIdFunc = (e, key) -> e.setId((I) key);
-        }
+        this.idClass = BeanUtil.getIdClass(entityClass);
     }
 
     @Override
@@ -132,8 +123,8 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
         SqlAndArgs sqlAndArgs = sqlBuilder.buildCreateAndArgs(e);
 
         if (isGeneratedId) {
-            Number key = databaseOperations.insert(sqlAndArgs);
-            setIdFunc.accept(e, key);
+            I id = databaseOperations.insert(sqlAndArgs, idClass);
+            e.setId(id);
         } else {
             databaseOperations.update(sqlAndArgs);
         }

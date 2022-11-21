@@ -55,6 +55,12 @@ enum SqlQuerySuffix {
             return CommonUtil.escapeStart(String.valueOf(value));
         }
     }),
+    End("LIKE", new LikeValueProcessor() {
+        @Override
+        public Object escapeValue(Object value) {
+            return CommonUtil.escapeEnd(String.valueOf(value));
+        }
+    }),
     NotIn("NOT IN", new InValueProcessor() {
         @Override
         public boolean shouldIgnore(Object value) {

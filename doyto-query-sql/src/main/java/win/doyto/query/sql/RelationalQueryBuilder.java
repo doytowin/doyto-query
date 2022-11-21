@@ -25,6 +25,7 @@ import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Having;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.relation.DomainPathDetail;
 import win.doyto.query.util.ColumnUtil;
 
 import java.io.Serializable;
@@ -46,9 +47,7 @@ import static win.doyto.query.sql.Constant.*;
 @UtilityClass
 public class RelationalQueryBuilder {
 
-    private static final String JOIN_ID_FORMAT = GlobalConfiguration.instance().getJoinIdFormat();
     private static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
-    private static final String JOIN_TABLE_FORMAT = GlobalConfiguration.instance().getJoinTableFormat();
     public static final String KEY_COLUMN = "MAIN_ENTITY_ID";
 
     public static SqlAndArgs buildSelectAndArgs(DoytoQuery q, Class<?> entityClass) {
@@ -111,8 +110,8 @@ public class RelationalQueryBuilder {
                 sqlBuilder = buildQueryOneForEachMainDomain(mainTableName, domainPath.localField(), subTableName, subColumns);
             }
         } else {
-            boolean reverse = !mainTableName.equals(subTableName);
-            sqlBuilder = buildQueryForEachMainDomain(subColumns, domains, reverse);
+            DomainPathDetail domainPathDetail = DomainPathDetail.buildBy(domainPath);
+            sqlBuilder = buildQueryForEachMainDomain(subColumns, domainPathDetail);
         }
 
         String condition = buildCondition(AND, query, queryArgs);
@@ -161,30 +160,12 @@ public class RelationalQueryBuilder {
     }
 
     private static StringBuilder buildQueryForEachMainDomain(
-            String columns, String[] domains, boolean reverse
+            String columns, DomainPathDetail domainPathDetail
     ) {
-        int size = domains.length;
-        int n = size - 1;
-        String[] joinTables = new String[n];
-        String[] joinIds = new String[size];
-        String targetDomainTable;
-        if (reverse) {
-            for (int i = 0; i <= n; i++) {
-                joinIds[i] = String.format(JOIN_ID_FORMAT, domains[n - i]);
-            }
-            for (int i = 0; i < n; i++) {
-                joinTables[n - 1 - i] = String.format(JOIN_TABLE_FORMAT, domains[i], domains[i + 1]);
-            }
-            targetDomainTable = String.format(TABLE_FORMAT, domains[0]);
-        } else {
-            for (int i = 0; i <= n; i++) {
-                joinIds[i] = String.format(JOIN_ID_FORMAT, domains[i]);
-            }
-            for (int i = 0; i < n; i++) {
-                joinTables[i] = String.format(JOIN_TABLE_FORMAT, domains[i], domains[i + 1]);
-            }
-            targetDomainTable = String.format(TABLE_FORMAT, domains[n]);
-        }
+        String[] joinIds = domainPathDetail.getJoinIds();
+        String[] joinTables = domainPathDetail.getJoinTables();
+        String targetDomainTable = domainPathDetail.getTargetTable();
+        int n = joinIds.length - 1;
 
         // select columns from target domain `joinTables[n]`
         StringBuilder sqlBuilder = new StringBuilder();

@@ -61,7 +61,8 @@ public class DatabaseTemplate implements DatabaseOperations {
         return jdbcOperations.queryForObject(sqlAndArgs.getSql(), countRowMapper, sqlAndArgs.getArgs());
     }
 
-    public Number insert(SqlAndArgs sqlAndArgs) {
+    @Override
+    public <I> I insert(SqlAndArgs sqlAndArgs, Class<I> idClass) {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcOperations.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sqlAndArgs.getSql(), Statement.RETURN_GENERATED_KEYS);
@@ -71,6 +72,6 @@ public class DatabaseTemplate implements DatabaseOperations {
             }
             return ps;
         }, keyHolder);
-        return keyHolder.getKey();
+        return keyHolder.getKeyAs(idClass);
     }
 }
