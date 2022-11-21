@@ -53,12 +53,12 @@
         <dependency>
             <groupId>win.doyto</groupId>
             <artifactId>doyto-query-mongodb</artifactId>
-            <version>${revision}</version>
+            <version>1.0.0-BETA</version>
         </dependency>
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
             <artifactId>de.flapdoodle.embed.mongo</artifactId>
-            <version>${embedded-mongo.version}</version>
+            <version>3.5.2</version>
             <scope>test</scope>
         </dependency>
 
