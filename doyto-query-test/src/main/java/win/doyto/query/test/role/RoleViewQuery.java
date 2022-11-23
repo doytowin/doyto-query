@@ -21,30 +21,31 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.RelationalQuery;
+import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.user.UserQuery;
 
-import java.util.List;
-
 /**
- * UserQuery
+ * RoleViewQuery
  *
- * @author f0rb on 2020-04-01
+ * @author f0rb on 2022/11/22
+ * @since 1.0.0
  */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class RoleQuery extends PageQuery {
-    private Integer id;
-    private List<Integer> idIn;
+public class RoleViewQuery extends RoleQuery implements RelationalQuery<RoleView, Integer> {
 
-    @DomainPath({"role", "~", "user"})
-    private UserQuery user;
+    private UserQuery withUsers;
 
-    private String roleName;
-    private String roleNameLike;
-    private Boolean valid;
+    private PermissionQuery withPerms;
+
+    private UserQuery withCreateUser;
+
+    @Override
+    public Class<RoleView> getDomainClass() {
+        return RoleView.class;
+    }
 }

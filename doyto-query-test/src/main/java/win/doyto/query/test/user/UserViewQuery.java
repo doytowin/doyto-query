@@ -21,8 +21,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.core.PageQuery;
 import win.doyto.query.core.RelationalQuery;
 import win.doyto.query.test.menu.MenuQuery;
 import win.doyto.query.test.perm.PermissionQuery;
@@ -38,18 +36,13 @@ import win.doyto.query.test.role.RoleQuery;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserViewQuery extends PageQuery implements RelationalQuery<UserView, Long> {
+public class UserViewQuery extends UserQuery implements RelationalQuery<UserView, Long> {
 
-    @DomainPath({"user", "role"})
-    private RoleQuery role;
-
-    private RoleQuery rolesQuery;
-
-    private PermissionQuery permsQuery;
-
-    private MenuQuery menusQuery;
-    private UserQuery createUserQuery;
-    private RoleQuery createRolesQuery;
+    private RoleQuery withRoles;
+    private PermissionQuery withPerms;
+    private MenuQuery withMenus;
+    private UserQuery withCreateUser;
+    private RoleQuery withCreateRoles;
 
     @Override
     public Class<UserView> getDomainClass() {

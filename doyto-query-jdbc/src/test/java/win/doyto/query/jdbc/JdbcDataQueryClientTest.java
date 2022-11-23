@@ -27,6 +27,7 @@ import win.doyto.query.test.menu.MenuView;
 import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.role.RoleQuery;
 import win.doyto.query.test.role.RoleView;
+import win.doyto.query.test.role.RoleViewQuery;
 import win.doyto.query.test.user.*;
 
 import java.util.List;
@@ -49,7 +50,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
     @Test
     void queryForJoin() {
         UserQuery usersQuery = UserQuery.builder().build();
-        RoleQuery roleQuery = RoleQuery.builder().user(usersQuery).usersQuery(usersQuery).build();
+        RoleViewQuery roleQuery = RoleViewQuery.builder().user(usersQuery).withUsers(usersQuery).build();
         List<RoleView> roleViews = jdbcDataQueryClient.query(roleQuery);
         assertThat(roleViews)
                 .extracting(roleView -> roleView.getUsers().size())
@@ -58,7 +59,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
 
     @Test
     void countForGroupBy() {
-        RoleQuery roleQuery = RoleQuery.builder().user(new UserQuery()).build();
+        RoleViewQuery roleQuery = RoleViewQuery.builder().user(new UserQuery()).build();
         long count = jdbcDataQueryClient.count(roleQuery);
         assertThat(count).isEqualTo(2);
     }
@@ -67,7 +68,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
     void pageForJoin() {
         RoleQuery roleQuery = RoleQuery.builder().roleName("vip").build();
         RoleQuery rolesQuery = RoleQuery.builder().roleNameLike("vip").build();
-        UserViewQuery userViewQuery = UserViewQuery.builder().role(roleQuery).rolesQuery(rolesQuery).build();
+        UserViewQuery userViewQuery = UserViewQuery.builder().role(roleQuery).withRoles(rolesQuery).build();
         PageList<UserView> page = jdbcDataQueryClient.page(userViewQuery);
         assertThat(page.getTotal()).isEqualTo(2);
         assertThat(page.getList()).extracting(UserView::getUsername).containsExactly("f0rb", "user4");
@@ -83,7 +84,8 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
 
     @Test
     void queryUserWithRoles() {
-        UserViewQuery userViewQuery = UserViewQuery.builder().rolesQuery(new RoleQuery()).permsQuery(new PermissionQuery()).build();
+        UserViewQuery userViewQuery = UserViewQuery
+                .builder().withRoles(new RoleQuery()).withPerms(new PermissionQuery()).build();
 
         List<UserView> users = jdbcDataQueryClient.query(userViewQuery);
 
@@ -109,8 +111,10 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
 
     @Test
     void queryRoleWithUsersAndPerms() {
-        RoleQuery roleQuery = RoleQuery.builder().usersQuery(new UserQuery())
-                                       .permsQuery(new PermissionQuery()).build();
+        RoleViewQuery roleQuery = RoleViewQuery.builder()
+                                               .withUsers(new UserQuery())
+                                               .withPerms(new PermissionQuery())
+                                               .build();
 
         List<RoleView> roles = jdbcDataQueryClient.query(roleQuery);
 
@@ -126,7 +130,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
 
     @Test
     void queryRoleWithCreateUser() {
-        RoleQuery roleQuery = RoleQuery.builder().createUserQuery(new UserQuery()).build();
+        RoleViewQuery roleQuery = RoleViewQuery.builder().withCreateUser(new UserQuery()).build();
 
         List<RoleView> roles = jdbcDataQueryClient.query(roleQuery);
 
@@ -146,9 +150,9 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
     void queryUserWithGrantedMenusAndCreatedRolesAndCreateUser() {
         UserViewQuery userViewQuery = UserViewQuery
                 .builder()
-                .menusQuery(new MenuQuery())
-                .createUserQuery(new UserQuery())
-                .createRolesQuery(new RoleQuery())
+                .withMenus(new MenuQuery())
+                .withCreateUser(new UserQuery())
+                .withCreateRoles(new RoleQuery())
                 .build();
 
         List<UserView> users = jdbcDataQueryClient.query(userViewQuery);
