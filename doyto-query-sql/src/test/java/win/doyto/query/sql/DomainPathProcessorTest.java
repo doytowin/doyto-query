@@ -19,7 +19,6 @@ package win.doyto.query.sql;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
-import win.doyto.query.test.TestQuery;
 import win.doyto.query.test.menu.MenuQuery;
 import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.role.RoleQuery;
@@ -208,7 +207,7 @@ class DomainPathProcessorTest {
 
     @Test
     void supportSelfOneToManyQuery() {
-        DomainPathProcessor domainPathProcessor = buildProcessor(MenuQuery.class, "parentQuery");
+        DomainPathProcessor domainPathProcessor = buildProcessor(MenuQuery.class, "children");
         MenuQuery parentQuery = MenuQuery.builder().nameLike("test").valid(true).build();
 
         String sql = domainPathProcessor.process(argList, parentQuery);
@@ -220,7 +219,7 @@ class DomainPathProcessorTest {
 
     @Test
     void supportSelfManyToOneQuery() {
-        DomainPathProcessor domainPathProcessor = buildProcessor(MenuQuery.class, "childrenQuery");
+        DomainPathProcessor domainPathProcessor = buildProcessor(MenuQuery.class, "parent");
         MenuQuery parentQuery = MenuQuery.builder().nameLike("test").valid(true).build();
 
         String sql = domainPathProcessor.process(argList, parentQuery);
@@ -230,14 +229,4 @@ class DomainPathProcessorTest {
         assertThat(argList).containsExactly("%test%", true);
     }
 
-    @Test
-    void supportForeignOneToManyQuery() {
-        DomainPathProcessor domainPathProcessor = buildProcessor(TestQuery.class, "createUser");
-        UserQuery createUserQuery = UserQuery.builder().id(1).build();
-
-        String sql = domainPathProcessor.process(argList, createUserQuery);
-
-        assertThat(sql).isEqualTo("create_user_id IN (SELECT id FROM t_user WHERE id = ?)");
-        assertThat(argList).containsExactly(1);
-    }
 }

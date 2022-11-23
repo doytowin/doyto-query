@@ -18,12 +18,14 @@ package win.doyto.query.jdbc;
 
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 import win.doyto.query.core.PageList;
 import win.doyto.query.test.menu.MenuQuery;
 import win.doyto.query.test.menu.MenuView;
+import win.doyto.query.test.menu.MenuViewQuery;
 import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.role.RoleQuery;
 import win.doyto.query.test.role.RoleView;
@@ -180,5 +182,22 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
                         new Tuple(UserLevel.普通, false, 1L),
                         new Tuple(UserLevel.普通, true, 2L)
                 );
+    }
+
+    @DisplayName("An example for the combination of nested query and related query")
+    @Test
+    void queryParentMenuForMenu10WithParentAndValidChildrenMenu() {
+        MenuQuery parentForMenu10 = MenuQuery.builder().id(10L).build();
+        MenuViewQuery menuQuery = MenuViewQuery.builder()
+                                               .children(parentForMenu10)
+                                               .withParent(new MenuQuery())
+                                               .withChildren(MenuQuery.builder().valid(true).build())
+                                               .build();
+        List<MenuView> menus = jdbcDataQueryClient.query(menuQuery);
+        assertThat(menus).hasSize(1);
+        MenuView menu = menus.get(0);
+        assertThat(menu.getId()).isEqualTo(4);
+        assertThat(menu.getParent().getId()).isEqualTo(1L);
+        assertThat(menu.getChildren()).hasSize(3);
     }
 }

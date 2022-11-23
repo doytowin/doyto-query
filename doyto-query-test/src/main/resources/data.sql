@@ -7,18 +7,18 @@ INSERT INTO t_user (username, mobile, email, nickname, password, user_level, val
 
 INSERT INTO t_menu_01 (id, platform, parent_id, menu_name, memo, valid) VALUES (1, '01', 0, 'root', 'root menu', true);
 INSERT INTO t_menu_01 (id, platform, parent_id, menu_name, memo, valid) VALUES (2, '01', 1, 'first', 'first menu', true);
-INSERT INTO t_menu (platform, parent_id, menu_name, memo, valid) VALUES ('00', 0, 'root', 'root menu', true);
-INSERT INTO t_menu (platform, parent_id, menu_name, memo, valid) VALUES ('00', 1, 'User Management', 'Menu for User Management', true);
-INSERT INTO t_menu (platform, parent_id, menu_name, memo, valid) VALUES ('00', 1, 'Role Management', 'Menu for Role Management', true);
-INSERT INTO t_menu (platform, parent_id, menu_name, memo, valid) VALUES ('00', 1, 'Permission Management', 'Menu for Permission Management', true);
-INSERT INTO t_menu (platform, parent_id, menu_name, memo, valid) VALUES ('00', 1, 'Menu Management', 'Menu for Menu Management', true);
-INSERT INTO t_menu (platform, parent_id, menu_name, memo, valid) VALUES ('00', 2, 'User List', 'Menu for User List', true);
-INSERT INTO t_menu (platform, parent_id, menu_name, memo, valid) VALUES ('00', 3, 'Role List', 'Menu for Role List', true);
-INSERT INTO t_menu (platform, parent_id, menu_name, memo, valid) VALUES ('00', 4, 'Permission List', 'Menu for Permission List', true);
-INSERT INTO t_menu (platform, parent_id, menu_name, memo, valid) VALUES ('02', 0, 'root', 'root menu', true);
-INSERT INTO t_menu (platform, parent_id, menu_name, memo, valid) VALUES ('00', 4, 'Permission Op1', 'Menu for Permission Op1', true);
-INSERT INTO t_menu (platform, parent_id, menu_name, memo, valid) VALUES ('00', 4, 'Permission Op2', 'Menu for Permission Op2', true);
-INSERT INTO t_menu (platform, parent_id, menu_name, memo, valid) VALUES ('00', 4, 'Permission Op3', 'Menu for Permission Op3', true);
+INSERT INTO t_menu (id, platform, parent_id, menu_name, memo, valid) VALUES (1, '00', 0, 'root', 'root menu', true);
+INSERT INTO t_menu (id, platform, parent_id, menu_name, memo, valid) VALUES (2, '00', 1, 'User Management', 'Menu for User Management', true);
+INSERT INTO t_menu (id, platform, parent_id, menu_name, memo, valid) VALUES (3, '00', 1, 'Role Management', 'Menu for Role Management', true);
+INSERT INTO t_menu (id, platform, parent_id, menu_name, memo, valid) VALUES (4, '00', 1, 'Permission Management', 'Menu for Permission Management', true);
+INSERT INTO t_menu (id, platform, parent_id, menu_name, memo, valid) VALUES (5, '00', 1, 'Menu Management', 'Menu for Menu Management', true);
+INSERT INTO t_menu (id, platform, parent_id, menu_name, memo, valid) VALUES (6, '00', 2, 'User List', 'Menu for User List', true);
+INSERT INTO t_menu (id, platform, parent_id, menu_name, memo, valid) VALUES (7, '00', 3, 'Role List', 'Menu for Role List', true);
+INSERT INTO t_menu (id, platform, parent_id, menu_name, memo, valid) VALUES (8, '00', 4, 'Permission List', 'Menu for Permission List', true);
+INSERT INTO t_menu (id, platform, parent_id, menu_name, memo, valid) VALUES (9, '02', 0, 'root', 'root menu', true);
+INSERT INTO t_menu (id, platform, parent_id, menu_name, memo, valid) VALUES (10, '00', 4, 'Permission Op1', 'Menu for Permission Op1', true);
+INSERT INTO t_menu (id, platform, parent_id, menu_name, memo, valid) VALUES (11, '00', 4, 'Permission Op2', 'Menu for Permission Op2', true);
+INSERT INTO t_menu (id, platform, parent_id, menu_name, memo, valid) VALUES (12, '00', 4, 'Permission Op3', 'Menu for Permission Op3', false);
 
 INSERT INTO t_role (role_name, role_code, create_user_id) VALUES ('admin', 'ADMIN', 1);
 INSERT INTO t_role (role_name, role_code, create_user_id) VALUES ('vip', 'VIP', 2);

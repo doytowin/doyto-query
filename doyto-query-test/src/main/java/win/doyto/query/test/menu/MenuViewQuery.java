@@ -21,36 +21,27 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.core.PageQuery;
-import win.doyto.query.test.user.UserQuery;
+import win.doyto.query.core.RelationalQuery;
 
 /**
- * MenuQuery
+ * MenuViewQuery
  *
- * @author f0rb on 2019-05-28
+ * @author f0rb on 2022/11/23
+ * @since 1.0.0
  */
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MenuQuery extends PageQuery {
+public class MenuViewQuery extends MenuQuery implements RelationalQuery<MenuView, Long> {
 
-    // many-to-one
-    @DomainPath(value = "menu", localField = "parentId")
-    private MenuQuery parent;
+    private MenuQuery withParent;
 
-    // one-to-many
-    @DomainPath(value = "menu", foreignField = "parentId")
-    private MenuQuery children;
+    private MenuQuery withChildren;
 
-    @DomainPath({"menu", "~", "perm",  "~", "role", "~", "user"})
-    private UserQuery user;
-
-    private Long id;
-
-    private String nameLike;
-
-    private Boolean valid;
+    @Override
+    public Class<MenuView> getDomainClass() {
+        return MenuView.class;
+    }
 }
