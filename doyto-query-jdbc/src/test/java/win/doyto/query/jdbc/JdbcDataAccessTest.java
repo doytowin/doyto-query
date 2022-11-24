@@ -17,14 +17,22 @@
 package win.doyto.query.jdbc;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
+import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.role.RoleEntity;
 import win.doyto.query.test.role.RoleQuery;
+import win.doyto.query.test.user.UserEntity;
+import win.doyto.query.test.user.UserQuery;
 
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -37,9 +45,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class JdbcDataAccessTest extends JdbcApplicationTest {
 
     private JdbcDataAccess<RoleEntity, Integer, RoleQuery> jdbcDataAccess;
+    private JdbcDataAccess<UserEntity, Long, UserQuery> userDataAccess;
 
     public JdbcDataAccessTest(@Autowired JdbcOperations jdbcOperations) {
         this.jdbcDataAccess = new JdbcDataAccess<>(jdbcOperations, RoleEntity.class);
+        this.userDataAccess = new JdbcDataAccess<>(jdbcOperations, UserEntity.class);
     }
 
     @Test
@@ -84,5 +94,36 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
 
         int ret = jdbcDataAccess.patch(patch, RoleQuery.builder().roleNameLike("noop").build());
         assertThat(ret).isZero();
+    }
+
+    @DisplayName("An example comparing two ways of constructing query objects")
+    @ParameterizedTest
+    @CsvSource({
+            "admin, 1 3 4",
+            "vip, 1 4",
+    })
+    void queryUserByPermAndDifferentRoleCondition(String roleNameLike, String ids) {
+        List<Long> expected = Arrays.stream(ids.split(" ")).map(Long::valueOf).collect(Collectors.toList());
+
+        RoleQuery roleQuery = RoleQuery.builder().roleNameLike(roleNameLike).build();
+        UserQuery userQuery = UserQuery
+                .builder()
+                .perm(PermissionQuery.builder().permNameStart("user").build())
+                .role(roleQuery)
+                .build();
+
+        List<Long> userIds = userDataAccess.queryIds(userQuery);
+
+        PermissionQuery permQuery = PermissionQuery
+                .builder().roleQuery(roleQuery).permNameStart("user").build();
+        UserQuery userQuery2 = UserQuery
+                .builder()
+                .perm(permQuery)
+                .build();
+
+        List<Long> userIds2 = userDataAccess.queryIds(userQuery2);
+
+        assertThat(userIds).containsExactlyElementsOf(expected);
+        assertThat(userIds2).containsExactlyElementsOf(expected);
     }
 }

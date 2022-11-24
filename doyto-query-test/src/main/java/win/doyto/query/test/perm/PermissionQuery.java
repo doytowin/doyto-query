@@ -40,9 +40,11 @@ public class PermissionQuery extends PageQuery {
 
     @DomainPath({"perm", "~", "role"})
     private RoleQuery role;
+    private RoleQuery roleQuery;
 
     @DomainPath({"perm", "~", "role", "~", "user"})
     private UserQuery user;
 
+    private String permNameStart;
     private Boolean valid;
 }
