@@ -37,14 +37,18 @@ import win.doyto.query.test.user.UserQuery;
 @AllArgsConstructor
 public class MenuQuery extends PageQuery {
 
-    @DomainPath(value = "menu", foreignField = "parent_id")
-    private MenuQuery parentQuery;
+    // many-to-one
+    @DomainPath(value = "menu", localField = "parentId")
+    private MenuQuery parent;
 
-    @DomainPath(value = "menu", localField = "parent_id")
-    private MenuQuery childrenQuery;
+    // one-to-many
+    @DomainPath(value = "menu", foreignField = "parentId")
+    private MenuQuery children;
 
     @DomainPath({"menu", "~", "perm",  "~", "role", "~", "user"})
     private UserQuery user;
+
+    private Long id;
 
     private String nameLike;
 

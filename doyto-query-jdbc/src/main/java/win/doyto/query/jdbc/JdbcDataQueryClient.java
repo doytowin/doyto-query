@@ -17,6 +17,7 @@
 package win.doyto.query.jdbc;
 
 import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -104,7 +105,7 @@ public class JdbcDataQueryClient implements DataQueryClient {
                   .filter(joinField -> joinField.isAnnotationPresent(DomainPath.class))
                   .forEach(joinField -> {
                       // The name of query field for subdomain should follow this format `<joinFieldName>Query`
-                      String queryFieldName = joinField.getName() + "Query";
+                      String queryFieldName = buildQueryFieldName(joinField);
                       Object subQuery = CommonUtil.readField(query, queryFieldName);
                       if (subQuery instanceof DoytoQuery) {
                           if (Collection.class.isAssignableFrom(joinField.getType())) {
@@ -114,6 +115,10 @@ public class JdbcDataQueryClient implements DataQueryClient {
                           }
                       }
                   });
+    }
+
+    protected String buildQueryFieldName(Field joinField) {
+        return "with" + StringUtils.capitalize(joinField.getName());
     }
 
     @SuppressWarnings("unchecked")

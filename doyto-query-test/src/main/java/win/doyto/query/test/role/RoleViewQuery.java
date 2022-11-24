@@ -14,37 +14,38 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.perm;
+package win.doyto.query.test.role;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.core.PageQuery;
-import win.doyto.query.test.role.RoleQuery;
+import win.doyto.query.core.RelationalQuery;
+import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.user.UserQuery;
 
 /**
- * PermissionQuery
+ * RoleViewQuery
  *
- * @author f0rb on 2019-05-28
+ * @author f0rb on 2022/11/22
+ * @since 1.0.0
  */
 @Getter
 @Setter
-@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PermissionQuery extends PageQuery {
+@SuperBuilder
+public class RoleViewQuery extends RoleQuery implements RelationalQuery<RoleView, Integer> {
 
-    @DomainPath({"perm", "~", "role"})
-    private RoleQuery role;
-    private RoleQuery roleQuery;
+    private UserQuery withUsers;
 
-    @DomainPath({"perm", "~", "role", "~", "user"})
-    private UserQuery user;
+    private PermissionQuery withPerms;
 
-    private String permNameStart;
-    private Boolean valid;
+    private UserQuery withCreateUser;
+
+    @Override
+    public Class<RoleView> getDomainClass() {
+        return RoleView.class;
+    }
 }

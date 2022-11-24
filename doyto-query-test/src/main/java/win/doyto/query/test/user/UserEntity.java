@@ -14,37 +14,21 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.role;
+package win.doyto.query.test.user;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.core.PageQuery;
-import win.doyto.query.test.user.UserQuery;
-
-import java.util.List;
+import win.doyto.query.entity.AbstractCommonEntity;
 
 /**
- * UserQuery
+ * UserEntity
  *
- * @author f0rb on 2020-04-01
+ * @author f0rb on 2022/11/24
+ * @since 1.0.0
  */
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
-public class RoleQuery extends PageQuery {
-    private Integer id;
-    private List<Integer> idIn;
-
-    @DomainPath({"role", "~", "user"})
-    private UserQuery user;
-
-    private String roleName;
-    private String roleNameLike;
-    private Boolean valid;
+public class UserEntity extends AbstractCommonEntity<Long, Long> {
+    private String username;
+    private String email;
 }

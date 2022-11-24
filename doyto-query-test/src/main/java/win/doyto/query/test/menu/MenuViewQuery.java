@@ -14,37 +14,34 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.perm;
+package win.doyto.query.test.menu;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.core.PageQuery;
-import win.doyto.query.test.role.RoleQuery;
-import win.doyto.query.test.user.UserQuery;
+import win.doyto.query.core.RelationalQuery;
 
 /**
- * PermissionQuery
+ * MenuViewQuery
  *
- * @author f0rb on 2019-05-28
+ * @author f0rb on 2022/11/23
+ * @since 1.0.0
  */
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PermissionQuery extends PageQuery {
+public class MenuViewQuery extends MenuQuery implements RelationalQuery<MenuView, Long> {
 
-    @DomainPath({"perm", "~", "role"})
-    private RoleQuery role;
-    private RoleQuery roleQuery;
+    private MenuQuery withParent;
 
-    @DomainPath({"perm", "~", "role", "~", "user"})
-    private UserQuery user;
+    private MenuQuery withChildren;
 
-    private String permNameStart;
-    private Boolean valid;
+    @Override
+    public Class<MenuView> getDomainClass() {
+        return MenuView.class;
+    }
 }
