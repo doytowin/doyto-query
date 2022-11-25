@@ -39,6 +39,7 @@ class FilterExecutor {
 
     static {
         map.put(Like, new LikeMatcher());
+        map.put(Contain, new LikeMatcher());
         map.put(NotLike, new NotLikeMatcher());
         map.put(Start, new StartMatcher());
         map.put(End, new EndMatcher());

@@ -157,6 +157,12 @@ class MemoryDataAccessTest {
     }
 
     @Test
+    void filterByContain() {
+        TestQuery byUsernameEnd = TestQuery.builder().usernameContain("name").build();
+        assertEquals(4, testMemoryDataAccess.count(byUsernameEnd));
+    }
+
+    @Test
     void patch() {
         TestEntity testEntity = new TestEntity();
         testEntity.setMemo("invalid");
