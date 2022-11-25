@@ -86,4 +86,7 @@ public class TestQuery extends PageQuery {
 
     private Boolean valid;
 
+    // for MongoDB
+    private Boolean statusExists;
+
 }
