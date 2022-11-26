@@ -14,18 +14,26 @@
  * limitations under the License.
  */
 
-package win.doyto.query.web.demo.module.building;
+package win.doyto.query.service;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import win.doyto.query.web.controller.AbstractEIQController;
+import org.springframework.beans.factory.BeanFactory;
+import win.doyto.query.core.DataAccess;
+import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.entity.Persistable;
+
+import java.io.Serializable;
+import javax.persistence.EntityType;
 
 /**
- * InventoryController
+ * DataAccessFactory
  *
- * @author f0rb on 2021-12-06
+ * @author f0rb on 2022/11/26
+ * @since 1.0.0
  */
-//@RestController
-@RequestMapping("building")
-public class BuildingController extends AbstractEIQController<BuildingEntity, String, BuildingQuery> {
+public interface DataAccessFactory {
 
+    EntityType getEntityType();
+
+    <E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
+    DataAccess<E, I, Q> createDataAccess(BeanFactory beanFactory, Class<E> entityClass);
 }

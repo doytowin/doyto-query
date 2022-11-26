@@ -35,6 +35,12 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>win.doyto</groupId>
+            <artifactId>doyto-query-web</artifactId>
+            <version>${revision}</version>
+            <optional>true</optional>
+        </dependency>
 
         <dependency>
             <groupId>win.doyto</groupId>
