@@ -223,9 +223,9 @@ class QueryBuilderTest {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
 
         Date date = new Date();
-        TestQuery testQuery = TestQuery.builder().userNameOrUserCodeLike("test").createTimeLt(date).build();
+        TestQuery testQuery = TestQuery.builder().usernameOrUserCodeLike("test").createTimeLt(date).build();
 
-        assertEquals("SELECT * FROM user WHERE (user_name = ? OR user_code LIKE ?) AND create_time < ?",
+        assertEquals("SELECT * FROM user WHERE (username = ? OR user_code LIKE ?) AND create_time < ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test", "%test%", date);
 

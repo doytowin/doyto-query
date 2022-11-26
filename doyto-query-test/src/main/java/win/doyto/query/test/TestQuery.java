@@ -46,6 +46,8 @@ public class TestQuery extends PageQuery {
 
     private List<Integer> idIn;
     private List<Integer> idNotIn;
+    private Integer id;
+    private Integer idNot;
     private Integer idLt;
     private Integer idLe;
     private String username;
@@ -65,9 +67,12 @@ public class TestQuery extends PageQuery {
     private String usernameLikeOrEmailLikeOrMobileLike;
 
     private String usernameLike;
+    private String usernameNotLike;
     private String usernameStart;
+    private String usernameEnd;
+    private String testLikeEq;
 
-    private String userNameOrUserCodeLike;
+    private String usernameOrUserCodeLike;
 
     private boolean memoNull;
     private boolean memoNotNull;
@@ -76,6 +81,7 @@ public class TestQuery extends PageQuery {
 
     private TestEnum userLevelNot;
     private List<TestEnum> userLevelIn;
+    private List<TestEnum> userLevelNotIn;
 
     private List<TestStringEnum> statusIn;
 
@@ -85,5 +91,8 @@ public class TestQuery extends PageQuery {
     private Date createTimeLe;
 
     private Boolean valid;
+
+    // for MongoDB
+    private Boolean statusExists;
 
 }

@@ -55,6 +55,8 @@ public enum QuerySuffix {
     Lt,
     Le,
     Eq,
+    Exists, // for MongoDB
+
     Near(Near.class::isInstance),
     NearSphere(Near.class::isInstance),
     Center(Circle.class::isInstance),

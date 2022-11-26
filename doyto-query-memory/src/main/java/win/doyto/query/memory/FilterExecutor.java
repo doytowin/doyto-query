@@ -39,8 +39,10 @@ class FilterExecutor {
 
     static {
         map.put(Like, new LikeMatcher());
+        map.put(Contain, new LikeMatcher());
         map.put(NotLike, new NotLikeMatcher());
         map.put(Start, new StartMatcher());
+        map.put(End, new EndMatcher());
         map.put(Null, new NullMatcher());
         map.put(NotNull, new NotNullMatcher());
         map.put(In, (qv, ev) -> ((Collection<?>) qv).contains(ev));
@@ -79,6 +81,13 @@ class FilterExecutor {
         @Override
         public boolean doMatch(Object qv, Object ev) {
             return StringUtils.startsWith(ev.toString(), qv.toString());
+        }
+    }
+
+    static class EndMatcher extends LikeMatcher {
+        @Override
+        public boolean doMatch(Object qv, Object ev) {
+            return StringUtils.endsWith(ev.toString(), qv.toString());
         }
     }
 
