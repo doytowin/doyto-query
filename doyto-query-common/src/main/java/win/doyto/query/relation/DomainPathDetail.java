@@ -34,11 +34,10 @@ import java.util.function.UnaryOperator;
  * <p>
  * Examples:
  * <ul>
- *   <li>["role", "perm"] -> ["role_id","perm_id"]/["a_role_and_perm"]</li>
- *   <li>["perm", "~", "role"] -> ["perm_id","role_id"]/["a_role_and_perm"]</li>
- *   <li>["perm", "~", "role", "~", "user"] -> [ "perm_id","role_id","user_id"]/["a_role_and_perm","a_user_and_role"]</li>
+ *   <li>["role", "perm"] -&gt; ["role_id","perm_id"]/["a_role_and_perm"]</li>
+ *   <li>["perm", "~", "role"] -&gt; ["perm_id","role_id"]/["a_role_and_perm"]</li>
+ *   <li>["perm", "~", "role", "~", "user"] -&gt; [ "perm_id","role_id","user_id"]/["a_role_and_perm","a_user_and_role"]</li>
  * </ul>
- * </p>
  *
  * @author f0rb on 2022/11/19
  * @since 1.0.0
