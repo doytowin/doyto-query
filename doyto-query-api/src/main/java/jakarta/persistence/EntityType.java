@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package win.doyto.query.web.demo.module.building;
-
-import org.springframework.web.bind.annotation.RequestMapping;
-import win.doyto.query.web.controller.AbstractEIQController;
+package jakarta.persistence;
 
 /**
- * InventoryController
+ * EntityType
  *
- * @author f0rb on 2021-12-06
+ * @author f0rb on 2022-05-19
  */
-//@RestController
-@RequestMapping("building")
-public class BuildingController extends AbstractEIQController<BuildingEntity, String, BuildingQuery> {
-
+public enum EntityType {
+    RELATIONAL,
+    MONGO_DB
 }

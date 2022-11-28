@@ -16,14 +16,13 @@
 
 package win.doyto.query.web.demo.module.auth;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import win.doyto.query.web.demo.module.user.UserData;
 import win.doyto.query.web.demo.module.user.UserResponse;
-
-import javax.servlet.http.HttpServletRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;

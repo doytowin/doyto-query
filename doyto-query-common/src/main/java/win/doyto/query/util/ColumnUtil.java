@@ -16,6 +16,10 @@
 
 package win.doyto.query.util;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -35,12 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Transient;
 
 /**
  * ColumnUtil
@@ -95,8 +94,7 @@ public class ColumnUtil {
      * @return unmodifiable fields without id and @Transient field
      */
     public static List<Field> getColumnFieldsFrom(Class<?> entityClass) {
-        List<Field> fields = filterFields(entityClass).collect(Collectors.toList());
-        return Collections.unmodifiableList(fields);
+        return filterFields(entityClass).toList();
     }
 
     public static String convertColumn(String columnName) {

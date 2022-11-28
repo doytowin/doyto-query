@@ -16,7 +16,7 @@
 
 package win.doyto.query.validation;
 
-import javax.validation.groups.Default;
+import jakarta.validation.groups.Default;
 
 /**
  * UpdateGroup

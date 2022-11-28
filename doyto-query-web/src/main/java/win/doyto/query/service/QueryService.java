@@ -21,7 +21,6 @@ import win.doyto.query.core.PageList;
 
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * QueryService
@@ -53,7 +52,7 @@ public interface QueryService<E, Q extends DoytoQuery> {
     }
 
     default <V> List<V> query(Q query, Function<E, V> transfer) {
-        return query(query).stream().map(transfer).collect(Collectors.toList());
+        return query(query).stream().map(transfer).toList();
     }
 
     default PageList<E> page(Q query) {

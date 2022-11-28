@@ -13,7 +13,7 @@
  *     Linda DeMichiel - Java Persistence 2.0
  *
  ******************************************************************************/
-package javax.persistence;
+package jakarta.persistence;
 
 /**
  * Defines mapping for enumerated types.  The constants of this

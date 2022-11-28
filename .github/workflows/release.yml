@@ -10,10 +10,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up JDK
+      - name: Setup JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '8'
+          java-version: 17
           distribution: 'adopt'
           server-id: sonatype-nexus-staging # Value of the distributionManagement/repository/id field of the pom.xml
           server-username: OSSRH_USERNAME # env variable for username in deploy

@@ -13,7 +13,7 @@
  *     Linda DeMichiel - Java Persistence 2.0
  *
  ******************************************************************************/
-package javax.persistence;
+package jakarta.persistence;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -23,34 +23,24 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Specifies the primary key of an entity.
- * The field or property to which the <code>Id</code> annotation is applied
- * should be one of the following types: any Java primitive type;
- * any primitive wrapper type;
- * <code>String</code>;
- * <code>java.util.Date</code>;
- * <code>java.sql.Date</code>;
- * <code>java.math.BigDecimal</code>;
- * <code>java.math.BigInteger</code>.
- *
- * <p>The mapped column for the primary key of the entity is assumed
- * to be the primary key of the primary table. If no <code>Column</code> annotation
- * is specified, the primary key column name is assumed to be the name
- * of the primary key property or field.
+ * Specifies that the property or field is not persistent. It is used
+ * to annotate a property or field of an entity class, mapped
+ * superclass, or embeddable class.
  *
  * <pre>
- *   Example:
+ *    Example:
  *
- *   &#064;Id
- *   public Long getId() { return id; }
+ *    &#064;Entity
+ *    public class Employee {
+ *        &#064;Id int id;
+ *        &#064;Transient User currentUser;
+ *        ...
+ *    }
  * </pre>
- *
- * @see Column
- * @see GeneratedValue
  *
  * @since Java Persistence 1.0
  */
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
 
-public @interface Id {}
+public @interface Transient {}

@@ -16,13 +16,13 @@
 
 package win.doyto.query.service;
 
+import jakarta.persistence.EntityType;
 import org.springframework.beans.factory.BeanFactory;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
-import javax.persistence.EntityType;
 
 /**
  * DataAccessFactory

@@ -16,6 +16,7 @@
 
 package win.doyto.query.test.user;
 
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.DomainPath;
@@ -26,7 +27,6 @@ import win.doyto.query.test.role.RoleStatView;
 import win.doyto.query.test.role.RoleView;
 
 import java.util.List;
-import javax.persistence.Id;
 
 /**
  * UserCountByRoleView

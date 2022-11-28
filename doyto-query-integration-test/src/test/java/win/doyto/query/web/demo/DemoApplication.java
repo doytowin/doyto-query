@@ -16,7 +16,6 @@
 
 package win.doyto.query.web.demo;
 
-import com.mongodb.client.MongoClient;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
@@ -25,8 +24,6 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.jdbc.JdbcDataQueryClient;
-import win.doyto.query.mongodb.session.MongoSessionSupplier;
-import win.doyto.query.mongodb.session.MongoSessionThreadLocalSupplier;
 import win.doyto.query.web.WebMvcConfigurerAdapter;
 
 /**
@@ -45,11 +42,6 @@ public class DemoApplication extends WebMvcConfigurerAdapter {
     @Bean
     public DataQueryClient jdbcDataQueryClient(JdbcOperations jdbcOperations) {
         return new JdbcDataQueryClient(jdbcOperations);
-    }
-
-    @Bean
-    public MongoSessionSupplier mongoSessionSupplier(MongoClient mongoClient) {
-        return MongoSessionThreadLocalSupplier.create(mongoClient);
     }
 
 }

@@ -16,12 +16,12 @@
 
 package win.doyto.query.web.demo.module.user;
 
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
-import javax.persistence.Id;
 
 /**
  * UserDetailEntity

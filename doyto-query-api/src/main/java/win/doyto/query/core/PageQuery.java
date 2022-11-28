@@ -16,6 +16,7 @@
 
 package win.doyto.query.core;
 
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +25,6 @@ import lombok.experimental.SuperBuilder;
 import win.doyto.query.validation.PageGroup;
 
 import java.util.regex.Pattern;
-import javax.persistence.Transient;
 
 /**
  * PageQuery
@@ -54,7 +54,7 @@ public class PageQuery implements DoytoQuery {
      * Sorting field, format: field1,desc;field2,asc;field(col,'v1','v2')
      */
     @Transient
-    @javax.validation.constraints.Pattern(regexp = SORT_RX, message = "Sorting field format error", groups = PageGroup.class)
+    @jakarta.validation.constraints.Pattern(regexp = SORT_RX, message = "Sorting field format error", groups = PageGroup.class)
     private String sort;
 
     public void setPage(Integer pageNumber) {

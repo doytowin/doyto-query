@@ -17,6 +17,7 @@
 package win.doyto.query.web.component;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
@@ -32,8 +33,6 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import win.doyto.query.web.response.ErrorCode;
 import win.doyto.query.web.response.ErrorCodeException;
 import win.doyto.query.web.response.ErrorResponse;
-
-import javax.validation.ConstraintViolationException;
 
 import static win.doyto.query.web.response.PresetErrorCode.*;
 
@@ -71,8 +70,8 @@ class CommonExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ErrorCode httpMessageNotReadableException(HttpMessageNotReadableException e) {
         log.error("HttpMessageNotReadableException: " + e.getMessage(), e);
-        if (e.getCause() instanceof InvalidFormatException) {
-            return errorCodeI18nService.buildErrorCode(ARGUMENT_FORMAT_ERROR, ((InvalidFormatException) e.getCause()).getValue());
+        if (e.getCause() instanceof InvalidFormatException ife) {
+            return errorCodeI18nService.buildErrorCode(ARGUMENT_FORMAT_ERROR, ife.getValue());
         }
         return errorCodeI18nService.buildErrorCode(REQUEST_BODY_ERROR);
     }

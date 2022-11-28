@@ -17,6 +17,7 @@
 package win.doyto.query.web.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import jakarta.annotation.Resource;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,8 +37,6 @@ import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import javax.annotation.Resource;
 
 /**
  * AbstractController
@@ -146,7 +145,7 @@ abstract class AbstractController<
         if (requests.size() == 1) {
             service.create(buildEntity(requests.get(0)));
         } else {
-            service.create(requests.stream().map(this::buildEntity).collect(Collectors.toList()));
+            service.create(requests.stream().map(this::buildEntity).toList());
         }
     }
 

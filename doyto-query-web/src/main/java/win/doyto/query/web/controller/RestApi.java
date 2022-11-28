@@ -38,7 +38,7 @@ public interface RestApi<I, Q extends DoytoQuery, R, S> {
 
     long count(Q q);
 
-    @GetMapping
+    @GetMapping("/")
     PageList<S> page(@Validated(PageGroup.class) Q q);
 
     @GetMapping("{id}")
@@ -57,7 +57,7 @@ public interface RestApi<I, Q extends DoytoQuery, R, S> {
         create(Collections.singletonList(request));
     }
 
-    @PostMapping
+    @PostMapping("/")
     void create(@RequestBody List<R> requests);
 
 }

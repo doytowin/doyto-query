@@ -16,12 +16,12 @@
 
 package win.doyto.query.util.menu;
 
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.entity.AbstractPersistable;
 
 import java.util.Objects;
-import javax.persistence.Entity;
 
 /**
  * MenuEntity

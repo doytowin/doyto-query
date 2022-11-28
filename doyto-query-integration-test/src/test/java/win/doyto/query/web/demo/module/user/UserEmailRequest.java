@@ -16,9 +16,8 @@
 
 package win.doyto.query.web.demo.module.user;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * UserIdRequest

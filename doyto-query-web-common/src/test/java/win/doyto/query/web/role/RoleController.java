@@ -16,6 +16,9 @@
 
 package win.doyto.query.web.role;
 
+import jakarta.annotation.Resource;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -29,9 +32,6 @@ import win.doyto.query.web.response.JsonResponse;
 import win.doyto.query.web.response.PresetErrorCode;
 
 import java.util.List;
-import javax.annotation.Resource;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  * UserController
@@ -52,7 +52,7 @@ public class RoleController {
         return ErrorCode.build((RoleEntity) null);
     }
 
-    @PostMapping
+    @PostMapping("/")
     public void create(@RequestBody List<RoleEntity> requests) {
         listValidator.validateList(requests);
         throw new DuplicateKeyException("");

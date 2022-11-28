@@ -16,6 +16,8 @@
 
 package win.doyto.query.web.util;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -25,8 +27,6 @@ import win.doyto.query.web.response.ErrorCode;
 
 import java.io.PrintWriter;
 import java.util.Enumeration;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Created by IntelliJ IDEA.
@@ -67,7 +67,7 @@ public class HttpUtil {
     }
 
     public static void writeJson(HttpServletResponse response, Enum<?> content) {
-        writeJson(response, content instanceof ErrorCode ? ErrorCode.build((ErrorCode) content) : content);
+        writeJson(response, content instanceof ErrorCode errorCode ? ErrorCode.build(errorCode) : content);
     }
 
     @SneakyThrows

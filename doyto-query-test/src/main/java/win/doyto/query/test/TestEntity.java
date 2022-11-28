@@ -16,6 +16,9 @@
 
 package win.doyto.query.test;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.entity.AbstractPersistable;
@@ -23,9 +26,6 @@ import win.doyto.query.entity.AbstractPersistable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
 
 /**
  * TestEntity

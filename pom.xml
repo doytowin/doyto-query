@@ -35,7 +35,8 @@
     <properties>
         <revision>2.0.0-SNAPSHOT</revision>
 
-        <spring-boot.version>2.7.5</spring-boot.version>
+        <java.version>17</java.version>
+        <spring-boot.version>3.0.0-RC2</spring-boot.version>
         <snakeyaml.version>1.33</snakeyaml.version>
 
         <sourceDirectory>src/main/java</sourceDirectory>
@@ -125,6 +126,19 @@
         </dependencies>
     </dependencyManagement>
 
+    <repositories>
+        <repository>
+            <id>SpringBoot</id>
+            <url>https://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
     <build>
         <sourceDirectory>${sourceDirectory}</sourceDirectory>
         <testResources>
@@ -148,6 +162,15 @@
             </testResource>
         </testResources>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <release>17</release>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-install-plugin</artifactId>

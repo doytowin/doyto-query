@@ -16,6 +16,9 @@
 
 package win.doyto.query.service;
 
+import jakarta.annotation.Resource;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityType;
 import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.beans.BeansException;
@@ -44,10 +47,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
-import javax.annotation.Resource;
-import javax.persistence.Entity;
-import javax.persistence.EntityType;
 
 /**
  * AbstractDynamicService
@@ -110,7 +109,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     @SuppressWarnings("java:S4973")
     @Value("${doyto.query.caches:}")
     public void setCacheList(String caches) {
-        List<String> cacheList = Arrays.stream(caches.split("[,\\s]")).filter(s -> !s.isEmpty()).collect(Collectors.toList());
+        List<String> cacheList = Arrays.stream(caches.split("[,\\s]")).filter(s -> !s.isEmpty()).toList();
         if (cacheManager != null) {
             String cacheName = getCacheName();
             if (cacheList.contains(cacheName) || cacheName != entityClass.getSimpleName().intern()) {

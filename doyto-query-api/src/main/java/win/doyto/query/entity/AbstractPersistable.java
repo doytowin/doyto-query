@@ -16,6 +16,10 @@
 
 package win.doyto.query.entity;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.validation.CreateGroup;
@@ -23,10 +27,6 @@ import win.doyto.query.validation.PatchGroup;
 import win.doyto.query.validation.UpdateGroup;
 
 import java.io.Serializable;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 
 /**
  * AbstractId

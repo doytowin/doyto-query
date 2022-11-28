@@ -16,6 +16,7 @@
 
 package win.doyto.query.web.component;
 
+import jakarta.annotation.Resource;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.SmartValidator;
@@ -25,7 +26,6 @@ import win.doyto.query.web.response.ErrorResponse;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Resource;
 
 import static win.doyto.query.web.response.PresetErrorCode.ARGUMENT_VALIDATION_FAILED;
 

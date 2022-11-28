@@ -32,7 +32,6 @@ import win.doyto.query.test.user.UserQuery;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -103,7 +102,7 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
             "vip, 1 4",
     })
     void queryUserByPermAndDifferentRoleCondition(String roleNameLike, String ids) {
-        List<Long> expected = Arrays.stream(ids.split(" ")).map(Long::valueOf).collect(Collectors.toList());
+        List<Long> expected = Arrays.stream(ids.split(" ")).map(Long::valueOf).toList();
 
         RoleQuery roleQuery = RoleQuery.builder().roleNameLike(roleNameLike).build();
         UserQuery userQuery = UserQuery

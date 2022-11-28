@@ -16,6 +16,8 @@
 
 package win.doyto.query.web.response;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Path;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Delegate;
@@ -25,8 +27,6 @@ import org.springframework.validation.FieldError;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.validation.ConstraintViolation;
-import javax.validation.Path;
 
 /**
  * 返回给移动客户端的JSON对象的结构
@@ -48,7 +48,7 @@ public class ErrorResponse implements ErrorCode {
 
     public ErrorResponse(ErrorCode errorCode, List<BindingResult> bindingResults) {
         this.errorCode = errorCode;
-        this.hints = bindingResults.stream().map(this::buildHints).collect(Collectors.toList());
+        this.hints = bindingResults.stream().map(this::buildHints).toList();
     }
 
     private Map<String, String> buildHints(BindingResult bindingResult) {

@@ -16,6 +16,8 @@
 
 package win.doyto.query.memory;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,8 +39,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 
 import static win.doyto.query.core.QuerySuffix.isValidValue;
 import static win.doyto.query.core.QuerySuffix.resolve;
@@ -197,6 +197,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
 
     @Override
     public List<E> query(Q query) {
+        @SuppressWarnings("java:S6204")
         List<E> queryList = entitiesMap
                 .values().stream()
                 .filter(item -> filterByQuery(query, item))
@@ -226,7 +227,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         List<E> entities = query(q);
         List<V> objects = new ArrayList<>(entities.size());
         if (columns.length == 1) {
-            return entities.stream().map(entity -> (V) readField(entity, columns[0])).collect(Collectors.toList());
+            return entities.stream().map(entity -> (V) readField(entity, columns[0])).toList();
         } else {
             for (E e : entities) {
                 objects.add(BeanUtil.convertTo(e, classV));

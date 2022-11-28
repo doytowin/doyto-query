@@ -16,6 +16,7 @@
 
 package win.doyto.query.web.demo.test;
 
+import jakarta.annotation.Resource;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpSession;
@@ -27,8 +28,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.transaction.annotation.Transactional;
 import win.doyto.query.web.demo.DemoApplication;
 import win.doyto.query.web.response.ErrorCode;
-
-import javax.annotation.Resource;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;

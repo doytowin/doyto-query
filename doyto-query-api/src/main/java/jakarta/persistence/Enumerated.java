@@ -13,14 +13,13 @@
  *     Linda DeMichiel - Java Persistence 2.0
  *
  ******************************************************************************/
-package javax.persistence;
+package jakarta.persistence;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static javax.persistence.EnumType.ORDINAL;
 
 /**
  * Specifies that a persistent property or field should be persisted
@@ -54,5 +53,5 @@ import static javax.persistence.EnumType.ORDINAL;
 public @interface Enumerated {
 
     /** (Optional) The type used in mapping an enum type. */
-    EnumType value() default ORDINAL;
+    EnumType value() default EnumType.ORDINAL;
 }

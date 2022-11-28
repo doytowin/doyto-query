@@ -36,7 +36,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import static win.doyto.query.sql.RelationalQueryBuilder.*;
 
@@ -99,19 +98,18 @@ public class JdbcDataQueryClient implements DataQueryClient {
         }
         // used for every subdomain query
         Class<I> mainIdClass = resolveKeyClass(mainEntities.get(0));
-        List<I> mainIds = mainEntities.stream().map(Persistable::getId).collect(Collectors.toList());
+        List<I> mainIds = mainEntities.stream().map(Persistable::getId).toList();
 
         FieldUtils.getAllFieldsList(viewClass).stream()
                   .filter(joinField -> joinField.isAnnotationPresent(DomainPath.class))
                   .forEach(joinField -> {
                       // The name of query field for subdomain should follow this format `<joinFieldName>Query`
                       String queryFieldName = buildQueryFieldName(joinField);
-                      Object subQuery = CommonUtil.readField(query, queryFieldName);
-                      if (subQuery instanceof DoytoQuery) {
+                      if (CommonUtil.readField(query, queryFieldName) instanceof DoytoQuery subQuery) {
                           if (Collection.class.isAssignableFrom(joinField.getType())) {
-                              queryEntitiesForJoinField(joinField, mainEntities, mainIds, (DoytoQuery) subQuery, mainIdClass);
+                              queryEntitiesForJoinField(joinField, mainEntities, mainIds, subQuery, mainIdClass);
                           } else {
-                              queryEntityForJoinField(joinField, mainEntities, mainIds, (DoytoQuery) subQuery, mainIdClass);
+                              queryEntityForJoinField(joinField, mainEntities, mainIds, subQuery, mainIdClass);
                           }
                       }
                   });

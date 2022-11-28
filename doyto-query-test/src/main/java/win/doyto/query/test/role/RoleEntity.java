@@ -16,12 +16,11 @@
 
 package win.doyto.query.test.role;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.entity.AbstractCommonEntity;
 import win.doyto.query.validation.CreateGroup;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * UserEntity

@@ -38,7 +38,6 @@ import win.doyto.query.web.config.WebComponentsConfiguration;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * WebMvcConfigurerAdapter
@@ -63,9 +62,9 @@ public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
             String className = converter.getClass().getName();
             if (!retain.contains(className)) {
                 retain.add(className);
-                if (converter instanceof MappingJackson2HttpMessageConverter) {
+                if (converter instanceof MappingJackson2HttpMessageConverter cvt) {
                     backup.add(0, converter);
-                    configMappingJackson2HttpMessageConverter((MappingJackson2HttpMessageConverter) converter);
+                    configMappingJackson2HttpMessageConverter(cvt);
                 } else {
                     backup.add(converter);
                 }
@@ -103,18 +102,11 @@ public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
 
     @Bean
     public LocaleResolver localeResolver() {
-        CookieLocaleResolver cookieLocaleResolver = new CookieLocaleResolver() {
-            @Override
-            protected Locale determineDefaultLocale(HttpServletRequest request) {
-                String acceptLanguage = request.getHeader(HttpHeaders.ACCEPT_LANGUAGE);
-                if (StringUtils.isBlank(acceptLanguage)) {
-                    return super.determineDefaultLocale(request);
-                }
-                return request.getLocale();
-            }
-        };
-        cookieLocaleResolver.setDefaultLocale(Locale.SIMPLIFIED_CHINESE);
-        cookieLocaleResolver.setCookieName("locale");
+        CookieLocaleResolver cookieLocaleResolver = new CookieLocaleResolver("locale");
+        cookieLocaleResolver.setDefaultLocaleFunction(request -> {
+            String acceptLanguage = request.getHeader(HttpHeaders.ACCEPT_LANGUAGE);
+            return StringUtils.isBlank(acceptLanguage) ? Locale.SIMPLIFIED_CHINESE : request.getLocale();
+        });
         return cookieLocaleResolver;
     }
 

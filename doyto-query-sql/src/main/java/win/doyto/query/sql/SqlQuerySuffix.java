@@ -16,6 +16,8 @@
 
 package win.doyto.query.sql;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,8 +32,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 
 import static win.doyto.query.sql.Constant.*;
 

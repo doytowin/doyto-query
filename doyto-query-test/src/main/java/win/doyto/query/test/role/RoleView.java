@@ -16,6 +16,7 @@
 
 package win.doyto.query.test.role;
 
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.DomainPath;
@@ -24,7 +25,6 @@ import win.doyto.query.test.perm.PermView;
 import win.doyto.query.test.user.UserView;
 
 import java.util.List;
-import javax.persistence.Id;
 
 /**
  * UserEntity

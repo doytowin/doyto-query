@@ -16,6 +16,8 @@
 
 package win.doyto.query.web.demo.module.user;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -28,8 +30,6 @@ import win.doyto.query.web.response.JsonResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import javax.validation.Valid;
-import javax.validation.constraints.Size;
 
 /**
  * UserController

@@ -16,14 +16,13 @@
 
 package win.doyto.query.web.demo.module.user;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.entity.AbstractCommonEntity;
 import win.doyto.query.validation.CreateGroup;
-
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.validation.constraints.NotNull;
 
 /**
  * UserEntity

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package javax.persistence;
+package jakarta.persistence;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

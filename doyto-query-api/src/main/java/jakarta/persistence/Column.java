@@ -13,7 +13,7 @@
  *     Linda DeMichiel - Java Persistence 2.0
  *
  ******************************************************************************/
-package javax.persistence;
+package jakarta.persistence;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

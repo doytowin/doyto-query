@@ -16,6 +16,7 @@
 
 package win.doyto.query.service;
 
+import jakarta.persistence.EntityType;
 import lombok.experimental.UtilityClass;
 import org.springframework.beans.factory.BeanFactory;
 import win.doyto.query.core.DataAccess;
@@ -26,7 +27,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
-import javax.persistence.EntityType;
 
 /**
  * DataAccessManager

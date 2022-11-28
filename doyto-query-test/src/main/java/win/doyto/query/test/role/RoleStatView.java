@@ -16,11 +16,11 @@
 
 package win.doyto.query.test.role;
 
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import javax.persistence.Entity;
 
 /**
  * RoleStatView

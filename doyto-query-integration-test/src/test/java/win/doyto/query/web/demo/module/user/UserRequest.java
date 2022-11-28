@@ -16,13 +16,12 @@
 
 package win.doyto.query.web.demo.module.user;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.validation.CreateGroup;
 import win.doyto.query.validation.PatchGroup;
 import win.doyto.query.validation.UpdateGroup;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * UserRequest

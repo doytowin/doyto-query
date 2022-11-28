@@ -16,6 +16,7 @@
 
 package win.doyto.query.sql;
 
+import jakarta.persistence.Id;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.config.GlobalConfiguration;
@@ -29,7 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
-import javax.persistence.Id;
 
 import static win.doyto.query.sql.Constant.*;
 import static win.doyto.query.util.CommonUtil.*;
@@ -57,7 +57,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
 
         wildInsertValue = fields.stream().map(f -> PLACE_HOLDER).collect(CLT_COMMA_WITH_PAREN);
 
-        List<String> columnList = fields.stream().map(ColumnUtil::resolveColumn).collect(Collectors.toList());
+        List<String> columnList = fields.stream().map(ColumnUtil::resolveColumn).toList();
         insertColumns = columnList.stream().collect(CLT_COMMA_WITH_PAREN);
         wildSetClause = columnList.stream().map(c -> c + EQUAL_HOLDER).collect(Collectors.joining(SEPARATOR));
 

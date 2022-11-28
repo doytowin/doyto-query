@@ -16,6 +16,8 @@
 
 package win.doyto.query.jdbc;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.jdbc.core.*;
 import win.doyto.query.core.DataAccess;
@@ -33,8 +35,6 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 
 /**
  * JdbcDataAccess
