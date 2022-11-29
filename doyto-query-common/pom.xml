@@ -29,6 +29,11 @@
 
     <artifactId>doyto-query-common</artifactId>
     <name>doyto-query-common</name>
+    <description>The common package for other packages</description>
+
+    <properties>
+        <skipDeploy>false</skipDeploy>
+    </properties>
 
     <dependencies>
         <dependency>

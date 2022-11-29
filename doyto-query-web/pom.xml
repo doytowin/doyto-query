@@ -29,6 +29,11 @@
 
     <artifactId>doyto-query-web</artifactId>
     <name>doyto-query-web</name>
+    <description>The web layer integrate with Spring Web</description>
+
+    <properties>
+        <skipDeploy>false</skipDeploy>
+    </properties>
 
     <dependencies>
 

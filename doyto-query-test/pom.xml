@@ -28,6 +28,11 @@
 
     <artifactId>doyto-query-test</artifactId>
     <name>doyto-query-test</name>
+    <description>The test package for DoytoQuery Library</description>
+
+    <properties>
+        <skipDeploy>false</skipDeploy>
+    </properties>
 
     <dependencies>
         <dependency>
