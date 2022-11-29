@@ -3,7 +3,7 @@
     {
       "name": "doyto.query.config.map-camel-case-to-underscore",
       "type": "java.lang.Boolean",
-      "description": "True to map camelCase to under_score. Default: false."
+      "description": "True to map camel-cased field names to underscored column names, otherwise keep camel-cased. Default: true."
     },
     {
       "name": "doyto.query.config.ignore-cache-exception",
