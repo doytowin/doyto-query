@@ -21,7 +21,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcOperations;
 import win.doyto.query.core.PageList;
 import win.doyto.query.test.menu.MenuQuery;
 import win.doyto.query.test.menu.MenuView;
@@ -33,6 +32,7 @@ import win.doyto.query.test.role.RoleViewQuery;
 import win.doyto.query.test.user.*;
 
 import java.util.List;
+import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,8 +45,8 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
     private JdbcDataQueryClient jdbcDataQueryClient;
 
     @BeforeEach
-    void setUp(@Autowired JdbcOperations jdbcOperations) {
-        jdbcDataQueryClient = new JdbcDataQueryClient(jdbcOperations);
+    void setUp(@Autowired DataSource dataSource) {
+        jdbcDataQueryClient = new JdbcDataQueryClient(dataSource);
     }
 
     @Test

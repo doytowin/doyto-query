@@ -17,7 +17,6 @@
 package win.doyto.query.jdbc;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.jdbc.core.JdbcOperations;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.entity.Persistable;
@@ -25,6 +24,7 @@ import win.doyto.query.service.DataAccessFactory;
 
 import java.io.Serializable;
 import javax.persistence.EntityType;
+import javax.sql.DataSource;
 
 /**
  * JdbcDataAccessFactory
@@ -42,8 +42,8 @@ public class JdbcDataAccessFactory implements DataAccessFactory {
     @Override
     public <E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
     DataAccess<E, I, Q> createDataAccess(BeanFactory beanFactory, Class<E> entityClass) {
-        JdbcOperations jdbcOperations = beanFactory.getBean(JdbcOperations.class);
-        return new JdbcDataAccess<>(jdbcOperations, entityClass);
+        DataSource dataSource = beanFactory.getBean(DataSource.class);
+        return new JdbcDataAccess<>(dataSource, entityClass);
     }
 
 }

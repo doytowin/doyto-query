@@ -17,7 +17,6 @@
 package win.doyto.query.jdbc;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 import win.doyto.query.config.GlobalConfiguration;
@@ -29,6 +28,7 @@ import win.doyto.query.sql.SqlAndArgs;
 
 import java.util.List;
 import java.util.Set;
+import javax.sql.DataSource;
 
 /**
  * JdbcAssociationService
@@ -62,8 +62,8 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
     }
 
     @Autowired
-    public void setJdbcOperations(JdbcOperations jdbcOperations) {
-        this.databaseOperations = new DatabaseTemplate(jdbcOperations);
+    public void setDataSource(DataSource dataSource) {
+        this.databaseOperations = new JdbcDatabaseOperations(dataSource);
     }
 
     @Override

@@ -20,7 +20,6 @@ import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.AggregationQuery;
@@ -37,6 +36,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import javax.sql.DataSource;
 
 import static win.doyto.query.sql.RelationalQueryBuilder.*;
 
@@ -62,8 +62,8 @@ public class JdbcDataQueryClient implements DataQueryClient {
     private static final Map<Class<?>, RowMapper<?>> holder = new ConcurrentHashMap<>();
     private final DatabaseOperations databaseOperations;
 
-    public JdbcDataQueryClient(JdbcOperations jdbcOperations) {
-        this.databaseOperations = new DatabaseTemplate(jdbcOperations);
+    public JdbcDataQueryClient(DataSource dataSource) {
+        this.databaseOperations = new JdbcDatabaseOperations(dataSource);
     }
 
     @SuppressWarnings("unchecked")

@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.sql.DataSource;
 
 /**
  * JdbcDataAccess
@@ -60,6 +61,9 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
 
     public JdbcDataAccess(JdbcOperations jdbcOperations, Class<E> entityClass) {
         this(new DatabaseTemplate(jdbcOperations), entityClass, new BeanPropertyRowMapper<>(entityClass));
+    }
+    public JdbcDataAccess(DataSource dataSource, Class<E> entityClass) {
+        this(new JdbcDatabaseOperations(dataSource), entityClass, new BeanPropertyRowMapper<>(entityClass));
     }
 
     @SuppressWarnings("unchecked")
