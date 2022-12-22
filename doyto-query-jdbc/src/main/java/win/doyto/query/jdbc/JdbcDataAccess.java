@@ -72,7 +72,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
 
         Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
         this.isGeneratedId = idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class);
-        this.idClass = BeanUtil.getIdClass(entityClass);
+        this.idClass = BeanUtil.getIdClass(entityClass, idFields[0].getName());
     }
 
     @Override
