@@ -104,7 +104,7 @@ public class JdbcDataQueryClient implements DataQueryClient {
         FieldUtils.getAllFieldsList(viewClass).stream()
                   .filter(joinField -> joinField.isAnnotationPresent(DomainPath.class))
                   .forEach(joinField -> {
-                      // The name of query field for subdomain should follow this format `<joinFieldName>Query`
+                      // The name of query field for subdomain should follow this format `with<JoinFieldName>`
                       String queryFieldName = buildQueryFieldName(joinField);
                       Object subQuery = CommonUtil.readField(query, queryFieldName);
                       if (subQuery instanceof DoytoQuery) {
