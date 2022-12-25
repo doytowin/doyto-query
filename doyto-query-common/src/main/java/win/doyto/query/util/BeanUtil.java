@@ -155,6 +155,10 @@ public class BeanUtil {
         return objectMapper2.updateValue(to, from);
     }
 
+    public static <I> Class<I> getIdClass(Class<?> entityClass) {
+        return getIdClass(entityClass, "id");
+    }
+
     @SneakyThrows
     @SuppressWarnings("unchecked")
     public static <I> Class<I> getIdClass(Class<?> entityClass, String idName) {
