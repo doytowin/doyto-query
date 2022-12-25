@@ -21,11 +21,13 @@ import lombok.Setter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.annotation.GroupBy;
+import win.doyto.query.config.GlobalConfiguration;
 
 import javax.persistence.Entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
 
 /**
  * EntityMetadataTest
@@ -46,9 +48,21 @@ class EntityMetadataTest {
 
     @ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
     @Test
-    void supportGroupByAnnotation() {
+    void supportGroupByAnnotationForUnderscoreColumn() {
         EntityMetadata entityMetadata = new EntityMetadata(ScoreGroupByStudentView.class);
         assertEquals("student_id AS studentId, avg(score) AS avgScore", entityMetadata.getColumnsForSelect());
+        assertEquals(" GROUP BY student_id", entityMetadata.getGroupBySql());
+    }
+
+    @ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ_WRITE)
+    @Test
+    void supportGroupByAnnotationForCamelCaseColumn() {
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
+
+        EntityMetadata entityMetadata = new EntityMetadata(ScoreGroupByStudentView.class);
+        assertEquals("studentId, avg(score) AS avgScore", entityMetadata.getColumnsForSelect());
         assertEquals(" GROUP BY studentId", entityMetadata.getGroupBySql());
+
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
     }
 }
