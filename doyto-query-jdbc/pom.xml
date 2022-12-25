@@ -28,6 +28,11 @@
 
     <artifactId>doyto-query-jdbc</artifactId>
     <name>doyto-query-jdbc</name>
+    <description>The SQL executed layer based on Spring JDBC</description>
+
+    <properties>
+        <skipDeploy>false</skipDeploy>
+    </properties>
 
     <dependencies>
         <dependency>

@@ -28,6 +28,11 @@
 
     <artifactId>doyto-query-api</artifactId>
     <name>doyto-query-api</name>
+    <description>The core API package of DoytoQuery</description>
+
+    <properties>
+        <skipDeploy>false</skipDeploy>
+    </properties>
 
     <dependencies>
         <dependency>

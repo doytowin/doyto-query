@@ -28,6 +28,11 @@
 
     <artifactId>doyto-query-memory</artifactId>
     <name>doyto-query-memory</name>
+    <description>An in-memory implementation of DoytoQuery</description>
+
+    <properties>
+        <skipDeploy>false</skipDeploy>
+    </properties>
 
     <dependencies>
         <dependency>

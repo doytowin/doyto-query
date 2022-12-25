@@ -28,6 +28,11 @@
 
     <artifactId>doyto-query-geo</artifactId>
     <name>doyto-query-geo</name>
+    <description>The geo package contains the basic data structure for Geo data storage and query</description>
+
+    <properties>
+        <skipDeploy>false</skipDeploy>
+    </properties>
 
     <dependencies>
         <dependency>

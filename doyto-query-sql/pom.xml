@@ -28,6 +28,11 @@
 
     <artifactId>doyto-query-sql</artifactId>
     <name>doyto-query-sql</name>
+    <description>The query object/SQL mapping layer</description>
+
+    <properties>
+        <skipDeploy>false</skipDeploy>
+    </properties>
 
     <dependencies>
         <dependency>
