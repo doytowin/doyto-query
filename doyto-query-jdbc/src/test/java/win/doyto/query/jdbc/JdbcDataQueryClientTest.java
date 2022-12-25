@@ -17,11 +17,8 @@
 package win.doyto.query.jdbc;
 
 import org.assertj.core.groups.Tuple;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcOperations;
 import win.doyto.query.core.PageList;
 import win.doyto.query.test.menu.MenuQuery;
 import win.doyto.query.test.menu.MenuView;
@@ -33,6 +30,7 @@ import win.doyto.query.test.role.RoleViewQuery;
 import win.doyto.query.test.user.*;
 
 import java.util.List;
+import javax.annotation.Resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,12 +40,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author f0rb on 2020-04-11
  */
 class JdbcDataQueryClientTest extends JdbcApplicationTest {
+    @Resource
     private JdbcDataQueryClient jdbcDataQueryClient;
-
-    @BeforeEach
-    void setUp(@Autowired JdbcOperations jdbcOperations) {
-        jdbcDataQueryClient = new JdbcDataQueryClient(jdbcOperations);
-    }
 
     @Test
     void queryForJoin() {
