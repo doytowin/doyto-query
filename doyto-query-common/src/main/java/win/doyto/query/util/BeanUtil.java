@@ -157,8 +157,8 @@ public class BeanUtil {
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public static <I> Class<I> getIdClass(Class<?> entityClass) {
-        PropertyDescriptor propertyDescriptor = new PropertyDescriptor("id", entityClass);
+    public static <I> Class<I> getIdClass(Class<?> entityClass, String idName) {
+        PropertyDescriptor propertyDescriptor = new PropertyDescriptor(idName, entityClass);
         return (Class<I>) propertyDescriptor.getPropertyType();
     }
 

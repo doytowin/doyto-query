@@ -16,11 +16,11 @@
 
 package win.doyto.query.jdbc;
 
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.AggregationQuery;
@@ -57,14 +57,11 @@ import static win.doyto.query.sql.RelationalQueryBuilder.*;
  * @author f0rb on 2019-06-09
  * @since 0.1.3
  */
+@AllArgsConstructor
 public class JdbcDataQueryClient implements DataQueryClient {
 
     private static final Map<Class<?>, RowMapper<?>> holder = new ConcurrentHashMap<>();
     private final DatabaseOperations databaseOperations;
-
-    public JdbcDataQueryClient(JdbcOperations jdbcOperations) {
-        this.databaseOperations = new DatabaseTemplate(jdbcOperations);
-    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -104,7 +101,7 @@ public class JdbcDataQueryClient implements DataQueryClient {
         FieldUtils.getAllFieldsList(viewClass).stream()
                   .filter(joinField -> joinField.isAnnotationPresent(DomainPath.class))
                   .forEach(joinField -> {
-                      // The name of query field for subdomain should follow this format `<joinFieldName>Query`
+                      // The name of query field for subdomain should follow this format `with<JoinFieldName>`
                       String queryFieldName = buildQueryFieldName(joinField);
                       Object subQuery = CommonUtil.readField(query, queryFieldName);
                       if (subQuery instanceof DoytoQuery) {

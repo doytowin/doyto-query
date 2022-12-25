@@ -17,7 +17,10 @@
 package win.doyto.query.jdbc;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.springframework.jdbc.core.*;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.ColumnMapRowMapper;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
@@ -58,11 +61,10 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     private final SingleColumnRowMapper<I> idRowMapper = new SingleColumnRowMapper<>();
     private final Class<I> idClass;
 
-    public JdbcDataAccess(JdbcOperations jdbcOperations, Class<E> entityClass) {
-        this(new DatabaseTemplate(jdbcOperations), entityClass, new BeanPropertyRowMapper<>(entityClass));
+    public JdbcDataAccess(DatabaseOperations databaseOperations, Class<E> entityClass) {
+        this(databaseOperations, entityClass, new BeanPropertyRowMapper<>(entityClass));
     }
 
-    @SuppressWarnings("unchecked")
     public JdbcDataAccess(DatabaseOperations databaseOperations, Class<E> entityClass, RowMapper<E> rowMapper) {
         classRowMapperMap.put(entityClass, rowMapper);
         this.databaseOperations = databaseOperations;
@@ -72,7 +74,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
 
         Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
         this.isGeneratedId = idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class);
-        this.idClass = BeanUtil.getIdClass(entityClass);
+        this.idClass = BeanUtil.getIdClass(entityClass, idFields[0].getName());
     }
 
     @Override

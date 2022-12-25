@@ -120,6 +120,6 @@ class BeanUtilTest {
 
     @Test
     void getIdClass() {
-        assertThat(BeanUtil.getIdClass(TestEntity.class)).isEqualTo(Integer.class);
+        assertThat(BeanUtil.getIdClass(TestEntity.class, "id")).isEqualTo(Integer.class);
     }
 }

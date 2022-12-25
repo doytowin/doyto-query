@@ -66,11 +66,12 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
         // init fields
         fields = ColumnUtil.getColumnFieldsFrom(entityClass);
         Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
-        idClass = BeanUtil.getIdClass(entityClass);
         if (idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class)) {
             idField = idFields[0];
+            idClass = BeanUtil.getIdClass(entityClass, idField.getName());
         } else {
             idField = null;
+            idClass = null;
         }
     }
 
