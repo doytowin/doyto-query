@@ -20,7 +20,6 @@ import lombok.Getter;
 import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.util.ColumnUtil;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -66,8 +65,8 @@ public class EntityMetadata {
         String groupBy = "";
 
         groupByColumns = ColumnUtil.filterFields(entityClass, field -> field.isAnnotationPresent(GroupBy.class))
-                                        .map(Field::getName)
-                                        .collect(Collectors.joining(SEPARATOR));
+                                   .map(field -> ColumnUtil.convertColumn(field.getName()))
+                                   .collect(Collectors.joining(SEPARATOR));
         if (!groupByColumns.isEmpty()) {
             groupBy = " GROUP BY " + this.groupByColumns;
         }
