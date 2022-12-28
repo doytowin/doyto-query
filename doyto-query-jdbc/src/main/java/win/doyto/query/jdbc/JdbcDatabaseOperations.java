@@ -25,7 +25,6 @@ import win.doyto.query.sql.SqlAndArgs;
 
 import java.sql.*;
 import java.util.List;
-import java.util.Map;
 import javax.sql.DataSource;
 
 /**
@@ -100,7 +99,7 @@ public class JdbcDatabaseOperations implements DatabaseOperations {
     }
 
     @Override
-    public <I, R> Map<I, List<R>> query(SqlAndArgs sqlAndArgs, ResultSetExtractor<Map<I, List<R>>> resultSetExtractor) {
+    public <R> R query(SqlAndArgs sqlAndArgs, ResultSetExtractor<R> resultSetExtractor) {
         return withTransaction(dataSource, connection -> {
             try (PreparedStatement ps = connection.prepareStatement(sqlAndArgs.getSql())) {
                 setParameters(sqlAndArgs, ps);

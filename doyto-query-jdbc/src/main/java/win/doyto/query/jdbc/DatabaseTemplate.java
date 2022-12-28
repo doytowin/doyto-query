@@ -24,7 +24,6 @@ import win.doyto.query.sql.SqlAndArgs;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Map;
 
 /**
  * DbTemplate
@@ -43,7 +42,7 @@ public class DatabaseTemplate implements DatabaseOperations {
     }
 
     @Override
-    public <I, R> Map<I, List<R>> query(SqlAndArgs sqlAndArgs, ResultSetExtractor<Map<I, List<R>>> resultSetExtractor) {
+    public <R> R query(SqlAndArgs sqlAndArgs, ResultSetExtractor<R> resultSetExtractor) {
         return jdbcOperations.query(sqlAndArgs.getSql(), resultSetExtractor, sqlAndArgs.getArgs());
     }
 
