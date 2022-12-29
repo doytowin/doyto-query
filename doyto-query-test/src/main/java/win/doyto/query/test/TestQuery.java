@@ -96,6 +96,9 @@ public class TestQuery extends PageQuery {
     @Subquery(select = "score", from = "t_user")
     private TestQuery scoreGtAny;
 
+    @Subquery(select = "score", from = "t_user")
+    private TestQuery scoreLtAll;
+
     // for MongoDB
     private Boolean statusExists;
 

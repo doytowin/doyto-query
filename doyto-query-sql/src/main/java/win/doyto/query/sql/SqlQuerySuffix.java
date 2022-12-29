@@ -76,6 +76,7 @@ enum SqlQuerySuffix {
     Le("<="),
     Eq("="),
     Any("ANY"),
+    All("ALL"),
     NONE("=");
 
     private static final Pattern SUFFIX_PTN = Pattern.compile(

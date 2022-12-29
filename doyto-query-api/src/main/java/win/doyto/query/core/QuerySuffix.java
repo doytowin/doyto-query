@@ -56,6 +56,7 @@ public enum QuerySuffix {
     Le,
     Eq,
     Any,
+    All,
 
     Exists, // for MongoDB
 
