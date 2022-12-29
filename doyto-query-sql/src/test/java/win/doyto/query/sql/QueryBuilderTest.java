@@ -405,4 +405,13 @@ class QueryBuilderTest {
         assertThat(argList).containsExactly(false);
     }
 
+    @Test
+    void buildSubqueryWithComparisonOperators() {
+        TestQuery queryByInvalid = TestQuery.builder().valid(false).build();
+        TestQuery testQuery = TestQuery.builder().scoreGt(queryByInvalid).build();
+        assertEquals("SELECT * FROM user WHERE score > (SELECT avg(score) FROM t_user WHERE valid = ?)",
+                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly(false);
+    }
+
 }

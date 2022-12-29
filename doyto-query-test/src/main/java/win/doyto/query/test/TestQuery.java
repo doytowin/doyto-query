@@ -99,6 +99,9 @@ public class TestQuery extends PageQuery {
     @Subquery(select = "score", from = "t_user")
     private TestQuery scoreLtAll;
 
+    @Subquery(select = "avg(score)", from = "t_user")
+    private TestQuery scoreGt;
+
     // for MongoDB
     private Boolean statusExists;
 
