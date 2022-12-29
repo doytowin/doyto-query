@@ -415,6 +415,15 @@ class QueryBuilderTest {
     }
 
     @Test
+    void buildForSameColumnAndOperator() {
+        TestQuery queryByInvalid = TestQuery.builder().valid(false).build();
+        TestQuery testQuery = TestQuery.builder().scoreGt1(60.).scoreGt(queryByInvalid).build();
+        assertEquals("SELECT * FROM user WHERE score > (SELECT avg(score) FROM t_user WHERE valid = ?) AND score > ?",
+                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly(false, 60.);
+    }
+
+    @Test
     void buildInQueryClause() {
         TestQuery queryByInvalid = TestQuery.builder().valid(false).build();
         TestQuery testQuery = TestQuery.builder().scoreIn(queryByInvalid).build();

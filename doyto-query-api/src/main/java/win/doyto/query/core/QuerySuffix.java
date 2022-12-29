@@ -77,7 +77,7 @@ public enum QuerySuffix {
             Arrays.stream(values())
                   .filter(querySuffix -> querySuffix != NONE)
                   .map(Enum::name)
-                  .collect(Collectors.joining("|", "(", ")$")));
+                  .collect(Collectors.joining("|", "(", ")\\d*$")));
 
     QuerySuffix() {
         this(c -> true);
@@ -87,7 +87,7 @@ public enum QuerySuffix {
 
     public static QuerySuffix resolve(String fieldName) {
         Matcher matcher = SUFFIX_PTN.matcher(fieldName);
-        return matcher.find() ? valueOf(matcher.group()) : NONE;
+        return matcher.find() ? valueOf(matcher.group(1)) : NONE;
     }
 
     public static boolean isValidValue(Object value, Field field) {
@@ -98,8 +98,7 @@ public enum QuerySuffix {
     }
 
     public String resolveColumnName(String fieldName) {
-        String suffix = this.name();
-        return fieldName.endsWith(suffix) ? fieldName.substring(0, fieldName.length() - suffix.length()) : fieldName;
+        return SUFFIX_PTN.matcher(fieldName).replaceAll("");
     }
 
     public boolean shouldIgnore(Object value) {
