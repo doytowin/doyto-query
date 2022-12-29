@@ -109,7 +109,7 @@ public enum QuerySuffix {
     static class InPredicate implements Predicate<Object> {
         @Override
         public boolean test(Object o) {
-            if (o instanceof Collection) {
+            if (o instanceof Collection || o instanceof DoytoQuery) {
                 return true;
             }
             log.warn("Type of field which ends with In/NotIn should be Collection.");
