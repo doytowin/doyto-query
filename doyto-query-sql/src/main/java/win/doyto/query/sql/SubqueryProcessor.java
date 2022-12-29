@@ -36,14 +36,21 @@ public class SubqueryProcessor implements FieldProcessor.Processor {
     public SubqueryProcessor(Field field) {
         Subquery subquery = field.getAnnotation(Subquery.class);
         String fieldName = field.getName();
-        SqlQuerySuffix querySuffix2 = SqlQuerySuffix.resolve(fieldName);
-        String tempName = querySuffix2.removeSuffix(fieldName);
+        SqlQuerySuffix querySuffix = SqlQuerySuffix.resolve(fieldName);
 
-        SqlQuerySuffix querySuffix1 = SqlQuerySuffix.resolve(tempName);
-        String columnName = querySuffix1.removeSuffix(tempName);
+        String clause;
+        if (querySuffix == SqlQuerySuffix.Any || querySuffix == SqlQuerySuffix.All) {
+            String tempName = querySuffix.removeSuffix(fieldName);
 
-        clauseFormat = (columnName + SPACE + querySuffix1.getOp() + SPACE + querySuffix2.getOp())
-                + OP + SELECT + subquery.select() + FROM + subquery.from() + "%s" + CP;
+            SqlQuerySuffix querySuffix1 = SqlQuerySuffix.resolve(tempName);
+            String columnName = querySuffix1.removeSuffix(tempName);
+
+            clause = columnName + SPACE + querySuffix1.getOp() + SPACE + querySuffix.getOp();
+        } else {
+            String columnName = querySuffix.removeSuffix(fieldName);
+            clause = columnName + SPACE + querySuffix.getOp() + SPACE;
+        }
+        clauseFormat = clause + OP + SELECT + subquery.select() + FROM + subquery.from() + "%s" + CP;
 
     }
 
