@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.annotation.QueryField;
+import win.doyto.query.annotation.Subquery;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Having;
 import win.doyto.query.core.Or;
@@ -59,6 +60,8 @@ final class FieldProcessor {
         } else if (DoytoQuery.class.isAssignableFrom(field.getType())) {
             if (field.isAnnotationPresent(DomainPath.class)) {
                 processor = new DomainPathProcessor(field);
+            } else if (field.isAnnotationPresent(Subquery.class)) {
+                processor = new SubqueryProcessor(field);
             } else {
                 processor = (argList, value) -> null;
             }

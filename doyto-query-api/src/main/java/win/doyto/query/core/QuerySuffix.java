@@ -55,6 +55,8 @@ public enum QuerySuffix {
     Lt,
     Le,
     Eq,
+    Any,
+
     Exists, // for MongoDB
 
     Near(Near.class::isInstance),

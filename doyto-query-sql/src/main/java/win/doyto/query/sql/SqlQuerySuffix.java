@@ -75,6 +75,7 @@ enum SqlQuerySuffix {
     Lt("<"),
     Le("<="),
     Eq("="),
+    Any("ANY"),
     NONE("=");
 
     private static final Pattern SUFFIX_PTN = Pattern.compile(
@@ -117,7 +118,7 @@ enum SqlQuerySuffix {
     static String buildConditionForField(String fieldName, List<Object> argList, Object value) {
         SqlQuerySuffix sqlQuerySuffix = resolve(fieldName);
         value = sqlQuerySuffix.valueProcessor.escapeValue(value);
-        String columnName = StringUtils.removeEnd(fieldName, sqlQuerySuffix.name());
+        String columnName = sqlQuerySuffix.removeSuffix(fieldName);
         if (columnName.startsWith(HAVING_PREFIX)) {
             columnName = columnName.substring(HAVING_PREFIX.length());
             columnName = ColumnUtil.resolveColumn(columnName);
@@ -125,6 +126,10 @@ enum SqlQuerySuffix {
             columnName = ColumnUtil.convertColumn(columnName);
         }
         return sqlQuerySuffix.buildColumnCondition(columnName, argList, value);
+    }
+
+    public String removeSuffix(String fieldName) {
+        return StringUtils.removeEnd(fieldName, this.name());
     }
 
     String buildColumnCondition(String columnName, List<Object> argList, Object value) {
