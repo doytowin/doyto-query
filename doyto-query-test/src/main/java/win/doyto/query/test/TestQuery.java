@@ -23,6 +23,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.QueryField;
+import win.doyto.query.annotation.Subquery;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.perm.PermissionQuery;
 
@@ -91,6 +92,9 @@ public class TestQuery extends PageQuery {
     private Date createTimeLe;
 
     private Boolean valid;
+
+    @Subquery(select = "score", from = "t_user")
+    private TestQuery scoreGtAny;
 
     // for MongoDB
     private Boolean statusExists;
