@@ -396,4 +396,13 @@ class QueryBuilderTest {
         assertThat(argList).containsExactly(false);
     }
 
+    @Test
+    void buildAllClause() {
+        TestQuery queryByInvalid = TestQuery.builder().valid(false).build();
+        TestQuery testQuery = TestQuery.builder().scoreLtAll(queryByInvalid).build();
+        assertEquals("SELECT * FROM user WHERE score < ALL(SELECT score FROM t_user WHERE valid = ?)",
+                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly(false);
+    }
+
 }
