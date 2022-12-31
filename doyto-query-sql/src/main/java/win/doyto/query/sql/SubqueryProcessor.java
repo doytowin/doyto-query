@@ -16,6 +16,7 @@
 
 package win.doyto.query.sql;
 
+import org.apache.commons.lang3.RegExUtils;
 import win.doyto.query.annotation.Subquery;
 import win.doyto.query.core.DoytoQuery;
 
@@ -36,6 +37,7 @@ public class SubqueryProcessor implements FieldProcessor.Processor {
     public SubqueryProcessor(Field field) {
         Subquery subquery = field.getAnnotation(Subquery.class);
         String fieldName = field.getName();
+        fieldName = RegExUtils.removePattern(fieldName, "\\d+$");
         SqlQuerySuffix querySuffix = SqlQuerySuffix.resolve(fieldName);
 
         String clause;

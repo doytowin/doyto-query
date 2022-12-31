@@ -83,7 +83,7 @@ enum SqlQuerySuffix {
             Arrays.stream(values())
                   .filter(querySuffix -> querySuffix != NONE)
                   .map(Enum::name)
-                  .collect(Collectors.joining("|", OP, CP + "\\d*$")));
+                  .collect(Collectors.joining("|", OP, CP + "$")));
 
     private final String op;
     private final ValueProcessor valueProcessor;
@@ -99,7 +99,7 @@ enum SqlQuerySuffix {
 
     static SqlQuerySuffix resolve(String fieldName) {
         Matcher matcher = SUFFIX_PTN.matcher(fieldName);
-        return matcher.find() ? valueOf(matcher.group(1)) : NONE;
+        return matcher.find() ? valueOf(matcher.group()) : NONE;
     }
 
     static String buildConditionForFieldContainsOr(String fieldNameWithOr, List<Object> argList, Object value) {
@@ -130,7 +130,7 @@ enum SqlQuerySuffix {
     }
 
     public String removeSuffix(String fieldName) {
-        return SUFFIX_PTN.matcher(fieldName).replaceAll("");
+        return StringUtils.removeEnd(fieldName, this.name());
     }
 
     String buildColumnCondition(String columnName, List<Object> argList, Object value) {
