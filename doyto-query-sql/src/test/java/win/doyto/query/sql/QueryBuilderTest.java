@@ -441,7 +441,7 @@ class QueryBuilderTest {
     }
 
     @Test
-    void shouldParseField() {
+    void shouldParseFieldWithSubqueryFormat() {
         TestQuery queryByInvalid = TestQuery.builder().valid(false).build();
         TestQuery testQuery = TestQuery.builder().scoreGt$avgScoreFromUser(queryByInvalid).build();
         assertEquals("SELECT * FROM user WHERE score > (SELECT avg(score) FROM t_user WHERE valid = ?)",
