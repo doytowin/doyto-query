@@ -439,4 +439,13 @@ class QueryBuilderTest {
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly(60.);
     }
+
+    @Test
+    void shouldParseField() {
+        TestQuery queryByInvalid = TestQuery.builder().valid(false).build();
+        TestQuery testQuery = TestQuery.builder().scoreGt$avgScoreFromUser(queryByInvalid).build();
+        assertEquals("SELECT * FROM user WHERE score > (SELECT avg(score) FROM t_user WHERE valid = ?)",
+                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly(false);
+    }
 }

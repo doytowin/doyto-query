@@ -35,6 +35,7 @@ import java.util.List;
  *
  * @author f0rb
  */
+@SuppressWarnings("java:S116")
 @Getter
 @Setter
 @SuperBuilder
@@ -103,6 +104,7 @@ public class TestQuery extends PageQuery {
     private TestQuery scoreGt1;
     private Double scoreGt;
     private Double scoreGt2;
+    private TestQuery scoreGt$avgScoreFromUser;
 
     @Subquery(select = "score", from = "t_user")
     private TestQuery scoreIn;
