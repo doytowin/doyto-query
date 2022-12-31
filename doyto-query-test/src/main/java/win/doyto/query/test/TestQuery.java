@@ -100,8 +100,9 @@ public class TestQuery extends PageQuery {
     private TestQuery scoreLtAll;
 
     @Subquery(select = "avg(score)", from = "t_user")
-    private TestQuery scoreGt;
-    private Double scoreGt1;
+    private TestQuery scoreGt1;
+    private Double scoreGt;
+    private Double scoreGt2;
 
     @Subquery(select = "score", from = "t_user")
     private TestQuery scoreIn;
