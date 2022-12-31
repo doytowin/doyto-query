@@ -16,12 +16,12 @@
 
 package win.doyto.query.sql;
 
-import org.apache.commons.lang3.RegExUtils;
 import win.doyto.query.annotation.Subquery;
 import win.doyto.query.core.DoytoQuery;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static win.doyto.query.sql.Constant.*;
 
@@ -32,12 +32,13 @@ import static win.doyto.query.sql.Constant.*;
  * @since 1.0.1
  */
 public class SubqueryProcessor implements FieldProcessor.Processor {
+    private static final Pattern PTN_DIGITS_END = Pattern.compile("\\d++$");
     private final String clauseFormat;
 
     public SubqueryProcessor(Field field) {
         Subquery subquery = field.getAnnotation(Subquery.class);
         String fieldName = field.getName();
-        fieldName = RegExUtils.removePattern(fieldName, "\\d+$");
+        fieldName = PTN_DIGITS_END.matcher(fieldName).replaceFirst(EMPTY);
         SqlQuerySuffix querySuffix = SqlQuerySuffix.resolve(fieldName);
 
         String clause;
