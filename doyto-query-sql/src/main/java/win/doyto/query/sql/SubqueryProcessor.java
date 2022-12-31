@@ -17,10 +17,13 @@
 package win.doyto.query.sql;
 
 import win.doyto.query.annotation.Subquery;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static win.doyto.query.sql.Constant.*;
@@ -33,12 +36,33 @@ import static win.doyto.query.sql.Constant.*;
  */
 public class SubqueryProcessor implements FieldProcessor.Processor {
     private static final Pattern PTN_DIGITS_END = Pattern.compile("\\d++$");
+    private static final Pattern PTN_SUBQUERY = Pattern.compile("(\\w+)\\$(\\w+)From(\\w+)$");
     private final String clauseFormat;
 
     public SubqueryProcessor(Field field) {
         Subquery subquery = field.getAnnotation(Subquery.class);
         String fieldName = field.getName();
         fieldName = PTN_DIGITS_END.matcher(fieldName).replaceFirst(EMPTY);
+        clauseFormat = buildClauseFormat(fieldName, subquery.select(), subquery.from());
+    }
+
+    public SubqueryProcessor(String originFieldName) {
+        Matcher matcher = SubqueryProcessor.matches(originFieldName);
+        assert matcher != null;
+        String fieldName = matcher.group(1);
+        String column = ColumnUtil.resolveColumn(matcher.group(2));
+        String domain = ColumnUtil.convertColumn(matcher.group(3));
+        String table = String.format(GlobalConfiguration.instance().getTableFormat(), domain);
+
+        clauseFormat = buildClauseFormat(fieldName, column, table);
+    }
+
+    public static Matcher matches(String fieldName) {
+        Matcher matcher = PTN_SUBQUERY.matcher(fieldName);
+        return matcher.find() ? matcher : null;
+    }
+
+    private String buildClauseFormat(String fieldName, String column, String table) {
         SqlQuerySuffix querySuffix = SqlQuerySuffix.resolve(fieldName);
 
         String clause;
@@ -53,8 +77,7 @@ public class SubqueryProcessor implements FieldProcessor.Processor {
             String columnName = querySuffix.removeSuffix(fieldName);
             clause = columnName + SPACE + querySuffix.getOp() + SPACE;
         }
-        clauseFormat = clause + OP + SELECT + subquery.select() + FROM + subquery.from() + "%s" + CP;
-
+        return clause + OP + SELECT + column + FROM + table + "%s" + CP;
     }
 
     @Override

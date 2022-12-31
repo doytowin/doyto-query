@@ -18,6 +18,7 @@ package win.doyto.query.sql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.GroupBy;
@@ -44,6 +45,7 @@ import static win.doyto.query.sql.Constant.*;
  * @author f0rb on 2019-06-04
  */
 @SuppressWarnings("java:S1874")
+@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class FieldProcessor {
 
@@ -62,8 +64,13 @@ final class FieldProcessor {
                 processor = new DomainPathProcessor(field);
             } else if (field.isAnnotationPresent(Subquery.class)) {
                 processor = new SubqueryProcessor(field);
+            } else if (SubqueryProcessor.matches(field.getName()) != null) {
+                processor = new SubqueryProcessor(field.getName());
             } else {
-                processor = (argList, value) -> null;
+                processor = (argList, value) -> {
+                    log.warn("Field configuration is invalid: {}.{}", field.getDeclaringClass(), field.getName());
+                    return null;
+                };
             }
         } else if (field.isAnnotationPresent(QueryField.class)) {
             processor = initFieldAnnotatedByQueryField(field);
