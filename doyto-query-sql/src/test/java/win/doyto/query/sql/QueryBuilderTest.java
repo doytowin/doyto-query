@@ -16,7 +16,6 @@
 
 package win.doyto.query.sql;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
@@ -46,14 +45,8 @@ class QueryBuilderTest {
 
     @BeforeEach
     void setUp() {
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
         GlobalConfiguration.instance().setDialect(new SimpleDialect());
         argList = new ArrayList<>();
-    }
-
-    @AfterEach
-    void tearDown() {
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
     }
 
     @Test
@@ -154,7 +147,7 @@ class QueryBuilderTest {
         Date createTimeGt = new Date();
         TestQuery testQuery = TestQuery.builder().username("test").createTimeGt(createTimeGt).build();
 
-        assertEquals("SELECT * FROM user WHERE username = ? AND createTime > ?",
+        assertEquals("SELECT * FROM user WHERE username = ? AND create_time > ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test", createTimeGt);
     }
@@ -164,7 +157,7 @@ class QueryBuilderTest {
         Date date = new Date();
         TestQuery testQuery = TestQuery.builder().username("test").createTimeGe(date).build();
 
-        assertEquals("SELECT * FROM user WHERE username = ? AND createTime >= ?",
+        assertEquals("SELECT * FROM user WHERE username = ? AND create_time >= ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test", date);
     }
@@ -174,7 +167,7 @@ class QueryBuilderTest {
         Date date = new Date();
         TestQuery testQuery = TestQuery.builder().username("test").createTimeLt(date).build();
 
-        assertEquals("SELECT * FROM user WHERE username = ? AND createTime < ?",
+        assertEquals("SELECT * FROM user WHERE username = ? AND create_time < ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test", date);
     }
@@ -184,7 +177,7 @@ class QueryBuilderTest {
         Date date = new Date();
         TestQuery testQuery = TestQuery.builder().username("test").createTimeLe(date).build();
 
-        assertEquals("SELECT * FROM user WHERE username = ? AND createTime <= ?",
+        assertEquals("SELECT * FROM user WHERE username = ? AND create_time <= ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test", date);
     }
@@ -219,20 +212,6 @@ class QueryBuilderTest {
     }
 
     @Test
-    void supportMapFieldToUnderscore() {
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
-
-        Date date = new Date();
-        TestQuery testQuery = TestQuery.builder().usernameOrUserCodeLike("test").createTimeLt(date).build();
-
-        assertEquals("SELECT * FROM user WHERE (username = ? OR user_code LIKE ?) AND create_time < ?",
-                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
-        assertThat(argList).containsExactly("test", "%test%", date);
-
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
-    }
-
-    @Test
     void buildSelectIdWithArgs() {
         TestQuery testQuery = TestQuery.builder().username("test").build();
 
@@ -254,7 +233,7 @@ class QueryBuilderTest {
     @Test
     void defaultEnumOrdinal() {
         TestQuery testQuery = TestQuery.builder().userLevel(TestEnum.VIP).build();
-        assertEquals("SELECT * FROM user WHERE userLevel = ?",
+        assertEquals("SELECT * FROM user WHERE user_level = ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly(0);
 
@@ -299,7 +278,7 @@ class QueryBuilderTest {
     @Test
     void supportNot() {
         TestQuery testQuery = TestQuery.builder().userLevelNot(TestEnum.VIP).build();
-        assertEquals("SELECT * FROM user WHERE userLevel != ?",
+        assertEquals("SELECT * FROM user WHERE user_level != ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly(0);
     }
@@ -323,7 +302,7 @@ class QueryBuilderTest {
     @Test
     void supportResolveEnumListToOrdinalList() {
         TestQuery testQuery = TestQuery.builder().userLevelIn(Arrays.asList(TestEnum.NORMAL)).build();
-        assertEquals("SELECT * FROM user WHERE userLevel IN (?)", testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertEquals("SELECT * FROM user WHERE user_level IN (?)", testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly(1);
     }
 
@@ -435,7 +414,7 @@ class QueryBuilderTest {
     @Test
     void shouldNotParseFieldEndingWithDigitsButNotInstanceOfDoytoQuery() {
         TestQuery testQuery = TestQuery.builder().scoreGt2(60.).build();
-        assertEquals("SELECT * FROM user WHERE scoreGt2 = ?",
+        assertEquals("SELECT * FROM user WHERE score_gt2 = ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly(60.);
     }
