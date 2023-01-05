@@ -36,7 +36,7 @@ import static win.doyto.query.sql.Constant.*;
  */
 public class SubqueryProcessor implements FieldProcessor.Processor {
     private static final Pattern PTN_DIGITS_END = Pattern.compile("\\d++$");
-    private static final Pattern PTN_SUBQUERY = Pattern.compile("(\\w+)\\$(\\w+)From(\\w+)$");
+    private static final Pattern PTN_SUBQUERY = Pattern.compile("^(\\w+)\\$(\\w+)From(\\w+)$");
     private final String clauseFormat;
 
     public SubqueryProcessor(Field field) {

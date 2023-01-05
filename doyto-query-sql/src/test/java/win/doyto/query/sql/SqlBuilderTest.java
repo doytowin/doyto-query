@@ -79,7 +79,7 @@ class SqlBuilderTest {
                 .pageNumber(3).pageSize(10).build();
 
         String expected = "DELETE FROM t_dynamic_f0rb_i18n " +
-                "WHERE id IN (SELECT id FROM t_dynamic_f0rb_i18n WHERE score < ? LIMIT 10 OFFSET 20)";
+                "WHERE id IN (SELECT id FROM t_dynamic_f0rb_i18n t WHERE score < ? LIMIT 10 OFFSET 20)";
         SqlAndArgs sqlAndArgs = sqlBuilder.buildDeleteAndArgs(dynamicQuery);
         assertEquals(expected, sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly(100);
@@ -100,7 +100,7 @@ class SqlBuilderTest {
         SqlAndArgs sqlAndArgs = sqlBuilder.buildPatchAndArgs(entity, dynamicQuery);
 
         String expected = "UPDATE t_dynamic_f0rb_i18n SET user_score = ? " +
-                "WHERE id IN (SELECT id FROM t_dynamic_f0rb_i18n WHERE score < ? LIMIT 10 OFFSET 20)";
+                "WHERE id IN (SELECT id FROM t_dynamic_f0rb_i18n t WHERE score < ? LIMIT 10 OFFSET 20)";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(100, 90);
     }

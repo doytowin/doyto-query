@@ -61,7 +61,11 @@ final class FieldProcessor {
             processor = initFieldMappedByOr(field);
         } else if (DoytoQuery.class.isAssignableFrom(field.getType())) {
             if (field.isAnnotationPresent(DomainPath.class)) {
-                processor = new DomainPathProcessor(field);
+                if (field.getName().endsWith(QuerySuffix.Exists.name())) {
+                    processor = new ExistsProcessor(field);
+                } else {
+                    processor = new DomainPathProcessor(field);
+                }
             } else if (field.isAnnotationPresent(Subquery.class)) {
                 processor = new SubqueryProcessor(field);
             } else if (SubqueryProcessor.matches(field.getName()) != null) {

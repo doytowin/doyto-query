@@ -79,4 +79,8 @@ public class GlobalConfiguration {
     public String formatJoinTable(String domain1, String domain2) {
         return String.format(joinTableFormat, domain1, domain2);
     }
+
+    public static String formatTable(String domain) {
+        return String.format(Singleton.instance.tableFormat, domain);
+    }
 }
