@@ -113,6 +113,9 @@ public class TestQuery extends PageQuery {
     @DomainPath(value = "user", foreignField = "createUserId")
     private TestQuery userExists;
 
+    @DomainPath(value = "user", foreignField = "createUserId")
+    private TestQuery userNotExists;
+
     // for MongoDB
     private Boolean statusExists;
 

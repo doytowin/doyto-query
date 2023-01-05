@@ -436,4 +436,13 @@ class QueryBuilderTest {
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly(false);
     }
+
+    @Test
+    void shouldSupportNotExists() {
+        TestQuery queryByInvalid = TestQuery.builder().valid(false).build();
+        TestQuery testQuery = TestQuery.builder().userNotExists(queryByInvalid).build();
+        assertEquals("SELECT * FROM t_user t WHERE NOT EXISTS(SELECT * FROM t_user t1 WHERE t.id = t1.create_user_id AND t1.valid = ?)",
+                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly(false);
+    }
 }

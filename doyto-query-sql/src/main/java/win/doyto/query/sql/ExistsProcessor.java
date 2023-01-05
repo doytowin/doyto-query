@@ -42,7 +42,8 @@ public class ExistsProcessor implements FieldProcessor.Processor {
         String primaryId = ColumnUtil.convertColumn(domainPath.localField());
         String foreignId = ColumnUtil.convertColumn(domainPath.foreignField());
         alias = "t1";
-        clauseFormat = "EXISTS" + OP +SELECT + "*" + FROM + domains + SPACE + alias
+        clauseFormat = (field.getName().endsWith("NotExists") ? "NOT " : EMPTY) + "EXISTS"
+                + OP +SELECT + "*" + FROM + domains + SPACE + alias
                 + WHERE + TABLE_ALIAS + "." + primaryId + EQUAL + alias + "." + foreignId + "%s" + CP;
     }
 
