@@ -35,12 +35,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author f0rb on 2023/1/4
  * @since 1.0.1
  */
-@ResourceLock(value = "mapCamelCaseToUnderscore")
 class MapCamelCaseToUnderscoreTest {
     private final QueryBuilder testQueryBuilder = new QueryBuilder(TestEntity.class);
     private final List<Object> argList = new ArrayList<>();
 
-
+    @ResourceLock(value = "mapCamelCaseToUnderscore")
     @Test
     void supportDisAbleMapFieldToUnderscore() {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
@@ -48,7 +47,7 @@ class MapCamelCaseToUnderscoreTest {
         Date date = new Date();
         TestQuery testQuery = TestQuery.builder().usernameOrUserCodeLike("test").createTimeLt(date).build();
 
-        assertEquals("SELECT * FROM user WHERE (username = ? OR userCode LIKE ?) AND createTime < ?",
+        assertEquals("SELECT * FROM t_user t WHERE (username = ? OR userCode LIKE ?) AND createTime < ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test", "%test%", date);
 

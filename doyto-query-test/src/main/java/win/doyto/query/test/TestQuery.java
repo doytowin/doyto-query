@@ -110,6 +110,9 @@ public class TestQuery extends PageQuery {
     @Subquery(select = "score", from = "t_user")
     private TestQuery scoreIn;
 
+    @DomainPath(value = "user", foreignField = "createUserId")
+    private TestQuery userExists;
+
     // for MongoDB
     private Boolean statusExists;
 

@@ -48,4 +48,5 @@ interface Constant {
     String VALUES = " VALUES ";
     String HAVING_PREFIX = "_having_";
     String WHERE_ = "\nWHERE ";
+    String TABLE_ALIAS = "t";
 }

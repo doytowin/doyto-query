@@ -58,8 +58,8 @@ public class BuildHelper {
         return tableName;
     }
 
-    static String buildStart(String[] columns, String from) {
-        return Constant.SELECT + StringUtils.join(columns, SEPARATOR) + FROM + from;
+    static String buildStart(String[] columns, String table) {
+        return Constant.SELECT + StringUtils.join(columns, SEPARATOR) + FROM + table + SPACE + TABLE_ALIAS;
     }
 
     public static String buildWhere(DoytoQuery query, List<Object> argList) {
@@ -67,6 +67,11 @@ public class BuildHelper {
     }
 
     public static String buildCondition(String prefix, Object query, List<Object> argList) {
+        return buildCondition(query, argList, prefix, EMPTY);
+    }
+
+    public static String buildCondition(Object query, List<Object> argList, String prefix, String alias) {
+        alias = StringUtils.isBlank(alias) ? EMPTY : alias + ".";
         Field[] fields = ColumnUtil.initFields(query.getClass(), FieldProcessor::init);
         StringJoiner whereJoiner = new StringJoiner(AND);
         for (Field field : fields) {
@@ -74,7 +79,7 @@ public class BuildHelper {
             if (isValidValue(value, field)) {
                 String and = FieldProcessor.execute(field, argList, value);
                 if (and != null) {
-                    whereJoiner.add(and);
+                    whereJoiner.add(alias + and);
                 }
             }
         }

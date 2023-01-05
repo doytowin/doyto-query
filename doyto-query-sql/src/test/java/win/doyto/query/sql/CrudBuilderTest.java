@@ -62,14 +62,14 @@ class CrudBuilderTest {
     @Test
     void create() {
         SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildCreateAndArgs(new TestEntity());
-        String expected = "INSERT INTO user (username, password, mobile, email, nickname, user_level, memo, valid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String expected = "INSERT INTO t_user (username, password, mobile, email, nickname, user_level, memo, valid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         assertEquals(expected, sqlAndArgs.getSql());
     }
 
     @Test
     void update() {
         SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildUpdateAndArgs(new TestEntity());
-        String expected = "UPDATE user SET username = ?, password = ?, mobile = ?, email = ?, nickname = ?, user_level = ?, memo = ?, valid = ? WHERE id = ?";
+        String expected = "UPDATE t_user SET username = ?, password = ?, mobile = ?, email = ?, nickname = ?, user_level = ?, memo = ?, valid = ? WHERE id = ?";
         assertEquals(expected, sqlAndArgs.getSql());
     }
 
@@ -113,7 +113,7 @@ class CrudBuilderTest {
         entity.setProject("i18n");
 
         assertEquals("t_dynamic_f0rb_i18n", CommonUtil.replaceHolderInString(entity, DynamicEntity.TABLE));
-        assertEquals("user", CommonUtil.replaceHolderInString(new TestEntity(), TestEntity.TABLE));
+        assertEquals("t_user", CommonUtil.replaceHolderInString(new TestEntity(), TestEntity.TABLE));
 
     }
 
@@ -138,7 +138,7 @@ class CrudBuilderTest {
 
         SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildPatchAndArgsWithId(testEntity);
 
-        assertEquals("UPDATE user SET user_level = ?, valid = ? WHERE id = ?", sqlAndArgs.getSql());
+        assertEquals("UPDATE t_user SET user_level = ?, valid = ? WHERE id = ?", sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly(0, true, 1);
     }
 
@@ -146,7 +146,7 @@ class CrudBuilderTest {
     void createMulti() {
         SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildCreateAndArgs(Arrays.asList(new TestEntity(), new TestEntity(), new TestEntity()));
         assertEquals(
-                "INSERT INTO user (username, password, mobile, email, nickname, user_level, memo, valid) VALUES " +
+                "INSERT INTO t_user (username, password, mobile, email, nickname, user_level, memo, valid) VALUES " +
                         "(?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?)", sqlAndArgs.getSql());
     }
 
@@ -154,7 +154,7 @@ class CrudBuilderTest {
     void supportDynamicTableName() {
         DynamicQuery dynamicQuery = DynamicQuery.builder().user("f0rb").project("i18n").scoreLt(100).build();
 
-        assertEquals("SELECT * FROM t_dynamic_f0rb_i18n WHERE score < ?",
+        assertEquals("SELECT * FROM t_dynamic_f0rb_i18n t WHERE score < ?",
                      dynamicEntityCrudBuilder.buildSelectAndArgs(dynamicQuery, argList));
         assertThat(argList).containsExactly(100);
     }
@@ -163,7 +163,7 @@ class CrudBuilderTest {
     void fixSQLInject() {
         DynamicQuery dynamicQuery = DynamicQuery.builder().user("f0rb").project("; DROP TABLE menu;").scoreLt(80).build();
 
-        assertEquals("SELECT * FROM t_dynamic_f0rb_${project} WHERE score < ?",
+        assertEquals("SELECT * FROM t_dynamic_f0rb_${project} t WHERE score < ?",
                      dynamicEntityCrudBuilder.buildSelectAndArgs(dynamicQuery, argList));
         assertThat(argList).containsExactly(80);
     }
@@ -172,7 +172,7 @@ class CrudBuilderTest {
     void supportUnderlineScore() {
         DynamicQuery dynamicQuery = DynamicQuery.builder().user("f0rb").project("i18n_0001").scoreLt(100).build();
 
-        assertEquals("SELECT * FROM t_dynamic_f0rb_i18n_0001 WHERE score < ?",
+        assertEquals("SELECT * FROM t_dynamic_f0rb_i18n_0001 t WHERE score < ?",
                      dynamicEntityCrudBuilder.buildSelectAndArgs(dynamicQuery, argList));
         assertThat(argList).containsExactly(100);
     }
@@ -184,7 +184,7 @@ class CrudBuilderTest {
                 "mobile", "email"
         );
         assertEquals(
-                "INSERT INTO user (username, password, mobile, email, nickname, user_level, memo, valid) VALUES " +
+                "INSERT INTO t_user (username, password, mobile, email, nickname, user_level, memo, valid) VALUES " +
                         "(?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?)" +
                         " ON DUPLICATE KEY UPDATE " +
                         "mobile = VALUES (mobile), " +

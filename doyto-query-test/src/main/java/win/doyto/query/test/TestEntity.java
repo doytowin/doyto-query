@@ -36,7 +36,7 @@ import javax.persistence.Transient;
 @Setter
 @Entity(name = TestEntity.TABLE)
 public class TestEntity extends AbstractPersistable<Integer> {
-    public static final String TABLE = "user";
+    public static final String TABLE = "t_user";
     @Column
     private String username;
     private String password;
