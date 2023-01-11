@@ -16,8 +16,10 @@
 
 package win.doyto.query.test;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import win.doyto.query.entity.AbstractPersistable;
 
 import java.util.ArrayList;
@@ -32,8 +34,10 @@ import javax.persistence.Transient;
  *
  * @author f0rb 2019-05-12
  */
-@Getter
-@Setter
+@Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = TestEntity.TABLE)
 public class TestEntity extends AbstractPersistable<Integer> {
     public static final String TABLE = "t_user";
@@ -45,6 +49,7 @@ public class TestEntity extends AbstractPersistable<Integer> {
     private String nickname;
     private TestEnum userLevel;
     private String memo;
+    private Integer score;
     private Boolean valid;
 
     @Transient
@@ -64,6 +69,7 @@ public class TestEntity extends AbstractPersistable<Integer> {
             testEntity.setMobile("1777888888" + i);
             testEntity.setUserLevel(TestEnum.NORMAL);
             testEntity.setValid(i % 2 == 0);
+            testEntity.setScore(i * 10);
             userEntities.add(testEntity);
         }
         TestEntity testEntity = new TestEntity();
@@ -76,6 +82,7 @@ public class TestEntity extends AbstractPersistable<Integer> {
         testEntity.setUserLevel(TestEnum.VIP);
         testEntity.setValid(true);
         testEntity.setMemo("master");
+        testEntity.setScore(100);
         userEntities.add(testEntity);
         return userEntities;
     }
