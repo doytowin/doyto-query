@@ -56,4 +56,9 @@ class CompoundOperatorsSuffixTest {
     void mapFieldEndsWithBae() {
         assertThat(CompoundOperatorsSuffix.mapField("userScoreBae")).isEqualTo("user_score &= ?");
     }
+
+    @Test
+    void mapFieldEndsWithBee() {
+        assertThat(CompoundOperatorsSuffix.mapField("userScoreBee")).isEqualTo("user_score ^= ?");
+    }
 }
