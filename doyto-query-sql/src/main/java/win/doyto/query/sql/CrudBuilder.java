@@ -25,6 +25,7 @@ import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringJoiner;
@@ -42,6 +43,7 @@ import static win.doyto.query.util.CommonUtil.*;
 @Slf4j
 final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implements SqlBuilder<E> {
 
+    private final Class<E> entityClass;
     private final Field idField;
     private final List<Field> fields;
     private final String wildInsertValue;   // ?, ?, ?
@@ -50,6 +52,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
 
     public CrudBuilder(Class<E> entityClass) {
         super(entityClass);
+        this.entityClass = entityClass;
         idField = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0];
 
         // init fields
@@ -112,6 +115,21 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
         }
     }
 
+    private static void readValueToArgList(Object entity, List<Object> argList, StringJoiner setClauses) {
+        List<Field> fieldsOfSubClass = Arrays.stream(entity.getClass().getDeclaredFields())
+                                             .filter(ColumnUtil::shouldRetain)
+                                             .collect(Collectors.toList());
+
+        for (Field field : fieldsOfSubClass) {
+            Object value = readFieldGetter(field, entity);
+            if (value != null) {
+                String setClause = CompoundOperatorsSuffix.mapField(field.getName());
+                setClauses.add(setClause);
+                argList.add(value);
+            }
+        }
+    }
+
     @Override
     public SqlAndArgs buildCreateAndArgs(E testEntity) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
@@ -157,6 +175,9 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
         String table = resolveTableName(entity);
         StringJoiner setClauses = new StringJoiner(SEPARATOR);
         readValueToArgList(fields, entity, argList, setClauses);
+        if (entity.getClass().getSuperclass().equals(entityClass)) {
+            readValueToArgList(entity, argList, setClauses);
+        }
         String setClausesText = replaceHolderInString(entity, setClauses.toString());
         return buildUpdateSql(table, setClausesText);
     }

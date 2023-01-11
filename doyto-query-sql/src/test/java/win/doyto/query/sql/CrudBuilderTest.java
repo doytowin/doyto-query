@@ -19,10 +19,7 @@ package win.doyto.query.sql;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
-import win.doyto.query.test.DynamicEntity;
-import win.doyto.query.test.DynamicQuery;
-import win.doyto.query.test.TestEntity;
-import win.doyto.query.test.TestEnum;
+import win.doyto.query.test.*;
 import win.doyto.query.util.CommonUtil;
 
 import java.util.ArrayList;
@@ -62,14 +59,14 @@ class CrudBuilderTest {
     @Test
     void create() {
         SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildCreateAndArgs(new TestEntity());
-        String expected = "INSERT INTO t_user (username, password, mobile, email, nickname, user_level, memo, valid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String expected = "INSERT INTO t_user (username, password, mobile, email, nickname, user_level, memo, score, valid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         assertEquals(expected, sqlAndArgs.getSql());
     }
 
     @Test
     void update() {
         SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildUpdateAndArgs(new TestEntity());
-        String expected = "UPDATE t_user SET username = ?, password = ?, mobile = ?, email = ?, nickname = ?, user_level = ?, memo = ?, valid = ? WHERE id = ?";
+        String expected = "UPDATE t_user SET username = ?, password = ?, mobile = ?, email = ?, nickname = ?, user_level = ?, memo = ?, score = ?, valid = ? WHERE id = ?";
         assertEquals(expected, sqlAndArgs.getSql());
     }
 
@@ -146,8 +143,8 @@ class CrudBuilderTest {
     void createMulti() {
         SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildCreateAndArgs(Arrays.asList(new TestEntity(), new TestEntity(), new TestEntity()));
         assertEquals(
-                "INSERT INTO t_user (username, password, mobile, email, nickname, user_level, memo, valid) VALUES " +
-                        "(?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?)", sqlAndArgs.getSql());
+                "INSERT INTO t_user (username, password, mobile, email, nickname, user_level, memo, score, valid) VALUES " +
+                        "(?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?)", sqlAndArgs.getSql());
     }
 
     @Test
@@ -184,8 +181,8 @@ class CrudBuilderTest {
                 "mobile", "email"
         );
         assertEquals(
-                "INSERT INTO t_user (username, password, mobile, email, nickname, user_level, memo, valid) VALUES " +
-                        "(?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?)" +
+                "INSERT INTO t_user (username, password, mobile, email, nickname, user_level, memo, score, valid) VALUES " +
+                        "(?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?)" +
                         " ON DUPLICATE KEY UPDATE " +
                         "mobile = VALUES (mobile), " +
                         "email = VALUES (email)",
@@ -198,6 +195,16 @@ class CrudBuilderTest {
         SqlAndArgs sqlAndArgs = dynamicEntityCrudBuilder.buildPatchAndArgsWithId(dynamicEntity);
         assertEquals("UPDATE t_dynamic_f0rb_i18n SET locale_zh = ?, user_score = ? WHERE id = ?", sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly("中文", 100, 1);
+    }
+
+    @Test
+    void supportCompoundOperators() {
+        TestEntity testPatch = TestPatch.builder().id(1).valid(true).scoreAe(20).build();
+
+        SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildPatchAndArgsWithId(testPatch);
+
+        assertEquals("UPDATE t_user SET valid = ?, score += ? WHERE id = ?", sqlAndArgs.getSql());
+        assertThat(sqlAndArgs.getArgs()).containsExactly(true, 20, 1);
     }
 
 }

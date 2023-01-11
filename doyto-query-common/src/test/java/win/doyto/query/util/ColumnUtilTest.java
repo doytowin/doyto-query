@@ -46,7 +46,7 @@ class ColumnUtilTest {
     @Test
     void resolveSelectColumns() {
         String columns = StringUtils.join(ColumnUtil.resolveSelectColumns(TestEntity.class), ", ");
-        assertEquals("username, password, mobile, email, nickname, user_level AS userLevel, memo, valid, id", columns);
+        assertEquals("username, password, mobile, email, nickname, user_level AS userLevel, memo, score, valid, id", columns);
     }
 
     @Test
