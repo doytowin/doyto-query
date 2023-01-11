@@ -38,6 +38,7 @@ import static win.doyto.query.sql.Constant.*;
 enum CompoundOperatorsSuffix {
     Ae(" += "),
     Se(" -= "),
+    Me(" *= "),
     NONE(" = ");
 
     private static final Pattern SUFFIX_PTN = Pattern.compile(
