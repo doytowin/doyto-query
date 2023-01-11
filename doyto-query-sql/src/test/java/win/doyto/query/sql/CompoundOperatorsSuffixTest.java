@@ -17,8 +17,10 @@
 package win.doyto.query.sql;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * CompoundOperatorsSuffixTest
@@ -26,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author f0rb on 2023/1/11
  * @since 1.0.1
  */
+@ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
 class CompoundOperatorsSuffixTest {
     @Test
     void mapFieldEndsWithAe() {
