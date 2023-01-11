@@ -39,6 +39,7 @@ enum CompoundOperatorsSuffix {
     Ae(" += "),
     Se(" -= "),
     Me(" *= "),
+    De(" /= "),
     NONE(" = ");
 
     private static final Pattern SUFFIX_PTN = Pattern.compile(
