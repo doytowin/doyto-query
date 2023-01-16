@@ -36,15 +36,15 @@ import static win.doyto.query.sql.Constant.*;
 @SuppressWarnings("java:S115")
 @AllArgsConstructor
 enum CompoundOperatorsSuffix {
-    Ae(" += "),
-    Se(" -= "),
-    Me(" *= "),
-    De(" /= "),
-    Moe(" %= "),
-    Bae(" &= "),
-    Bee(" ^= "),
-    Boe(" |= "),
-    NONE(" = ");
+    Ae("+"),
+    Se("-"),
+    Me("*"),
+    De("/"),
+    Moe("%"),
+    Bae("&"),
+    Bee("^"),
+    Boe("|"),
+    NONE("");
 
     private static final Pattern SUFFIX_PTN = Pattern.compile(
             Arrays.stream(values())
@@ -54,6 +54,10 @@ enum CompoundOperatorsSuffix {
 
     private final String op;
 
+    private String wrappedOp() {
+        return SPACE + op +  SPACE;
+    }
+
     static CompoundOperatorsSuffix resolve(String fieldName) {
         Matcher matcher = SUFFIX_PTN.matcher(fieldName);
         return matcher.find() ? valueOf(matcher.group()) : NONE;
@@ -62,6 +66,6 @@ enum CompoundOperatorsSuffix {
     static String mapField(String fieldName) {
         CompoundOperatorsSuffix suffix = resolve(fieldName);
         String column = ColumnUtil.convertColumn(StringUtils.removeEnd(fieldName, suffix.name()));
-        return column + suffix.op + PLACE_HOLDER;
+        return column + EQUAL + column + suffix.wrappedOp() + PLACE_HOLDER;
     }
 }
