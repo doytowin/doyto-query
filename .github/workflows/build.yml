@@ -42,7 +42,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mvn -B clean test && \
-          mvn -B jacoco:report sonar:sonar javadoc:javadoc \
+          mvn -B jacoco:report sonar:sonar \
           -Dsonar.projectKey=win.doyto:doyto-query \
           -Dsonar.projectName=doyto-query \
           -Dsonar.exclusions=doyto-query-test/**,doyto-query-integration-test/**,**/pom.xml
