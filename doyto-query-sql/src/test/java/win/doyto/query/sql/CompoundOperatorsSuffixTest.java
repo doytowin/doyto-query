@@ -32,41 +32,41 @@ import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 class CompoundOperatorsSuffixTest {
     @Test
     void mapFieldEndsWithAe() {
-        assertThat(CompoundOperatorsSuffix.mapField("userScoreAe")).isEqualTo("user_score += ?");
+        assertThat(CompoundOperatorsSuffix.mapField("userScoreAe")).isEqualTo("user_score = user_score + ?");
     }
 
     @Test
     void mapFieldEndsWithSe() {
-        assertThat(CompoundOperatorsSuffix.mapField("userScoreSe")).isEqualTo("user_score -= ?");
+        assertThat(CompoundOperatorsSuffix.mapField("userScoreSe")).isEqualTo("user_score = user_score - ?");
     }
 
     @Test
     void mapFieldEndsWithMe() {
-        assertThat(CompoundOperatorsSuffix.mapField("userScoreMe")).isEqualTo("user_score *= ?");
+        assertThat(CompoundOperatorsSuffix.mapField("userScoreMe")).isEqualTo("user_score = user_score * ?");
     }
 
     @Test
     void mapFieldEndsWithDe() {
-        assertThat(CompoundOperatorsSuffix.mapField("userScoreDe")).isEqualTo("user_score /= ?");
+        assertThat(CompoundOperatorsSuffix.mapField("userScoreDe")).isEqualTo("user_score = user_score / ?");
     }
 
     @Test
     void mapFieldEndsWithMoe() {
-        assertThat(CompoundOperatorsSuffix.mapField("userScoreMoe")).isEqualTo("user_score %= ?");
+        assertThat(CompoundOperatorsSuffix.mapField("userScoreMoe")).isEqualTo("user_score = user_score % ?");
     }
 
     @Test
     void mapFieldEndsWithBae() {
-        assertThat(CompoundOperatorsSuffix.mapField("userScoreBae")).isEqualTo("user_score &= ?");
+        assertThat(CompoundOperatorsSuffix.mapField("userScoreBae")).isEqualTo("user_score = user_score & ?");
     }
 
     @Test
     void mapFieldEndsWithBee() {
-        assertThat(CompoundOperatorsSuffix.mapField("userScoreBee")).isEqualTo("user_score ^= ?");
+        assertThat(CompoundOperatorsSuffix.mapField("userScoreBee")).isEqualTo("user_score = user_score ^ ?");
     }
 
     @Test
     void mapFieldEndsWithBoe() {
-        assertThat(CompoundOperatorsSuffix.mapField("userScoreBoe")).isEqualTo("user_score |= ?");
+        assertThat(CompoundOperatorsSuffix.mapField("userScoreBoe")).isEqualTo("user_score = user_score | ?");
     }
 }

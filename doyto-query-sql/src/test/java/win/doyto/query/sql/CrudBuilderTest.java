@@ -203,7 +203,7 @@ class CrudBuilderTest {
 
         SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildPatchAndArgsWithId(testPatch);
 
-        assertEquals("UPDATE t_user SET valid = ?, score += ? WHERE id = ?", sqlAndArgs.getSql());
+        assertEquals("UPDATE t_user SET valid = ?, score = score + ? WHERE id = ?", sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly(true, 20, 1);
     }
 
