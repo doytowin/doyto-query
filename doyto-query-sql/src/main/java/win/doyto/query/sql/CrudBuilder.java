@@ -18,6 +18,7 @@ package win.doyto.query.sql;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import win.doyto.query.annotation.Clause;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
@@ -123,7 +124,12 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
         for (Field field : fieldsOfSubClass) {
             Object value = readFieldGetter(field, entity);
             if (value != null) {
-                String setClause = CompoundOperatorsSuffix.mapField(field.getName());
+                String setClause;
+                if (field.isAnnotationPresent(Clause.class)) {
+                    setClause = field.getAnnotation(Clause.class).value();
+                } else {
+                    setClause = CompoundOperatorsSuffix.mapField(field.getName());
+                }
                 setClauses.add(setClause);
                 argList.add(value);
             }
