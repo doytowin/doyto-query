@@ -18,6 +18,7 @@ package win.doyto.query.test;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.entity.AbstractPersistable;
@@ -35,6 +36,7 @@ import javax.persistence.Transient;
  * @author f0rb 2019-05-12
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor

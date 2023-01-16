@@ -207,4 +207,14 @@ class CrudBuilderTest {
         assertThat(sqlAndArgs.getArgs()).containsExactly(true, 20, 1);
     }
 
+    @Test
+    void supportCustomSetClause() {
+        TestEntity testPatch = TestPatch.builder().id(1).valid(true).scoreDec(20).build();
+
+        SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildPatchAndArgsWithId(testPatch);
+
+        assertEquals("UPDATE t_user SET valid = ?, score = score - ? WHERE id = ?", sqlAndArgs.getSql());
+        assertThat(sqlAndArgs.getArgs()).containsExactly(true, 20, 1);
+    }
+
 }
