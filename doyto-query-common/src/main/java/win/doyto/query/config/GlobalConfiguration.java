@@ -45,6 +45,9 @@ public class GlobalConfiguration {
 
     private GlobalConfiguration() {
         this.setTableFormat("t_%s");
+
+        // !!! The starting value of the page number is set to ONE by default since 0.3.0 !!!
+        this.setStartPageNumberFromOne(true);
     }
 
     public static int adjustStartPageNumber(Integer page) {
@@ -55,17 +58,20 @@ public class GlobalConfiguration {
         return Singleton.instance;
     }
 
-    private static class Singleton {
-        private static final GlobalConfiguration instance = new GlobalConfiguration();
-
-        static {
-            // !!! Default to set page number starting from ONE since 0.3.0 !!!
-            instance.setStartPageNumberFromOne(true);
-        }
-    }
-
     public static Dialect dialect() {
         return instance().dialect;
+    }
+
+    public static int calcOffset(DoytoQuery query) {
+        return GlobalConfiguration.adjustStartPageNumber(query.getPageNumber()) * query.getPageSize();
+    }
+
+    public static String formatTable(String domain) {
+        if (Singleton.instance.tablePtn.matcher(domain).matches()) {
+            return domain;
+        }
+        String table = ColumnUtil.convertTableName(domain);
+        return String.format(Singleton.instance.tableFormat, table);
     }
 
     public void setTableFormat(String tableFormat) {
@@ -75,11 +81,7 @@ public class GlobalConfiguration {
     }
 
     public void setStartPageNumberFromOne(boolean startPageNumberFromOne) {
-        instance().setStartPageNumberAdjuster(page -> startPageNumberFromOne ? Math.max(page - 1, 0) : page);
-    }
-
-    public static int calcOffset(DoytoQuery query) {
-        return GlobalConfiguration.adjustStartPageNumber(query.getPageNumber()) * query.getPageSize();
+        this.startPageNumberAdjuster = startPageNumberFromOne ? page -> Math.max(page - 1, 0) : page -> page;
     }
 
     public String formatJoinId(String domain) {
@@ -90,11 +92,7 @@ public class GlobalConfiguration {
         return String.format(joinTableFormat, domain1, domain2);
     }
 
-    public static String formatTable(String domain) {
-        if (Singleton.instance.tablePtn.matcher(domain).matches()) {
-            return domain;
-        }
-        String table = ColumnUtil.convertTableName(domain);
-        return String.format(Singleton.instance.tableFormat, table);
+    private static class Singleton {
+        private static final GlobalConfiguration instance = new GlobalConfiguration();
     }
 }
