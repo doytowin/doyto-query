@@ -47,13 +47,12 @@ public class BuildHelper {
         String tableName;
         Entity entity = entityClass.getAnnotation(Entity.class);
         if (entity != null) {
-            tableName = entity.name();
+            tableName = GlobalConfiguration.formatTable(entity.name());
         } else {
             String entityName = entityClass.getSimpleName();
             entityName = StringUtils.removeEnd(entityName, "Entity");
             entityName = StringUtils.removeEnd(entityName, "View");
-            entityName = ColumnUtil.convertColumn(entityName);
-            tableName = String.format(TABLE_FORMAT, entityName);
+            tableName = GlobalConfiguration.formatTable(entityName);
         }
         return tableName;
     }

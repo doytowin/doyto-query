@@ -16,14 +16,14 @@
 
 package win.doyto.query.config;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import win.doyto.query.core.Dialect;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.util.ColumnUtil;
 
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 /**
  * GlobalConfiguration
@@ -32,16 +32,20 @@ import java.util.function.Function;
  */
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GlobalConfiguration {
 
     private boolean mapCamelCaseToUnderscore = true;
     private boolean ignoreCacheException = true;
     private String joinIdFormat = "%s_id";
-    private String tableFormat = "t_%s";
+    private String tableFormat;
+    private Pattern tablePtn;
     private String joinTableFormat = "a_%s_and_%s";
     private Dialect dialect = (sql, limit, offset) -> sql + " LIMIT " + limit + " OFFSET " + offset;
     private Function<Integer, Integer> startPageNumberAdjuster;
+
+    private GlobalConfiguration() {
+        this.setTableFormat("t_%s");
+    }
 
     public static int adjustStartPageNumber(Integer page) {
         return instance().getStartPageNumberAdjuster().apply(page);
@@ -64,6 +68,12 @@ public class GlobalConfiguration {
         return instance().dialect;
     }
 
+    public void setTableFormat(String tableFormat) {
+        this.tableFormat = tableFormat;
+        String regex = tableFormat.replace("%s", "[\\w_\\${}]+");
+        this.tablePtn = Pattern.compile(regex);
+    }
+
     public void setStartPageNumberFromOne(boolean startPageNumberFromOne) {
         instance().setStartPageNumberAdjuster(page -> startPageNumberFromOne ? Math.max(page - 1, 0) : page);
     }
@@ -81,6 +91,10 @@ public class GlobalConfiguration {
     }
 
     public static String formatTable(String domain) {
-        return String.format(Singleton.instance.tableFormat, domain);
+        if (Singleton.instance.tablePtn.matcher(domain).matches()) {
+            return domain;
+        }
+        String table = ColumnUtil.convertTableName(domain);
+        return String.format(Singleton.instance.tableFormat, table);
     }
 }

@@ -94,20 +94,20 @@ public class TestQuery extends PageQuery {
 
     private Boolean valid;
 
-    @Subquery(select = "score", from = "t_user")
+    @Subquery(select = "score", from = "user")
     private TestQuery scoreGtAny;
 
-    @Subquery(select = "score", from = "t_user")
+    @Subquery(select = "score", from = "user")
     private TestQuery scoreLtAll;
 
-    @Subquery(select = "avg(score)", from = "t_user")
+    @Subquery(select = "avg(score)", from = "user")
     private TestQuery scoreGt1;
     private TestQuery scoreGt$avgScoreFromUser;
 
-    private Double scoreGt;
-    private Double scoreGt2;
+    private Double scoreGt;  // score > ?
+    private Double scoreGt2; // unsupported
 
-    @Subquery(select = "score", from = "t_user")
+    @Subquery(select = "score", from = "user")
     private TestQuery scoreIn;
 
     @DomainPath(value = "user", foreignField = "createUserId")
