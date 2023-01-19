@@ -53,7 +53,7 @@ For a `UserEntity` defined as follows:
 ```java
 @Getter
 @Setter
-@Entity(name = "t_user")
+@Entity(name = "user")
 public class UserEntity extends AbstractPersistable<Long> {
     private String username;
     private String email;

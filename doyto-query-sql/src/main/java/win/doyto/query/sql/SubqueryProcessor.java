@@ -43,7 +43,8 @@ public class SubqueryProcessor implements FieldProcessor.Processor {
         Subquery subquery = field.getAnnotation(Subquery.class);
         String fieldName = field.getName();
         fieldName = PTN_DIGITS_END.matcher(fieldName).replaceFirst(EMPTY);
-        clauseFormat = buildClauseFormat(fieldName, subquery.select(), subquery.from());
+        String tableName = GlobalConfiguration.formatTable(subquery.from());
+        clauseFormat = buildClauseFormat(fieldName, subquery.select(), tableName);
     }
 
     public SubqueryProcessor(String originFieldName) {

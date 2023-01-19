@@ -56,7 +56,7 @@ class RelationalQueryBuilderTest {
     @Test
     void supportAggregateQuery() {
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(new PageQuery(), MaxIdView.class);
-        assertEquals("SELECT max(id) AS maxId, first(createUserId) AS firstCreateUserId FROM user", sqlAndArgs.getSql());
+        assertEquals("SELECT max(id) AS maxId, first(createUserId) AS firstCreateUserId FROM t_user", sqlAndArgs.getSql());
     }
 
     @Test

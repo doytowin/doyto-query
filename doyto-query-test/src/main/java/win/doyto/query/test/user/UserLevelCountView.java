@@ -30,7 +30,7 @@ import javax.persistence.Entity;
  */
 @Getter
 @Setter
-@Entity(name = "t_user")
+@Entity(name = "user")
 public class UserLevelCountView {
 
     @GroupBy
