@@ -47,7 +47,6 @@ import static win.doyto.query.sql.Constant.*;
 @UtilityClass
 public class RelationalQueryBuilder {
 
-    private static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
     public static final String KEY_COLUMN = "MAIN_ENTITY_ID";
 
     public static SqlAndArgs buildSelectAndArgs(DoytoQuery q, Class<?> entityClass) {
@@ -99,7 +98,7 @@ public class RelationalQueryBuilder {
         DomainPath domainPath = joinField.getAnnotation(DomainPath.class);
         String[] domains = domainPath.value();
         String mainTableName = resolveTableName(joinField.getDeclaringClass());
-        String subTableName = String.format(TABLE_FORMAT, domains[0]);
+        String subTableName = GlobalConfiguration.formatTable(domains[0]);
         String subColumns = buildSubDomainColumns(joinEntityClass);
         LinkedList<Object> queryArgs = new LinkedList<>();
         StringBuilder sqlBuilder;

@@ -41,7 +41,6 @@ import static win.doyto.query.util.CommonUtil.readFieldGetter;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BuildHelper {
     private static final Pattern PTN_SORT = Pattern.compile(",(asc|desc)", Pattern.CASE_INSENSITIVE);
-    private static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
 
     static String resolveTableName(Class<?> entityClass) {
         String tableName;

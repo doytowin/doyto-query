@@ -53,7 +53,7 @@ public class SubqueryProcessor implements FieldProcessor.Processor {
         String fieldName = matcher.group(1);
         String column = ColumnUtil.resolveColumn(matcher.group(2));
         String domain = ColumnUtil.convertColumn(matcher.group(3));
-        String table = String.format(GlobalConfiguration.instance().getTableFormat(), domain);
+        String table = GlobalConfiguration.formatTable(domain);
 
         clauseFormat = buildClauseFormat(fieldName, column, table);
     }

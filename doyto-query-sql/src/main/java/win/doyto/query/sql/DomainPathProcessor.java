@@ -36,7 +36,6 @@ import static win.doyto.query.sql.Constant.*;
  * @since 0.3.1
  */
 class DomainPathProcessor implements FieldProcessor.Processor {
-    private static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
     private final DomainPathDetail domainPathDetail;
 
     public DomainPathProcessor(Field field) {
@@ -89,7 +88,7 @@ class DomainPathProcessor implements FieldProcessor.Processor {
             return;
         }
         String where = buildWhere((DoytoQuery) domainQuery, argList);
-        String table = String.format(TABLE_FORMAT, currentDomain);
+        String table = GlobalConfiguration.formatTable(currentDomain);
         subQueryBuilder.append(SELECT).append(ID).append(FROM).append(table).append(where);
         subQueryBuilder.append(INTERSECT);
     }

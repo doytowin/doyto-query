@@ -90,8 +90,7 @@ public class DomainPathDetail {
     }
 
     private static String prepareTargetTable(String[] domainPath) {
-        String tableFormat = GlobalConfiguration.instance().getTableFormat();
-        return String.format(tableFormat, domainPath[domainPath.length - 1]);
+        return GlobalConfiguration.formatTable(domainPath[domainPath.length - 1]);
     }
 
     private static String[] prepareDomainPath(String[] originDomainPath) {
