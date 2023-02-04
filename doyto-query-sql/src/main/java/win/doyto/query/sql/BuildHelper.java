@@ -22,11 +22,13 @@ import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.ColumnUtil;
+import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 import javax.persistence.Entity;
 
 import static win.doyto.query.core.QuerySuffix.isValidValue;
@@ -105,6 +107,12 @@ public class BuildHelper {
             sql = GlobalConfiguration.dialect().buildPageSql(sql, pageSize, offset);
         }
         return sql;
+    }
+
+    public static String buildPlaceHolders(int size) {
+        return IntStream.range(0, size)
+                        .mapToObj(i -> Constant.PLACE_HOLDER)
+                        .collect(CommonUtil.CLT_COMMA_WITH_PAREN);
     }
 
 }

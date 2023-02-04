@@ -29,7 +29,6 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
@@ -221,9 +220,7 @@ enum SqlQuerySuffix {
         @Override
         public String getPlaceHolderEx(Object value) {
             int size = ((Collection<?>) value).size();
-            return size == 0 ? "(null)" :
-                    IntStream.range(0, size).mapToObj(i -> Constant.PLACE_HOLDER)
-                             .collect(CommonUtil.CLT_COMMA_WITH_PAREN);
+            return size == 0 ? "(null)" : BuildHelper.buildPlaceHolders(size);
         }
     }
 
