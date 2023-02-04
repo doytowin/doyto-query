@@ -27,7 +27,6 @@ import javax.persistence.Entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
-import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
 
 /**
  * EntityMetadataTest
@@ -54,7 +53,7 @@ class EntityMetadataTest {
         assertEquals(" GROUP BY student_id", entityMetadata.getGroupBySql());
     }
 
-    @ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ_WRITE)
+    @ResourceLock(value = "mapCamelCaseToUnderscore")
     @Test
     void supportGroupByAnnotationForCamelCaseColumn() {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);

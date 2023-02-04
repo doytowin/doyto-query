@@ -30,13 +30,14 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * QueryBuilderTest
  *
  * @author f0rb 2019-05-12
  */
-@ResourceLock(value = "mapCamelCaseToUnderscore")
+@ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
 class QueryBuilderTest {
 
     private final QueryBuilder testQueryBuilder = new QueryBuilder(TestEntity.class);

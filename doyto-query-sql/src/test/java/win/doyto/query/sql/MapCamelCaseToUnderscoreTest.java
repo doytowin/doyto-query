@@ -16,11 +16,13 @@
 
 package win.doyto.query.sql;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.test.TestEntity;
 import win.doyto.query.test.TestQuery;
+import win.doyto.query.util.ColumnUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,6 +40,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class MapCamelCaseToUnderscoreTest {
     private final QueryBuilder testQueryBuilder = new QueryBuilder(TestEntity.class);
     private final List<Object> argList = new ArrayList<>();
+
+    @BeforeAll
+    static void beforeAll() {
+        ColumnUtil.initFields(TestQuery.class, FieldProcessor::init);
+    }
 
     @ResourceLock(value = "mapCamelCaseToUnderscore")
     @Test
