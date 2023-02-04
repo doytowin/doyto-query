@@ -42,7 +42,7 @@ import static win.doyto.query.util.CommonUtil.*;
  * @author f0rb
  */
 @Slf4j
-final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implements SqlBuilder<E> {
+public class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implements SqlBuilder<E> {
 
     private final Class<E> entityClass;
     private final Field idField;

@@ -22,7 +22,7 @@ package win.doyto.query.sql;
  * @author f0rb on 2019-06-03
  */
 @SuppressWarnings({"java:S1214", "java:S115"})
-interface Constant {
+public interface Constant {
     String SEPARATOR = ", ";
     String PLACE_HOLDER = "?";
     String SPACE = " ";

@@ -26,6 +26,8 @@ import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.role.RoleQuery;
 
+import java.util.List;
+
 /**
  * TestQuery
  *
@@ -39,6 +41,7 @@ import win.doyto.query.test.role.RoleQuery;
 @SuppressWarnings("unused")
 public class UserQuery extends PageQuery {
     private Integer id;
+    private List<Integer> idIn;
 
     @DomainPath({"user", "role"})
     private RoleQuery role;

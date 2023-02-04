@@ -62,7 +62,7 @@ public class QueryBuilder {
     protected String build(DoytoQuery query, List<Object> argList, String... columns) {
         String sql = BuildHelper.buildStart(columns, resolveTableName(query.toIdWrapper()));
         sql = replaceHolderInString(query, sql);
-        sql += BuildHelper.buildWhere(query, argList);
+        sql += buildWhere(query, argList);
         // intentionally use ==
         if (!(columns.length == 1 && COUNT == columns[0])) {
             // not SELECT COUNT(*)
@@ -70,6 +70,10 @@ public class QueryBuilder {
             sql = BuildHelper.buildPaging(sql, query);
         }
         return sql;
+    }
+
+    protected String buildWhere(DoytoQuery query, List<Object> argList) {
+        return BuildHelper.buildWhere(query, argList);
     }
 
     String buildSelectAndArgs(DoytoQuery query, List<Object> argList) {
