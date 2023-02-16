@@ -39,6 +39,7 @@ import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
  */
 @ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
 @ResourceLock(value = "dialect", mode = READ)
+@ResourceLock(value = "tableFormat", mode = READ)
 class QueryBuilderTest {
 
     private final QueryBuilder testQueryBuilder = new QueryBuilder(TestEntity.class);

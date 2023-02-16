@@ -14,45 +14,35 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q1;
+package win.doyto.query.test.tpch.q3;
 
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.annotation.View;
+import win.doyto.query.test.tpch.domain.customer.CustomerEntity;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
+import win.doyto.query.test.tpch.domain.orders.OrdersEntity;
 
-import java.math.BigDecimal;
+import java.sql.Date;
 import javax.persistence.Column;
 
 /**
- * PricingSummaryView
+ * ShippingPriorityView
  *
  * @author f0rb on 2023/2/16
  * @since 1.0.1
  */
 @Getter
 @Setter
-@View(LineitemEntity.class)
-public class PricingSummaryView {
+@View({CustomerEntity.class, OrdersEntity.class, LineitemEntity.class})
+public class ShippingPriorityView {
     @GroupBy
-    private int l_returnflag;
+    private String l_orderkey;
+    @Column(name = "SUM(l_extendedprice * (1 - l_discount))")
+    private Double revenue;
     @GroupBy
-    private int l_linestatus;
-    @Column(name = "sum(l_quantity)")
-    private BigDecimal sum_qty;
-    @Column(name = "sum(l_extendedprice)")
-    private BigDecimal sum_base_price;
-    @Column(name = "sum(l_extendedprice*(1-l_discount))")
-    private BigDecimal sum_disc_price;
-    @Column(name = "sum(l_extendedprice*(1-l_discount)*(1+l_tax))")
-    private BigDecimal sum_charge;
-    @Column(name = "avg(l_quantity)")
-    private Double avg_qty;
-    @Column(name = "avg(l_extendedprice)")
-    private Double avg_price;
-    @Column(name = "avg(l_discount)")
-    private Double avg_disc;
-    @Column(name = "count(*)")
-    private int count_order;
+    private Date o_orderdate;
+    @GroupBy
+    private String o_shippriority;
 }

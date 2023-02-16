@@ -19,12 +19,14 @@ package win.doyto.query.sql;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import win.doyto.query.annotation.View;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
@@ -46,9 +48,16 @@ public class BuildHelper {
 
     static String resolveTableName(Class<?> entityClass) {
         String tableName;
-        Entity entity = entityClass.getAnnotation(Entity.class);
-        if (entity != null) {
-            tableName = GlobalConfiguration.formatTable(entity.name());
+        if (entityClass.isAnnotationPresent(Entity.class)) {
+            Entity entityAnno = entityClass.getAnnotation(Entity.class);
+            tableName = GlobalConfiguration.formatTable(entityAnno.name());
+        } else if (entityClass.isAnnotationPresent(View.class)) {
+            View viewAnno = entityClass.getAnnotation(View.class);
+            List<String> list = new ArrayList<>();
+            for (Class<?> clazz : viewAnno.value()) {
+                list.add(resolveTableName(clazz));
+            }
+            tableName = String.join(", ", list);
         } else {
             String entityName = entityClass.getSimpleName();
             entityName = StringUtils.removeEnd(entityName, "Entity");

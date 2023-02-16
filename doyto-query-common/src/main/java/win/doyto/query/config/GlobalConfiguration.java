@@ -76,7 +76,7 @@ public class GlobalConfiguration {
 
     public void setTableFormat(String tableFormat) {
         this.tableFormat = tableFormat;
-        String regex = tableFormat.replace("%s", "[\\w_\\${}]+");
+        String regex = tableFormat.replace("%s", "[a-z_\\${}]+");
         this.tablePtn = Pattern.compile(regex);
     }
 

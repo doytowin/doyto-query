@@ -24,13 +24,15 @@ import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * BuildHelperTest
  *
  * @author f0rb on 2021-02-16
  */
-@ResourceLock(value = "mapCamelCaseToUnderscore")
+@ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
+@ResourceLock(value = "tableFormat", mode = READ)
 class BuildHelperTest {
 
     @Test

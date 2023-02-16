@@ -31,13 +31,15 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * DomainPathProcessorTest
  *
  * @author f0rb on 2022-04-23
  */
-@ResourceLock(value = "mapCamelCaseToUnderscore")
+@ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
+@ResourceLock(value = "tableFormat", mode = READ)
 class DomainPathProcessorTest {
 
     List<Object> argList = new ArrayList<>();

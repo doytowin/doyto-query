@@ -35,6 +35,7 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * RelationalQueryBuilderTest
@@ -42,6 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author f0rb on 2021-12-11
  */
 @ResourceLock(value = "mapCamelCaseToUnderscore")
+@ResourceLock(value = "tableFormat", mode = READ)
 class RelationalQueryBuilderTest {
     @BeforeEach
     void setUp() {

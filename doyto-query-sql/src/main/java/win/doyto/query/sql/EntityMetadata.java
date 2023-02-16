@@ -17,14 +17,19 @@
 package win.doyto.query.sql;
 
 import lombok.Getter;
+import win.doyto.query.annotation.ForeignKey;
 import win.doyto.query.annotation.GroupBy;
+import win.doyto.query.annotation.View;
 import win.doyto.query.util.ColumnUtil;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import static win.doyto.query.sql.Constant.SEPARATOR;
+import static win.doyto.query.sql.Constant.*;
 
 /**
  * EntityMetadata
@@ -40,15 +45,35 @@ public class EntityMetadata {
     @Getter
     private final String tableName;
     @Getter
+    private final String relations;
+    @Getter
     private String groupByColumns = "";
     @Getter
     private final String groupBySql;
 
     public EntityMetadata(Class<?> entityClass) {
         this.tableName = BuildHelper.resolveTableName(entityClass);
+        this.relations = resolveEntityRelations(entityClass);
 
         this.columnsForSelect = buildSelectColumns(entityClass);
         this.groupBySql = buildGroupBySql(entityClass);
+    }
+
+    private String resolveEntityRelations(Class<?> viewClass) {
+        List<String> conditions = new ArrayList<>();
+        View viewAnno = viewClass.getAnnotation(View.class);
+        if (viewAnno != null && viewAnno.value().length > 0) {
+            Class<?>[] viewClasses = viewAnno.value();
+            for (int i = 1; i < viewClasses.length; i++) {
+                for (Field field : ColumnUtil.initFields(viewClasses[i])) {
+                    if (field.isAnnotationPresent(ForeignKey.class)) {
+                        ForeignKey fkAnno = field.getAnnotation(ForeignKey.class);
+                        conditions.add(fkAnno.field() + " = " + field.getName());
+                    }
+                }
+            }
+        }
+        return conditions.isEmpty() ? EMPTY : String.join(AND, conditions) + AND;
     }
 
     static EntityMetadata build(Class<?> entityClass) {

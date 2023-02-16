@@ -19,11 +19,18 @@ package win.doyto.query.sql;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.test.tpch.q1.PricingSummaryQuery;
 import win.doyto.query.test.tpch.q1.PricingSummaryView;
+import win.doyto.query.test.tpch.q3.ShippingPriorityQuery;
+import win.doyto.query.test.tpch.q3.ShippingPriorityView;
+
+import java.sql.Date;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * TpcHTest
@@ -31,6 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author f0rb on 2023/2/16
  * @since 1.0.1
  */
+@ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
+@ResourceLock(value = "tableFormat")
 class TpcHTest {
 
     @BeforeAll
@@ -68,6 +77,35 @@ class TpcHTest {
                 .build();
 
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, PricingSummaryView.class);
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+    }
+
+    @Test
+    void queryForShippingPriority() {
+        String expected = "SELECT " +
+                "l_orderkey, " +
+                "SUM(l_extendedprice * (1 - l_discount)) AS revenue, " +
+                "o_orderdate, " +
+                "o_shippriority" +
+                " FROM customer, orders, lineitem" +
+                " WHERE c_custkey = o_custkey" +
+                " AND o_orderkey = l_orderkey" +
+                " AND c_mktsegment = ?" +
+                " AND o_orderdate < ?" +
+                " AND l_shipdate > ?" +
+                " GROUP BY l_orderkey, o_orderdate, o_shippriority" +
+                " ORDER BY revenue DESC, o_orderdate";
+
+        Date date = Date.valueOf(LocalDate.of(1995, 3, 15));
+        ShippingPriorityQuery query = ShippingPriorityQuery
+                .builder()
+                .c_mktsegment("BUILDING")
+                .o_orderdateLt(date)
+                .l_shipdateGt(date)
+                .sort("revenue,DESC;o_orderdate")
+                .build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, ShippingPriorityView.class);
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
     }
 }
