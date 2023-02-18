@@ -24,6 +24,8 @@ import win.doyto.query.sql.RelationalQueryBuilder;
 import win.doyto.query.sql.SqlAndArgs;
 import win.doyto.query.test.tpch.q1.PricingSummaryQuery;
 import win.doyto.query.test.tpch.q1.PricingSummaryView;
+import win.doyto.query.test.tpch.q10.ReturnedItemReportingQuery;
+import win.doyto.query.test.tpch.q10.ReturnedItemReportingView;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierQuery;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierView;
 import win.doyto.query.test.tpch.q2.SupplyCostQuery;
@@ -38,6 +40,7 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
 
+import static java.time.temporal.ChronoUnit.MONTHS;
 import static java.time.temporal.ChronoUnit.YEARS;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -204,6 +207,51 @@ class TpcHTest {
         assertThat(sqlAndArgs.getArgs()).containsExactly(
                 Date.valueOf(date), Date.valueOf(date.plus(1, YEARS)),
                 BigDecimal.valueOf(0.05), BigDecimal.valueOf(0.07), 24);
+    }
+
+    @Test
+    void queryForReturnedItemReporting() {
+        String expected = "SELECT" +
+                " c_custkey," +
+                " c_name," +
+                " SUM(l_extendedprice * (1 - l_discount)) AS revenue," +
+                " c_acctbal," +
+                " n_name," +
+                " c_address," +
+                " c_phone," +
+                " c_comment" +
+                " FROM customer, orders, lineitem, nation" +
+                " WHERE c_nationkey = n_nationkey" +
+                " AND o_custkey = c_custkey" +
+                " AND l_orderkey = o_orderkey" +
+                " AND o_orderdate >= ?" +
+                " AND o_orderdate < ?" +
+                " AND l_returnflag = ?" +
+                " GROUP BY" +
+                " c_custkey," +
+                " c_name," +
+                " c_acctbal," +
+                " n_name," +
+                " c_address," +
+                " c_phone," +
+                " c_comment" +
+                " ORDER BY revenue DESC";
+
+        LocalDate date = LocalDate.of(1994, 1, 1);
+
+        ReturnedItemReportingQuery query = ReturnedItemReportingQuery
+                .builder()
+                .o_orderdateGe(Date.valueOf(date))
+                .o_orderdateLt(Date.valueOf(date.plus(3, MONTHS)))
+                .l_returnflag("R")
+                .sort("revenue,DESC")
+                .build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, ReturnedItemReportingView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(
+                Date.valueOf(date), Date.valueOf(date.plus(3, MONTHS)), "R");
     }
 
 }
