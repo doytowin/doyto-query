@@ -14,37 +14,34 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.domain.lineitem;
+package win.doyto.query.test.tpch.q5;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.ForeignKey;
-import win.doyto.query.entity.AbstractPersistable;
+import win.doyto.query.annotation.GroupBy;
+import win.doyto.query.annotation.View;
+import win.doyto.query.test.tpch.domain.customer.CustomerEntity;
+import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
+import win.doyto.query.test.tpch.domain.nation.NationEntity;
 import win.doyto.query.test.tpch.domain.orders.OrdersEntity;
+import win.doyto.query.test.tpch.domain.region.RegionEntity;
 import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
 
 import java.math.BigDecimal;
-import java.sql.Date;
+import javax.persistence.Column;
 
 /**
- * LineitemEntity
+ * LocalSupplierVolumeView
  *
- * @author f0rb on 2023/2/16
+ * @author f0rb on 2023/2/18
  * @since 1.0.1
  */
 @Getter
 @Setter
-public class LineitemEntity extends AbstractPersistable<Long> {
-
-    @ForeignKey(entity = OrdersEntity.class, field = "o_orderkey")
-    private String l_orderkey;
-
-    @ForeignKey(entity = SupplierEntity.class, field = "s_suppkey")
-    private String l_suppkey;
-
-    private BigDecimal l_extendedprice;
-
-    private BigDecimal l_discount;
-
-    private Date l_shipdate;
+@View({CustomerEntity.class, OrdersEntity.class, LineitemEntity.class, SupplierEntity.class, NationEntity.class, RegionEntity.class})
+public class LocalSupplierVolumeView {
+    @GroupBy
+    private String n_name;
+    @Column(name = "SUM(l_extendedprice * (1 - l_discount))")
+    private BigDecimal revenue;
 }

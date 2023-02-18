@@ -29,9 +29,12 @@ import win.doyto.query.test.tpch.q2.MinimumCostSupplierView;
 import win.doyto.query.test.tpch.q2.SupplyCostQuery;
 import win.doyto.query.test.tpch.q3.ShippingPriorityQuery;
 import win.doyto.query.test.tpch.q3.ShippingPriorityView;
+import win.doyto.query.test.tpch.q5.LocalSupplierVolumeQuery;
+import win.doyto.query.test.tpch.q5.LocalSupplierVolumeView;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -83,30 +86,22 @@ class TpcHTest {
 
     @Test
     void queryForMinimumCostSupplier() {
-        String expected = "SELECT " +
-                "s_acctbal, " +
-                "s_name, " +
-                "n_name, " +
-                "p_partkey, " +
-                "p_mfgr, " +
-                "s_address, " +
-                "s_phone, " +
-                "s_comment" +
+        String expected = "SELECT s_acctbal, s_name, n_name, p_partkey, p_mfgr, s_address, s_phone, s_comment" +
                 " FROM part, supplier, partsupp, nation, region" +
-                " WHERE n_nationkey = s_nationkey" +
-                " AND p_partkey = ps_partkey" +
-                " AND s_suppkey = ps_suppkey" +
-                " AND r_regionkey = n_regionkey" +
+                " WHERE s_nationkey = n_nationkey" +
+                " AND ps_partkey = p_partkey" +
+                " AND ps_suppkey = s_suppkey" +
+                " AND n_regionkey = r_regionkey" +
                 " AND p_size = ?" +
                 " AND p_type LIKE ?" +
                 " AND r_name = ?" +
                 " AND ps_supplycost = (" +
                 "SELECT MIN(ps_supplycost)" +
                 " FROM partsupp, supplier, nation, region" +
-                " WHERE p_partkey = ps_partkey" +
-                " AND s_suppkey = ps_suppkey" +
-                " AND n_nationkey = s_nationkey" +
-                " AND r_regionkey = n_regionkey" +
+                " WHERE ps_partkey = p_partkey" +
+                " AND ps_suppkey = s_suppkey" +
+                " AND s_nationkey = n_nationkey" +
+                " AND n_regionkey = r_regionkey" +
                 " AND r_name = ?" +
                 ") " +
                 "ORDER BY s_acctbal DESC, n_name, s_name, p_partkey";
@@ -132,8 +127,8 @@ class TpcHTest {
                 "o_orderdate, " +
                 "o_shippriority" +
                 " FROM customer, orders, lineitem" +
-                " WHERE c_custkey = o_custkey" +
-                " AND o_orderkey = l_orderkey" +
+                " WHERE o_custkey = c_custkey" +
+                " AND l_orderkey = o_orderkey" +
                 " AND c_mktsegment = ?" +
                 " AND o_orderdate < ?" +
                 " AND l_shipdate > ?" +
@@ -150,6 +145,37 @@ class TpcHTest {
                 .build();
 
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, ShippingPriorityView.class);
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+    }
+
+    @Test
+    void queryForLocalSupplierVolume() {
+        String expected = "SELECT n_name, SUM(l_extendedprice * (1 - l_discount)) AS revenue" +
+                " FROM customer, orders, lineitem, supplier, nation, region" +
+                " WHERE c_nationkey = n_nationkey" +
+                " AND o_custkey = c_custkey" +
+                " AND l_orderkey = o_orderkey" +
+                " AND l_suppkey = s_suppkey" +
+                " AND s_nationkey = n_nationkey" +
+                " AND n_regionkey = r_regionkey" +
+                " AND r_name = ?" +
+                " AND o_orderdate >= ?" +
+                " AND o_orderdate < ?" +
+                " GROUP BY n_name"+
+                " ORDER BY revenue DESC";
+
+        LocalDate date = LocalDate.of(1994, 1, 1);
+        Date orderDateGe = Date.valueOf(date);
+        Date orderDateLt = Date.valueOf(date.plus(1, ChronoUnit.YEARS));
+        LocalSupplierVolumeQuery query = LocalSupplierVolumeQuery
+                .builder()
+                .r_name("ASIA")
+                .o_orderdateGe(orderDateGe)
+                .o_orderdateLt(orderDateLt)
+                .sort("revenue,DESC")
+                .build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, LocalSupplierVolumeView.class);
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
     }
 }

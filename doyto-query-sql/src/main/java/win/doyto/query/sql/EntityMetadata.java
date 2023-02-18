@@ -66,8 +66,8 @@ public class EntityMetadata {
                   .forEach(field -> {
                 ForeignKey fkAnno = field.getAnnotation(ForeignKey.class);
                 if (parentColumns.contains(fkAnno.field()) || otherClassList.contains(fkAnno.entity())) {
-                    String c1 = ColumnUtil.convertColumn(fkAnno.field());
-                    String c2 = ColumnUtil.convertColumn(field.getName());
+                    String c1 = ColumnUtil.convertColumn(field.getName());
+                    String c2 = ColumnUtil.convertColumn(fkAnno.field());
                     relations.add(c1 + EQUAL + c2);
                 }
             });

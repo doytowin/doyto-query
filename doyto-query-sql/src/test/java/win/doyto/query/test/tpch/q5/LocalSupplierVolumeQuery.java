@@ -14,26 +14,30 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.domain.customer;
+package win.doyto.query.test.tpch.q5;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import win.doyto.query.annotation.ForeignKey;
-import win.doyto.query.entity.AbstractPersistable;
-import win.doyto.query.test.tpch.domain.nation.NationEntity;
+import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.PageQuery;
+
+import java.sql.Date;
 
 /**
- * CustomerEntity
+ * LocalSupplierVolumeQuery
  *
- * @author f0rb on 2023/2/16
+ * @author f0rb on 2023/2/18
  * @since 1.0.1
  */
 @Getter
 @Setter
-public class CustomerEntity extends AbstractPersistable<Long> {
-    private String c_custkey;
-    private String c_mktsegment;
-
-    @ForeignKey(entity = NationEntity.class, field = "n_nationkey")
-    private String c_nationkey;
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public class LocalSupplierVolumeQuery extends PageQuery {
+    private String r_name;
+    private Date o_orderdateGe;
+    private Date o_orderdateLt;
 }
