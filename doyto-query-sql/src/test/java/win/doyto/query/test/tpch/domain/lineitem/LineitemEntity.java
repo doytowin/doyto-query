@@ -47,4 +47,6 @@ public class LineitemEntity extends AbstractPersistable<Long> {
     private BigDecimal l_discount;
 
     private Date l_shipdate;
+
+    private Integer l_quantity;
 }

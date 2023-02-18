@@ -31,11 +31,14 @@ import win.doyto.query.test.tpch.q3.ShippingPriorityQuery;
 import win.doyto.query.test.tpch.q3.ShippingPriorityView;
 import win.doyto.query.test.tpch.q5.LocalSupplierVolumeQuery;
 import win.doyto.query.test.tpch.q5.LocalSupplierVolumeView;
+import win.doyto.query.test.tpch.q6.ForecastingRevenueChangeQuery;
+import win.doyto.query.test.tpch.q6.ForecastingRevenueChangeView;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 
+import static java.time.temporal.ChronoUnit.YEARS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -166,7 +169,7 @@ class TpcHTest {
 
         LocalDate date = LocalDate.of(1994, 1, 1);
         Date orderDateGe = Date.valueOf(date);
-        Date orderDateLt = Date.valueOf(date.plus(1, ChronoUnit.YEARS));
+        Date orderDateLt = Date.valueOf(date.plus(1, YEARS));
         LocalSupplierVolumeQuery query = LocalSupplierVolumeQuery
                 .builder()
                 .r_name("ASIA")
@@ -178,4 +181,29 @@ class TpcHTest {
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, LocalSupplierVolumeView.class);
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
     }
+
+    @Test
+    void queryForForecastingRevenueChange() {
+        String expected = "SELECT SUM(l_extendedprice * l_discount) AS revenue" +
+                " FROM lineitem" +
+                " WHERE l_shipdate >= ?" +
+                " AND l_shipdate < ?" +
+                " AND l_discount >= ?" +
+                " AND l_discount <= ?" +
+                " AND l_quantity < ?";
+        LocalDate date = LocalDate.of(1994, 1, 1);
+
+        ForecastingRevenueChangeQuery query = new ForecastingRevenueChangeQuery();
+        query.setBaseShipdate(date);
+        query.setBaseDiscount(BigDecimal.valueOf(0.06));
+        query.setL_quantityLt(24);
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, ForecastingRevenueChangeView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(
+                Date.valueOf(date), Date.valueOf(date.plus(1, YEARS)),
+                BigDecimal.valueOf(0.05), BigDecimal.valueOf(0.07), 24);
+    }
+
 }
