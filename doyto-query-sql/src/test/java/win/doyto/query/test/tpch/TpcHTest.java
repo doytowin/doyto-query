@@ -19,7 +19,6 @@ package win.doyto.query.test.tpch;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.sql.RelationalQueryBuilder;
 import win.doyto.query.sql.SqlAndArgs;
@@ -35,7 +34,6 @@ import java.sql.Date;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * TpcHTest
@@ -43,8 +41,6 @@ import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
  * @author f0rb on 2023/2/16
  * @since 1.0.1
  */
-@ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
-@ResourceLock(value = "tableFormat")
 class TpcHTest {
 
     @BeforeAll

@@ -18,7 +18,6 @@ package win.doyto.query.sql;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.test.*;
 import win.doyto.query.util.CommonUtil;
 
@@ -28,14 +27,12 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * CrudBuilderTest
  *
  * @author f0rb
  */
-@ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
 class CrudBuilderTest {
 
     private DynamicEntity dynamicEntity;

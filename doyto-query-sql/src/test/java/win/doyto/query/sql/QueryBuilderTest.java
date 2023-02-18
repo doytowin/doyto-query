@@ -18,7 +18,6 @@ package win.doyto.query.sql;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.Dialect;
 import win.doyto.query.test.*;
@@ -30,16 +29,12 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * QueryBuilderTest
  *
  * @author f0rb 2019-05-12
  */
-@ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
-@ResourceLock(value = "dialect", mode = READ)
-@ResourceLock(value = "tableFormat", mode = READ)
 class QueryBuilderTest {
 
     private final QueryBuilder testQueryBuilder = new QueryBuilder(TestEntity.class);
@@ -253,7 +248,6 @@ class QueryBuilderTest {
     }
 
     @Test
-    @ResourceLock(value = "dialect")
     void customPageDialect() {
         GlobalConfiguration globalConfiguration = GlobalConfiguration.instance();
         Dialect origin = globalConfiguration.getDialect();

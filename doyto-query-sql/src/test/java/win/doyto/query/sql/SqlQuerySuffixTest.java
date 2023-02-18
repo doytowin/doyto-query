@@ -18,7 +18,6 @@ package win.doyto.query.sql;
 
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceLock;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import win.doyto.query.test.TestEnum;
@@ -30,14 +29,12 @@ import java.util.Arrays;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * QuerySuffixTest
  *
  * @author f0rb on 2020-01-17
  */
-@ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
 class SqlQuerySuffixTest {
 
     @SneakyThrows

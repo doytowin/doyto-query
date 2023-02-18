@@ -18,7 +18,6 @@ package win.doyto.query.sql;
 
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.test.menu.MenuQuery;
 import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.role.RoleQuery;
@@ -31,15 +30,12 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * DomainPathProcessorTest
  *
  * @author f0rb on 2022-04-23
  */
-@ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
-@ResourceLock(value = "tableFormat", mode = READ)
 class DomainPathProcessorTest {
 
     List<Object> argList = new ArrayList<>();
