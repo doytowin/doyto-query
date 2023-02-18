@@ -22,14 +22,17 @@ import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.View;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.persistence.Entity;
 
@@ -53,11 +56,7 @@ public class BuildHelper {
             tableName = GlobalConfiguration.formatTable(entityAnno.name());
         } else if (entityClass.isAnnotationPresent(View.class)) {
             View viewAnno = entityClass.getAnnotation(View.class);
-            List<String> list = new ArrayList<>();
-            for (Class<?> clazz : viewAnno.value()) {
-                list.add(resolveTableName(clazz));
-            }
-            tableName = String.join(", ", list);
+            tableName = resolveTableName(viewAnno.value());
         } else {
             String entityName = entityClass.getSimpleName();
             entityName = StringUtils.removeEnd(entityName, "Entity");
@@ -65,6 +64,12 @@ public class BuildHelper {
             tableName = GlobalConfiguration.formatTable(entityName);
         }
         return tableName;
+    }
+
+    static String resolveTableName(Class<? extends Persistable<? extends Serializable>>[] value) {
+        return Arrays.stream(value)
+                     .map(BuildHelper::resolveTableName)
+                     .collect(Collectors.joining(SEPARATOR));
     }
 
     static String buildStart(String[] columns, String table) {

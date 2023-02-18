@@ -55,9 +55,14 @@ public class RelationalQueryBuilder {
             EntityMetadata entityMetadata = EntityMetadata.build(entityClass);
             StringBuilder sqlBuilder = new StringBuilder()
                     .append(SELECT).append(entityMetadata.getColumnsForSelect())
-                    .append(FROM).append(entityMetadata.getTableName())
-                    .append(buildCondition(WHERE + entityMetadata.getRelations(), query, argList))
-                    .append(entityMetadata.getGroupBySql());
+                    .append(FROM).append(entityMetadata.getTableName());
+            if (entityMetadata.getJoinConditions().isEmpty()) {
+                sqlBuilder.append(buildWhere(query, argList));
+            } else {
+                sqlBuilder.append(entityMetadata.getJoinConditions());
+                sqlBuilder.append(buildCondition(AND, query, argList));
+            }
+            sqlBuilder.append(entityMetadata.getGroupBySql());
             if (query instanceof AggregationQuery) {
                 sqlBuilder.append(buildHaving(((AggregationQuery) query).getHaving(), argList));
             }

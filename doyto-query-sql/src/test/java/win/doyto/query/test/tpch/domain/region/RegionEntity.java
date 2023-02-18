@@ -14,32 +14,20 @@
  * limitations under the License.
  */
 
-package win.doyto.query.annotation;
+package win.doyto.query.test.tpch.domain.region;
 
-import win.doyto.query.entity.Persistable;
-
-import java.io.Serializable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import lombok.Getter;
+import lombok.Setter;
+import win.doyto.query.entity.AbstractPersistable;
 
 /**
- * Subquery
+ * RegionEntity
  *
- * @author f0rb on 2022/12/29
+ * @author f0rb on 2023/2/17
  * @since 1.0.1
  */
-@SuppressWarnings("java:S1452")
-@Target(FIELD)
-@Retention(RUNTIME)
-public @interface Subquery {
-
-    String select();
-
-    String[] parentColumns() default {};
-
-    Class<? extends Persistable<? extends Serializable>>[] from();
-
+@Getter
+@Setter
+public class RegionEntity extends AbstractPersistable<Long> {
+    private String r_regionkey;
 }

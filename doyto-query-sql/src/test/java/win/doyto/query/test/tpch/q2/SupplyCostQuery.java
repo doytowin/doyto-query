@@ -14,32 +14,26 @@
  * limitations under the License.
  */
 
-package win.doyto.query.annotation;
+package win.doyto.query.test.tpch.q2;
 
-import win.doyto.query.entity.Persistable;
-
-import java.io.Serializable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.PageQuery;
 
 /**
- * Subquery
+ * SupplyCostQuery
  *
- * @author f0rb on 2022/12/29
+ * @author f0rb on 2023/2/17
  * @since 1.0.1
  */
-@SuppressWarnings("java:S1452")
-@Target(FIELD)
-@Retention(RUNTIME)
-public @interface Subquery {
-
-    String select();
-
-    String[] parentColumns() default {};
-
-    Class<? extends Persistable<? extends Serializable>>[] from();
-
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public class SupplyCostQuery extends PageQuery {
+    private String r_name;
 }

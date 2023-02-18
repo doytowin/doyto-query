@@ -43,12 +43,12 @@ public class ExistsProcessor implements FieldProcessor.Processor {
         String foreignId = ColumnUtil.convertColumn(domainPath.foreignField());
         alias = "t1";
         clauseFormat = (field.getName().endsWith("NotExists") ? "NOT " : EMPTY) + "EXISTS"
-                + OP +SELECT + "*" + FROM + domains + SPACE + alias
+                + OP + SELECT + "*" + FROM + domains + SPACE + alias
                 + WHERE + TABLE_ALIAS + "." + primaryId + EQUAL + alias + "." + foreignId + "%s" + CP;
     }
 
     @Override
     public String process(List<Object> argList, Object query) {
-        return  String.format(clauseFormat, BuildHelper.buildCondition(query, argList, AND, alias));
+        return String.format(clauseFormat, BuildHelper.buildCondition(query, argList, AND, alias));
     }
 }

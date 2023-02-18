@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql;
+package win.doyto.query.test.tpch;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.sql.RelationalQueryBuilder;
+import win.doyto.query.sql.SqlAndArgs;
 import win.doyto.query.test.tpch.q1.PricingSummaryQuery;
 import win.doyto.query.test.tpch.q1.PricingSummaryView;
+import win.doyto.query.test.tpch.q2.MinimumCostSupplierQuery;
+import win.doyto.query.test.tpch.q2.MinimumCostSupplierView;
+import win.doyto.query.test.tpch.q2.SupplyCostQuery;
 import win.doyto.query.test.tpch.q3.ShippingPriorityQuery;
 import win.doyto.query.test.tpch.q3.ShippingPriorityView;
 
@@ -77,6 +82,49 @@ class TpcHTest {
                 .build();
 
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, PricingSummaryView.class);
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+    }
+
+    @Test
+    void queryForMinimumCostSupplier() {
+        String expected = "SELECT " +
+                "s_acctbal, " +
+                "s_name, " +
+                "n_name, " +
+                "p_partkey, " +
+                "p_mfgr, " +
+                "s_address, " +
+                "s_phone, " +
+                "s_comment" +
+                " FROM part, supplier, partsupp, nation, region" +
+                " WHERE n_nationkey = s_nationkey" +
+                " AND p_partkey = ps_partkey" +
+                " AND s_suppkey = ps_suppkey" +
+                " AND r_regionkey = n_regionkey" +
+                " AND p_size = ?" +
+                " AND p_type LIKE ?" +
+                " AND r_name = ?" +
+                " AND ps_supplycost = (" +
+                "SELECT MIN(ps_supplycost)" +
+                " FROM partsupp, supplier, nation, region" +
+                " WHERE p_partkey = ps_partkey" +
+                " AND s_suppkey = ps_suppkey" +
+                " AND n_nationkey = s_nationkey" +
+                " AND r_regionkey = n_regionkey" +
+                " AND r_name = ?" +
+                ") " +
+                "ORDER BY s_acctbal DESC, n_name, s_name, p_partkey";
+
+        MinimumCostSupplierQuery query = MinimumCostSupplierQuery
+                .builder()
+                .p_size(15)
+                .p_typeEnd("BRASS")
+                .r_name("EUROPE")
+                .ps_supplycost(SupplyCostQuery.builder().r_name("EUROPE").build())
+                .sort("s_acctbal,DESC;n_name;s_name;p_partkey")
+                .build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, MinimumCostSupplierView.class);
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
     }
 

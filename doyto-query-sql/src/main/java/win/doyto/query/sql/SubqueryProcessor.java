@@ -22,6 +22,8 @@ import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,12 +40,18 @@ public class SubqueryProcessor implements FieldProcessor.Processor {
     private static final Pattern PTN_DIGITS_END = Pattern.compile("\\d++$");
     private static final Pattern PTN_SUBQUERY = Pattern.compile("^(\\w+)\\$(\\w+)From(\\w+)$");
     private final String clauseFormat;
+    private String joinConditions = EMPTY;
 
     public SubqueryProcessor(Field field) {
         Subquery subquery = field.getAnnotation(Subquery.class);
         String fieldName = field.getName();
         fieldName = PTN_DIGITS_END.matcher(fieldName).replaceFirst(EMPTY);
-        String tableName = GlobalConfiguration.formatTable(subquery.from());
+
+        String tableName = BuildHelper.resolveTableName(subquery.from());
+        List<String> relations = EntityMetadata.resolveEntityRelations(
+                subquery.from(), new HashSet<>(Arrays.asList(subquery.parentColumns())));
+        joinConditions = String.join(AND, relations);
+
         clauseFormat = buildClauseFormat(fieldName, subquery.select(), tableName);
     }
 
@@ -83,7 +91,12 @@ public class SubqueryProcessor implements FieldProcessor.Processor {
 
     @Override
     public String process(List<Object> argList, Object value) {
-        String where = BuildHelper.buildWhere((DoytoQuery) value, argList);
+        String where;
+        if (!joinConditions.isEmpty()) {
+            where = WHERE + joinConditions + BuildHelper.buildCondition(AND, value, argList);
+        } else {
+            where = BuildHelper.buildWhere((DoytoQuery) value, argList);
+        }
         return String.format(clauseFormat, where);
     }
 }

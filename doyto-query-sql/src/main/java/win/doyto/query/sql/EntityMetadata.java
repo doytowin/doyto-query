@@ -22,10 +22,7 @@ import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.annotation.View;
 import win.doyto.query.util.ColumnUtil;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -45,7 +42,7 @@ public class EntityMetadata {
     @Getter
     private final String tableName;
     @Getter
-    private final String relations;
+    private final String joinConditions;
     @Getter
     private String groupByColumns = "";
     @Getter
@@ -53,27 +50,38 @@ public class EntityMetadata {
 
     public EntityMetadata(Class<?> entityClass) {
         this.tableName = BuildHelper.resolveTableName(entityClass);
-        this.relations = resolveEntityRelations(entityClass);
+        this.joinConditions = resolveJoinConditions(entityClass);
 
         this.columnsForSelect = buildSelectColumns(entityClass);
         this.groupBySql = buildGroupBySql(entityClass);
     }
 
-    private String resolveEntityRelations(Class<?> viewClass) {
+    static List<String> resolveEntityRelations(Class<?>[] viewClasses, Set<Object> parentColumns) {
+        List<String> relations = new ArrayList<>();
+        for (int i = 0, len = viewClasses.length; i < len; i++) {
+            List<Class<?>> otherClassList = new ArrayList<>(Arrays.asList(viewClasses));
+            otherClassList.remove(i);
+            Arrays.stream(ColumnUtil.initFields(viewClasses[i]))
+                    .filter(field -> field.isAnnotationPresent(ForeignKey.class))
+                  .forEach(field -> {
+                ForeignKey fkAnno = field.getAnnotation(ForeignKey.class);
+                if (parentColumns.contains(fkAnno.field()) || otherClassList.contains(fkAnno.entity())) {
+                    String c1 = ColumnUtil.convertColumn(fkAnno.field());
+                    String c2 = ColumnUtil.convertColumn(field.getName());
+                    relations.add(c1 + EQUAL + c2);
+                }
+            });
+        }
+        return relations;
+    }
+
+    private String resolveJoinConditions(Class<?> viewClass) {
         List<String> conditions = new ArrayList<>();
         View viewAnno = viewClass.getAnnotation(View.class);
         if (viewAnno != null && viewAnno.value().length > 0) {
-            Class<?>[] viewClasses = viewAnno.value();
-            for (int i = 1; i < viewClasses.length; i++) {
-                for (Field field : ColumnUtil.initFields(viewClasses[i])) {
-                    if (field.isAnnotationPresent(ForeignKey.class)) {
-                        ForeignKey fkAnno = field.getAnnotation(ForeignKey.class);
-                        conditions.add(fkAnno.field() + " = " + field.getName());
-                    }
-                }
-            }
+            conditions.addAll(resolveEntityRelations(viewAnno.value(), new HashSet<>()));
         }
-        return conditions.isEmpty() ? EMPTY : String.join(AND, conditions) + AND;
+        return conditions.isEmpty() ? EMPTY : WHERE + String.join(AND, conditions);
     }
 
     static EntityMetadata build(Class<?> entityClass) {
