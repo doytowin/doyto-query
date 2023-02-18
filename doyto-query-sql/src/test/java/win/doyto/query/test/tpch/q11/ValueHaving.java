@@ -14,31 +14,30 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.domain.partsupp;
+package win.doyto.query.test.tpch.q11;
 
-import lombok.Getter;
-import lombok.Setter;
-import win.doyto.query.annotation.ForeignKey;
-import win.doyto.query.entity.AbstractPersistable;
-import win.doyto.query.test.tpch.domain.part.PartEntity;
+import lombok.*;
+import win.doyto.query.annotation.Subquery;
+import win.doyto.query.core.Having;
+import win.doyto.query.test.tpch.domain.nation.NationEntity;
+import win.doyto.query.test.tpch.domain.partsupp.PartsuppEntity;
 import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
 
-import java.math.BigDecimal;
-
 /**
- * PartsuppEntity
+ * ValueHaving
  *
- * @author f0rb on 2023/2/17
+ * @author f0rb on 2023/2/18
  * @since 1.0.1
  */
 @Getter
 @Setter
-public class PartsuppEntity extends AbstractPersistable<Long> {
-    @ForeignKey(entity = PartEntity.class, field = "p_partkey")
-    private String ps_partkey;
-    @ForeignKey(entity = SupplierEntity.class, field = "s_suppkey")
-    private String ps_suppkey;
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ValueHaving implements Having {
 
-    private BigDecimal ps_supplycost;
-    private Integer ps_availqty;
+    @Subquery(select = "SUM(ps_supplycost * ps_availqty) * 0.0001000000e-2",
+            from = {PartsuppEntity.class, SupplierEntity.class, NationEntity.class})
+    private ValueQuery valueGt;
+
 }

@@ -26,6 +26,10 @@ import win.doyto.query.test.tpch.q1.PricingSummaryQuery;
 import win.doyto.query.test.tpch.q1.PricingSummaryView;
 import win.doyto.query.test.tpch.q10.ReturnedItemReportingQuery;
 import win.doyto.query.test.tpch.q10.ReturnedItemReportingView;
+import win.doyto.query.test.tpch.q11.ImportantStockIdentificationQuery;
+import win.doyto.query.test.tpch.q11.ImportantStockIdentificationView;
+import win.doyto.query.test.tpch.q11.ValueHaving;
+import win.doyto.query.test.tpch.q11.ValueQuery;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierQuery;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierView;
 import win.doyto.query.test.tpch.q2.SupplyCostQuery;
@@ -252,6 +256,41 @@ class TpcHTest {
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(
                 Date.valueOf(date), Date.valueOf(date.plus(3, MONTHS)), "R");
+    }
+
+    @Test
+    void queryForImportantStockIdentification() {
+        String expected = "SELECT" +
+                " ps_partkey," +
+                " SUM(ps_supplycost * ps_availqty) AS value" +
+                " FROM partsupp, supplier, nation" +
+                " WHERE ps_suppkey = s_suppkey" +
+                " AND s_nationkey = n_nationkey" +
+                " AND n_name = ?" +
+                " GROUP BY ps_partkey" +
+                " HAVING value > (SELECT SUM(ps_supplycost * ps_availqty) * 0.0001000000e-2" +
+                " FROM partsupp, supplier, nation" +
+                " WHERE ps_suppkey = s_suppkey" +
+                " AND s_nationkey = n_nationkey" +
+                " AND n_name = ?" +
+                ")" +
+                " ORDER BY value DESC";
+
+        ValueHaving having = ValueHaving
+                .builder()
+                .valueGt(ValueQuery.builder().n_name("GERMANY").build())
+                .build();
+        ImportantStockIdentificationQuery query = ImportantStockIdentificationQuery
+                .builder()
+                .n_name("GERMANY")
+                .having(having)
+                .sort("value,DESC")
+                .build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, ImportantStockIdentificationView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly("GERMANY", "GERMANY");
     }
 
 }

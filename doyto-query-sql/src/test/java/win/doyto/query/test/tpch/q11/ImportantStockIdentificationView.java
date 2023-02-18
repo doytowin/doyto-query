@@ -14,31 +14,33 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.domain.partsupp;
+package win.doyto.query.test.tpch.q11;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.ForeignKey;
-import win.doyto.query.entity.AbstractPersistable;
-import win.doyto.query.test.tpch.domain.part.PartEntity;
+import win.doyto.query.annotation.GroupBy;
+import win.doyto.query.annotation.View;
+import win.doyto.query.test.tpch.domain.nation.NationEntity;
+import win.doyto.query.test.tpch.domain.partsupp.PartsuppEntity;
 import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
 
 import java.math.BigDecimal;
+import javax.persistence.Column;
 
 /**
- * PartsuppEntity
+ * ImportantStockIdentificationView
  *
- * @author f0rb on 2023/2/17
+ * @author f0rb on 2023/2/18
  * @since 1.0.1
  */
 @Getter
 @Setter
-public class PartsuppEntity extends AbstractPersistable<Long> {
-    @ForeignKey(entity = PartEntity.class, field = "p_partkey")
-    private String ps_partkey;
-    @ForeignKey(entity = SupplierEntity.class, field = "s_suppkey")
-    private String ps_suppkey;
+@View({PartsuppEntity.class, SupplierEntity.class, NationEntity.class})
+public class ImportantStockIdentificationView {
 
-    private BigDecimal ps_supplycost;
-    private Integer ps_availqty;
+    @GroupBy
+    private String ps_partkey;
+
+    @Column(name = "SUM(ps_supplycost * ps_availqty)")
+    private BigDecimal value;
 }
