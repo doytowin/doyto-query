@@ -42,11 +42,28 @@ public class LineitemEntity extends AbstractPersistable<Long> {
     @ForeignKey(entity = SupplierEntity.class, field = "s_suppkey")
     private String l_suppkey;
 
+    private Integer l_quantity;
+
     private BigDecimal l_extendedprice;
 
     private BigDecimal l_discount;
 
+    private BigDecimal l_tax;
+
+    private int l_returnflag;
+
+    private int l_linestatus;
+
     private Date l_shipdate;
 
-    private Integer l_quantity;
+    private Date l_commitdate;
+
+    private Date l_receiptdate;
+
+    private String l_shipinstruct;
+
+    private String l_shipmode;
+
+    private String l_comment;
+
 }

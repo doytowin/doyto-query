@@ -30,6 +30,8 @@ import win.doyto.query.test.tpch.q11.ImportantStockIdentificationQuery;
 import win.doyto.query.test.tpch.q11.ImportantStockIdentificationView;
 import win.doyto.query.test.tpch.q11.ValueHaving;
 import win.doyto.query.test.tpch.q11.ValueQuery;
+import win.doyto.query.test.tpch.q12.ShippingModesAndOrderPriorityQuery;
+import win.doyto.query.test.tpch.q12.ShippingModesAndOrderPriorityView;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierQuery;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierView;
 import win.doyto.query.test.tpch.q2.SupplyCostQuery;
@@ -43,6 +45,7 @@ import win.doyto.query.test.tpch.q6.ForecastingRevenueChangeView;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.Arrays;
 
 import static java.time.temporal.ChronoUnit.MONTHS;
 import static java.time.temporal.ChronoUnit.YEARS;
@@ -291,6 +294,39 @@ class TpcHTest {
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly("GERMANY", "GERMANY");
+    }
+
+    @Test
+    void queryForShippingModesAndOrderPriority() {
+        String expected = "SELECT l_shipmode," +
+                " SUM(CASE WHEN o_orderpriority = '1-URGENT'OR o_orderpriority = '2-HIGH'THEN 1 ELSE 0 END) AS high_line_count," +
+                " SUM(CASE WHEN o_orderpriority <> '1-URGENT'AND o_orderpriority <> '2-HIGH'THEN 1 ELSE 0 END) AS low_line_count" +
+                " FROM orders, lineitem" +
+                " WHERE l_orderkey = o_orderkey" +
+                " AND l_shipmode IN (?, ?)" +
+                " AND l_commitdate < l_receiptdate" +
+                " AND l_shipdate < l_commitdate" +
+                " AND l_receiptdate >= ?" +
+                " AND l_receiptdate < ?" +
+                " GROUP BY l_shipmode" +
+                " ORDER BY l_shipmode";
+
+        LocalDate date = LocalDate.of(1994, 1, 1);
+        ShippingModesAndOrderPriorityQuery query = ShippingModesAndOrderPriorityQuery
+                .builder()
+                .l_shipmodeIn(Arrays.asList("MAIL", "SHIP"))
+                .l_receiptdateGe(Date.valueOf(date))
+                .l_receiptdateLt(Date.valueOf(date.plus(1, YEARS)))
+                .sort("l_shipmode")
+                .build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, ShippingModesAndOrderPriorityView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(
+                "MAIL", "SHIP",
+                Date.valueOf(date), Date.valueOf(date.plus(1, YEARS))
+        );
     }
 
 }
