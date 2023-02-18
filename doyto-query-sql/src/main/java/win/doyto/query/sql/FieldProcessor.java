@@ -80,6 +80,8 @@ final class FieldProcessor {
             processor = initFieldAnnotatedByQueryField(field);
         } else if (Having.class.isAssignableFrom(field.getDeclaringClass())) {
             processor = initHavingField(field);
+        } else if (boolean.class.isAssignableFrom(field.getType())) {
+            processor = new PrimitiveBooleanProcessor(field.getName());
         } else {
             processor = initCommonField(field);
         }
