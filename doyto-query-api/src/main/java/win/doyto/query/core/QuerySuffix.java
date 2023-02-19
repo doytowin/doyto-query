@@ -43,6 +43,7 @@ public enum QuerySuffix {
     Not,
     NotLike(Constants.LIKE_PREDICATE),
     Like(Constants.LIKE_PREDICATE),
+    NotContain(Constants.LIKE_PREDICATE),
     Contain(Constants.LIKE_PREDICATE),
     NotStart(Constants.LIKE_PREDICATE),
     Start(Constants.LIKE_PREDICATE),

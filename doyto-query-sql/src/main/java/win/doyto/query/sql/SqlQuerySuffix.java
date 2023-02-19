@@ -47,6 +47,7 @@ enum SqlQuerySuffix {
     Not("!="),
     NotLike(NOT_LIKE, ValueProcessor.LIKE_VALUE_PROCESSOR),
     Like(LIKE, ValueProcessor.LIKE_VALUE_PROCESSOR),
+    NotContain(NOT_LIKE, ValueProcessor.LIKE_VALUE_PROCESSOR),
     Contain(LIKE, ValueProcessor.LIKE_VALUE_PROCESSOR),
     NotStart(NOT_LIKE, new LikeValueProcessor() {
         @Override

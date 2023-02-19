@@ -49,6 +49,7 @@ class SqlQuerySuffixTest {
             "testLikeEq, test, test_like = ?, test",
             "usernameNotLike, test, username NOT LIKE ?, %test%",
             "usernameLike, test, username LIKE ?, %test%",
+            "usernameNotContain, test, username NOT LIKE ?, %test%",
             "usernameStart, test, username LIKE ?, test%",
             "usernameNotStart, test, username NOT LIKE ?, test%",
             "usernameEnd, test, username LIKE ?, %test",
