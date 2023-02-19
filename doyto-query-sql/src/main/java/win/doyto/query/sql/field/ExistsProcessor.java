@@ -32,7 +32,7 @@ import static win.doyto.query.sql.Constant.*;
  * @author f0rb on 2023/1/4
  * @since 1.0.1
  */
-public class ExistsProcessor implements FieldMapper.Processor {
+public class ExistsProcessor implements FieldProcessor {
 
     private final String clauseFormat;
     private final String alias;

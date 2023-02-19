@@ -16,33 +16,35 @@
 
 package win.doyto.query.sql.field;
 
-import win.doyto.query.util.ColumnUtil;
+import org.apache.commons.lang3.StringUtils;
+import win.doyto.query.annotation.QueryField;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
+import static win.doyto.query.sql.Constant.PLACE_HOLDER;
+
 /**
- * PrimitiveBooleanProcessor
+ * QueryFieldProcessor
  *
- * @author f0rb on 2023/2/18
+ * @author f0rb on 2023/2/19
  * @since 1.0.1
  */
-public class PrimitiveBooleanProcessor implements FieldProcessor {
+class QueryFieldProcessor implements FieldProcessor {
 
-    private final String clause;
+    private final String andSQL;
+    private final int holderCount;
 
-    public PrimitiveBooleanProcessor(String fieldName) {
-        SqlQuerySuffix sqlQuerySuffix = SqlQuerySuffix.resolve(fieldName);
-        if (sqlQuerySuffix == SqlQuerySuffix.Null || sqlQuerySuffix == SqlQuerySuffix.NotNull) {
-            String columnName = sqlQuerySuffix.removeSuffix(fieldName);
-            columnName = ColumnUtil.convertColumn(columnName);
-            clause = columnName + " " + sqlQuerySuffix.getOp();
-        } else {
-            clause = SqlComparator.buildClause(fieldName);
-        }
+    QueryFieldProcessor(Field field) {
+        andSQL = field.getAnnotation(QueryField.class).and();
+        holderCount = StringUtils.countMatches(andSQL, PLACE_HOLDER);
     }
 
     @Override
     public String process(List<Object> argList, Object value) {
-        return Boolean.TRUE.equals(value) ? clause : null;
+        for (int i = 0; i < holderCount; i++) {
+            argList.add(value);
+        }
+        return andSQL;
     }
 }

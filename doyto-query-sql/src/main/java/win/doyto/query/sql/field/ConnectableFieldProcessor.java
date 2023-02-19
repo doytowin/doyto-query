@@ -35,7 +35,7 @@ import static win.doyto.query.sql.field.FieldMapper.execute;
  * @author f0rb on 2023/2/19
  * @since 1.0.1
  */
-public class ConnectableFieldProcessor implements FieldMapper.Processor {
+public class ConnectableFieldProcessor implements FieldProcessor {
 
     private final Field[] fields;
     private final String connector;

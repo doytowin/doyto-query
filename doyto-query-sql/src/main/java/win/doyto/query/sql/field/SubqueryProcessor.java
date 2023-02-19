@@ -41,7 +41,7 @@ import static win.doyto.query.sql.Constant.*;
  * @author f0rb on 2022/12/29
  * @since 1.0.1
  */
-public class SubqueryProcessor implements FieldMapper.Processor {
+public class SubqueryProcessor implements FieldProcessor {
     private static final Pattern PTN_DIGITS_END = Pattern.compile("\\d++$");
     private static final Pattern PTN_SUBQUERY = Pattern.compile("^(\\w+)\\$(\\w+)From(\\w+)$");
     private final String clauseFormat;

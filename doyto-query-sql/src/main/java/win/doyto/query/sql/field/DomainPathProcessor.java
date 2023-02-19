@@ -36,7 +36,7 @@ import static win.doyto.query.sql.Constant.*;
  * @author f0rb on 2022-05-10
  * @since 0.3.1
  */
-class DomainPathProcessor implements FieldMapper.Processor {
+class DomainPathProcessor implements FieldProcessor {
     private final DomainPathDetail domainPathDetail;
 
     public DomainPathProcessor(Field field) {

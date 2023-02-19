@@ -19,7 +19,6 @@ package win.doyto.query.sql.field;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.annotation.QueryField;
@@ -44,14 +43,14 @@ import static win.doyto.query.sql.Constant.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FieldMapper {
 
-    private static final Map<Field, Processor> FIELD_PROCESSOR_MAP = new ConcurrentHashMap<>();
+    private static final Map<Field, FieldProcessor> FIELD_PROCESSOR_MAP = new ConcurrentHashMap<>();
 
     public static String execute(Field field, List<Object> argList, Object value) {
         return FIELD_PROCESSOR_MAP.get(field).process(argList, value);
     }
 
     public static void init(Field field) {
-        Processor processor;
+        FieldProcessor processor;
         if (Or.class.isAssignableFrom(field.getType())) {
             processor = new ConnectableFieldProcessor(field, OR);
         } else if (And.class.isAssignableFrom(field.getType())) {
@@ -59,7 +58,7 @@ public final class FieldMapper {
         } else if (DoytoQuery.class.isAssignableFrom(field.getType())) {
             processor = initDoytoQueryField(field);
         } else if (field.isAnnotationPresent(QueryField.class)) {
-            processor = initFieldAnnotatedByQueryField(field);
+            processor = new QueryFieldProcessor(field);
         } else if (Having.class.isAssignableFrom(field.getDeclaringClass())) {
             processor = initHavingField(field);
         } else if (boolean.class.isAssignableFrom(field.getType())) {
@@ -70,8 +69,8 @@ public final class FieldMapper {
         FIELD_PROCESSOR_MAP.put(field, processor);
     }
 
-    private static Processor initDoytoQueryField(Field field) {
-        Processor processor;
+    private static FieldProcessor initDoytoQueryField(Field field) {
+        FieldProcessor processor;
         if (field.isAnnotationPresent(DomainPath.class)) {
             if (field.getName().endsWith(QuerySuffix.Exists.name())) {
                 processor = new ExistsProcessor(field);
@@ -91,12 +90,12 @@ public final class FieldMapper {
         return processor;
     }
 
-    private static Processor initCommonField(Field field) {
+    private static FieldProcessor initCommonField(Field field) {
         String fieldName = field.getName();
         return chooseProcessorForFieldWithOr(fieldName);
     }
 
-    private static Processor initHavingField(Field field) {
+    private static FieldProcessor initHavingField(Field field) {
         String fieldName = field.getName();
         if (!field.isAnnotationPresent(GroupBy.class)) {
              fieldName = HAVING_PREFIX + field.getName();
@@ -104,27 +103,12 @@ public final class FieldMapper {
         return chooseProcessorForFieldWithOr(fieldName);
     }
 
-    private static Processor chooseProcessorForFieldWithOr(String fieldName) {
+    private static FieldProcessor chooseProcessorForFieldWithOr(String fieldName) {
         if (CommonUtil.containsOr(fieldName)) {
             return (argList, value) -> SqlQuerySuffix.buildConditionForFieldContainsOr(fieldName, argList, value);
         } else {
             return (argList, value) -> SqlQuerySuffix.buildConditionForField(fieldName, argList, value);
         }
-    }
-
-    private static Processor initFieldAnnotatedByQueryField(Field field) {
-        String andSQL = field.getAnnotation(QueryField.class).and();
-        int holderCount = StringUtils.countMatches(andSQL, PLACE_HOLDER);
-        return (argList, value) -> {
-            for (int i = 0; i < holderCount; i++) {
-                argList.add(value);
-            }
-            return andSQL;
-        };
-    }
-
-    interface Processor {
-        String process(List<Object> argList, Object value);
     }
 
 }
