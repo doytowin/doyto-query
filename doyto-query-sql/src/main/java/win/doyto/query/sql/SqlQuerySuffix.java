@@ -48,6 +48,12 @@ enum SqlQuerySuffix {
     NotLike("NOT LIKE", ValueProcessor.LIKE_VALUE_PROCESSOR),
     Like("LIKE", ValueProcessor.LIKE_VALUE_PROCESSOR),
     Contain("LIKE", ValueProcessor.LIKE_VALUE_PROCESSOR),
+    NotStart("NOT LIKE", new LikeValueProcessor() {
+        @Override
+        public Object escapeValue(Object value) {
+            return CommonUtil.escapeStart(String.valueOf(value));
+        }
+    }),
     Start("LIKE", new LikeValueProcessor() {
         @Override
         public Object escapeValue(Object value) {
