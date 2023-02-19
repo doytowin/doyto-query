@@ -30,4 +30,7 @@ import win.doyto.query.entity.AbstractPersistable;
 @Setter
 public class PartEntity extends AbstractPersistable<Long> {
     private String p_partkey;
+    private String p_brand;
+    private String p_type;
+    private Integer p_size;
 }

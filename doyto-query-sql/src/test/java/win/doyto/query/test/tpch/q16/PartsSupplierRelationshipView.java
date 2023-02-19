@@ -14,25 +14,33 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.domain.supplier;
+package win.doyto.query.test.tpch.q16;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.ForeignKey;
-import win.doyto.query.entity.AbstractPersistable;
-import win.doyto.query.test.tpch.domain.nation.NationEntity;
+import win.doyto.query.annotation.GroupBy;
+import win.doyto.query.annotation.View;
+import win.doyto.query.test.tpch.domain.part.PartEntity;
+import win.doyto.query.test.tpch.domain.partsupp.PartsuppEntity;
+
+import javax.persistence.Column;
 
 /**
- * SupplierEntity
+ * PartsSupplierRelationshipView
  *
- * @author f0rb on 2023/2/17
+ * @author f0rb on 2023/2/19
  * @since 1.0.1
  */
 @Getter
 @Setter
-public class SupplierEntity extends AbstractPersistable<Long> {
-    private String s_suppkey;
-    @ForeignKey(entity = NationEntity.class, field = "n_nationkey")
-    private String s_nationkey;
-    private String s_comment;
+@View({PartsuppEntity.class, PartEntity.class})
+public class PartsSupplierRelationshipView {
+    @GroupBy
+    private String p_brand;
+    @GroupBy
+    private String p_type;
+    @GroupBy
+    private Integer p_size;
+    @Column(name = "COUNT(DISTINCT ps_suppkey)")
+    private Integer supplier_cnt;
 }

@@ -16,23 +16,24 @@
 
 package win.doyto.query.test.tpch.domain.supplier;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import win.doyto.query.annotation.ForeignKey;
-import win.doyto.query.entity.AbstractPersistable;
-import win.doyto.query.test.tpch.domain.nation.NationEntity;
+import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.PageQuery;
 
 /**
- * SupplierEntity
+ * SupplierQuery
  *
- * @author f0rb on 2023/2/17
+ * @author f0rb on 2023/2/19
  * @since 1.0.1
  */
 @Getter
 @Setter
-public class SupplierEntity extends AbstractPersistable<Long> {
-    private String s_suppkey;
-    @ForeignKey(entity = NationEntity.class, field = "n_nationkey")
-    private String s_nationkey;
-    private String s_comment;
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public class SupplierQuery extends PageQuery {
+    private String s_commentLike;
 }

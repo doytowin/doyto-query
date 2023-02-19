@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.sql.RelationalQueryBuilder;
 import win.doyto.query.sql.SqlAndArgs;
+import win.doyto.query.test.tpch.domain.supplier.SupplierQuery;
 import win.doyto.query.test.tpch.q1.PricingSummaryQuery;
 import win.doyto.query.test.tpch.q1.PricingSummaryView;
 import win.doyto.query.test.tpch.q10.ReturnedItemReportingQuery;
@@ -34,6 +35,8 @@ import win.doyto.query.test.tpch.q12.ShippingModesAndOrderPriorityQuery;
 import win.doyto.query.test.tpch.q12.ShippingModesAndOrderPriorityView;
 import win.doyto.query.test.tpch.q14.PromotionEffectQuery;
 import win.doyto.query.test.tpch.q14.PromotionEffectView;
+import win.doyto.query.test.tpch.q16.PartsSupplierRelationshipQuery;
+import win.doyto.query.test.tpch.q16.PartsSupplierRelationshipView;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierQuery;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierView;
 import win.doyto.query.test.tpch.q2.SupplyCostQuery;
@@ -350,6 +353,37 @@ class TpcHTest {
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, PromotionEffectView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+    }
+
+    @Test
+    void queryForPartsSupplierRelationship() {
+        String expected = "SELECT p_brand, p_type, p_size, COUNT(DISTINCT ps_suppkey) AS supplier_cnt" +
+                " FROM partsupp, part" +
+                " WHERE ps_partkey = p_partkey" +
+                " AND p_brand != ?" +
+                " AND p_type NOT LIKE ?" +
+                " AND p_size IN (?, ?, ?, ?, ?, ?, ?, ?)" +
+                " AND ps_suppkey NOT IN (SELECT s_suppkey" +
+                " FROM supplier" +
+                " WHERE s_comment LIKE ?)" +
+                " GROUP BY p_brand, p_type, p_size" +
+                " ORDER BY supplier_cnt DESC, p_brand, p_type, p_size";
+
+        PartsSupplierRelationshipQuery query = PartsSupplierRelationshipQuery
+                .builder()
+                .p_brandNot("Brand#45")
+                .p_typeNotStart("MEDIUM POLISHED")
+                .p_sizeIn(Arrays.asList(9, 14, 23, 45, 19, 3, 36, 9))
+                .ps_suppkeyNotIn(SupplierQuery.builder().s_commentLike("%Customer%Complaints%").build())
+                .sort("supplier_cnt,DESC;p_brand;p_type;p_size")
+                .build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, PartsSupplierRelationshipView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(
+                "Brand#45", "MEDIUM POLISHED%", 9, 14, 23, 45, 19, 3, 36, 9, "%Customer%Complaints%"
+        );
     }
 
 }
