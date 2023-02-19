@@ -18,7 +18,9 @@ package win.doyto.query.sql;
 
 import win.doyto.query.annotation.Subquery;
 import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.core.Having;
 import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
@@ -28,6 +30,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static win.doyto.query.sql.BuildHelper.buildCondition;
 import static win.doyto.query.sql.Constant.*;
 
 /**
@@ -41,6 +44,7 @@ public class SubqueryProcessor implements FieldProcessor.Processor {
     private static final Pattern PTN_SUBQUERY = Pattern.compile("^(\\w+)\\$(\\w+)From(\\w+)$");
     private final String clauseFormat;
     private String joinConditions = EMPTY;
+    private String groupBy = EMPTY;
 
     public SubqueryProcessor(Field field) {
         Subquery subquery = field.getAnnotation(Subquery.class);
@@ -48,6 +52,10 @@ public class SubqueryProcessor implements FieldProcessor.Processor {
         fieldName = PTN_DIGITS_END.matcher(fieldName).replaceFirst(EMPTY);
 
         String tableName = BuildHelper.resolveTableName(subquery.from());
+
+        if (subquery.distinct()) {
+            groupBy = " GROUP BY " + subquery.select();
+        }
         List<String> relations = EntityMetadata.resolveEntityRelations(
                 subquery.from(), new HashSet<>(Arrays.asList(subquery.parentColumns())));
         joinConditions = String.join(AND, relations);
@@ -71,7 +79,7 @@ public class SubqueryProcessor implements FieldProcessor.Processor {
         return matcher.find() ? matcher : null;
     }
 
-    private String buildClauseFormat(String fieldName, String column, String table) {
+    private static String buildClauseFormat(String fieldName, String column, String table) {
         SqlQuerySuffix querySuffix = SqlQuerySuffix.resolve(fieldName);
 
         String clause;
@@ -91,12 +99,19 @@ public class SubqueryProcessor implements FieldProcessor.Processor {
 
     @Override
     public String process(List<Object> argList, Object value) {
-        String where;
+        String clause;
         if (!joinConditions.isEmpty()) {
-            where = WHERE + joinConditions + BuildHelper.buildCondition(AND, value, argList);
+            clause = WHERE + joinConditions + BuildHelper.buildCondition(AND, value, argList);
         } else {
-            where = BuildHelper.buildWhere((DoytoQuery) value, argList);
+            clause = BuildHelper.buildWhere((DoytoQuery) value, argList);
         }
-        return String.format(clauseFormat, where);
+        clause += groupBy;
+        if (value instanceof AggregationQuery) {
+            Having having = ((AggregationQuery) value).getHaving();
+            if (having != null) {
+                clause += buildCondition(" HAVING ", having, argList);
+            }
+        }
+        return String.format(clauseFormat, clause);
     }
 }

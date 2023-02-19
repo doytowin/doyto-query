@@ -40,6 +40,10 @@ import win.doyto.query.test.tpch.q16.PartsSupplierRelationshipQuery;
 import win.doyto.query.test.tpch.q16.PartsSupplierRelationshipView;
 import win.doyto.query.test.tpch.q17.SmallQuantityOrderRevenueQuery;
 import win.doyto.query.test.tpch.q17.SmallQuantityOrderRevenueView;
+import win.doyto.query.test.tpch.q18.LargeVolumeCustomerQuery;
+import win.doyto.query.test.tpch.q18.LargeVolumeCustomerView;
+import win.doyto.query.test.tpch.q18.LineitemQuantityHaving;
+import win.doyto.query.test.tpch.q18.LineitemQuantityQuery;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierQuery;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierView;
 import win.doyto.query.test.tpch.q2.SupplyCostQuery;
@@ -411,6 +415,40 @@ class TpcHTest {
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly("Brand#23", "MED BOX");
+    }
+
+    @Test
+    void queryForLargeVolumeCustomer() {
+        String expected = "SELECT" +
+                " c_name," +
+                " c_custkey," +
+                " o_orderkey," +
+                " o_orderdate," +
+                " o_totalprice," +
+                " sum(l_quantity) AS sumL_quantity" +
+                " FROM customer, orders, lineitem" +
+                " WHERE o_custkey = c_custkey" +
+                " AND l_orderkey = o_orderkey" +
+                " AND o_orderkey IN (SELECT l_orderkey" +
+                " FROM lineitem" +
+                " GROUP BY l_orderkey" +
+                " HAVING sum(l_quantity) > ?" +
+                ")" +
+                " GROUP BY c_name, c_custkey, o_orderkey, o_orderdate, o_totalprice" +
+                " ORDER BY o_totalprice desc, o_orderdate";
+
+        LineitemQuantityHaving lqHaving = LineitemQuantityHaving.builder().sumL_quantityGt(300).build();
+        LineitemQuantityQuery lqQuery = LineitemQuantityQuery.builder().having(lqHaving).build();
+        LargeVolumeCustomerQuery query = LargeVolumeCustomerQuery
+                .builder()
+                .o_orderkeyIn(lqQuery)
+                .sort("o_totalprice,desc;o_orderdate")
+                .build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, LargeVolumeCustomerView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(300);
     }
 
 }

@@ -51,9 +51,9 @@ public class EntityMetadata {
     public EntityMetadata(Class<?> entityClass) {
         this.tableName = BuildHelper.resolveTableName(entityClass);
         this.joinConditions = resolveJoinConditions(entityClass);
-
         this.columnsForSelect = buildSelectColumns(entityClass);
-        this.groupBySql = buildGroupBySql(entityClass);
+        this.groupByColumns = resolveGroupByColumns(entityClass);
+        this.groupBySql = buildGroupBySql(groupByColumns);
     }
 
     static List<String> resolveEntityRelations(Class<?>[] viewClasses, Set<Object> parentColumns) {
@@ -62,20 +62,20 @@ public class EntityMetadata {
             List<Class<?>> otherClassList = new ArrayList<>(Arrays.asList(viewClasses));
             otherClassList.remove(i);
             Arrays.stream(ColumnUtil.initFields(viewClasses[i]))
-                    .filter(field -> field.isAnnotationPresent(ForeignKey.class))
+                  .filter(field -> field.isAnnotationPresent(ForeignKey.class))
                   .forEach(field -> {
-                ForeignKey fkAnno = field.getAnnotation(ForeignKey.class);
-                if (parentColumns.contains(fkAnno.field()) || otherClassList.contains(fkAnno.entity())) {
-                    String c1 = ColumnUtil.convertColumn(field.getName());
-                    String c2 = ColumnUtil.convertColumn(fkAnno.field());
-                    relations.add(c1 + EQUAL + c2);
-                }
-            });
+                      ForeignKey fkAnno = field.getAnnotation(ForeignKey.class);
+                      if (parentColumns.contains(fkAnno.field()) || otherClassList.contains(fkAnno.entity())) {
+                          String c1 = ColumnUtil.convertColumn(field.getName());
+                          String c2 = ColumnUtil.convertColumn(fkAnno.field());
+                          relations.add(c1 + EQUAL + c2);
+                      }
+                  });
         }
         return relations;
     }
 
-    private String resolveJoinConditions(Class<?> viewClass) {
+    static String resolveJoinConditions(Class<?> viewClass) {
         List<String> conditions = new ArrayList<>();
         View viewAnno = viewClass.getAnnotation(View.class);
         if (viewAnno != null && viewAnno.value().length > 0) {
@@ -88,22 +88,20 @@ public class EntityMetadata {
         return holder.computeIfAbsent(entityClass, EntityMetadata::new);
     }
 
-    private String buildSelectColumns(Class<?> entityClass) {
+    static String buildSelectColumns(Class<?> entityClass) {
         return ColumnUtil.filterFields(entityClass)
                          .map(ColumnUtil::selectAs)
                          .collect(Collectors.joining(SEPARATOR));
     }
 
-    private String buildGroupBySql(Class<?> entityClass) {
-        String groupBy = "";
+    static String resolveGroupByColumns(Class<?> entityClass) {
+        return ColumnUtil.filterFields(entityClass, field -> field.isAnnotationPresent(GroupBy.class))
+                         .map(field -> ColumnUtil.convertColumn(field.getName()))
+                         .collect(Collectors.joining(SEPARATOR));
+    }
 
-        groupByColumns = ColumnUtil.filterFields(entityClass, field -> field.isAnnotationPresent(GroupBy.class))
-                                   .map(field -> ColumnUtil.convertColumn(field.getName()))
-                                   .collect(Collectors.joining(SEPARATOR));
-        if (!groupByColumns.isEmpty()) {
-            groupBy = " GROUP BY " + this.groupByColumns;
-        }
-        return groupBy;
+    static String buildGroupBySql(String groupByColumns) {
+        return !groupByColumns.isEmpty() ? " GROUP BY " + groupByColumns : "";
     }
 
 }
