@@ -16,6 +16,8 @@
 
 package win.doyto.query.sql;
 
+import win.doyto.query.util.ColumnUtil;
+
 import java.util.List;
 
 /**
@@ -26,10 +28,17 @@ import java.util.List;
  */
 public class PrimitiveBooleanProcessor implements FieldProcessor.Processor {
 
-    private String clause;
+    private final String clause;
 
     public PrimitiveBooleanProcessor(String fieldName) {
-        clause = SqlComparator.buildClause(fieldName);
+        SqlQuerySuffix sqlQuerySuffix = SqlQuerySuffix.resolve(fieldName);
+        if (sqlQuerySuffix == SqlQuerySuffix.Null || sqlQuerySuffix == SqlQuerySuffix.NotNull) {
+            String columnName = sqlQuerySuffix.removeSuffix(fieldName);
+            columnName = ColumnUtil.convertColumn(columnName);
+            clause = columnName + " " + sqlQuerySuffix.getOp();
+        } else {
+            clause = SqlComparator.buildClause(fieldName);
+        }
     }
 
     @Override
