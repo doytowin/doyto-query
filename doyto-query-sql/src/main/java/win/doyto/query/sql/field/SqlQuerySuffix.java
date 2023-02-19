@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql;
+package win.doyto.query.sql.field;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.sql.BuildHelper;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
@@ -44,7 +45,7 @@ import static win.doyto.query.sql.Constant.*;
 @SuppressWarnings("java:S115")
 @Getter
 @Slf4j
-enum SqlQuerySuffix {
+public enum SqlQuerySuffix {
     Not("!="),
     NotLike(NOT_LIKE, ValueProcessor.LIKE_VALUE_PROCESSOR),
     Like(LIKE, ValueProcessor.LIKE_VALUE_PROCESSOR),
@@ -146,7 +147,7 @@ enum SqlQuerySuffix {
         return StringUtils.removeEnd(fieldName, this.name());
     }
 
-    String buildColumnCondition(String columnName, List<Object> argList, Object value) {
+    public String buildColumnCondition(String columnName, List<Object> argList, Object value) {
         if (shouldIgnore(value)) {
             return null;
         }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql;
+package win.doyto.query.sql.field;
 
 import win.doyto.query.util.ColumnUtil;
 
@@ -26,7 +26,7 @@ import java.util.List;
  * @author f0rb on 2023/2/18
  * @since 1.0.1
  */
-public class PrimitiveBooleanProcessor implements FieldProcessor.Processor {
+public class PrimitiveBooleanProcessor implements FieldMapper.Processor {
 
     private final String clause;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql;
+package win.doyto.query.sql.field;
 
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;

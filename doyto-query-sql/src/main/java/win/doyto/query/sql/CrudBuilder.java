@@ -23,6 +23,7 @@ import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.sql.field.SqlQuerySuffix;
 import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;

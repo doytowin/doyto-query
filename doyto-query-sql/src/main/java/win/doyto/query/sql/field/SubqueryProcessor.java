@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql;
+package win.doyto.query.sql.field;
 
 import win.doyto.query.annotation.Subquery;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Having;
+import win.doyto.query.sql.BuildHelper;
+import win.doyto.query.sql.EntityMetadata;
 import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
@@ -39,7 +41,7 @@ import static win.doyto.query.sql.Constant.*;
  * @author f0rb on 2022/12/29
  * @since 1.0.1
  */
-public class SubqueryProcessor implements FieldProcessor.Processor {
+public class SubqueryProcessor implements FieldMapper.Processor {
     private static final Pattern PTN_DIGITS_END = Pattern.compile("\\d++$");
     private static final Pattern PTN_SUBQUERY = Pattern.compile("^(\\w+)\\$(\\w+)From(\\w+)$");
     private final String clauseFormat;

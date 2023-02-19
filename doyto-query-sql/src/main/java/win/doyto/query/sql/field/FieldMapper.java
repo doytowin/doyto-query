@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql;
+package win.doyto.query.sql.field;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -35,14 +35,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import static win.doyto.query.sql.Constant.*;
 
 /**
- * FieldProcessor
+ * FieldMapper
  *
  * @author f0rb on 2019-06-04
  */
 @SuppressWarnings("java:S1874")
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-final class FieldProcessor {
+public final class FieldMapper {
 
     private static final Map<Field, Processor> FIELD_PROCESSOR_MAP = new ConcurrentHashMap<>();
 

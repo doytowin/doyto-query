@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql;
+package win.doyto.query.sql.field;
 
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.core.QuerySuffix;
@@ -27,7 +27,7 @@ import java.util.StringJoiner;
 
 import static win.doyto.query.sql.Constant.CP;
 import static win.doyto.query.sql.Constant.OP;
-import static win.doyto.query.sql.FieldProcessor.execute;
+import static win.doyto.query.sql.field.FieldMapper.execute;
 
 /**
  * ConnectableFieldProcessor
@@ -35,13 +35,13 @@ import static win.doyto.query.sql.FieldProcessor.execute;
  * @author f0rb on 2023/2/19
  * @since 1.0.1
  */
-public class ConnectableFieldProcessor implements FieldProcessor.Processor {
+public class ConnectableFieldProcessor implements FieldMapper.Processor {
 
     private final Field[] fields;
     private final String connector;
 
     public ConnectableFieldProcessor(Field field, String connector) {
-        this.fields = ColumnUtil.initFields(field.getType(), FieldProcessor::init);
+        this.fields = ColumnUtil.initFields(field.getType(), FieldMapper::init);
         this.connector = connector;
     }
 

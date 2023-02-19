@@ -56,7 +56,7 @@ public class EntityMetadata {
         this.groupBySql = buildGroupBySql(groupByColumns);
     }
 
-    static List<String> resolveEntityRelations(Class<?>[] viewClasses, Set<Object> parentColumns) {
+    public static List<String> resolveEntityRelations(Class<?>[] viewClasses, Set<Object> parentColumns) {
         List<String> relations = new ArrayList<>();
         for (int i = 0, len = viewClasses.length; i < len; i++) {
             List<Class<?>> otherClassList = new ArrayList<>(Arrays.asList(viewClasses));

@@ -23,6 +23,7 @@ import win.doyto.query.annotation.View;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.sql.field.FieldMapper;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
@@ -66,14 +67,14 @@ public class BuildHelper {
         return tableName;
     }
 
-    static String resolveTableName(Class<? extends Persistable<? extends Serializable>>[] value) {
+    public static String resolveTableName(Class<? extends Persistable<? extends Serializable>>[] value) {
         return Arrays.stream(value)
                      .map(BuildHelper::resolveTableName)
                      .collect(Collectors.joining(SEPARATOR));
     }
 
     static String buildStart(String[] columns, String table) {
-        return Constant.SELECT + StringUtils.join(columns, SEPARATOR) + FROM + table + SPACE + TABLE_ALIAS;
+        return SELECT + StringUtils.join(columns, SEPARATOR) + FROM + table + SPACE + TABLE_ALIAS;
     }
 
     public static String buildWhere(DoytoQuery query, List<Object> argList) {
@@ -86,12 +87,12 @@ public class BuildHelper {
 
     public static String buildCondition(Object query, List<Object> argList, String prefix, String alias) {
         alias = StringUtils.isBlank(alias) ? EMPTY : alias + ".";
-        Field[] fields = ColumnUtil.initFields(query.getClass(), FieldProcessor::init);
+        Field[] fields = ColumnUtil.initFields(query.getClass(), FieldMapper::init);
         StringJoiner whereJoiner = new StringJoiner(AND);
         for (Field field : fields) {
             Object value = readFieldGetter(field, query);
             if (isValidValue(value, field)) {
-                String and = FieldProcessor.execute(field, argList, value);
+                String and = FieldMapper.execute(field, argList, value);
                 if (and != null) {
                     whereJoiner.add(alias + and);
                 }
@@ -125,7 +126,7 @@ public class BuildHelper {
 
     public static String buildPlaceHolders(int size) {
         return IntStream.range(0, size)
-                        .mapToObj(i -> Constant.PLACE_HOLDER)
+                        .mapToObj(i -> PLACE_HOLDER)
                         .collect(CommonUtil.CLT_COMMA_WITH_PAREN);
     }
 

@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql;
+package win.doyto.query.sql.field;
 
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.relation.DomainPathDetail;
+import win.doyto.query.sql.BuildHelper;
 import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
@@ -35,7 +36,7 @@ import static win.doyto.query.sql.Constant.*;
  * @author f0rb on 2022-05-10
  * @since 0.3.1
  */
-class DomainPathProcessor implements FieldProcessor.Processor {
+class DomainPathProcessor implements FieldMapper.Processor {
     private final DomainPathDetail domainPathDetail;
 
     public DomainPathProcessor(Field field) {

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql;
+package win.doyto.query.sql.field;
 
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.sql.BuildHelper;
 import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
@@ -31,7 +32,7 @@ import static win.doyto.query.sql.Constant.*;
  * @author f0rb on 2023/1/4
  * @since 1.0.1
  */
-public class ExistsProcessor implements FieldProcessor.Processor {
+public class ExistsProcessor implements FieldMapper.Processor {
 
     private final String clauseFormat;
     private final String alias;
