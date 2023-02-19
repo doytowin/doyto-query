@@ -44,6 +44,10 @@ import win.doyto.query.test.tpch.q18.LargeVolumeCustomerQuery;
 import win.doyto.query.test.tpch.q18.LargeVolumeCustomerView;
 import win.doyto.query.test.tpch.q18.LineitemQuantityHaving;
 import win.doyto.query.test.tpch.q18.LineitemQuantityQuery;
+import win.doyto.query.test.tpch.q19.DiscountedRevenueQuery;
+import win.doyto.query.test.tpch.q19.DiscountedRevenueView;
+import win.doyto.query.test.tpch.q19.LineitemFilter;
+import win.doyto.query.test.tpch.q19.LineitemOr;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierQuery;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierView;
 import win.doyto.query.test.tpch.q2.SupplyCostQuery;
@@ -449,6 +453,84 @@ class TpcHTest {
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(300);
+    }
+
+    @Test
+    void queryForDiscountedRevenue() {
+        String expected = "SELECT" +
+                " SUM(l_extendedprice * (1 - l_discount)) AS revenue" +
+                " FROM lineitem, part" +
+                " WHERE l_partkey = p_partkey" +
+                " AND ((p_brand = ?" +
+                " AND p_container IN (?, ?, ?, ?)" +
+                " AND l_quantity >= ?" +
+                " AND l_quantity <= ?" +
+                " AND p_size >= ?" +
+                " AND p_size <= ?" +
+                " AND l_shipmode IN (?, ?)" +
+                ") OR (p_brand = ?" +
+                " AND p_container IN (?, ?, ?, ?)" +
+                " AND l_quantity >= ?" +
+                " AND l_quantity <= ?" +
+                " AND p_size >= ?" +
+                " AND p_size <= ?" +
+                " AND l_shipmode IN (?, ?)" +
+                ") OR (p_brand = ?" +
+                " AND p_container IN (?, ?, ?, ?)" +
+                " AND l_quantity >= ?" +
+                " AND l_quantity <= ?" +
+                " AND p_size >= ?" +
+                " AND p_size <= ?" +
+                " AND l_shipmode IN (?, ?)" +
+                "))" +
+                " AND l_shipinstruct = ?";
+
+        LineitemFilter lineitemFilter1 = LineitemFilter
+                .builder()
+                .p_brand("Brand#12")
+                .p_containerIn(Arrays.asList("SM CASE", "SM BOX", "SM PACK", "SM PKG"))
+                .l_quantityGe(0)
+                .l_quantityLe(10)
+                .p_sizeGe(1)
+                .p_sizeLe(5)
+                .l_shipmodeIn(Arrays.asList("AIR", "AIR REG"))
+                .build();
+        LineitemFilter lineitemFilter2 = LineitemFilter
+                .builder()
+                .p_brand("Brand#23")
+                .p_containerIn(Arrays.asList("MED BAG", "MED BOX", "MED PKG", "MED PACK"))
+                .l_quantityGe(10)
+                .l_quantityLe(20)
+                .p_sizeGe(1)
+                .p_sizeLe(10)
+                .l_shipmodeIn(Arrays.asList("AIR", "AIR REG"))
+                .build();
+        LineitemFilter lineitemFilter3 = LineitemFilter
+                .builder()
+                .p_brand("Brand#34")
+                .p_containerIn(Arrays.asList("LG CASE", "LG BOX", "LG PACK", "LG PKG"))
+                .l_quantityGe(20)
+                .l_quantityLe(30)
+                .p_sizeGe(1)
+                .p_sizeLe(15)
+                .l_shipmodeIn(Arrays.asList("AIR", "AIR REG"))
+                .build();
+        LineitemOr lineitemOr = LineitemOr
+                .builder()
+                .lineitemFilter1(lineitemFilter1)
+                .lineitemFilter2(lineitemFilter2)
+                .lineitemFilter3(lineitemFilter3)
+                .lineitemFilter4(new LineitemFilter())
+                .build();
+        DiscountedRevenueQuery query = DiscountedRevenueQuery
+                .builder()
+                .lineitemOr(lineitemOr)
+                .l_shipinstruct("DELIVER IN PERSON")
+                .build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, DiscountedRevenueView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
     }
 
 }

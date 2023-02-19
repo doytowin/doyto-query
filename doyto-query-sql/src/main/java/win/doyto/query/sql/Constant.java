@@ -33,7 +33,7 @@ public interface Constant {
     String FROM = " FROM ";
     String WHERE = " WHERE ";
     String EMPTY = "";
-    String SPACE_OR = " OR ";
+    String OR = " OR ";
     String DELETE_FROM = "DELETE" + FROM;
     String AND = " AND ";
     String IN = " IN ";

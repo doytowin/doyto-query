@@ -24,17 +24,12 @@ import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.annotation.QueryField;
 import win.doyto.query.annotation.Subquery;
-import win.doyto.query.core.DoytoQuery;
-import win.doyto.query.core.Having;
-import win.doyto.query.core.Or;
-import win.doyto.query.core.QuerySuffix;
-import win.doyto.query.util.ColumnUtil;
+import win.doyto.query.core.*;
 import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static win.doyto.query.sql.Constant.*;
@@ -58,24 +53,11 @@ final class FieldProcessor {
     public static void init(Field field) {
         Processor processor;
         if (Or.class.isAssignableFrom(field.getType())) {
-            processor = initFieldMappedByOr(field);
+            processor = new ConnectableFieldProcessor(field, OR);
+        } else if (And.class.isAssignableFrom(field.getType())) {
+            processor = new ConnectableFieldProcessor(field, AND);
         } else if (DoytoQuery.class.isAssignableFrom(field.getType())) {
-            if (field.isAnnotationPresent(DomainPath.class)) {
-                if (field.getName().endsWith(QuerySuffix.Exists.name())) {
-                    processor = new ExistsProcessor(field);
-                } else {
-                    processor = new DomainPathProcessor(field);
-                }
-            } else if (field.isAnnotationPresent(Subquery.class)) {
-                processor = new SubqueryProcessor(field);
-            } else if (SubqueryProcessor.matches(field.getName()) != null) {
-                processor = new SubqueryProcessor(field.getName());
-            } else {
-                processor = (argList, value) -> {
-                    log.warn("Field configuration is invalid: {}.{}", field.getDeclaringClass(), field.getName());
-                    return null;
-                };
-            }
+            processor = initDoytoQueryField(field);
         } else if (field.isAnnotationPresent(QueryField.class)) {
             processor = initFieldAnnotatedByQueryField(field);
         } else if (Having.class.isAssignableFrom(field.getDeclaringClass())) {
@@ -88,19 +70,25 @@ final class FieldProcessor {
         FIELD_PROCESSOR_MAP.put(field, processor);
     }
 
-    private static Processor initFieldMappedByOr(Field field) {
-        Field[] fields = ColumnUtil.initFields(field.getType(), FieldProcessor::init);
-        return (argList, value) -> {
-            StringJoiner or = new StringJoiner(SPACE_OR, OP, CP);
-            for (Field subField : fields) {
-                Object subValue = CommonUtil.readField(subField, value);
-                if (QuerySuffix.isValidValue(subValue, subField)) {
-                    String condition = execute(subField, argList, subValue);
-                    or.add(condition);
-                }
+    private static Processor initDoytoQueryField(Field field) {
+        Processor processor;
+        if (field.isAnnotationPresent(DomainPath.class)) {
+            if (field.getName().endsWith(QuerySuffix.Exists.name())) {
+                processor = new ExistsProcessor(field);
+            } else {
+                processor = new DomainPathProcessor(field);
             }
-            return or.length() == "()".length() ? null : or.toString();
-        };
+        } else if (field.isAnnotationPresent(Subquery.class)) {
+            processor = new SubqueryProcessor(field);
+        } else if (SubqueryProcessor.matches(field.getName()) != null) {
+            processor = new SubqueryProcessor(field.getName());
+        } else {
+            processor = (argList, value) -> {
+                log.warn("Field configuration is invalid: {}.{}", field.getDeclaringClass(), field.getName());
+                return null;
+            };
+        }
+        return processor;
     }
 
     private static Processor initCommonField(Field field) {

@@ -81,8 +81,8 @@ enum SqlQuerySuffix {
         }
     }),
     In("IN", new InValueProcessor()),
-    NotNull("IS NOT NULL", ValueProcessor.EMPTY),
-    Null("IS NULL", ValueProcessor.EMPTY),
+    NotNull("IS NOT NULL", ValueProcessor.EMPTY_PROCESSOR),
+    Null("IS NULL", ValueProcessor.EMPTY_PROCESSOR),
     Gt(">"),
     Ge(">="),
     Lt("<"),
@@ -102,7 +102,7 @@ enum SqlQuerySuffix {
     private final ValueProcessor valueProcessor;
 
     SqlQuerySuffix(String op) {
-        this(op, ValueProcessor.PLACE_HOLDER);
+        this(op, ValueProcessor.PLACE_HOLDER_PROCESSOR);
     }
 
     SqlQuerySuffix(String op, ValueProcessor valueProcessor) {
@@ -126,7 +126,7 @@ enum SqlQuerySuffix {
         }
         return Arrays.stream(CommonUtil.splitByOr(fieldNameWithOr))
                      .map(fieldName -> buildConditionForField(alias + fieldName, argList, value))
-                     .collect(Collectors.joining(win.doyto.query.sql.Constant.SPACE_OR, OP, CP));
+                     .collect(Collectors.joining(OR, OP, CP));
     }
 
     static String buildConditionForField(String fieldName, List<Object> argList, Object value) {
@@ -169,7 +169,7 @@ enum SqlQuerySuffix {
     private static void appendArg(List<Object> argList, Object value, String placeHolderEx) {
         if (value instanceof Collection) {
             appendCollectionArg(argList, (Collection<?>) value);
-        } else if (placeHolderEx.contains(win.doyto.query.sql.Constant.PLACE_HOLDER)) {
+        } else if (placeHolderEx.contains(PLACE_HOLDER)) {
             appendSingleArg(argList, value);
         }
     }
@@ -203,8 +203,8 @@ enum SqlQuerySuffix {
 
     @SuppressWarnings("java:S1214")
     interface ValueProcessor {
-        ValueProcessor PLACE_HOLDER = value -> win.doyto.query.sql.Constant.PLACE_HOLDER;
-        ValueProcessor EMPTY = value -> win.doyto.query.sql.Constant.EMPTY;
+        ValueProcessor PLACE_HOLDER_PROCESSOR = value -> PLACE_HOLDER;
+        ValueProcessor EMPTY_PROCESSOR = value -> EMPTY;
         ValueProcessor LIKE_VALUE_PROCESSOR = new LikeValueProcessor();
         ValueProcessor CONTAIN_VALUE_PROCESSOR = new ContainValueProcessor();
 
@@ -242,7 +242,7 @@ enum SqlQuerySuffix {
     private static class LikeValueProcessor implements ValueProcessor {
         @Override
         public String getPlaceHolderEx(Object value) {
-            return win.doyto.query.sql.Constant.PLACE_HOLDER;
+            return PLACE_HOLDER;
         }
 
         @Override
