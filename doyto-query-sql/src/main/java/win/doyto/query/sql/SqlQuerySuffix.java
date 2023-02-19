@@ -19,6 +19,7 @@ package win.doyto.query.sql;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
@@ -47,27 +48,27 @@ enum SqlQuerySuffix {
     Not("!="),
     NotLike(NOT_LIKE, ValueProcessor.LIKE_VALUE_PROCESSOR),
     Like(LIKE, ValueProcessor.LIKE_VALUE_PROCESSOR),
-    NotContain(NOT_LIKE, ValueProcessor.LIKE_VALUE_PROCESSOR),
-    Contain(LIKE, ValueProcessor.LIKE_VALUE_PROCESSOR),
-    NotStart(NOT_LIKE, new LikeValueProcessor() {
+    NotContain(NOT_LIKE, ValueProcessor.CONTAIN_VALUE_PROCESSOR),
+    Contain(LIKE, ValueProcessor.CONTAIN_VALUE_PROCESSOR),
+    NotStart(NOT_LIKE, new ContainValueProcessor() {
         @Override
         public Object escapeValue(Object value) {
             return CommonUtil.escapeStart(String.valueOf(value));
         }
     }),
-    Start(LIKE, new LikeValueProcessor() {
+    Start(LIKE, new ContainValueProcessor() {
         @Override
         public Object escapeValue(Object value) {
             return CommonUtil.escapeStart(String.valueOf(value));
         }
     }),
-    NotEnd(NOT_LIKE, new LikeValueProcessor() {
+    NotEnd(NOT_LIKE, new ContainValueProcessor() {
         @Override
         public Object escapeValue(Object value) {
             return CommonUtil.escapeEnd(String.valueOf(value));
         }
     }),
-    End(LIKE, new LikeValueProcessor() {
+    End(LIKE, new ContainValueProcessor() {
         @Override
         public Object escapeValue(Object value) {
             return CommonUtil.escapeEnd(String.valueOf(value));
@@ -205,6 +206,7 @@ enum SqlQuerySuffix {
         ValueProcessor PLACE_HOLDER = value -> win.doyto.query.sql.Constant.PLACE_HOLDER;
         ValueProcessor EMPTY = value -> win.doyto.query.sql.Constant.EMPTY;
         ValueProcessor LIKE_VALUE_PROCESSOR = new LikeValueProcessor();
+        ValueProcessor CONTAIN_VALUE_PROCESSOR = new ContainValueProcessor();
 
         String getPlaceHolderEx(Object value);
 
@@ -252,6 +254,17 @@ enum SqlQuerySuffix {
             return StringUtils.isBlank((String) value);
         }
 
+        @Override
+        public Object escapeValue(Object value) {
+            String like = String.valueOf(value);
+            if (GlobalConfiguration.instance().getWildcardPtn().matcher(like).find()) {
+                return like;
+            }
+            return CommonUtil.escapeLike(String.valueOf(value));
+        }
+    }
+
+    private static class ContainValueProcessor extends LikeValueProcessor {
         @Override
         public Object escapeValue(Object value) {
             return CommonUtil.escapeLike(String.valueOf(value));
