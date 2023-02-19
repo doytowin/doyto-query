@@ -74,6 +74,7 @@ public class TestQuery extends PageQuery {
     private String usernameStart;
     private String usernameNotStart;
     private String usernameEnd;
+    private String usernameNotEnd;
     private String testLikeEq;
 
     private String usernameOrUserCodeLike;

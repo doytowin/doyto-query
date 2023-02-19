@@ -52,6 +52,7 @@ class SqlQuerySuffixTest {
             "usernameStart, test, username LIKE ?, test%",
             "usernameNotStart, test, username NOT LIKE ?, test%",
             "usernameEnd, test, username LIKE ?, %test",
+            "usernameNotEnd, test, username NOT LIKE ?, %test",
     })
     void testClauseAndValueGeneration(String fieldName, String value, String expectedSql, String expectedValue) {
         ArrayList<Object> argList = new ArrayList<>();

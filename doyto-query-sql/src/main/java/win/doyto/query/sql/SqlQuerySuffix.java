@@ -45,22 +45,28 @@ import static win.doyto.query.sql.Constant.*;
 @Slf4j
 enum SqlQuerySuffix {
     Not("!="),
-    NotLike("NOT LIKE", ValueProcessor.LIKE_VALUE_PROCESSOR),
-    Like("LIKE", ValueProcessor.LIKE_VALUE_PROCESSOR),
-    Contain("LIKE", ValueProcessor.LIKE_VALUE_PROCESSOR),
-    NotStart("NOT LIKE", new LikeValueProcessor() {
+    NotLike(NOT_LIKE, ValueProcessor.LIKE_VALUE_PROCESSOR),
+    Like(LIKE, ValueProcessor.LIKE_VALUE_PROCESSOR),
+    Contain(LIKE, ValueProcessor.LIKE_VALUE_PROCESSOR),
+    NotStart(NOT_LIKE, new LikeValueProcessor() {
         @Override
         public Object escapeValue(Object value) {
             return CommonUtil.escapeStart(String.valueOf(value));
         }
     }),
-    Start("LIKE", new LikeValueProcessor() {
+    Start(LIKE, new LikeValueProcessor() {
         @Override
         public Object escapeValue(Object value) {
             return CommonUtil.escapeStart(String.valueOf(value));
         }
     }),
-    End("LIKE", new LikeValueProcessor() {
+    NotEnd(NOT_LIKE, new LikeValueProcessor() {
+        @Override
+        public Object escapeValue(Object value) {
+            return CommonUtil.escapeEnd(String.valueOf(value));
+        }
+    }),
+    End(LIKE, new LikeValueProcessor() {
         @Override
         public Object escapeValue(Object value) {
             return CommonUtil.escapeEnd(String.valueOf(value));
@@ -118,7 +124,7 @@ enum SqlQuerySuffix {
         }
         return Arrays.stream(CommonUtil.splitByOr(fieldNameWithOr))
                      .map(fieldName -> buildConditionForField(alias + fieldName, argList, value))
-                     .collect(Collectors.joining(Constant.SPACE_OR, OP, CP));
+                     .collect(Collectors.joining(win.doyto.query.sql.Constant.SPACE_OR, OP, CP));
     }
 
     static String buildConditionForField(String fieldName, List<Object> argList, Object value) {
@@ -161,7 +167,7 @@ enum SqlQuerySuffix {
     private static void appendArg(List<Object> argList, Object value, String placeHolderEx) {
         if (value instanceof Collection) {
             appendCollectionArg(argList, (Collection<?>) value);
-        } else if (placeHolderEx.contains(Constant.PLACE_HOLDER)) {
+        } else if (placeHolderEx.contains(win.doyto.query.sql.Constant.PLACE_HOLDER)) {
             appendSingleArg(argList, value);
         }
     }
@@ -195,8 +201,8 @@ enum SqlQuerySuffix {
 
     @SuppressWarnings("java:S1214")
     interface ValueProcessor {
-        ValueProcessor PLACE_HOLDER = value -> Constant.PLACE_HOLDER;
-        ValueProcessor EMPTY = value -> Constant.EMPTY;
+        ValueProcessor PLACE_HOLDER = value -> win.doyto.query.sql.Constant.PLACE_HOLDER;
+        ValueProcessor EMPTY = value -> win.doyto.query.sql.Constant.EMPTY;
         ValueProcessor LIKE_VALUE_PROCESSOR = new LikeValueProcessor();
 
         String getPlaceHolderEx(Object value);
@@ -233,7 +239,7 @@ enum SqlQuerySuffix {
     private static class LikeValueProcessor implements ValueProcessor {
         @Override
         public String getPlaceHolderEx(Object value) {
-            return Constant.PLACE_HOLDER;
+            return win.doyto.query.sql.Constant.PLACE_HOLDER;
         }
 
         @Override
