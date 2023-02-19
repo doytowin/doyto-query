@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.sql.RelationalQueryBuilder;
 import win.doyto.query.sql.SqlAndArgs;
+import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
 import win.doyto.query.test.tpch.domain.supplier.SupplierQuery;
 import win.doyto.query.test.tpch.q1.PricingSummaryQuery;
 import win.doyto.query.test.tpch.q1.PricingSummaryView;
@@ -37,6 +38,8 @@ import win.doyto.query.test.tpch.q14.PromotionEffectQuery;
 import win.doyto.query.test.tpch.q14.PromotionEffectView;
 import win.doyto.query.test.tpch.q16.PartsSupplierRelationshipQuery;
 import win.doyto.query.test.tpch.q16.PartsSupplierRelationshipView;
+import win.doyto.query.test.tpch.q17.SmallQuantityOrderRevenueQuery;
+import win.doyto.query.test.tpch.q17.SmallQuantityOrderRevenueView;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierQuery;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierView;
 import win.doyto.query.test.tpch.q2.SupplyCostQuery;
@@ -384,6 +387,30 @@ class TpcHTest {
         assertThat(sqlAndArgs.getArgs()).containsExactly(
                 "Brand#45", "MEDIUM POLISHED%", 9, 14, 23, 45, 19, 3, 36, 9, "%Customer%Complaints%"
         );
+    }
+
+    @Test
+    void queryForSmallQuantityOrderRevenue() {
+        String expected = "SELECT SUM(l_extendedprice) / 7.0 AS avg_yearly" +
+                " FROM lineitem, part" +
+                " WHERE l_partkey = p_partkey" +
+                " AND p_brand = ?" +
+                " AND p_container = ?" +
+                " AND l_quantity < (SELECT 2e-1 * AVG(l_quantity)" +
+                " FROM lineitem" +
+                " WHERE l_partkey = p_partkey)";
+
+        SmallQuantityOrderRevenueQuery query = SmallQuantityOrderRevenueQuery
+                .builder()
+                .p_brand("Brand#23")
+                .p_container("MED BOX")
+                .l_quantityLt(LineitemQuery.builder().l_partkeyEqP_partkey(true).build())
+                .build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, SmallQuantityOrderRevenueView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly("Brand#23", "MED BOX");
     }
 
 }
