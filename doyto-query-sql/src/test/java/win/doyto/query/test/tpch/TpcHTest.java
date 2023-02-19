@@ -32,6 +32,8 @@ import win.doyto.query.test.tpch.q11.ValueHaving;
 import win.doyto.query.test.tpch.q11.ValueQuery;
 import win.doyto.query.test.tpch.q12.ShippingModesAndOrderPriorityQuery;
 import win.doyto.query.test.tpch.q12.ShippingModesAndOrderPriorityView;
+import win.doyto.query.test.tpch.q14.PromotionEffectQuery;
+import win.doyto.query.test.tpch.q14.PromotionEffectView;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierQuery;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierView;
 import win.doyto.query.test.tpch.q2.SupplyCostQuery;
@@ -327,6 +329,27 @@ class TpcHTest {
                 "MAIL", "SHIP",
                 Date.valueOf(date), Date.valueOf(date.plus(1, YEARS))
         );
+    }
+
+    @Test
+    void queryForPromotionEffect() {
+        String expected = "SELECT" +
+                " 100.00 * SUM(CASE WHEN p_type LIKE 'PROMO%'THEN l_extendedprice * (1 - l_discount)ELSE 0 END) / SUM(l_extendedprice * (1 - l_discount)) AS promo_revenue" +
+                " FROM lineitem, part" +
+                " WHERE l_partkey = p_partkey" +
+                " AND l_shipdate >= ?" +
+                " AND l_shipdate < ?";
+
+        LocalDate date = LocalDate.of(1995, 12, 1);
+        PromotionEffectQuery query = PromotionEffectQuery
+                .builder()
+                .l_shipdateGe(Date.valueOf(date))
+                .l_shipdateLt(Date.valueOf(date.plus(1, MONTHS)))
+                .build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, PromotionEffectView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
     }
 
 }

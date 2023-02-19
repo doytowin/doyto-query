@@ -21,6 +21,7 @@ import lombok.Setter;
 import win.doyto.query.annotation.ForeignKey;
 import win.doyto.query.entity.AbstractPersistable;
 import win.doyto.query.test.tpch.domain.orders.OrdersEntity;
+import win.doyto.query.test.tpch.domain.part.PartEntity;
 import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
 
 import java.math.BigDecimal;
@@ -41,6 +42,9 @@ public class LineitemEntity extends AbstractPersistable<Long> {
 
     @ForeignKey(entity = SupplierEntity.class, field = "s_suppkey")
     private String l_suppkey;
+
+    @ForeignKey(entity = PartEntity.class, field = "p_partkey")
+    private String l_partkey;
 
     private Integer l_quantity;
 
