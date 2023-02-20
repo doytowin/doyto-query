@@ -19,6 +19,7 @@ package win.doyto.query.sql;
 import lombok.Getter;
 import win.doyto.query.annotation.ForeignKey;
 import win.doyto.query.annotation.GroupBy;
+import win.doyto.query.annotation.NestedView;
 import win.doyto.query.annotation.View;
 import win.doyto.query.util.ColumnUtil;
 
@@ -44,12 +45,26 @@ public class EntityMetadata {
     @Getter
     private final String joinConditions;
     @Getter
-    private String groupByColumns = "";
+    private final String groupByColumns;
     @Getter
     private final String groupBySql;
+    @Getter
+    private EntityMetadata nested;
 
     public EntityMetadata(Class<?> entityClass) {
-        this.tableName = BuildHelper.resolveTableName(entityClass);
+        if (entityClass.isAnnotationPresent(NestedView.class)) {
+            NestedView anno = entityClass.getAnnotation(NestedView.class);
+            Class<?> clazz = anno.value();
+            this.nested = EntityMetadata.build(clazz);
+            //tableName = OP + SELECT +
+            //        entityMetadata.getColumnsForSelect() +
+            //        FROM + entityMetadata.getTableName() +
+            //        entityMetadata.getJoinConditions() +
+            //        CP + AS +
+            this.tableName = BuildHelper.defaultTableName(clazz);
+        } else {
+            this.tableName = BuildHelper.resolveTableName(entityClass);
+        }
         this.joinConditions = resolveJoinConditions(entityClass);
         this.columnsForSelect = buildSelectColumns(entityClass);
         this.groupByColumns = resolveGroupByColumns(entityClass);

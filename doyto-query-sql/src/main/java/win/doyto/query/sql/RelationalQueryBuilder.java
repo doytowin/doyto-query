@@ -27,6 +27,7 @@ import win.doyto.query.core.Having;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.relation.DomainPathDetail;
 import win.doyto.query.util.ColumnUtil;
+import win.doyto.query.util.CommonUtil;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -55,7 +56,13 @@ public class RelationalQueryBuilder {
             EntityMetadata entityMetadata = EntityMetadata.build(entityClass);
             StringBuilder sqlBuilder = new StringBuilder()
                     .append(SELECT).append(entityMetadata.getColumnsForSelect())
-                    .append(FROM).append(entityMetadata.getTableName());
+                    .append(FROM);
+            EntityMetadata nested = entityMetadata.getNested();
+            if (nested != null) {
+                buildNestedView(nested, CommonUtil.readField(query, entityMetadata.getTableName() + "Query"), sqlBuilder, argList);
+            }
+
+            sqlBuilder.append(entityMetadata.getTableName());
             if (entityMetadata.getJoinConditions().isEmpty()) {
                 sqlBuilder.append(buildWhere(query, argList));
             } else {
@@ -69,6 +76,17 @@ public class RelationalQueryBuilder {
             sqlBuilder.append(buildOrderBy(query));
             return buildPaging(sqlBuilder.toString(), query);
         });
+    }
+
+    private static void buildNestedView(EntityMetadata nested, Object nestedQuery, StringBuilder sqlBuilder, List<Object> argList) {
+        sqlBuilder.append(OP).append(SELECT)
+                  .append(nested.getColumnsForSelect())
+                  .append(FROM).append(nested.getTableName())
+                  .append(nested.getJoinConditions());
+        if (nestedQuery instanceof DoytoQuery) {
+            sqlBuilder.append(buildCondition(AND, nestedQuery, argList));
+        }
+        sqlBuilder.append(CP).append(AS);
     }
 
     private static String buildHaving(Having having, List<Object> argList) {

@@ -62,6 +62,9 @@ import win.doyto.query.test.tpch.q5.LocalSupplierVolumeQuery;
 import win.doyto.query.test.tpch.q5.LocalSupplierVolumeView;
 import win.doyto.query.test.tpch.q6.ForecastingRevenueChangeQuery;
 import win.doyto.query.test.tpch.q6.ForecastingRevenueChangeView;
+import win.doyto.query.test.tpch.q9.ProductTypeProfitMeasureQuery;
+import win.doyto.query.test.tpch.q9.ProductTypeProfitMeasureView;
+import win.doyto.query.test.tpch.q9.ProfitQuery;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -235,6 +238,34 @@ class TpcHTest {
         assertThat(sqlAndArgs.getArgs()).containsExactly(
                 Date.valueOf(date), Date.valueOf(date.plus(1, YEARS)),
                 BigDecimal.valueOf(0.05), BigDecimal.valueOf(0.07), 24);
+    }
+
+    @Test
+    void queryForProductTypeProfitMeasure() {
+        String expected = "SELECT nation, o_year, SUM(amount) AS sum_profit" +
+                " FROM (SELECT n_name AS nation, YEAR(o_orderdate) AS o_year, l_extendedprice * (1 - l_discount) - ps_supplycost * l_quantity AS amount" +
+                " FROM part, supplier, lineitem, partsupp, orders, nation" +
+                " WHERE s_nationkey = n_nationkey" +
+                " AND l_orderkey = o_orderkey" +
+                " AND l_suppkey = s_suppkey" +
+                " AND l_partkey = p_partkey" +
+                " AND ps_partkey = p_partkey" +
+                " AND ps_suppkey = s_suppkey" +
+                " AND p_name LIKE ?" +
+                ") AS profit" +
+                " GROUP BY nation, o_year" +
+                " ORDER BY nation, o_year DESC";
+
+        ProfitQuery profitQuery = ProfitQuery.builder().p_nameLike("green").build();
+        ProductTypeProfitMeasureQuery query = ProductTypeProfitMeasureQuery
+                .builder()
+                .profitQuery(profitQuery)
+                .sort("nation;o_year,DESC")
+                .build();
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, ProductTypeProfitMeasureView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly("%green%");
     }
 
     @Test

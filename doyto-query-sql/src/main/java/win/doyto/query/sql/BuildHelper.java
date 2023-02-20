@@ -59,12 +59,16 @@ public class BuildHelper {
             View viewAnno = entityClass.getAnnotation(View.class);
             tableName = resolveTableName(viewAnno.value());
         } else {
-            String entityName = entityClass.getSimpleName();
-            entityName = StringUtils.removeEnd(entityName, "Entity");
-            entityName = StringUtils.removeEnd(entityName, "View");
-            tableName = GlobalConfiguration.formatTable(entityName);
+            tableName = defaultTableName(entityClass);
         }
         return tableName;
+    }
+
+    static String defaultTableName(Class<?> entityClass) {
+        String entityName = entityClass.getSimpleName();
+        entityName = StringUtils.removeEnd(entityName, "Entity");
+        entityName = StringUtils.removeEnd(entityName, "View");
+        return GlobalConfiguration.formatTable(entityName);
     }
 
     public static String resolveTableName(Class<? extends Persistable<? extends Serializable>>[] value) {
