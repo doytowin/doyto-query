@@ -23,6 +23,7 @@ import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.sql.RelationalQueryBuilder;
 import win.doyto.query.sql.SqlAndArgs;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
+import win.doyto.query.test.tpch.domain.part.PartQuery;
 import win.doyto.query.test.tpch.domain.supplier.SupplierQuery;
 import win.doyto.query.test.tpch.q1.PricingSummaryQuery;
 import win.doyto.query.test.tpch.q1.PricingSummaryView;
@@ -51,6 +52,10 @@ import win.doyto.query.test.tpch.q19.LineitemOr;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierQuery;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierView;
 import win.doyto.query.test.tpch.q2.SupplyCostQuery;
+import win.doyto.query.test.tpch.q20.AvailableQtyQuery;
+import win.doyto.query.test.tpch.q20.PotentialPartPromotionQuery;
+import win.doyto.query.test.tpch.q20.PotentialPartPromotionView;
+import win.doyto.query.test.tpch.q20.SuppkeyQuery;
 import win.doyto.query.test.tpch.q3.ShippingPriorityQuery;
 import win.doyto.query.test.tpch.q3.ShippingPriorityView;
 import win.doyto.query.test.tpch.q5.LocalSupplierVolumeQuery;
@@ -531,6 +536,54 @@ class TpcHTest {
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, DiscountedRevenueView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+    }
+
+    @Test
+    void queryForPotentialPartPromotion() {
+        String expected = "SELECT s_name, s_address" +
+                " FROM supplier, nation" +
+                " WHERE s_nationkey = n_nationkey" +
+                " AND s_suppkey IN (SELECT ps_suppkey" +
+                " FROM partsupp" +
+                " WHERE ps_partkey IN (SELECT p_partkey" +
+                " FROM part" +
+                " WHERE p_name LIKE ?)" +
+                " AND ps_availqty > (SELECT 0.5 * SUM(l_quantity)" +
+                " FROM lineitem" +
+                " WHERE l_partkey = ps_partkey" +
+                " AND l_suppkey = ps_suppkey" +
+                " AND l_shipdate >= ?" +
+                " AND l_shipdate < ?))" +
+                " AND n_name = ?" +
+                " ORDER BY s_name";
+
+        PartQuery partQuery = PartQuery.builder().p_nameStart("forest").build();
+
+        LocalDate date = LocalDate.of(1994, 1, 1);
+        AvailableQtyQuery availableQtyQuery = AvailableQtyQuery
+                .builder()
+                .l_shipdateGe(Date.valueOf(date))
+                .l_shipdateLt(Date.valueOf(date.plus(1, YEARS)))
+                .build();
+
+        SuppkeyQuery suppkeyQuery = SuppkeyQuery
+                .builder()
+                .ps_partkeyIn(partQuery)
+                .ps_availqtyGt(availableQtyQuery)
+                .build();
+        PotentialPartPromotionQuery query = PotentialPartPromotionQuery
+                .builder()
+                .s_suppkeyIn(suppkeyQuery)
+                .n_name("CANADA")
+                .sort("s_name")
+                .build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, PotentialPartPromotionView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(
+                "forest%", Date.valueOf(date),
+                Date.valueOf(date.plus(1, YEARS)), "CANADA");
     }
 
 }
