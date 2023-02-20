@@ -50,6 +50,6 @@ public class ExistsProcessor implements FieldProcessor {
 
     @Override
     public String process(List<Object> argList, Object query) {
-        return String.format(clauseFormat, BuildHelper.buildCondition(query, argList, AND, alias));
+        return String.format(clauseFormat, BuildHelper.buildCondition(AND, query, argList, alias));
     }
 }

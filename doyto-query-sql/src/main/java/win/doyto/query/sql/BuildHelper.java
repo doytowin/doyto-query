@@ -82,13 +82,18 @@ public class BuildHelper {
     }
 
     public static String buildCondition(String prefix, Object query, List<Object> argList) {
-        return buildCondition(query, argList, prefix, EMPTY);
+        return buildCondition(prefix, query, argList, EMPTY);
     }
 
-    public static String buildCondition(Object query, List<Object> argList, String prefix, String alias) {
+    public static String buildCondition(String prefix, Object query, List<Object> argList, String alias) {
         alias = StringUtils.isBlank(alias) ? EMPTY : alias + ".";
         Field[] fields = ColumnUtil.initFields(query.getClass(), FieldMapper::init);
-        StringJoiner whereJoiner = new StringJoiner(AND);
+        String clause = buildCondition(fields, query, argList, alias, AND);
+        return clause.isEmpty() ? clause : prefix + clause;
+    }
+
+    public static String buildCondition(Field[] fields, Object query, List<Object> argList, String alias, String connector) {
+        StringJoiner whereJoiner = new StringJoiner(connector);
         for (Field field : fields) {
             Object value = readFieldGetter(field, query);
             if (isValidValue(value, field)) {
@@ -98,10 +103,7 @@ public class BuildHelper {
                 }
             }
         }
-        if (whereJoiner.length() == 0) {
-            return EMPTY;
-        }
-        return prefix + whereJoiner;
+        return whereJoiner.toString();
     }
 
     public static String buildOrderBy(DoytoQuery pageQuery) {

@@ -16,18 +16,13 @@
 
 package win.doyto.query.sql.field;
 
-import org.apache.commons.lang3.StringUtils;
-import win.doyto.query.core.QuerySuffix;
+import win.doyto.query.sql.BuildHelper;
 import win.doyto.query.util.ColumnUtil;
-import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.StringJoiner;
 
-import static win.doyto.query.sql.Constant.CP;
-import static win.doyto.query.sql.Constant.OP;
-import static win.doyto.query.sql.field.FieldMapper.execute;
+import static win.doyto.query.sql.Constant.*;
 
 /**
  * ConnectableFieldProcessor
@@ -47,17 +42,7 @@ public class ConnectableFieldProcessor implements FieldProcessor {
 
     @Override
     public String process(List<Object> argList, Object value) {
-        StringJoiner joiner = new StringJoiner(connector, OP, CP);
-        for (Field subField : fields) {
-            Object subValue = CommonUtil.readField(subField, value);
-            if (QuerySuffix.isValidValue(subValue, subField)) {
-                String condition = execute(subField, argList, subValue);
-                if (StringUtils.isNotEmpty(condition)) {
-                    joiner.add(condition);
-                }
-            }
-        }
-        String clause = joiner.toString();
-        return "()".equals(clause) ? null : clause;
+        String clause = BuildHelper.buildCondition(fields, value, argList, EMPTY, connector);
+        return clause.length() == 0 ? null : OP + clause + CP;
     }
 }
