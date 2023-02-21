@@ -58,6 +58,9 @@ import win.doyto.query.test.tpch.q20.PotentialPartPromotionView;
 import win.doyto.query.test.tpch.q20.SuppkeyQuery;
 import win.doyto.query.test.tpch.q3.ShippingPriorityQuery;
 import win.doyto.query.test.tpch.q3.ShippingPriorityView;
+import win.doyto.query.test.tpch.q4.LineitemReceiptQuery;
+import win.doyto.query.test.tpch.q4.OrderPriorityCheckingQuery;
+import win.doyto.query.test.tpch.q4.OrderPriorityCheckingView;
 import win.doyto.query.test.tpch.q5.LocalSupplierVolumeQuery;
 import win.doyto.query.test.tpch.q5.LocalSupplierVolumeView;
 import win.doyto.query.test.tpch.q6.ForecastingRevenueChangeQuery;
@@ -182,6 +185,34 @@ class TpcHTest {
                 .build();
 
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, ShippingPriorityView.class);
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+    }
+
+    @Test
+    void queryForOrderPriorityChecking() {
+        String expected = "SELECT o_orderpriority, count(*) AS order_count" +
+                " FROM orders t" +
+                " WHERE o_orderdate >= ?" +
+                " AND o_orderdate < ?" +
+                " AND EXISTS(SELECT * FROM lineitem t1" +
+                " WHERE t.o_orderkey = t1.l_orderkey" +
+                " AND t1.l_commitdate < t1.l_receiptdate" +
+                ")" +
+                " GROUP BY o_orderpriority" +
+                " ORDER BY o_orderpriority";
+
+        LocalDate date = LocalDate.of(1993, 7, 1);
+        Date orderDateGe = Date.valueOf(date);
+        Date orderDateLt = Date.valueOf(date.plus(3, MONTHS));
+        OrderPriorityCheckingQuery query = OrderPriorityCheckingQuery
+                .builder()
+                .o_orderdateGe(orderDateGe)
+                .o_orderdateLt(orderDateLt)
+                .orderExists(new LineitemReceiptQuery())
+                .sort("o_orderpriority")
+                .build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, OrderPriorityCheckingView.class);
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
     }
 

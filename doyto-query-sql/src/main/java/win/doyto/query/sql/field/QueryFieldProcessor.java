@@ -45,6 +45,6 @@ class QueryFieldProcessor implements FieldProcessor {
         for (int i = 0; i < holderCount; i++) {
             argList.add(value);
         }
-        return andSQL;
+        return andSQL.replace("${ALIAS}", alias);
     }
 }
