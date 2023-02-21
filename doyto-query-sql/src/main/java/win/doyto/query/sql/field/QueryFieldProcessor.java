@@ -41,7 +41,7 @@ class QueryFieldProcessor implements FieldProcessor {
     }
 
     @Override
-    public String process(List<Object> argList, Object value) {
+    public String process(String alias, List<Object> argList, Object value) {
         for (int i = 0; i < holderCount; i++) {
             argList.add(value);
         }

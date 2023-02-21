@@ -101,9 +101,9 @@ public class BuildHelper {
         for (Field field : fields) {
             Object value = readFieldGetter(field, query);
             if (isValidValue(value, field)) {
-                String and = FieldMapper.execute(field, argList, value);
+                String and = FieldMapper.execute(field, alias, argList, value);
                 if (and != null) {
-                    whereJoiner.add(alias + and);
+                    whereJoiner.add(and);
                 }
             }
         }

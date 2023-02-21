@@ -25,5 +25,5 @@ import java.util.List;
  * @since 1.0.1
  */
 interface FieldProcessor {
-    String process(List<Object> argList, Object value);
+    String process(String alias, List<Object> argList, Object value);
 }

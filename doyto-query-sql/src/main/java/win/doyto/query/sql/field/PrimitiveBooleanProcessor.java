@@ -42,7 +42,7 @@ public class PrimitiveBooleanProcessor implements FieldProcessor {
     }
 
     @Override
-    public String process(List<Object> argList, Object value) {
+    public String process(String alias, List<Object> argList, Object value) {
         return Boolean.TRUE.equals(value) ? clause : null;
     }
 }

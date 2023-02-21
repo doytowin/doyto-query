@@ -45,8 +45,8 @@ public final class FieldMapper {
 
     private static final Map<Field, FieldProcessor> FIELD_PROCESSOR_MAP = new ConcurrentHashMap<>();
 
-    public static String execute(Field field, List<Object> argList, Object value) {
-        return FIELD_PROCESSOR_MAP.get(field).process(argList, value);
+    public static String execute(Field field, String alias, List<Object> argList, Object value) {
+        return FIELD_PROCESSOR_MAP.get(field).process(alias, argList, value);
     }
 
     public static void init(Field field) {
@@ -82,7 +82,7 @@ public final class FieldMapper {
         } else if (SubqueryProcessor.matches(field.getName()) != null) {
             processor = new SubqueryProcessor(field.getName());
         } else {
-            processor = (argList, value) -> {
+            processor = (alias, argList, value) -> {
                 log.warn("Field configuration is invalid: {}.{}", field.getDeclaringClass(), field.getName());
                 return null;
             };
@@ -105,9 +105,9 @@ public final class FieldMapper {
 
     private static FieldProcessor chooseProcessorForFieldWithOr(String fieldName) {
         if (CommonUtil.containsOr(fieldName)) {
-            return (argList, value) -> SqlQuerySuffix.buildConditionForFieldContainsOr(fieldName, argList, value);
+            return (alias, argList, value) -> SqlQuerySuffix.buildConditionForFieldContainsOr(alias + fieldName, argList, value);
         } else {
-            return (argList, value) -> SqlQuerySuffix.buildConditionForField(fieldName, argList, value);
+            return (alias, argList, value) -> SqlQuerySuffix.buildConditionForField(alias + fieldName, argList, value);
         }
     }
 

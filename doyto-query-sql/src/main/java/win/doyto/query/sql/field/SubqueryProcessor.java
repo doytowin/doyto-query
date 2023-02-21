@@ -100,7 +100,7 @@ public class SubqueryProcessor implements FieldProcessor {
     }
 
     @Override
-    public String process(List<Object> argList, Object value) {
+    public String process(String alias, List<Object> argList, Object value) {
         String clause;
         if (!joinConditions.isEmpty()) {
             clause = WHERE + joinConditions + BuildHelper.buildCondition(AND, value, argList);
