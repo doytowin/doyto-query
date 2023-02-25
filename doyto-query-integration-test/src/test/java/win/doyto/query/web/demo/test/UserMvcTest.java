@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.RequestBuilder;
+import win.doyto.query.web.response.PresetErrorCode;
 
 import static org.hamcrest.Matchers.containsInRelativeOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -128,6 +129,15 @@ class UserMvcTest extends DemoApplicationTest {
                 .andExpect(jsonPath("$.data.list").isArray())
                 .andExpect(jsonPath("$.data.list.size()").value(3))
                 .andExpect(jsonPath("$.data.list[*].id", containsInRelativeOrder(1, 3, 4)))
+        ;
+    }
+
+    @Test
+    @Rollback
+    void deleteByQuery() throws Exception {
+        performAndExpectFail(delete("/user/"), PresetErrorCode.ARGUMENT_VALIDATION_FAILED);
+        performAndExpectSuccess(delete("/user/?username=f0rb"))
+                .andExpect(jsonPath("$.data").value(1))
         ;
     }
 }

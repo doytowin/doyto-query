@@ -23,6 +23,7 @@ import win.doyto.query.core.PageList;
 import win.doyto.query.validation.PageGroup;
 import win.doyto.query.validation.PatchGroup;
 import win.doyto.query.validation.UpdateGroup;
+import win.doyto.query.web.component.NotEmptyQuery;
 
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +47,9 @@ public interface RestApi<I, Q extends DoytoQuery, R, S> {
 
     @DeleteMapping("{id}")
     S delete(I id);
+
+    @DeleteMapping
+    int delete(@NotEmptyQuery Q q);
 
     @PutMapping("{id}")
     void update(@RequestBody @Validated(UpdateGroup.class) R request);

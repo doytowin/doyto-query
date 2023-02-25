@@ -37,7 +37,7 @@ public class NotEmptyQueryValidator implements ConstraintValidator<NotEmptyQuery
         if (query.needPaging()) {
             return true;
         }
-        Field[] fields = ColumnUtil.initFields(query.getClass());
+        Field[] fields = ColumnUtil.queryFields(query.getClass());
         for (Field field : fields) {
             Object value = readFieldGetter(field, query);
             if (isValidValue(value, field)) {

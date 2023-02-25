@@ -53,8 +53,19 @@ public class ColumnUtil {
     private static final Pattern PTN_CAPITAL_CHAR = Pattern.compile("([A-Z])");
     private static final Map<Class<?>, Field[]> classFieldsMap = new ConcurrentHashMap<>();
 
+    /**
+     * For MongoDB implementation currently.
+     */
     public static Field[] initFields(Class<?> clazz) {
         return initFields(clazz, null);
+    }
+
+    public static Field[] queryFields(Class<?> queryClass) {
+        Field[] fields = classFieldsMap.get(queryClass);
+        if (fields == null) {
+            fields = filterFields(queryClass, ColumnUtil::shouldRetain).toArray(Field[]::new);
+        }
+        return fields;
     }
 
     public static Field[] initFields(Class<?> queryClass, Consumer<Field> fieldConsumer) {
@@ -127,7 +138,7 @@ public class ColumnUtil {
         columnName = convertColumn(columnName);
         columnName = GlobalConfiguration.dialect().wrapLabel(columnName);
         if (aggregationPrefix != AggregationPrefix.NONE) {
-           columnName = aggregationPrefix.getName() + "(" + columnName + ")";
+            columnName = aggregationPrefix.getName() + "(" + columnName + ")";
         }
         return columnName;
     }
