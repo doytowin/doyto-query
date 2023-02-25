@@ -20,9 +20,11 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import win.doyto.query.test.role.RoleEntity;
+import win.doyto.query.test.role.RoleQuery;
 import win.doyto.query.validation.PatchGroup;
 import win.doyto.query.validation.UpdateGroup;
 import win.doyto.query.web.component.ListValidator;
+import win.doyto.query.web.component.NotEmptyQuery;
 import win.doyto.query.web.response.ErrorCode;
 import win.doyto.query.web.response.JsonBody;
 import win.doyto.query.web.response.JsonResponse;
@@ -70,6 +72,10 @@ public class RoleController {
 
     @PatchMapping("{id}")
     void patch(@RequestBody @Validated(PatchGroup.class) RoleEntity request) {
+    }
+
+    @DeleteMapping
+    void delete(@NotEmptyQuery RoleQuery roleQuery) {
     }
 
 }

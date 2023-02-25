@@ -227,7 +227,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     }
 
     public int patch(E e, Q q) {
-        userIdProvider.setupUserId(e);
+        userIdProvider.setupPatchUserId(e);
         int patch = dataAccess.patch(e, q);
         clearCache();
         return patch;
