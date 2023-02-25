@@ -19,6 +19,8 @@ package win.doyto.query.web.component;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.test.TestQuery;
 
+import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -41,6 +43,16 @@ class NotEmptyQueryValidatorTest {
     void shouldBeValidWhenQueryWithPage() {
         assertTrue(notEmptyQueryValidator.isValid(TestQuery.builder().pageNumber(1).build(), null));
         assertTrue(notEmptyQueryValidator.isValid(TestQuery.builder().pageSize(5).build(), null));
+    }
+
+    @Test
+    void shouldBeValidWhenQueryWithAnyParameters() {
+        assertTrue(notEmptyQueryValidator.isValid(TestQuery.builder().id(10).build(), null));
+        assertTrue(notEmptyQueryValidator.isValid(TestQuery.builder().memoNotNull(true).build(), null));
+
+        assertFalse(notEmptyQueryValidator.isValid(TestQuery.builder().idNotIn(Arrays.asList()).build(), null));
+        assertTrue(notEmptyQueryValidator.isValid(TestQuery.builder().idNotIn(Arrays.asList(1, 2, 3)).build(), null));
+        assertTrue(notEmptyQueryValidator.isValid(TestQuery.builder().idIn(Arrays.asList()).build(), null));
     }
 
 }

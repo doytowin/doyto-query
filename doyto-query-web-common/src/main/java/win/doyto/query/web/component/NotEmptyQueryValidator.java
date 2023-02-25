@@ -17,9 +17,14 @@
 package win.doyto.query.web.component;
 
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.util.ColumnUtil;
 
+import java.lang.reflect.Field;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+
+import static win.doyto.query.core.QuerySuffix.isValidValue;
+import static win.doyto.query.util.CommonUtil.readFieldGetter;
 
 /**
  * NotEmptyQueryValidator
@@ -31,6 +36,13 @@ public class NotEmptyQueryValidator implements ConstraintValidator<NotEmptyQuery
     public boolean isValid(DoytoQuery query, ConstraintValidatorContext constraintValidatorContext) {
         if (query.needPaging()) {
             return true;
+        }
+        Field[] fields = ColumnUtil.initFields(query.getClass());
+        for (Field field : fields) {
+            Object value = readFieldGetter(field, query);
+            if (isValidValue(value, field)) {
+                return true;
+            }
         }
         return false;
     }
