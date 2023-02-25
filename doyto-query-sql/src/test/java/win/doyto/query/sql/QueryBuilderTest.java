@@ -20,7 +20,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.Dialect;
+import win.doyto.query.core.IdWrapper;
 import win.doyto.query.test.*;
+import win.doyto.query.test.tpch.domain.partsupp.PartsuppEntity;
+import win.doyto.query.test.tpch.domain.partsupp.PartsuppKey;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -451,5 +454,15 @@ class QueryBuilderTest {
         assertEquals("SELECT * FROM t_user t WHERE NOT EXISTS(SELECT * FROM t_user t1 WHERE t.id = t1.create_user_id AND t1.valid = ?)",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly(false);
+    }
+
+    @Test
+    void buildSelectByCompositeId() {
+        QueryBuilder queryBuilder = new QueryBuilder(PartsuppEntity.class);
+        PartsuppKey partSuppKey = new PartsuppKey(1, 2);
+        SqlAndArgs sqlAndArgs = queryBuilder.buildSelectById(IdWrapper.build(partSuppKey), "*");
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo("SELECT * FROM t_partsupp WHERE ps_partkey = ? AND ps_suppkey = ?");
+        assertThat(sqlAndArgs.getArgs()).containsExactly(1, 2);
     }
 }

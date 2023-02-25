@@ -38,7 +38,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 
@@ -151,7 +150,7 @@ public class ColumnUtil {
 
     public static boolean filterForEntity(Field field) {
         return shouldRetain(field)
-                && !field.isAnnotationPresent(GeneratedValue.class) // ignore id
+                && !field.isAnnotationPresent(Id.class) // ignore id
                 && !field.isAnnotationPresent(DomainPath.class)     // ignore subdomains
                 ;
     }
@@ -170,7 +169,8 @@ public class ColumnUtil {
         return columns.length == 1 && !columns[0].contains(",");
     }
 
-    public static String resolveIdColumn(Class<?> entityClass) {
-        return resolveColumn(FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0]);
+    public static String[] resolveIdColumn(Class<?> entityClass) {
+        return Arrays.stream(FieldUtils.getFieldsWithAnnotation(entityClass, Id.class))
+                     .map(ColumnUtil::resolveColumn).toArray(String[]::new);
     }
 }

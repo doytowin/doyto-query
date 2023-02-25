@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.domain.partsupp;
+package win.doyto.query.core;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import java.math.BigDecimal;
-import javax.persistence.Entity;
+import java.io.Serializable;
+import java.util.List;
 
 /**
- * PartsuppEntity
+ * CompositeId
  *
- * @author f0rb on 2023/2/17
+ * @author f0rb on 2023/2/24
+ * @since 1.0.1
  */
-@Getter
-@Setter
-@Entity(name = "partsupp")
-public class PartsuppEntity extends PartsuppKey {
-    private Integer ps_availqty;
-    private BigDecimal ps_supplycost;
-    private String ps_comment;
+public interface CompositeId extends Serializable {
+    List<Serializable> getKeys();
 }

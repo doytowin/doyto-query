@@ -17,7 +17,6 @@
 package win.doyto.query.sql;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.Clause;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
@@ -32,7 +31,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
-import javax.persistence.Id;
 
 import static win.doyto.query.sql.Constant.*;
 import static win.doyto.query.util.CommonUtil.*;
@@ -46,7 +44,6 @@ import static win.doyto.query.util.CommonUtil.*;
 public class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implements SqlBuilder<E> {
 
     private final Class<E> entityClass;
-    private final Field idField;
     private final List<Field> fields;
     private final String wildInsertValue;   // ?, ?, ?
     private final String insertColumns;
@@ -55,7 +52,6 @@ public class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implemen
     public CrudBuilder(Class<E> entityClass) {
         super(entityClass);
         this.entityClass = entityClass;
-        idField = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0];
 
         // init fields
         fields = ColumnUtil.getColumnFieldsFrom(entityClass);
@@ -173,7 +169,7 @@ public class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implemen
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             String table = resolveTableName(entity);
             readValueToArgList(fields, entity, argList);
-            argList.add(readField(idField, entity));
+            appendArgsForId(argList, entity.getId());
             return buildUpdateSql(table, replaceHolderInString(entity, wildSetClause)) + whereId;
         });
     }
@@ -193,7 +189,7 @@ public class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implemen
     public SqlAndArgs buildPatchAndArgsWithId(E entity) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             String sql = buildPatchAndArgs(entity, argList) + whereId;
-            argList.add(readField(idField, entity));
+            appendArgsForId(argList, entity.getId());
             return sql;
         });
     }
@@ -201,7 +197,7 @@ public class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implemen
     @Override
     public SqlAndArgs buildDeleteById(IdWrapper<?> w) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
-            argList.add(w.getId());
+            appendArgsForId(argList, w.getId());
             return buildDeleteFromTable(w) + whereId;
         });
     }
@@ -221,14 +217,14 @@ public class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implemen
     @Override
     public SqlAndArgs buildDeleteAndArgs(DoytoQuery query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> buildDeleteFromTable(query.toIdWrapper())
-                + WHERE + idColumn + IN
+                + WHERE + wrappedIdColumn + IN
                 + OP + build(query, argList, idColumn) + CP);
     }
 
     @Override
     public SqlAndArgs buildPatchAndArgs(E entity, DoytoQuery query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> buildPatchAndArgs(entity, argList)
-                + WHERE + idColumn + IN
+                + WHERE + wrappedIdColumn + IN
                 + OP + build(query, argList, idColumn) + CP);
     }
 

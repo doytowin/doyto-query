@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import win.doyto.query.test.DynamicEntity;
 import win.doyto.query.test.DynamicIdWrapper;
 import win.doyto.query.test.DynamicQuery;
+import win.doyto.query.test.tpch.domain.partsupp.PartsuppEntity;
 
 import java.util.Arrays;
 
@@ -103,5 +104,37 @@ class SqlBuilderTest {
                 "WHERE id IN (SELECT id FROM t_dynamic_f0rb_i18n t WHERE score < ? LIMIT 10 OFFSET 20)";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(100, 90);
+    }
+
+    @Test
+    void buildPatchAndArgsWithIdForCompositeId() {
+        SqlBuilder<PartsuppEntity> sqlBuilder = new CrudBuilder<>(PartsuppEntity.class);
+
+        PartsuppEntity entity = new PartsuppEntity();
+        entity.setPs_partkey(1);
+        entity.setPs_suppkey(2);
+        entity.setPs_availqty(1000);
+
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildPatchAndArgsWithId(entity);
+
+        String expected = "UPDATE t_partsupp SET ps_availqty = ? " +
+                "WHERE ps_partkey = ? AND ps_suppkey = ?";
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(1000, 1, 2);
+    }
+
+    @Test
+    void buildDeleteAndArgsForCompositeId() {
+        SqlBuilder<PartsuppEntity> sqlBuilder = new CrudBuilder<>(PartsuppEntity.class);
+
+        DynamicQuery dynamicQuery = DynamicQuery.builder().pageNumber(3).build();
+
+        String expected = "DELETE FROM t_partsupp " +
+                "WHERE (ps_partkey, ps_suppkey) IN " +
+                "(SELECT ps_partkey, ps_suppkey FROM t_partsupp t " +
+                "LIMIT 10 OFFSET 20)";
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildDeleteAndArgs(dynamicQuery);
+        assertEquals(expected, sqlAndArgs.getSql());
+        assertThat(sqlAndArgs.getArgs()).isEmpty();
     }
 }
