@@ -140,4 +140,14 @@ class UserMvcTest extends DemoApplicationTest {
                 .andExpect(jsonPath("$.data").value(1))
         ;
     }
+
+    @Test
+    @Rollback
+    void patchUserByQuery() throws Exception {
+        RequestBuilder requestBuilder = patch("/user/?emailLike=qq.com&valid=true")
+                .content("{\"valid\":false}").contentType(MediaType.APPLICATION_JSON);
+        performAndExpectSuccess(requestBuilder)
+                .andExpect(jsonPath("$.data").value(2))
+        ;
+    }
 }

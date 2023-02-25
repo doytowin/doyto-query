@@ -59,4 +59,10 @@ public abstract class AbstractDynamicController
         return service.delete(q);
     }
 
+    @Override
+    public int patch(R request, Q q) {
+        E e = buildEntity(request);
+        return service.patch(e, q);
+    }
+
 }

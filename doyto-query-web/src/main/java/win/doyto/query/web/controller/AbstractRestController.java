@@ -78,4 +78,10 @@ public abstract class AbstractRestController<E extends Persistable<I>, I extends
         return service.delete(q);
     }
 
+    @Override
+    public int patch(R request, Q q) {
+        E e = buildEntity(request);
+        return service.patch(e, q);
+    }
+
 }

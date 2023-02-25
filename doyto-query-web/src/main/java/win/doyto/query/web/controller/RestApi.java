@@ -57,6 +57,9 @@ public interface RestApi<I, Q extends DoytoQuery, R, S> {
     @PatchMapping("{id}")
     void patch(@RequestBody @Validated(PatchGroup.class) R request);
 
+    @PatchMapping
+    int patch(@RequestBody R request, @NotEmptyQuery Q q);
+
     default void create(R request) {
         create(Collections.singletonList(request));
     }
