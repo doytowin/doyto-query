@@ -24,6 +24,8 @@ package win.doyto.query.core;
  */
 public interface AggregationQuery extends DoytoQuery {
 
-    Having getHaving();
+    default Having getHaving() {
+        return null;
+    }
 
 }
