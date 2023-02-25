@@ -44,16 +44,16 @@ public enum AggregationPrefix {
     count {
         @Override
         public String resolveColumnName(String viewFieldName) {
-            return  viewFieldName.equals(name()) ?  "*" :super.resolveColumnName(viewFieldName);
+            return viewFieldName.equals(name()) ? "*" : super.resolveColumnName(viewFieldName);
         }
     },
 
     NONE(0);
 
-    private static final Pattern SUFFIX_PTN = Pattern.compile(
+    private static final Pattern PREFIX_PTN = Pattern.compile(
             Arrays.stream(values())
                   .map(Enum::name)
-                  .collect(Collectors.joining("|", "^\\b(", ")(?=[A-Z])|count"))
+                  .collect(Collectors.joining("|", "^\\b(", ")(?=[A-Z])|\\bcount"))
     );
 
     private final int prefixLength;
@@ -77,7 +77,7 @@ public enum AggregationPrefix {
     }
 
     public static AggregationPrefix resolveField(String fieldName) {
-        Matcher matcher = SUFFIX_PTN.matcher(fieldName);
+        Matcher matcher = PREFIX_PTN.matcher(fieldName);
         return matcher.find() ? valueOf(matcher.group()) : NONE;
     }
 

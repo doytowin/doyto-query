@@ -46,4 +46,11 @@ class AggregationPrefixTest {
         assertThat(prefix).isEqualTo(AggregationPrefix.NONE);
     }
 
+    @Test
+    void fixShouldIgnoreWhenFieldEndsWithCount() {
+        String fieldName = "discount";
+        String resolved = AggregationPrefix.resolveField(fieldName).resolveColumnName(fieldName);
+        assertThat(resolved).isEqualTo(fieldName);
+    }
+
 }
