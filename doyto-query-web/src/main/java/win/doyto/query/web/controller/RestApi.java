@@ -35,12 +35,12 @@ import java.util.List;
  */
 public interface RestApi<I, Q extends DoytoQuery, R, S> {
 
-    List<S> query(Q q);
+    List<S> query(Q query);
 
-    long count(Q q);
+    long count(Q query);
 
     @GetMapping
-    PageList<S> page(@Validated(PageGroup.class) Q q);
+    PageList<S> page(@Validated(PageGroup.class) Q query);
 
     @GetMapping("{id}")
     S get(I id);
@@ -49,7 +49,7 @@ public interface RestApi<I, Q extends DoytoQuery, R, S> {
     S delete(I id);
 
     @DeleteMapping
-    int delete(@NotEmptyQuery Q q);
+    int delete(@NotEmptyQuery Q query);
 
     @PutMapping("{id}")
     void update(@RequestBody @Validated(UpdateGroup.class) R request);
@@ -58,7 +58,7 @@ public interface RestApi<I, Q extends DoytoQuery, R, S> {
     void patch(@RequestBody @Validated(PatchGroup.class) R request);
 
     @PatchMapping
-    int patch(@RequestBody R request, @NotEmptyQuery Q q);
+    int patch(@RequestBody R request, @NotEmptyQuery Q query);
 
     default void create(R request) {
         create(Collections.singletonList(request));

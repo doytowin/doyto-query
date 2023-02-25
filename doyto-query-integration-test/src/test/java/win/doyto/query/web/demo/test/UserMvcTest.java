@@ -150,4 +150,14 @@ class UserMvcTest extends DemoApplicationTest {
                 .andExpect(jsonPath("$.data").value(2))
         ;
     }
+
+    @Test
+    @Rollback
+    void patchUserByEmptyQuery() throws Exception {
+        RequestBuilder requestBuilder = patch("/user/")
+                .content("{\"valid\":false}").contentType(MediaType.APPLICATION_JSON);
+        performAndExpectFail(requestBuilder, PresetErrorCode.ARGUMENT_VALIDATION_FAILED)
+                .andExpect(jsonPath("$.hints.query").value("不能为空"))
+        ;
+    }
 }

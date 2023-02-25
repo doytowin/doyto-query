@@ -68,8 +68,8 @@ abstract class DemoApplicationTest {
         return builder.content(content).contentType("application/json;charset=UTF-8").session(session);
     }
 
-    protected void performAndExpectFail(RequestBuilder requestBuilder, ErrorCode errorCode) throws Exception {
-        performAndExpectOk(requestBuilder).andExpect(jsonPath("$.code").value(errorCode.getCode()));
+    protected ResultActions performAndExpectFail(RequestBuilder requestBuilder, ErrorCode errorCode) throws Exception {
+        return performAndExpectOk(requestBuilder).andExpect(jsonPath("$.code").value(errorCode.getCode()));
     }
 
 }
