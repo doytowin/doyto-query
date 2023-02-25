@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import win.doyto.query.test.TestQuery;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * NotEmptyQueryValidatorTest
@@ -34,6 +35,12 @@ class NotEmptyQueryValidatorTest {
     @Test
     void shouldNotBeValidWhenQueryObjectHasNoParameters() {
         assertFalse(notEmptyQueryValidator.isValid(new TestQuery(), null));
+    }
+
+    @Test
+    void shouldBeValidWhenQueryWithPage() {
+        assertTrue(notEmptyQueryValidator.isValid(TestQuery.builder().pageNumber(1).build(), null));
+        assertTrue(notEmptyQueryValidator.isValid(TestQuery.builder().pageSize(5).build(), null));
     }
 
 }

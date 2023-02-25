@@ -29,6 +29,9 @@ import javax.validation.ConstraintValidatorContext;
  */
 public class NotEmptyQueryValidator implements ConstraintValidator<NotEmptyQuery, DoytoQuery> {
     public boolean isValid(DoytoQuery query, ConstraintValidatorContext constraintValidatorContext) {
+        if (query.needPaging()) {
+            return true;
+        }
         return false;
     }
 }
