@@ -39,6 +39,7 @@ public class GlobalConfiguration {
     private String joinIdFormat = "%s_id";
     private String tableFormat;
     private Pattern tablePtn;
+    private Pattern wildcardPtn = Pattern.compile("[%|_]");
     private String joinTableFormat = "a_%s_and_%s";
     private Dialect dialect = (sql, limit, offset) -> sql + " LIMIT " + limit + " OFFSET " + offset;
     private Function<Integer, Integer> startPageNumberAdjuster;
@@ -76,7 +77,7 @@ public class GlobalConfiguration {
 
     public void setTableFormat(String tableFormat) {
         this.tableFormat = tableFormat;
-        String regex = tableFormat.replace("%s", "[\\w_\\${}]+");
+        String regex = tableFormat.replace("%s", "[a-z_\\${}]+");
         this.tablePtn = Pattern.compile(regex);
     }
 

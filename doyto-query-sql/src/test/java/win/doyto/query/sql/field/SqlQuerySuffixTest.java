@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql;
+package win.doyto.query.sql.field;
 
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceLock;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import win.doyto.query.test.TestEnum;
@@ -30,14 +29,12 @@ import java.util.Arrays;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * QuerySuffixTest
  *
  * @author f0rb on 2020-01-17
  */
-@ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
 class SqlQuerySuffixTest {
 
     @SneakyThrows
@@ -50,10 +47,16 @@ class SqlQuerySuffixTest {
             "id, 1, id = ?, 1",
             "idNot, 2, id != ?, 2",
             "testLikeEq, test, test_like = ?, test",
-            "usernameNotLike, test, username NOT LIKE ?, %test%",
             "usernameLike, test, username LIKE ?, %test%",
+            "usernameNotLike, test, username NOT LIKE ?, %test%",
+            "usernameLike, %test%admin%, username LIKE ?, %test%admin%",
+            "usernameNotLike, %test%admin%, username NOT LIKE ?, %test%admin%",
+            "usernameContain, test%admin, username LIKE ?, %test\\%admin%",
+            "usernameNotContain, test, username NOT LIKE ?, %test%",
             "usernameStart, test, username LIKE ?, test%",
+            "usernameNotStart, test, username NOT LIKE ?, test%",
             "usernameEnd, test, username LIKE ?, %test",
+            "usernameNotEnd, test, username NOT LIKE ?, %test",
     })
     void testClauseAndValueGeneration(String fieldName, String value, String expectedSql, String expectedValue) {
         ArrayList<Object> argList = new ArrayList<>();

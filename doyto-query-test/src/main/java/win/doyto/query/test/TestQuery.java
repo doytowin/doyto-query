@@ -26,6 +26,7 @@ import win.doyto.query.annotation.QueryField;
 import win.doyto.query.annotation.Subquery;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.perm.PermissionQuery;
+import win.doyto.query.test.user.UserEntity;
 
 import java.util.Date;
 import java.util.List;
@@ -54,7 +55,6 @@ public class TestQuery extends PageQuery {
     private Integer idLe;
     private String username;
     private String usernameEq;
-    private String usernameContain;
 
     @QueryField(and = "(username = ? OR email = ? OR mobile = ?)")
     private String account;
@@ -70,8 +70,12 @@ public class TestQuery extends PageQuery {
 
     private String usernameLike;
     private String usernameNotLike;
+    private String usernameContain;
+    private String usernameNotContain;
     private String usernameStart;
+    private String usernameNotStart;
     private String usernameEnd;
+    private String usernameNotEnd;
     private String testLikeEq;
 
     private String usernameOrUserCodeLike;
@@ -94,20 +98,20 @@ public class TestQuery extends PageQuery {
 
     private Boolean valid;
 
-    @Subquery(select = "score", from = "user")
+    @Subquery(select = "score", from = UserEntity.class)
     private TestQuery scoreGtAny;
 
-    @Subquery(select = "score", from = "user")
+    @Subquery(select = "score", from = UserEntity.class)
     private TestQuery scoreLtAll;
 
-    @Subquery(select = "avg(score)", from = "user")
+    @Subquery(select = "avg(score)", from = UserEntity.class)
     private TestQuery scoreGt1;
     private TestQuery scoreGt$avgScoreFromUser;
 
     private Double scoreGt;  // score > ?
     private Double scoreGt2; // unsupported
 
-    @Subquery(select = "score", from = "user")
+    @Subquery(select = "score", from = UserEntity.class)
     private TestQuery scoreIn;
 
     @DomainPath(value = "user", foreignField = "createUserId")

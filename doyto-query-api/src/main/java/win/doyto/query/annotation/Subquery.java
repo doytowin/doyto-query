@@ -16,6 +16,9 @@
 
 package win.doyto.query.annotation;
 
+import win.doyto.query.entity.Persistable;
+
+import java.io.Serializable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -28,12 +31,17 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * @author f0rb on 2022/12/29
  * @since 1.0.1
  */
+@SuppressWarnings("java:S1452")
 @Target(FIELD)
 @Retention(RUNTIME)
 public @interface Subquery {
 
     String select();
 
-    String from();
+    boolean distinct() default false;
+
+    String[] parentColumns() default {};
+
+    Class<? extends Persistable<? extends Serializable>>[] from();
 
 }

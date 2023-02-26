@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql;
+package win.doyto.query.sql.field;
 
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.sql.BuildHelper;
 import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
@@ -31,7 +32,7 @@ import static win.doyto.query.sql.Constant.*;
  * @author f0rb on 2023/1/4
  * @since 1.0.1
  */
-public class ExistsProcessor implements FieldProcessor.Processor {
+public class ExistsProcessor implements FieldProcessor {
 
     private final String clauseFormat;
     private final String alias;
@@ -43,12 +44,12 @@ public class ExistsProcessor implements FieldProcessor.Processor {
         String foreignId = ColumnUtil.convertColumn(domainPath.foreignField());
         alias = "t1";
         clauseFormat = (field.getName().endsWith("NotExists") ? "NOT " : EMPTY) + "EXISTS"
-                + OP +SELECT + "*" + FROM + domains + SPACE + alias
+                + OP + SELECT + "*" + FROM + domains + SPACE + alias
                 + WHERE + TABLE_ALIAS + "." + primaryId + EQUAL + alias + "." + foreignId + "%s" + CP;
     }
 
     @Override
-    public String process(List<Object> argList, Object query) {
-        return  String.format(clauseFormat, BuildHelper.buildCondition(query, argList, AND, alias));
+    public String process(String alias, List<Object> argList, Object query) {
+        return String.format(clauseFormat, BuildHelper.buildCondition(AND, query, argList, this.alias));
     }
 }

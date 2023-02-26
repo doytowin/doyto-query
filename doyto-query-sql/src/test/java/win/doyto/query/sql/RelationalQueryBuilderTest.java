@@ -19,7 +19,6 @@ package win.doyto.query.sql;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.menu.MenuView;
@@ -41,7 +40,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author f0rb on 2021-12-11
  */
-@ResourceLock(value = "mapCamelCaseToUnderscore")
 class RelationalQueryBuilderTest {
     @BeforeEach
     void setUp() {

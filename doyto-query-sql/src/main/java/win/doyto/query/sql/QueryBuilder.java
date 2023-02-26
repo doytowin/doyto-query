@@ -18,13 +18,16 @@ package win.doyto.query.sql;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import win.doyto.query.core.CompositeId;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 import static win.doyto.query.sql.Constant.*;
 import static win.doyto.query.util.CommonUtil.isDynamicTable;
@@ -40,13 +43,15 @@ public class QueryBuilder {
 
     protected final String tableName;
     protected final String idColumn;
+    protected final String wrappedIdColumn;
     protected final String whereId;
     private final BiFunction<IdWrapper<?>, String, String> resolveTableNameFunc;
 
-    public QueryBuilder(String tableName, String idColumn) {
+    public QueryBuilder(String tableName, String[] idColumns) {
         this.tableName = tableName;
-        this.idColumn = idColumn;
-        this.whereId = WHERE + idColumn + EQUAL_HOLDER;
+        this.idColumn = String.join(SEPARATOR, idColumns);
+        this.wrappedIdColumn = idColumns.length > 1 ? OP + idColumn + CP : idColumn;
+        this.whereId = WHERE + Arrays.stream(idColumns).map(c -> c + EQUAL_HOLDER).collect(Collectors.joining(AND));
         this.resolveTableNameFunc = isDynamicTable(tableName) ? CommonUtil::replaceHolderInString : (idWrapper, tableName1) -> tableName1;
     }
 
@@ -90,11 +95,19 @@ public class QueryBuilder {
 
     public SqlAndArgs buildSelectById(IdWrapper<?> idWrapper, String... columns) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
-            argList.add(idWrapper.getId());
+            appendArgsForId(argList, idWrapper.getId());
             String columnStr = buildColumnStr(idWrapper, columns);
             String table = resolveTableName(idWrapper);
             return SELECT + columnStr + FROM + table + whereId;
         });
+    }
+
+    protected void appendArgsForId(List<Object> argList, Object id) {
+        if (id instanceof CompositeId) {
+            argList.addAll(((CompositeId) id).getKeys());
+        } else {
+            argList.add(id);
+        }
     }
 
     private String buildColumnStr(IdWrapper<?> idWrapper, String[] columns) {

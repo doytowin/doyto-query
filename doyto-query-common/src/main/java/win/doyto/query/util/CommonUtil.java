@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import win.doyto.query.config.GlobalConfiguration;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -142,7 +143,7 @@ public class CommonUtil {
     }
 
     private static String escape(String like) {
-        return like.replaceAll("[%|_]", "\\\\$0");
+        return GlobalConfiguration.instance().getWildcardPtn().matcher(like).replaceAll("\\\\$0");
     }
 
     public static String camelize(String input) {

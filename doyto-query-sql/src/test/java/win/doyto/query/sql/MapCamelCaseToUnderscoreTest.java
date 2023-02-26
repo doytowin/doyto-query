@@ -18,8 +18,8 @@ package win.doyto.query.sql;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.sql.field.FieldMapper;
 import win.doyto.query.test.TestEntity;
 import win.doyto.query.test.TestQuery;
 import win.doyto.query.util.ColumnUtil;
@@ -43,10 +43,9 @@ class MapCamelCaseToUnderscoreTest {
 
     @BeforeAll
     static void beforeAll() {
-        ColumnUtil.initFields(TestQuery.class, FieldProcessor::init);
+        ColumnUtil.initFields(TestQuery.class, FieldMapper::init);
     }
 
-    @ResourceLock(value = "mapCamelCaseToUnderscore")
     @Test
     void supportDisAbleMapFieldToUnderscore() {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);

@@ -195,11 +195,11 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     }
 
     private int doUpdate(E e, CacheInvoker<Integer> cacheInvoker) {
-        userIdProvider.setupUserId(e);
         E origin;
         if (e == null || (origin = dataAccess.get(e.toIdWrapper())) == null) {
             return 0;
         }
+        userIdProvider.setupUserId(e);
         if (!entityAspects.isEmpty()) {
             transactionOperations.execute(s -> {
                 cacheInvoker.invoke();

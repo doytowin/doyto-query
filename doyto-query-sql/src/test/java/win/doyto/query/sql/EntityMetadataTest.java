@@ -19,14 +19,12 @@ package win.doyto.query.sql;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.config.GlobalConfiguration;
 
 import javax.persistence.Entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * EntityMetadataTest
@@ -45,7 +43,6 @@ class EntityMetadataTest {
         private Double avgScore;
     }
 
-    @ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
     @Test
     void supportGroupByAnnotationForUnderscoreColumn() {
         EntityMetadata entityMetadata = new EntityMetadata(ScoreGroupByStudentView.class);
@@ -53,7 +50,6 @@ class EntityMetadataTest {
         assertEquals(" GROUP BY student_id", entityMetadata.getGroupBySql());
     }
 
-    @ResourceLock(value = "mapCamelCaseToUnderscore")
     @Test
     void supportGroupByAnnotationForCamelCaseColumn() {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);

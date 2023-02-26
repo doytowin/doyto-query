@@ -18,10 +18,12 @@ package win.doyto.query.sql;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.Dialect;
+import win.doyto.query.core.IdWrapper;
 import win.doyto.query.test.*;
+import win.doyto.query.test.tpch.domain.partsupp.PartsuppEntity;
+import win.doyto.query.test.tpch.domain.partsupp.PartsuppKey;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,15 +32,12 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * QueryBuilderTest
  *
  * @author f0rb 2019-05-12
  */
-@ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
-@ResourceLock(value = "dialect", mode = READ)
 class QueryBuilderTest {
 
     private final QueryBuilder testQueryBuilder = new QueryBuilder(TestEntity.class);
@@ -118,6 +117,15 @@ class QueryBuilderTest {
     @Test
     void supportLikeSuffix() {
         TestQuery testQuery = TestQuery.builder().usernameLike("_test%f0rb").build();
+
+        assertEquals("SELECT * FROM t_user t WHERE username LIKE ?",
+                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly("_test%f0rb");
+    }
+
+    @Test
+    void supportContainSuffix() {
+        TestQuery testQuery = TestQuery.builder().usernameContain("_test%f0rb").build();
 
         assertEquals("SELECT * FROM t_user t WHERE username LIKE ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
@@ -252,7 +260,6 @@ class QueryBuilderTest {
     }
 
     @Test
-    @ResourceLock(value = "dialect")
     void customPageDialect() {
         GlobalConfiguration globalConfiguration = GlobalConfiguration.instance();
         Dialect origin = globalConfiguration.getDialect();
@@ -447,5 +454,15 @@ class QueryBuilderTest {
         assertEquals("SELECT * FROM t_user t WHERE NOT EXISTS(SELECT * FROM t_user t1 WHERE t.id = t1.create_user_id AND t1.valid = ?)",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly(false);
+    }
+
+    @Test
+    void buildSelectByCompositeId() {
+        QueryBuilder queryBuilder = new QueryBuilder(PartsuppEntity.class);
+        PartsuppKey partSuppKey = new PartsuppKey(1, 2);
+        SqlAndArgs sqlAndArgs = queryBuilder.buildSelectById(IdWrapper.build(partSuppKey), "*");
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo("SELECT * FROM t_partsupp WHERE ps_partkey = ? AND ps_suppkey = ?");
+        assertThat(sqlAndArgs.getArgs()).containsExactly(1, 2);
     }
 }

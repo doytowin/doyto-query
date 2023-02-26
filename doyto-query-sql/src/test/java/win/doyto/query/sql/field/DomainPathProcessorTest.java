@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql;
+package win.doyto.query.sql.field;
 
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceLock;
+import win.doyto.query.sql.Constant;
 import win.doyto.query.test.menu.MenuQuery;
 import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.role.RoleQuery;
@@ -37,7 +37,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author f0rb on 2022-04-23
  */
-@ResourceLock(value = "mapCamelCaseToUnderscore")
 class DomainPathProcessorTest {
 
     List<Object> argList = new ArrayList<>();
@@ -52,7 +51,7 @@ class DomainPathProcessorTest {
         DomainPathProcessor domainPathProcessor = buildProcessor(UserQuery.class, "role");
         RoleQuery roleQuery = RoleQuery.builder().id(1).valid(true).build();
 
-        String sql = domainPathProcessor.process(argList, roleQuery);
+        String sql = domainPathProcessor.process(Constant.EMPTY, argList, roleQuery);
 
         String expected = "id IN (" +
                 "SELECT user_id FROM a_user_and_role WHERE role_id IN (" +
@@ -66,7 +65,7 @@ class DomainPathProcessorTest {
     void supportReverseNestedQueryWithTwoDomains() {
         DomainPathProcessor domainPathProcessor = buildProcessor(PermissionQuery.class, "role");
 
-        String sql = domainPathProcessor.process(argList, new RoleQuery());
+        String sql = domainPathProcessor.process(Constant.EMPTY, argList, new RoleQuery());
 
         String expected = "id IN (" +
                 "SELECT perm_id FROM a_role_and_perm WHERE role_id IN (" +
@@ -81,7 +80,7 @@ class DomainPathProcessorTest {
         DomainPathProcessor domainPathProcessor = buildProcessor(PermissionQuery.class, "role");
         RoleQuery roleQuery = RoleQuery.builder().id(1).valid(true).build();
 
-        String sql = domainPathProcessor.process(argList, roleQuery);
+        String sql = domainPathProcessor.process(Constant.EMPTY, argList, roleQuery);
 
         String expected = "id IN (" +
                 "SELECT perm_id FROM a_role_and_perm WHERE role_id IN (" +
@@ -96,7 +95,7 @@ class DomainPathProcessorTest {
         DomainPathProcessor domainPathProcessor = buildProcessor(PermissionQuery.class, "role");
         RoleQuery roleQuery = RoleQuery.builder().idIn(Arrays.asList(1, 2, 3)).build();
 
-        String sql = domainPathProcessor.process(argList, roleQuery);
+        String sql = domainPathProcessor.process(Constant.EMPTY, argList, roleQuery);
 
         String expected = "id IN (" +
                 "SELECT perm_id FROM a_role_and_perm WHERE role_id IN (" +
@@ -111,7 +110,7 @@ class DomainPathProcessorTest {
         DomainPathProcessor domainPathProcessor = buildProcessor(PermissionQuery.class, "role");
         RoleQuery roleQuery = RoleQuery.builder().idIn(Collections.emptyList()).build();
 
-        String sql = domainPathProcessor.process(argList, roleQuery);
+        String sql = domainPathProcessor.process(Constant.EMPTY, argList, roleQuery);
 
         String expected = "id IN (" +
                 "SELECT perm_id FROM a_role_and_perm WHERE role_id IN (" +
@@ -126,7 +125,7 @@ class DomainPathProcessorTest {
     void supportNestedQueryWithThreeDomains() {
         DomainPathProcessor domainPathProcessor = buildProcessor(UserQuery.class, "perm");
 
-        String sql = domainPathProcessor.process(argList, new PermissionQuery());
+        String sql = domainPathProcessor.process(Constant.EMPTY, argList, new PermissionQuery());
 
         String expected = "id IN (" +
                 "SELECT user_id FROM a_user_and_role WHERE role_id IN (" +
@@ -141,7 +140,7 @@ class DomainPathProcessorTest {
     void supportReverseNestedQueryWithThreeDomains() {
         DomainPathProcessor domainPathProcessor = buildProcessor(PermissionQuery.class, "user");
 
-        String sql = domainPathProcessor.process(argList, new UserQuery());
+        String sql = domainPathProcessor.process(Constant.EMPTY, argList, new UserQuery());
 
         String expected = "id IN (" +
                 "SELECT perm_id FROM a_role_and_perm WHERE role_id IN (" +
@@ -157,7 +156,7 @@ class DomainPathProcessorTest {
         DomainPathProcessor domainPathProcessor = buildProcessor(PermissionQuery.class, "user");
         UserQuery userQuery = UserQuery.builder().id(2).build();
 
-        String sql = domainPathProcessor.process(argList, userQuery);
+        String sql = domainPathProcessor.process(Constant.EMPTY, argList, userQuery);
 
         String expected = "id IN (SELECT perm_id FROM a_role_and_perm WHERE role_id IN " +
                 "(SELECT role_id FROM a_user_and_role WHERE user_id IN (" +
@@ -172,7 +171,7 @@ class DomainPathProcessorTest {
         DomainPathProcessor domainPathProcessor = buildProcessor(PermissionQuery.class, "user");
         UserQuery userQuery = UserQuery.builder().usernameLike("test").userLevel(UserLevel.普通).build();
 
-        String sql = domainPathProcessor.process(argList, userQuery);
+        String sql = domainPathProcessor.process(Constant.EMPTY, argList, userQuery);
 
         String expected = "id IN (SELECT perm_id FROM a_role_and_perm WHERE role_id IN " +
                 "(SELECT role_id FROM a_user_and_role WHERE user_id IN " +
@@ -190,7 +189,7 @@ class DomainPathProcessorTest {
                 .roleQuery(RoleQuery.builder().roleNameLike("vip").valid(true).build())
                 .id(1).build();
 
-        String sql = domainPathProcessor.process(argList, userQuery);
+        String sql = domainPathProcessor.process(Constant.EMPTY, argList, userQuery);
 
         String expected = "id IN (" +
                 "SELECT menu_id FROM a_perm_and_menu WHERE perm_id IN (" +
@@ -210,7 +209,7 @@ class DomainPathProcessorTest {
         DomainPathProcessor domainPathProcessor = buildProcessor(MenuQuery.class, "children");
         MenuQuery parentQuery = MenuQuery.builder().nameLike("test").valid(true).build();
 
-        String sql = domainPathProcessor.process(argList, parentQuery);
+        String sql = domainPathProcessor.process(Constant.EMPTY, argList, parentQuery);
 
         String expected = "id IN (SELECT parent_id FROM t_menu WHERE name LIKE ? AND valid = ?)";
         assertThat(sql).isEqualTo(expected);
@@ -222,7 +221,7 @@ class DomainPathProcessorTest {
         DomainPathProcessor domainPathProcessor = buildProcessor(MenuQuery.class, "parent");
         MenuQuery parentQuery = MenuQuery.builder().nameLike("test").valid(true).build();
 
-        String sql = domainPathProcessor.process(argList, parentQuery);
+        String sql = domainPathProcessor.process(Constant.EMPTY, argList, parentQuery);
 
         String expected = "parent_id IN (SELECT id FROM t_menu WHERE name LIKE ? AND valid = ?)";
         assertThat(sql).isEqualTo(expected);

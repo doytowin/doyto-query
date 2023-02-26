@@ -43,8 +43,11 @@ public enum QuerySuffix {
     Not,
     NotLike(Constants.LIKE_PREDICATE),
     Like(Constants.LIKE_PREDICATE),
+    NotContain(Constants.LIKE_PREDICATE),
     Contain(Constants.LIKE_PREDICATE),
+    NotStart(Constants.LIKE_PREDICATE),
     Start(Constants.LIKE_PREDICATE),
+    NotEnd(Constants.LIKE_PREDICATE),
     End(Constants.LIKE_PREDICATE),
     NotIn(new NotInPredicate()),
     In(new InPredicate()),
@@ -112,7 +115,7 @@ public enum QuerySuffix {
             if (o instanceof Collection || o instanceof DoytoQuery) {
                 return true;
             }
-            log.warn("Type of field which ends with In/NotIn should be Collection.");
+            log.warn("Type of field which ends with In/NotIn should be Collection or DoytoQuery.");
             return false;
         }
     }
@@ -120,7 +123,11 @@ public enum QuerySuffix {
     static class NotInPredicate extends InPredicate {
         @Override
         public boolean test(Object o) {
-            return super.test(o) && !((Collection<?>) o).isEmpty();
+            if (o instanceof Collection && !((Collection<?>) o).isEmpty() || o instanceof DoytoQuery) {
+                return true;
+            }
+            log.warn("Type of field which ends with In/NotIn should be Collection or DoytoQuery.");
+            return false;
         }
     }
 

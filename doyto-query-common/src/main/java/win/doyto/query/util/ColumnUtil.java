@@ -181,7 +181,8 @@ public class ColumnUtil {
         return columns.length == 1 && !columns[0].contains(",");
     }
 
-    public static String resolveIdColumn(Class<?> entityClass) {
-        return resolveColumn(FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0]);
+    public static String[] resolveIdColumn(Class<?> entityClass) {
+        return Arrays.stream(FieldUtils.getFieldsWithAnnotation(entityClass, Id.class))
+                     .map(ColumnUtil::resolveColumn).toArray(String[]::new);
     }
 }

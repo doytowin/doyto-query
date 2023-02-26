@@ -17,7 +17,6 @@
 package win.doyto.query.sql;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.test.TestQuery;
 
 import java.util.ArrayList;
@@ -30,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author f0rb on 2021-02-16
  */
-@ResourceLock(value = "mapCamelCaseToUnderscore")
 class BuildHelperTest {
 
     @Test

@@ -19,15 +19,21 @@ package win.doyto.query.sql;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import win.doyto.query.annotation.View;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.entity.Persistable;
+import win.doyto.query.sql.field.FieldMapper;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.persistence.Entity;
 
@@ -46,20 +52,33 @@ public class BuildHelper {
 
     static String resolveTableName(Class<?> entityClass) {
         String tableName;
-        Entity entity = entityClass.getAnnotation(Entity.class);
-        if (entity != null) {
-            tableName = GlobalConfiguration.formatTable(entity.name());
+        if (entityClass.isAnnotationPresent(Entity.class)) {
+            Entity entityAnno = entityClass.getAnnotation(Entity.class);
+            tableName = GlobalConfiguration.formatTable(entityAnno.name());
+        } else if (entityClass.isAnnotationPresent(View.class)) {
+            View viewAnno = entityClass.getAnnotation(View.class);
+            tableName = resolveTableName(viewAnno.value());
         } else {
-            String entityName = entityClass.getSimpleName();
-            entityName = StringUtils.removeEnd(entityName, "Entity");
-            entityName = StringUtils.removeEnd(entityName, "View");
-            tableName = GlobalConfiguration.formatTable(entityName);
+            tableName = defaultTableName(entityClass);
         }
         return tableName;
     }
 
+    static String defaultTableName(Class<?> entityClass) {
+        String entityName = entityClass.getSimpleName();
+        entityName = StringUtils.removeEnd(entityName, "Entity");
+        entityName = StringUtils.removeEnd(entityName, "View");
+        return GlobalConfiguration.formatTable(entityName);
+    }
+
+    public static String resolveTableName(Class<? extends Persistable<? extends Serializable>>[] value) {
+        return Arrays.stream(value)
+                     .map(BuildHelper::resolveTableName)
+                     .collect(Collectors.joining(SEPARATOR));
+    }
+
     static String buildStart(String[] columns, String table) {
-        return Constant.SELECT + StringUtils.join(columns, SEPARATOR) + FROM + table + SPACE + TABLE_ALIAS;
+        return SELECT + StringUtils.join(columns, SEPARATOR) + FROM + table + SPACE + TABLE_ALIAS;
     }
 
     public static String buildWhere(DoytoQuery query, List<Object> argList) {
@@ -67,26 +86,28 @@ public class BuildHelper {
     }
 
     public static String buildCondition(String prefix, Object query, List<Object> argList) {
-        return buildCondition(query, argList, prefix, EMPTY);
+        return buildCondition(prefix, query, argList, EMPTY);
     }
 
-    public static String buildCondition(Object query, List<Object> argList, String prefix, String alias) {
+    public static String buildCondition(String prefix, Object query, List<Object> argList, String alias) {
         alias = StringUtils.isBlank(alias) ? EMPTY : alias + ".";
-        Field[] fields = ColumnUtil.initFields(query.getClass(), FieldProcessor::init);
-        StringJoiner whereJoiner = new StringJoiner(AND);
+        Field[] fields = ColumnUtil.initFields(query.getClass(), FieldMapper::init);
+        String clause = buildCondition(fields, query, argList, alias, AND);
+        return clause.isEmpty() ? clause : prefix + clause;
+    }
+
+    public static String buildCondition(Field[] fields, Object query, List<Object> argList, String alias, String connector) {
+        StringJoiner whereJoiner = new StringJoiner(connector);
         for (Field field : fields) {
             Object value = readFieldGetter(field, query);
             if (isValidValue(value, field)) {
-                String and = FieldProcessor.execute(field, argList, value);
+                String and = FieldMapper.execute(field, alias, argList, value);
                 if (and != null) {
-                    whereJoiner.add(alias + and);
+                    whereJoiner.add(and);
                 }
             }
         }
-        if (whereJoiner.length() == 0) {
-            return EMPTY;
-        }
-        return prefix + whereJoiner;
+        return whereJoiner.toString();
     }
 
     public static String buildOrderBy(DoytoQuery pageQuery) {
@@ -111,7 +132,7 @@ public class BuildHelper {
 
     public static String buildPlaceHolders(int size) {
         return IntStream.range(0, size)
-                        .mapToObj(i -> Constant.PLACE_HOLDER)
+                        .mapToObj(i -> PLACE_HOLDER)
                         .collect(CommonUtil.CLT_COMMA_WITH_PAREN);
     }
 

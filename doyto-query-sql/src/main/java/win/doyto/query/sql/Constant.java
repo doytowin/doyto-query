@@ -33,7 +33,7 @@ public interface Constant {
     String FROM = " FROM ";
     String WHERE = " WHERE ";
     String EMPTY = "";
-    String SPACE_OR = " OR ";
+    String OR = " OR ";
     String DELETE_FROM = "DELETE" + FROM;
     String AND = " AND ";
     String IN = " IN ";
@@ -49,4 +49,6 @@ public interface Constant {
     String HAVING_PREFIX = "_having_";
     String WHERE_ = "\nWHERE ";
     String TABLE_ALIAS = "t";
+    String LIKE = "LIKE";
+    String NOT_LIKE = "NOT LIKE";
 }
