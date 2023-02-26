@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 
@@ -150,7 +151,7 @@ public class ColumnUtil {
 
     public static boolean filterForEntity(Field field) {
         return shouldRetain(field)
-                && !field.isAnnotationPresent(Id.class) // ignore id
+                && !field.isAnnotationPresent(GeneratedValue.class) // ignore id
                 && !field.isAnnotationPresent(DomainPath.class)     // ignore subdomains
                 ;
     }

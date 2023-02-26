@@ -22,6 +22,7 @@ import win.doyto.query.test.DynamicIdWrapper;
 import win.doyto.query.test.DynamicQuery;
 import win.doyto.query.test.tpch.domain.partsupp.PartsuppEntity;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -104,6 +105,24 @@ class SqlBuilderTest {
                 "WHERE id IN (SELECT id FROM t_dynamic_f0rb_i18n t WHERE score < ? LIMIT 10 OFFSET 20)";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(100, 90);
+    }
+
+    @Test
+    void buildUpdateAndArgsForCompositeId() {
+        SqlBuilder<PartsuppEntity> sqlBuilder = new CrudBuilder<>(PartsuppEntity.class);
+
+        PartsuppEntity entity = new PartsuppEntity();
+        entity.setPs_partkey(1);
+        entity.setPs_suppkey(2);
+        entity.setPs_availqty(1000);
+        entity.setPs_supplycost(BigDecimal.valueOf(20));
+
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildUpdateAndArgs(entity);
+
+        String expected = "UPDATE t_partsupp SET ps_availqty = ?, ps_supplycost = ?, ps_comment = ? " +
+                "WHERE ps_partkey = ? AND ps_suppkey = ?";
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(1000, BigDecimal.valueOf(20), null, 1, 2);
     }
 
     @Test
