@@ -16,7 +16,10 @@ spring:
     type: simple
   mongodb:
     embedded:
-      version: 4.0.21
+      version: 5.0.5
+      storage:
+        oplog-size: 10
+        repl-set-name: rs0
 
 doyto:
   query:
