@@ -26,5 +26,5 @@ import java.util.List;
  * @since 1.0.1
  */
 public interface CompositeId extends Serializable {
-    List<Serializable> getKeys();
+    List<Serializable> toKeys();
 }

@@ -35,7 +35,7 @@ public class PartsuppKey implements CompositeId, Persistable<PartsuppKey> {
     private Integer ps_suppkey;
 
     @Override
-    public List<Serializable> getKeys() {
+    public List<Serializable> toKeys() {
         return Arrays.asList(ps_partkey, ps_suppkey);
     }
 

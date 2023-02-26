@@ -104,7 +104,7 @@ public class QueryBuilder {
 
     protected void appendArgsForId(List<Object> argList, Object id) {
         if (id instanceof CompositeId) {
-            argList.addAll(((CompositeId) id).getKeys());
+            argList.addAll(((CompositeId) id).toKeys());
         } else {
             argList.add(id);
         }
