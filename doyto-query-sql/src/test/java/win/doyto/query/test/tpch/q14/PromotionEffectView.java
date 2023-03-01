@@ -18,7 +18,7 @@ package win.doyto.query.test.tpch.q14;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.View;
+import win.doyto.query.annotation.CompositeView;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
 import win.doyto.query.test.tpch.domain.part.PartEntity;
 
@@ -32,7 +32,7 @@ import javax.persistence.Column;
  */
 @Getter
 @Setter
-@View({LineitemEntity.class, PartEntity.class})
+@CompositeView({LineitemEntity.class, PartEntity.class})
 public class PromotionEffectView {
     @Column(name = "100.00 * SUM(CASE WHEN p_type LIKE 'PROMO%'THEN l_extendedprice * (1 - l_discount)ELSE 0 END) / SUM(l_extendedprice * (1 - l_discount))")
     private Integer promo_revenue;

@@ -19,7 +19,7 @@ package win.doyto.query.sql;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import win.doyto.query.annotation.View;
+import win.doyto.query.annotation.CompositeView;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.entity.Persistable;
@@ -55,9 +55,9 @@ public class BuildHelper {
         if (entityClass.isAnnotationPresent(Entity.class)) {
             Entity entityAnno = entityClass.getAnnotation(Entity.class);
             tableName = GlobalConfiguration.formatTable(entityAnno.name());
-        } else if (entityClass.isAnnotationPresent(View.class)) {
-            View viewAnno = entityClass.getAnnotation(View.class);
-            tableName = resolveTableName(viewAnno.value());
+        } else if (entityClass.isAnnotationPresent(CompositeView.class)) {
+            CompositeView compositeViewAnno = entityClass.getAnnotation(CompositeView.class);
+            tableName = resolveTableName(compositeViewAnno.value());
         } else {
             tableName = defaultTableName(entityClass);
         }

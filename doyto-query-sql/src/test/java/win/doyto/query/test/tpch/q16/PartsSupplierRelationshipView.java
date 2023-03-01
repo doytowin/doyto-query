@@ -18,8 +18,8 @@ package win.doyto.query.test.tpch.q16;
 
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.annotation.CompositeView;
 import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.annotation.View;
 import win.doyto.query.test.tpch.domain.part.PartEntity;
 import win.doyto.query.test.tpch.domain.partsupp.PartsuppEntity;
 
@@ -33,7 +33,7 @@ import javax.persistence.Column;
  */
 @Getter
 @Setter
-@View({PartsuppEntity.class, PartEntity.class})
+@CompositeView({PartsuppEntity.class, PartEntity.class})
 public class PartsSupplierRelationshipView {
     @GroupBy
     private String p_brand;

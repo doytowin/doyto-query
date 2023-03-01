@@ -26,7 +26,9 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * View
+ * CompositeView
+ *
+ * Aggregate multiple entities and views into one.
  *
  * @author f0rb on 2023/2/16
  * @since 1.0.1
@@ -34,6 +36,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @SuppressWarnings("java:S1452")
 @Target(TYPE)
 @Retention(RUNTIME)
-public @interface View {
+public @interface CompositeView {
     Class<? extends Persistable<? extends Serializable>>[] value();
 }

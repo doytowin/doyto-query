@@ -18,7 +18,7 @@ package win.doyto.query.test.tpch.q2;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.View;
+import win.doyto.query.annotation.CompositeView;
 import win.doyto.query.test.tpch.domain.nation.NationEntity;
 import win.doyto.query.test.tpch.domain.part.PartEntity;
 import win.doyto.query.test.tpch.domain.partsupp.PartsuppEntity;
@@ -33,7 +33,7 @@ import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
  */
 @Getter
 @Setter
-@View({PartEntity.class, SupplierEntity.class, PartsuppEntity.class, NationEntity.class, RegionEntity.class})
+@CompositeView({PartEntity.class, SupplierEntity.class, PartsuppEntity.class, NationEntity.class, RegionEntity.class})
 public class MinimumCostSupplierView {
     private String s_acctbal;
     private String s_name;
