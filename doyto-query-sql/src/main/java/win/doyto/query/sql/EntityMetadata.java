@@ -56,11 +56,6 @@ public class EntityMetadata {
             NestedView anno = entityClass.getAnnotation(NestedView.class);
             Class<?> clazz = anno.value();
             this.nested = EntityMetadata.build(clazz);
-            //tableName = OP + SELECT +
-            //        entityMetadata.getColumnsForSelect() +
-            //        FROM + entityMetadata.getTableName() +
-            //        entityMetadata.getJoinConditions() +
-            //        CP + AS +
             this.tableName = BuildHelper.defaultTableName(clazz);
         } else {
             this.tableName = BuildHelper.resolveTableName(entityClass);

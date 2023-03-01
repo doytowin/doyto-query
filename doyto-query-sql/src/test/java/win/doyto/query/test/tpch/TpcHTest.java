@@ -274,7 +274,8 @@ class TpcHTest {
     @Test
     void queryForProductTypeProfitMeasure() {
         String expected = "SELECT nation, o_year, SUM(amount) AS sum_profit" +
-                " FROM (SELECT n_name AS nation, YEAR(o_orderdate) AS o_year, l_extendedprice * (1 - l_discount) - ps_supplycost * l_quantity AS amount" +
+                " FROM " +
+                "(SELECT n_name AS nation, YEAR(o_orderdate) AS o_year, l_extendedprice * (1 - l_discount) - ps_supplycost * l_quantity AS amount" +
                 " FROM part, supplier, lineitem, partsupp, orders, nation" +
                 " WHERE s_nationkey = n_nationkey" +
                 " AND l_orderkey = o_orderkey" +
