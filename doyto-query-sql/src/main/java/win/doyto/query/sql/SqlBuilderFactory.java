@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package win.doyto.query.sql;
 
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import win.doyto.query.entity.Persistable;
 
 /**
@@ -24,9 +26,19 @@ import win.doyto.query.entity.Persistable;
  *
  * @author f0rb on 2021-11-21
  */
+@SuppressWarnings("unchecked")
+@Slf4j
 @UtilityClass
 public class SqlBuilderFactory {
     public static <E extends Persistable<?>> SqlBuilder<E> create(Class<E> entityClass) {
+        String queryBuilderName = entityClass.getCanonicalName().replace("Entity", "QueryBuilder");
+        try {
+            Class<?> clazz = Class.forName(queryBuilderName);
+            Object target = ConstructorUtils.invokeConstructor(clazz, entityClass);
+            return (SqlBuilder<E>) target;
+        } catch (Exception e) {
+            log.debug("Construct failed for: {}, the default QueryBuilder would be used: {}", queryBuilderName, e.getMessage());
+        }
         return new CrudBuilder<>(entityClass);
     }
 }

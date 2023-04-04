@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public interface DatabaseOperations {
 
     long count(SqlAndArgs sqlAndArgs);
 
-    Number insert(SqlAndArgs sqlAndArgs);
+    <I> I insert(SqlAndArgs sqlAndArgs, Class<I> idClass);
 
     int update(SqlAndArgs sqlAndArgs);
 

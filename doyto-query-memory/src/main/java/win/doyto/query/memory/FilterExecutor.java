@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,10 @@ class FilterExecutor {
 
     static {
         map.put(Like, new LikeMatcher());
+        map.put(Contain, new LikeMatcher());
         map.put(NotLike, new NotLikeMatcher());
         map.put(Start, new StartMatcher());
+        map.put(End, new EndMatcher());
         map.put(Null, new NullMatcher());
         map.put(NotNull, new NotNullMatcher());
         map.put(In, (qv, ev) -> ((Collection<?>) qv).contains(ev));
@@ -79,6 +81,13 @@ class FilterExecutor {
         @Override
         public boolean doMatch(Object qv, Object ev) {
             return StringUtils.startsWith(ev.toString(), qv.toString());
+        }
+    }
+
+    static class EndMatcher extends LikeMatcher {
+        @Override
+        public boolean doMatch(Object qv, Object ev) {
+            return StringUtils.endsWith(ev.toString(), qv.toString());
         }
     }
 

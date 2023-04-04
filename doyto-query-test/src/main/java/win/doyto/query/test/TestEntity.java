@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,11 @@
 
 package win.doyto.query.test;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import win.doyto.query.entity.AbstractPersistable;
 
 import java.util.ArrayList;
@@ -32,11 +35,14 @@ import javax.persistence.Transient;
  *
  * @author f0rb 2019-05-12
  */
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = true)
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = TestEntity.TABLE)
 public class TestEntity extends AbstractPersistable<Integer> {
-    public static final String TABLE = "user";
+    public static final String TABLE = "t_user";
     @Column
     private String username;
     private String password;
@@ -45,6 +51,7 @@ public class TestEntity extends AbstractPersistable<Integer> {
     private String nickname;
     private TestEnum userLevel;
     private String memo;
+    private Integer score;
     private Boolean valid;
 
     @Transient
@@ -64,6 +71,7 @@ public class TestEntity extends AbstractPersistable<Integer> {
             testEntity.setMobile("1777888888" + i);
             testEntity.setUserLevel(TestEnum.NORMAL);
             testEntity.setValid(i % 2 == 0);
+            testEntity.setScore(i * 10);
             userEntities.add(testEntity);
         }
         TestEntity testEntity = new TestEntity();
@@ -76,6 +84,7 @@ public class TestEntity extends AbstractPersistable<Integer> {
         testEntity.setUserLevel(TestEnum.VIP);
         testEntity.setValid(true);
         testEntity.setMemo("master");
+        testEntity.setScore(100);
         userEntities.add(testEntity);
         return userEntities;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -148,6 +148,18 @@ class MemoryDataAccessTest {
 
         TestQuery byUsernameStart = TestQuery.builder().usernameStart("name").build();
         assertEquals(0, testMemoryDataAccess.count(byUsernameStart));
+    }
+
+    @Test
+    void filterByEnd() {
+        TestQuery byUsernameEnd = TestQuery.builder().usernameEnd("name1").build();
+        assertEquals(1, testMemoryDataAccess.count(byUsernameEnd));
+    }
+
+    @Test
+    void filterByContain() {
+        TestQuery byUsernameEnd = TestQuery.builder().usernameContain("name").build();
+        assertEquals(4, testMemoryDataAccess.count(byUsernameEnd));
     }
 
     @Test

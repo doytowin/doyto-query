@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,6 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.PageQuery;
-import win.doyto.query.core.RelationalQuery;
-import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.user.UserQuery;
 
 import java.util.List;
@@ -39,25 +37,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class RoleQuery extends PageQuery implements RelationalQuery<RoleView, Integer> {
+public class RoleQuery extends PageQuery {
     private Integer id;
     private List<Integer> idIn;
 
-    @DomainPath({"user", "role"})
+    @DomainPath({"role", "~", "user"})
     private UserQuery user;
 
     private String roleName;
     private String roleNameLike;
     private Boolean valid;
-
-    private UserQuery usersQuery;
-
-    private PermissionQuery permsQuery;
-
-    private UserQuery createUserQuery;
-
-    @Override
-    public Class<RoleView> getDomainClass() {
-        return RoleView.class;
-    }
 }

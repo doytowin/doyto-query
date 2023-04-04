@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright © 2019-2022 Forb Yuan
+  ~ Copyright © 2019-2023 Forb Yuan
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@
         <dependency>
             <groupId>win.doyto</groupId>
             <artifactId>doyto-query-mongodb</artifactId>
-            <version>${revision}</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
@@ -74,6 +74,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test-autoconfigure</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>${snakeyaml.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

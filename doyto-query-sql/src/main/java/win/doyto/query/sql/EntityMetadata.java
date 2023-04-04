@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,17 @@
 package win.doyto.query.sql;
 
 import lombok.Getter;
+import win.doyto.query.annotation.CompositeView;
+import win.doyto.query.annotation.ForeignKey;
 import win.doyto.query.annotation.GroupBy;
+import win.doyto.query.annotation.NestedView;
 import win.doyto.query.util.ColumnUtil;
 
-import java.lang.reflect.Field;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import static win.doyto.query.sql.Constant.SEPARATOR;
+import static win.doyto.query.sql.Constant.*;
 
 /**
  * EntityMetadata
@@ -41,37 +43,75 @@ public class EntityMetadata {
     @Getter
     private final String tableName;
     @Getter
-    private String groupByColumns = "";
+    private final String joinConditions;
+    @Getter
+    private final String groupByColumns;
     @Getter
     private final String groupBySql;
+    @Getter
+    private EntityMetadata nested;
 
     public EntityMetadata(Class<?> entityClass) {
-        this.tableName = BuildHelper.resolveTableName(entityClass);
-
+        if (entityClass.isAnnotationPresent(NestedView.class)) {
+            NestedView anno = entityClass.getAnnotation(NestedView.class);
+            Class<?> clazz = anno.value();
+            this.nested = EntityMetadata.build(clazz);
+            this.tableName = BuildHelper.defaultTableName(clazz);
+        } else {
+            this.tableName = BuildHelper.resolveTableName(entityClass);
+        }
+        this.joinConditions = resolveJoinConditions(entityClass);
         this.columnsForSelect = buildSelectColumns(entityClass);
-        this.groupBySql = buildGroupBySql(entityClass);
+        this.groupByColumns = resolveGroupByColumns(entityClass);
+        this.groupBySql = buildGroupBySql(groupByColumns);
+    }
+
+    public static List<String> resolveEntityRelations(Class<?>[] viewClasses, Set<Object> parentColumns) {
+        List<String> relations = new ArrayList<>();
+        for (int i = 0, len = viewClasses.length; i < len; i++) {
+            List<Class<?>> otherClassList = new ArrayList<>(Arrays.asList(viewClasses));
+            otherClassList.remove(i);
+            Arrays.stream(ColumnUtil.initFields(viewClasses[i]))
+                  .filter(field -> field.isAnnotationPresent(ForeignKey.class))
+                  .forEach(field -> {
+                      ForeignKey fkAnno = field.getAnnotation(ForeignKey.class);
+                      if (parentColumns.contains(fkAnno.field()) || otherClassList.contains(fkAnno.entity())) {
+                          String c1 = ColumnUtil.convertColumn(field.getName());
+                          String c2 = ColumnUtil.convertColumn(fkAnno.field());
+                          relations.add(c1 + EQUAL + c2);
+                      }
+                  });
+        }
+        return relations;
+    }
+
+    static String resolveJoinConditions(Class<?> viewClass) {
+        List<String> conditions = new ArrayList<>();
+        CompositeView compositeViewAnno = viewClass.getAnnotation(CompositeView.class);
+        if (compositeViewAnno != null && compositeViewAnno.value().length > 0) {
+            conditions.addAll(resolveEntityRelations(compositeViewAnno.value(), new HashSet<>()));
+        }
+        return conditions.isEmpty() ? EMPTY : WHERE + String.join(AND, conditions);
     }
 
     static EntityMetadata build(Class<?> entityClass) {
         return holder.computeIfAbsent(entityClass, EntityMetadata::new);
     }
 
-    private String buildSelectColumns(Class<?> entityClass) {
+    static String buildSelectColumns(Class<?> entityClass) {
         return ColumnUtil.filterFields(entityClass)
                          .map(ColumnUtil::selectAs)
                          .collect(Collectors.joining(SEPARATOR));
     }
 
-    private String buildGroupBySql(Class<?> entityClass) {
-        String groupBy = "";
+    static String resolveGroupByColumns(Class<?> entityClass) {
+        return ColumnUtil.filterFields(entityClass, field -> field.isAnnotationPresent(GroupBy.class))
+                         .map(field -> ColumnUtil.convertColumn(field.getName()))
+                         .collect(Collectors.joining(SEPARATOR));
+    }
 
-        groupByColumns = ColumnUtil.filterFields(entityClass, field -> field.isAnnotationPresent(GroupBy.class))
-                                        .map(Field::getName)
-                                        .collect(Collectors.joining(SEPARATOR));
-        if (!groupByColumns.isEmpty()) {
-            groupBy = " GROUP BY " + this.groupByColumns;
-        }
-        return groupBy;
+    static String buildGroupBySql(String groupByColumns) {
+        return !groupByColumns.isEmpty() ? " GROUP BY " + groupByColumns : "";
     }
 
 }

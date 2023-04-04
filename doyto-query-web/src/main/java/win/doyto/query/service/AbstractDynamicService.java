@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package win.doyto.query.service;
 
 import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -42,7 +41,6 @@ import win.doyto.query.memory.MemoryDataAccess;
 import win.doyto.query.util.BeanUtil;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -89,47 +87,19 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
         return getClass();
     }
 
-    @SuppressWarnings("unchecked")
     @Resource
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        ClassLoader classLoader = beanFactory.getClass().getClassLoader();
         try {
-            EntityType entityType = EntityType.RELATIONAL;
-            Entity entity = entityClass.getAnnotation(Entity.class);
-            if (entity != null) {
-                entityType = entity.type();
-            }
-            if (entityType == EntityType.MONGO_DB) {
-                Class<?> mongoDataAccessClass = classLoader.loadClass("win.doyto.query.mongodb.MongoDataAccess");
-                tryCreateEmbeddedMongoServerFirst(beanFactory);
-                tryCreateMongoDataAccess(beanFactory, mongoDataAccessClass);
-            } else {// using JdbcDataAccess as default DataAccess
-                Class<?> jdbcDataAccessClass = classLoader.loadClass("win.doyto.query.jdbc.JdbcDataAccess");
-                Object jdbcOperations = beanFactory.getBean("jdbcTemplate");
-                dataAccess = (DataAccess<E, I, Q>) ConstructorUtils.invokeConstructor(jdbcDataAccessClass, jdbcOperations, entityClass);
-            }
+            EntityType entityType = getEntityType();
+            dataAccess = DataAccessManager.create(entityType, beanFactory, entityClass);
         } catch (Exception e) {
             throw new BeanInitializationException("Failed to create DataAccess for " + entityClass.getName(), e);
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void tryCreateMongoDataAccess(BeanFactory beanFactory, Class<?> mongoDataAccessClass)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        try {
-            Object mongoSessionSupplier = beanFactory.getBean("mongoSessionSupplier");
-            dataAccess = (DataAccess<E, I, Q>) ConstructorUtils.invokeConstructor(mongoDataAccessClass, entityClass, mongoSessionSupplier);
-        } catch (BeansException e) {
-            Object mongoClient = beanFactory.getBean("mongo");
-            dataAccess = (DataAccess<E, I, Q>) ConstructorUtils.invokeConstructor(mongoDataAccessClass, mongoClient, entityClass);
-        }
-    }
-
-    private void tryCreateEmbeddedMongoServerFirst(BeanFactory beanFactory) {
-        try {
-            beanFactory.getBean("embeddedMongoServer");
-        } catch (BeansException e) {//just ignore when no embeddedMongoServer provided
-        }
+    private EntityType getEntityType() {
+        Entity entity = entityClass.getAnnotation(Entity.class);
+        return entity != null ? entity.type() : EntityType.RELATIONAL;
     }
 
     @Autowired(required = false)
@@ -225,11 +195,11 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     }
 
     private int doUpdate(E e, CacheInvoker<Integer> cacheInvoker) {
-        userIdProvider.setupUserId(e);
         E origin;
         if (e == null || (origin = dataAccess.get(e.toIdWrapper())) == null) {
             return 0;
         }
+        userIdProvider.setupUserId(e);
         if (!entityAspects.isEmpty()) {
             transactionOperations.execute(s -> {
                 cacheInvoker.invoke();
@@ -257,7 +227,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     }
 
     public int patch(E e, Q q) {
-        userIdProvider.setupUserId(e);
+        userIdProvider.setupPatchUserId(e);
         int patch = dataAccess.patch(e, q);
         clearCache();
         return patch;

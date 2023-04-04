@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright © 2019-2022 Forb Yuan
+  ~ Copyright © 2019-2023 Forb Yuan
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -29,6 +29,11 @@
 
     <artifactId>doyto-query-web-common</artifactId>
     <name>doyto-query-web-common</name>
+    <description>The common web package for integration with spring-webmvc and spring-webflux</description>
+
+    <properties>
+        <skipDeploy>false</skipDeploy>
+    </properties>
 
     <dependencies>
 
@@ -76,6 +81,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>${snakeyaml.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <scope>test</scope>
@@ -103,16 +114,4 @@
         </dependency>
 
     </dependencies>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 </project>

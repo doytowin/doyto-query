@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import win.doyto.query.config.GlobalConfiguration;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -137,8 +138,12 @@ public class CommonUtil {
         return StringUtils.isBlank(like) ? like : escape(like) + "%";
     }
 
+    public static String escapeEnd(String like) {
+        return StringUtils.isBlank(like) ? like : "%" + escape(like);
+    }
+
     private static String escape(String like) {
-        return like.replaceAll("[%|_]", "\\\\$0");
+        return GlobalConfiguration.instance().getWildcardPtn().matcher(like).replaceAll("\\\\$0");
     }
 
     public static String camelize(String input) {

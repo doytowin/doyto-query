@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public class RoleView implements Persistable<Integer> {
     private Boolean valid;
 
     // many-to-many
-    @DomainPath({"user", "role"})
+    @DomainPath({"role", "~", "user"})
     private List<UserView> users;
 
     // many-to-many

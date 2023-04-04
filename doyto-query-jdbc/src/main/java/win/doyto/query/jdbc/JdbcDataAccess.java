@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,10 @@
 package win.doyto.query.jdbc;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.springframework.jdbc.core.*;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.ColumnMapRowMapper;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
@@ -33,7 +36,6 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
@@ -56,14 +58,13 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     private final SqlBuilder<E> sqlBuilder;
     private final String[] columnsForSelect;
     private final boolean isGeneratedId;
-    private final BiConsumer<E, Number> setIdFunc;
     private final SingleColumnRowMapper<I> idRowMapper = new SingleColumnRowMapper<>();
+    private final Class<I> idClass;
 
-    public JdbcDataAccess(JdbcOperations jdbcOperations, Class<E> entityClass) {
-        this(new DatabaseTemplate(jdbcOperations), entityClass, new BeanPropertyRowMapper<>(entityClass));
+    public JdbcDataAccess(DatabaseOperations databaseOperations, Class<E> entityClass) {
+        this(databaseOperations, entityClass, new BeanPropertyRowMapper<>(entityClass));
     }
 
-    @SuppressWarnings("unchecked")
     public JdbcDataAccess(DatabaseOperations databaseOperations, Class<E> entityClass, RowMapper<E> rowMapper) {
         classRowMapperMap.put(entityClass, rowMapper);
         this.databaseOperations = databaseOperations;
@@ -73,15 +74,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
 
         Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
         this.isGeneratedId = idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class);
-
-        Class<?> idClass = BeanUtil.getIdClass(entityClass);
-        if (idClass.isAssignableFrom(Integer.class)) {
-            setIdFunc = (e, key) -> e.setId((I) (Integer) key.intValue());
-        } else if (idClass.isAssignableFrom(Long.class)) {
-            setIdFunc = (e, key) -> e.setId((I) (Long) key.longValue());
-        } else {
-            setIdFunc = (e, key) -> e.setId((I) key);
-        }
+        this.idClass = BeanUtil.getIdClass(entityClass, idFields[0].getName());
     }
 
     @Override
@@ -132,8 +125,8 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
         SqlAndArgs sqlAndArgs = sqlBuilder.buildCreateAndArgs(e);
 
         if (isGeneratedId) {
-            Number key = databaseOperations.insert(sqlAndArgs);
-            setIdFunc.accept(e, key);
+            I id = databaseOperations.insert(sqlAndArgs, idClass);
+            e.setId(id);
         } else {
             databaseOperations.update(sqlAndArgs);
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,14 @@ public class MenuView implements Persistable<Long> {
     private String menuName;
     private String platform;
 
-    @DomainPath({"user", "role", "perm", "menu"})
+    @DomainPath({"menu", "~", "perm",  "~", "role", "~", "user"})
     private List<UserView> users;
+
+    // many-to-one
+    @DomainPath(value = "menu", localField = "parent_id")
+    private MenuView parent;
+
+    // one-to-many
+    @DomainPath(value = "menu", foreignField = "parent_id")
+    private List<MenuView> children;
 }

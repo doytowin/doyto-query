@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceLock;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
@@ -32,7 +31,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
 import static org.mockito.Mockito.*;
 
 /**
@@ -72,7 +70,6 @@ class CacheUtilTest {
         assertEquals(Integer.valueOf(1), CacheUtil.invoke(cache, null, () -> 1));
     }
 
-    @ResourceLock(value = "ignoreCacheException", mode = READ_WRITE)
     @Test
     void checkLogForPutException() {
         GlobalConfiguration.instance().setIgnoreCacheException(false);

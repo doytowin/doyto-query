@@ -10,7 +10,7 @@ DoytoQuery - The best and the last ORM framework in Java.
 
 DoytoQuery is a powerful and easy-to-use ORM framework in Java. 
 It comes out from an idea which is mapping a query object directly to a WHERE clause in SQL to query database.
-Then with the development of DoytoQuery, the idea developed into a new ORM theory.
+With the development of DoytoQuery, the idea formed a new ORM theory.
 
 ## The Modern ORM Theory
 
@@ -29,15 +29,15 @@ Then with the development of DoytoQuery, the idea developed into a new ORM theor
 
 - Data Access Layer
   - CRUD operations for single/sharding table.
-  - CRD operations for association table.
-  - Entity Query with relational entities and views.
+  - CRD operations for associative table.
+  - Query with related entities and views.
 - Service Layer
   - CRUD methods.
   - Second-Level Cache.
   - UserId Injection.
   - EntityAspect Extensions.
 - Controller Layer
-  - Support for RESTFul API.
+  - Support RESTFul API.
   - ErrorCode Pre-definition.
   - Exception Assertion.
   - Exception Handler.
@@ -46,6 +46,47 @@ Then with the development of DoytoQuery, the idea developed into a new ORM theor
   - Group Validation.
 - Seamless integration with Spring WebMvc.
 - Support for relational databases and MongoDB.
+
+## Quick Usage
+
+For a `UserEntity` defined as follows:
+```java
+@Getter
+@Setter
+@Entity(name = "user")
+public class UserEntity extends AbstractPersistable<Long> {
+    private String username;
+    private String email;
+    private Boolean valid;
+}
+```
+we can define a query object to query data from database as follows:
+```java
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserQuery extends PageQuery {
+    private String username;
+    private String emailLike;
+    private Boolean valid;
+}
+```
+and invoke the [`DataAccess#query(Q)`](https://github.com/doytowin/doyto-query/blob/main/doyto-query-api/src/main/java/win/doyto/query/core/DataAccess.java) method like this:
+```java
+@Service
+public class UserService extends AbstractCrudService<UserEntity, Long, UserQuery> {
+    public List<UserEntity> findValidGmailUsers() {
+        UserQuery userQuery = UserQuery.builder().emailLike("@gmail.com").valid(true).pageSize(10).build();
+        // Executed SQL: SELECT username, email, valid, id FROM t_user WHERE email LIKE ? AND valid = ? LIMIT 10 OFFSET 0
+        // Parameters  : %@gmail.com%(java.lang.String), true(java.lang.Boolean)
+        return dataAccess.query(userQuery);
+    }
+}
+```
+
+Please refer to the tests for more usages.
 
 ## Architecture for 0.3.x and newer
 

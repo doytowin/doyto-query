@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,14 @@
 
 package win.doyto.query.sql;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.Dialect;
+import win.doyto.query.core.IdWrapper;
 import win.doyto.query.test.*;
+import win.doyto.query.test.tpch.domain.partsupp.PartsuppEntity;
+import win.doyto.query.test.tpch.domain.partsupp.PartsuppKey;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +38,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author f0rb 2019-05-12
  */
-@ResourceLock(value = "mapCamelCaseToUnderscore")
 class QueryBuilderTest {
 
     private final QueryBuilder testQueryBuilder = new QueryBuilder(TestEntity.class);
@@ -46,46 +46,40 @@ class QueryBuilderTest {
 
     @BeforeEach
     void setUp() {
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
         GlobalConfiguration.instance().setDialect(new SimpleDialect());
         argList = new ArrayList<>();
-    }
-
-    @AfterEach
-    void tearDown() {
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
     }
 
     @Test
     void buildSelect() {
         TestQuery testQuery = TestQuery.builder().build();
-        assertEquals("SELECT * FROM user", testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertEquals("SELECT * FROM t_user t", testQueryBuilder.buildSelectAndArgs(testQuery, argList));
     }
 
     @Test
     void buildSelectWithWhere() {
         TestQuery testQuery = TestQuery.builder().username("test").build();
-        assertEquals("SELECT * FROM user WHERE username = ?", testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertEquals("SELECT * FROM t_user t WHERE username = ?", testQueryBuilder.buildSelectAndArgs(testQuery, argList));
     }
 
     @Test
     void buildSelectWithWhereAndPage() {
         TestQuery testQuery = TestQuery.builder().username("test").pageNumber(4).pageSize(10).build();
-        assertEquals("SELECT * FROM user WHERE username = ? LIMIT 10 OFFSET 30",
+        assertEquals("SELECT * FROM t_user t WHERE username = ? LIMIT 10 OFFSET 30",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
     }
 
     @Test
     void buildSelectWithCustomWhere() {
         TestQuery testQuery = TestQuery.builder().account("test").build();
-        assertEquals("SELECT * FROM user WHERE (username = ? OR email = ? OR mobile = ?)",
+        assertEquals("SELECT * FROM t_user t WHERE (username = ? OR email = ? OR mobile = ?)",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
     }
 
     @Test
     void buildSelectWithArgs() {
         TestQuery testQuery = TestQuery.builder().username("test").build();
-        assertEquals("SELECT * FROM user WHERE username = ?",
+        assertEquals("SELECT * FROM t_user t WHERE username = ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertEquals(1, argList.size());
         assertEquals("test", argList.get(0));
@@ -95,19 +89,19 @@ class QueryBuilderTest {
     void buildSelectAndArgsWithCustomWhere() {
 
         TestQuery testQuery = TestQuery.builder().account("test").build();
-        assertEquals("SELECT * FROM user WHERE (username = ? OR email = ? OR mobile = ?)",
+        assertEquals("SELECT * FROM t_user t WHERE (username = ? OR email = ? OR mobile = ?)",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertEquals(3, argList.size());
     }
 
     @Test
     void buildCountAndArgsWithWhere() {
-        TestQuery testQuery = TestQuery.builder().username("test").pageNumber(3).pageSize(10).sort("createTime,asc").build();
+        TestQuery testQuery = TestQuery.builder().username("test").pageNumber(3).pageSize(10).sort("create_time,asc").build();
 
-        assertEquals("SELECT * FROM user WHERE username = ? ORDER BY createTime asc LIMIT 10 OFFSET 20",
+        assertEquals("SELECT * FROM t_user t WHERE username = ? ORDER BY create_time asc LIMIT 10 OFFSET 20",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
 
-        assertEquals("SELECT count(*) FROM user WHERE username = ?",
+        assertEquals("SELECT count(*) FROM t_user t WHERE username = ?",
                      testQueryBuilder.buildCountAndArgs(testQuery).getSql());
     }
 
@@ -116,7 +110,7 @@ class QueryBuilderTest {
         TestQuery testQuery = TestQuery.builder().username("test").build();
         testQuery.setPageNumber(0);
         SqlAndArgs sqlAndArgs = testQueryBuilder.buildCountAndArgs(testQuery);
-        assertEquals("SELECT count(*) FROM user WHERE username = ?", sqlAndArgs.getSql());
+        assertEquals("SELECT count(*) FROM t_user t WHERE username = ?", sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly("test");
     }
 
@@ -124,7 +118,16 @@ class QueryBuilderTest {
     void supportLikeSuffix() {
         TestQuery testQuery = TestQuery.builder().usernameLike("_test%f0rb").build();
 
-        assertEquals("SELECT * FROM user WHERE username LIKE ?",
+        assertEquals("SELECT * FROM t_user t WHERE username LIKE ?",
+                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly("_test%f0rb");
+    }
+
+    @Test
+    void supportContainSuffix() {
+        TestQuery testQuery = TestQuery.builder().usernameContain("_test%f0rb").build();
+
+        assertEquals("SELECT * FROM t_user t WHERE username LIKE ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("%\\_test\\%f0rb%");
     }
@@ -134,7 +137,7 @@ class QueryBuilderTest {
         List<Integer> ids = Arrays.asList(1, 2, 3);
         TestQuery testQuery = TestQuery.builder().idIn(ids).build();
 
-        assertEquals("SELECT * FROM user WHERE id IN (?, ?, ?)",
+        assertEquals("SELECT * FROM t_user t WHERE id IN (?, ?, ?)",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly(1, 2, 3);
 
@@ -144,7 +147,7 @@ class QueryBuilderTest {
     void supportNotInSuffix() {
         TestQuery testQuery = TestQuery.builder().idNotIn(Arrays.asList(1, 2)).build();
 
-        assertEquals("SELECT * FROM user WHERE id NOT IN (?, ?)",
+        assertEquals("SELECT * FROM t_user t WHERE id NOT IN (?, ?)",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly(1, 2);
     }
@@ -154,7 +157,7 @@ class QueryBuilderTest {
         Date createTimeGt = new Date();
         TestQuery testQuery = TestQuery.builder().username("test").createTimeGt(createTimeGt).build();
 
-        assertEquals("SELECT * FROM user WHERE username = ? AND createTime > ?",
+        assertEquals("SELECT * FROM t_user t WHERE username = ? AND create_time > ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test", createTimeGt);
     }
@@ -164,7 +167,7 @@ class QueryBuilderTest {
         Date date = new Date();
         TestQuery testQuery = TestQuery.builder().username("test").createTimeGe(date).build();
 
-        assertEquals("SELECT * FROM user WHERE username = ? AND createTime >= ?",
+        assertEquals("SELECT * FROM t_user t WHERE username = ? AND create_time >= ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test", date);
     }
@@ -174,7 +177,7 @@ class QueryBuilderTest {
         Date date = new Date();
         TestQuery testQuery = TestQuery.builder().username("test").createTimeLt(date).build();
 
-        assertEquals("SELECT * FROM user WHERE username = ? AND createTime < ?",
+        assertEquals("SELECT * FROM t_user t WHERE username = ? AND create_time < ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test", date);
     }
@@ -184,7 +187,7 @@ class QueryBuilderTest {
         Date date = new Date();
         TestQuery testQuery = TestQuery.builder().username("test").createTimeLe(date).build();
 
-        assertEquals("SELECT * FROM user WHERE username = ? AND createTime <= ?",
+        assertEquals("SELECT * FROM t_user t WHERE username = ? AND create_time <= ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test", date);
     }
@@ -193,7 +196,7 @@ class QueryBuilderTest {
     void supportOr() {
         TestQuery testQuery = TestQuery.builder().usernameOrEmailOrMobile("test").build();
 
-        assertEquals("SELECT * FROM user WHERE (username = ? OR email = ? OR mobile = ?)",
+        assertEquals("SELECT * FROM t_user t WHERE (username = ? OR email = ? OR mobile = ?)",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test", "test", "test");
 
@@ -203,7 +206,7 @@ class QueryBuilderTest {
     void supportOrWithLike() {
         TestQuery testQuery = TestQuery.builder().usernameOrEmailOrMobileLike("test").build();
 
-        assertEquals("SELECT * FROM user WHERE (username = ? OR email = ? OR mobile LIKE ?)",
+        assertEquals("SELECT * FROM t_user t WHERE (username = ? OR email = ? OR mobile LIKE ?)",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test", "test", "%test%");
 
@@ -213,23 +216,9 @@ class QueryBuilderTest {
     void supportSort() {
         TestQuery testQuery = TestQuery.builder().usernameLike("test")
                                        .pageNumber(6).pageSize(10)
-                                       .sort("id,desc;createTime,asc").build();
-        assertEquals("SELECT * FROM user WHERE username LIKE ? ORDER BY id desc, createTime asc LIMIT 10 OFFSET 50",
+                                       .sort("id,desc;create_time,asc").build();
+        assertEquals("SELECT * FROM t_user t WHERE username LIKE ? ORDER BY id desc, create_time asc LIMIT 10 OFFSET 50",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
-    }
-
-    @Test
-    void supportMapFieldToUnderscore() {
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
-
-        Date date = new Date();
-        TestQuery testQuery = TestQuery.builder().userNameOrUserCodeLike("test").createTimeLt(date).build();
-
-        assertEquals("SELECT * FROM user WHERE (user_name = ? OR user_code LIKE ?) AND create_time < ?",
-                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
-        assertThat(argList).containsExactly("test", "%test%", date);
-
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
     }
 
     @Test
@@ -238,7 +227,7 @@ class QueryBuilderTest {
 
         SqlAndArgs sqlAndArgs = testQueryBuilder.buildSelectColumnsAndArgs(testQuery, "id");
 
-        assertEquals("SELECT id FROM user WHERE username = ?", sqlAndArgs.getSql());
+        assertEquals("SELECT id FROM t_user t WHERE username = ?", sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly("test");
     }
 
@@ -248,13 +237,13 @@ class QueryBuilderTest {
 
         SqlAndArgs sqlAndArgs = testQueryBuilder.buildSelectColumnsAndArgs(testQuery, "username", "password");
 
-        assertEquals("SELECT username, password FROM user", sqlAndArgs.getSql());
+        assertEquals("SELECT username, password FROM t_user t", sqlAndArgs.getSql());
     }
 
     @Test
     void defaultEnumOrdinal() {
         TestQuery testQuery = TestQuery.builder().userLevel(TestEnum.VIP).build();
-        assertEquals("SELECT * FROM user WHERE userLevel = ?",
+        assertEquals("SELECT * FROM t_user t WHERE user_level = ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly(0);
 
@@ -266,7 +255,7 @@ class QueryBuilderTest {
 
         String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
 
-        assertThat(sql).isEqualTo("SELECT * FROM user WHERE memo IS NULL");
+        assertThat(sql).isEqualTo("SELECT * FROM t_user t WHERE memo IS NULL");
         assertThat(argList).isEmpty();
     }
 
@@ -278,7 +267,7 @@ class QueryBuilderTest {
             (sql, limit, offset) -> String.format("SELECT LIMIT %d %d %s", offset, offset + limit, sql.substring("SELECT ".length())));
 
         TestQuery testQuery = TestQuery.builder().pageNumber(3).pageSize(10).build();
-        assertEquals("SELECT LIMIT 20 30 * FROM user",
+        assertEquals("SELECT LIMIT 20 30 * FROM t_user t",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
 
         // reset
@@ -291,7 +280,7 @@ class QueryBuilderTest {
         List<Integer> ids = Arrays.asList();
         TestQuery testQuery = TestQuery.builder().idIn(ids).idNotIn(ids).build();
 
-        assertEquals("SELECT * FROM user WHERE id IN (null)",
+        assertEquals("SELECT * FROM t_user t WHERE id IN (null)",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).isEmpty();
     }
@@ -299,7 +288,7 @@ class QueryBuilderTest {
     @Test
     void supportNot() {
         TestQuery testQuery = TestQuery.builder().userLevelNot(TestEnum.VIP).build();
-        assertEquals("SELECT * FROM user WHERE userLevel != ?",
+        assertEquals("SELECT * FROM t_user t WHERE user_level != ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly(0);
     }
@@ -307,7 +296,7 @@ class QueryBuilderTest {
     @Test
     void supportStart() {
         TestQuery testQuery = TestQuery.builder().usernameStart("test").build();
-        assertEquals("SELECT * FROM user WHERE username LIKE ?",
+        assertEquals("SELECT * FROM t_user t WHERE username LIKE ?",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("test%");
     }
@@ -316,21 +305,21 @@ class QueryBuilderTest {
     void ignoreFieldWhenLikeValueIsEmpty() {
         TestQuery testQuery = TestQuery.builder().email("").usernameLike("").build();
         SqlAndArgs sqlAndArgs = testQueryBuilder.buildSelectIdAndArgs(testQuery);
-        assertEquals("SELECT id FROM user WHERE email = ?", sqlAndArgs.getSql());
+        assertEquals("SELECT id FROM t_user t WHERE email = ?", sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly("");
     }
 
     @Test
     void supportResolveEnumListToOrdinalList() {
         TestQuery testQuery = TestQuery.builder().userLevelIn(Arrays.asList(TestEnum.NORMAL)).build();
-        assertEquals("SELECT * FROM user WHERE userLevel IN (?)", testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertEquals("SELECT * FROM t_user t WHERE user_level IN (?)", testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly(1);
     }
 
     @Test
     void supportResolveEnumListToStringList() {
         TestQuery testQuery = TestQuery.builder().statusIn(Arrays.asList(TestStringEnum.E1)).build();
-        assertEquals("SELECT * FROM user WHERE status IN (?)", testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertEquals("SELECT * FROM t_user t WHERE status IN (?)", testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("E1");
     }
 
@@ -340,7 +329,7 @@ class QueryBuilderTest {
 
         SqlAndArgs sqlAndArgs = dynamicQueryBuilder.buildSelectColumnsAndArgs(dynamicQuery, "locale_${locale}");
 
-        assertEquals("SELECT locale_zh FROM t_dynamic_f0rb_i18n WHERE score < ?", sqlAndArgs.getSql());
+        assertEquals("SELECT locale_zh FROM t_dynamic_f0rb_i18n t WHERE score < ?", sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly(100);
     }
 
@@ -361,7 +350,7 @@ class QueryBuilderTest {
 
         String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
 
-        assertThat(sql).isEqualTo("SELECT * FROM user WHERE (username = ? OR email = ? OR mobile = ?)");
+        assertThat(sql).isEqualTo("SELECT * FROM t_user t WHERE (username = ? OR email = ? OR mobile = ?)");
         assertThat(argList).containsExactly("f0rb", "f0rb", "f0rb");
     }
 
@@ -372,7 +361,7 @@ class QueryBuilderTest {
 
         String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
 
-        assertThat(sql).isEqualTo("SELECT * FROM user WHERE (username = ? OR email = ?)");
+        assertThat(sql).isEqualTo("SELECT * FROM t_user t WHERE (username = ? OR email = ?)");
         assertThat(argList).containsExactly("f0rb", "f0rb");
     }
 
@@ -383,8 +372,97 @@ class QueryBuilderTest {
 
         String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
 
-        assertThat(sql).isEqualTo("SELECT * FROM user");
+        assertThat(sql).isEqualTo("SELECT * FROM t_user t");
         assertThat(argList).containsExactly();
     }
 
+    @Test
+    void buildAnyClause() {
+        TestQuery queryByInvalid = TestQuery.builder().valid(false).build();
+        TestQuery testQuery = TestQuery.builder().scoreGtAny(queryByInvalid).build();
+        assertEquals("SELECT * FROM t_user t WHERE score > ANY(SELECT score FROM t_user WHERE valid = ?)",
+                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly(false);
+    }
+
+    @Test
+    void buildAllClause() {
+        TestQuery queryByInvalid = TestQuery.builder().valid(false).build();
+        TestQuery testQuery = TestQuery.builder().scoreLtAll(queryByInvalid).build();
+        assertEquals("SELECT * FROM t_user t WHERE score < ALL(SELECT score FROM t_user WHERE valid = ?)",
+                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly(false);
+    }
+
+    @Test
+    void buildSubqueryWithComparisonOperators() {
+        TestQuery queryByInvalid = TestQuery.builder().valid(false).build();
+        TestQuery testQuery = TestQuery.builder().scoreGt1(queryByInvalid).build();
+        assertEquals("SELECT * FROM t_user t WHERE score > (SELECT avg(score) FROM t_user WHERE valid = ?)",
+                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly(false);
+    }
+
+    @Test
+    void buildForSameColumnAndOperator() {
+        TestQuery queryByInvalid = TestQuery.builder().valid(false).build();
+        TestQuery testQuery = TestQuery.builder().scoreGt(60.).scoreGt1(queryByInvalid).build();
+        assertEquals("SELECT * FROM t_user t WHERE score > (SELECT avg(score) FROM t_user WHERE valid = ?) AND score > ?",
+                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly(false, 60.);
+    }
+
+    @Test
+    void buildInQueryClause() {
+        TestQuery queryByInvalid = TestQuery.builder().valid(false).build();
+        TestQuery testQuery = TestQuery.builder().scoreIn(queryByInvalid).build();
+        assertEquals("SELECT * FROM t_user t WHERE score IN (SELECT score FROM t_user WHERE valid = ?)",
+                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly(false);
+    }
+
+    @Test
+    void shouldNotParseFieldEndingWithDigitsButNotInstanceOfDoytoQuery() {
+        TestQuery testQuery = TestQuery.builder().scoreGt2(60.).build();
+        assertEquals("SELECT * FROM t_user t WHERE score_gt2 = ?",
+                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly(60.);
+    }
+
+    @Test
+    void shouldParseFieldWithSubqueryFormat() {
+        TestQuery queryByInvalid = TestQuery.builder().valid(false).build();
+        TestQuery testQuery = TestQuery.builder().scoreGt$avgScoreFromUser(queryByInvalid).build();
+        assertEquals("SELECT * FROM t_user t WHERE score > (SELECT avg(score) FROM t_user WHERE valid = ?)",
+                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly(false);
+    }
+
+    @Test
+    void shouldSupportExists() {
+        TestQuery queryByInvalid = TestQuery.builder().valid(false).build();
+        TestQuery testQuery = TestQuery.builder().userExists(queryByInvalid).build();
+        assertEquals("SELECT * FROM t_user t WHERE EXISTS(SELECT * FROM t_user t1 WHERE t.id = t1.create_user_id AND t1.valid = ?)",
+                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly(false);
+    }
+
+    @Test
+    void shouldSupportNotExists() {
+        TestQuery queryByInvalid = TestQuery.builder().valid(false).build();
+        TestQuery testQuery = TestQuery.builder().userNotExists(queryByInvalid).build();
+        assertEquals("SELECT * FROM t_user t WHERE NOT EXISTS(SELECT * FROM t_user t1 WHERE t.id = t1.create_user_id AND t1.valid = ?)",
+                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly(false);
+    }
+
+    @Test
+    void buildSelectByCompositeId() {
+        QueryBuilder queryBuilder = new QueryBuilder(PartsuppEntity.class);
+        PartsuppKey partSuppKey = new PartsuppKey(1, 2);
+        SqlAndArgs sqlAndArgs = queryBuilder.buildSelectById(IdWrapper.build(partSuppKey), "*");
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo("SELECT * FROM t_partsupp WHERE ps_partkey = ? AND ps_suppkey = ?");
+        assertThat(sqlAndArgs.getArgs()).containsExactly(1, 2);
+    }
 }

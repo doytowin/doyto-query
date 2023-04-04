@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,8 +68,8 @@ abstract class DemoApplicationTest {
         return builder.content(content).contentType("application/json;charset=UTF-8").session(session);
     }
 
-    protected void performAndExpectFail(RequestBuilder requestBuilder, ErrorCode errorCode) throws Exception {
-        performAndExpectOk(requestBuilder).andExpect(jsonPath("$.code").value(errorCode.getCode()));
+    protected ResultActions performAndExpectFail(RequestBuilder requestBuilder, ErrorCode errorCode) throws Exception {
+        return performAndExpectOk(requestBuilder).andExpect(jsonPath("$.code").value(errorCode.getCode()));
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.role.RoleQuery;
 
+import java.util.List;
+
 /**
  * TestQuery
  *
@@ -39,6 +41,7 @@ import win.doyto.query.test.role.RoleQuery;
 @SuppressWarnings("unused")
 public class UserQuery extends PageQuery {
     private Integer id;
+    private List<Integer> idIn;
 
     @DomainPath({"user", "role"})
     private RoleQuery role;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright © 2019-2022 Forb Yuan
+  ~ Copyright © 2019-2023 Forb Yuan
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -28,11 +28,27 @@
 
     <artifactId>doyto-query-jdbc</artifactId>
     <name>doyto-query-jdbc</name>
+    <description>The SQL executed layer based on Spring JDBC</description>
+
+    <properties>
+        <skipDeploy>false</skipDeploy>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>win.doyto</groupId>
+            <artifactId>doyto-query-web</artifactId>
+            <version>${revision}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
             <optional>true</optional>
         </dependency>
 

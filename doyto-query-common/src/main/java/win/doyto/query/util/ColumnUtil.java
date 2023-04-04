@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,19 @@ public class ColumnUtil {
     private static final Pattern PTN_CAPITAL_CHAR = Pattern.compile("([A-Z])");
     private static final Map<Class<?>, Field[]> classFieldsMap = new ConcurrentHashMap<>();
 
+    /**
+     * For MongoDB implementation currently.
+     */
     public static Field[] initFields(Class<?> clazz) {
         return initFields(clazz, null);
+    }
+
+    public static Field[] queryFields(Class<?> queryClass) {
+        Field[] fields = classFieldsMap.get(queryClass);
+        if (fields == null) {
+            fields = filterFields(queryClass, ColumnUtil::shouldRetain).toArray(Field[]::new);
+        }
+        return fields;
     }
 
     public static Field[] initFields(Class<?> queryClass, Consumer<Field> fieldConsumer) {
@@ -105,6 +116,10 @@ public class ColumnUtil {
                 camelCaseToUnderscore(columnName) : columnName;
     }
 
+    public static String convertTableName(String domain) {
+        return camelCaseToUnderscore(CommonUtil.camelize(domain));
+    }
+
     private static String camelCaseToUnderscore(String camel) {
         return PTN_CAPITAL_CHAR.matcher(camel).replaceAll("_$1").toLowerCase();
     }
@@ -123,7 +138,7 @@ public class ColumnUtil {
         columnName = convertColumn(columnName);
         columnName = GlobalConfiguration.dialect().wrapLabel(columnName);
         if (aggregationPrefix != AggregationPrefix.NONE) {
-           columnName = aggregationPrefix.getName() + "(" + columnName + ")";
+            columnName = aggregationPrefix.getName() + "(" + columnName + ")";
         }
         return columnName;
     }
@@ -166,7 +181,8 @@ public class ColumnUtil {
         return columns.length == 1 && !columns[0].contains(",");
     }
 
-    public static String resolveIdColumn(Class<?> entityClass) {
-        return resolveColumn(FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0]);
+    public static String[] resolveIdColumn(Class<?> entityClass) {
+        return Arrays.stream(FieldUtils.getFieldsWithAnnotation(entityClass, Id.class))
+                     .map(ColumnUtil::resolveColumn).toArray(String[]::new);
     }
 }

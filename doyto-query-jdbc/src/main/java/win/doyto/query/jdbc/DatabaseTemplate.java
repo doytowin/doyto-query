@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,7 @@
 package win.doyto.query.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.SingleColumnRowMapper;
+import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import win.doyto.query.sql.SqlAndArgs;
 
@@ -61,16 +58,19 @@ public class DatabaseTemplate implements DatabaseOperations {
         return jdbcOperations.queryForObject(sqlAndArgs.getSql(), countRowMapper, sqlAndArgs.getArgs());
     }
 
-    public Number insert(SqlAndArgs sqlAndArgs) {
-        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcOperations.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sqlAndArgs.getSql(), Statement.RETURN_GENERATED_KEYS);
-            int i = 1;
-            for (Object arg : sqlAndArgs.getArgs()) {
-                ps.setObject(i++, arg);
-            }
-            return ps;
-        }, keyHolder);
-        return keyHolder.getKey();
+    @Override
+    public <I> I insert(SqlAndArgs sqlAndArgs, Class<I> idClass) {
+        ArgumentPreparedStatementSetter pss = new ArgumentPreparedStatementSetter(sqlAndArgs.getArgs());
+        try {
+            GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcOperations.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sqlAndArgs.getSql(), Statement.RETURN_GENERATED_KEYS);
+                pss.setValues(ps);
+                return ps;
+            }, keyHolder);
+            return keyHolder.getKeyAs(idClass);
+        } finally {
+            pss.cleanupParameters();
+        }
     }
 }
