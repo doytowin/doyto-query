@@ -42,11 +42,11 @@ public class MenuView implements Persistable<Long> {
     @DomainPath({"menu", "~", "perm",  "~", "role", "~", "user"})
     private List<UserView> users;
 
-    //  many-to-one
+    // many-to-one
     @DomainPath(value = "menu", localField = "parent_id")
     private MenuView parent;
 
-    //  one-to-many
+    // one-to-many
     @DomainPath(value = "menu", foreignField = "parent_id")
     private List<MenuView> children;
 }

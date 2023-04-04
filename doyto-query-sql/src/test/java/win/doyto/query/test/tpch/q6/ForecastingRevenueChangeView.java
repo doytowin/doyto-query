@@ -18,7 +18,7 @@ package win.doyto.query.test.tpch.q6;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.View;
+import win.doyto.query.annotation.CompositeView;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
 
 import java.math.BigDecimal;
@@ -32,7 +32,7 @@ import javax.persistence.Column;
  */
 @Getter
 @Setter
-@View(LineitemEntity.class)
+@CompositeView(LineitemEntity.class)
 public class ForecastingRevenueChangeView {
     @Column(name = "SUM(l_extendedprice * l_discount)")
     private BigDecimal revenue;

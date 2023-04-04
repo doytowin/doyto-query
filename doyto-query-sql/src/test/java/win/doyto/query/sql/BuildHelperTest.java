@@ -49,9 +49,9 @@ class BuildHelperTest {
         assertEquals("t_user_detail", tableName);
     }
 
-
     private static class UserDetailView {
     }
+
     @Test
     void resolveTableNameForViewWithoutAnnotationTable() {
         String tableName = BuildHelper.resolveTableName(UserDetailView.class);

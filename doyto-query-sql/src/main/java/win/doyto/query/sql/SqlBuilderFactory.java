@@ -37,7 +37,7 @@ public class SqlBuilderFactory {
             Object target = ConstructorUtils.invokeConstructor(clazz, entityClass);
             return (SqlBuilder<E>) target;
         } catch (Exception e) {
-            log.debug("Construct failed for: {}, the default QueryBuild would be used: {}", queryBuilderName, e.getMessage());
+            log.debug("Construct failed for: {}, the default QueryBuilder would be used: {}", queryBuilderName, e.getMessage());
         }
         return new CrudBuilder<>(entityClass);
     }

@@ -17,10 +17,10 @@
 package win.doyto.query.sql;
 
 import lombok.Getter;
+import win.doyto.query.annotation.CompositeView;
 import win.doyto.query.annotation.ForeignKey;
 import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.annotation.NestedView;
-import win.doyto.query.annotation.View;
 import win.doyto.query.util.ColumnUtil;
 
 import java.util.*;
@@ -56,11 +56,6 @@ public class EntityMetadata {
             NestedView anno = entityClass.getAnnotation(NestedView.class);
             Class<?> clazz = anno.value();
             this.nested = EntityMetadata.build(clazz);
-            //tableName = OP + SELECT +
-            //        entityMetadata.getColumnsForSelect() +
-            //        FROM + entityMetadata.getTableName() +
-            //        entityMetadata.getJoinConditions() +
-            //        CP + AS +
             this.tableName = BuildHelper.defaultTableName(clazz);
         } else {
             this.tableName = BuildHelper.resolveTableName(entityClass);
@@ -92,9 +87,9 @@ public class EntityMetadata {
 
     static String resolveJoinConditions(Class<?> viewClass) {
         List<String> conditions = new ArrayList<>();
-        View viewAnno = viewClass.getAnnotation(View.class);
-        if (viewAnno != null && viewAnno.value().length > 0) {
-            conditions.addAll(resolveEntityRelations(viewAnno.value(), new HashSet<>()));
+        CompositeView compositeViewAnno = viewClass.getAnnotation(CompositeView.class);
+        if (compositeViewAnno != null && compositeViewAnno.value().length > 0) {
+            conditions.addAll(resolveEntityRelations(compositeViewAnno.value(), new HashSet<>()));
         }
         return conditions.isEmpty() ? EMPTY : WHERE + String.join(AND, conditions);
     }

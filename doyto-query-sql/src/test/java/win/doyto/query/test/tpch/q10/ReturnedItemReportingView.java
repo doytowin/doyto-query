@@ -18,8 +18,8 @@ package win.doyto.query.test.tpch.q10;
 
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.annotation.CompositeView;
 import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.annotation.View;
 import win.doyto.query.test.tpch.domain.customer.CustomerEntity;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
 import win.doyto.query.test.tpch.domain.nation.NationEntity;
@@ -35,7 +35,7 @@ import javax.persistence.Column;
  */
 @Getter
 @Setter
-@View({CustomerEntity.class, OrdersEntity.class, LineitemEntity.class, NationEntity.class})
+@CompositeView({CustomerEntity.class, OrdersEntity.class, LineitemEntity.class, NationEntity.class})
 public class ReturnedItemReportingView {
     @GroupBy
     private String c_custkey;

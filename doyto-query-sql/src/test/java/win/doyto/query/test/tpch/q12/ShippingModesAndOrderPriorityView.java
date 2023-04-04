@@ -18,8 +18,8 @@ package win.doyto.query.test.tpch.q12;
 
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.annotation.CompositeView;
 import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.annotation.View;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
 import win.doyto.query.test.tpch.domain.orders.OrdersEntity;
 
@@ -33,7 +33,7 @@ import javax.persistence.Column;
  */
 @Getter
 @Setter
-@View({OrdersEntity.class, LineitemEntity.class})
+@CompositeView({OrdersEntity.class, LineitemEntity.class})
 public class ShippingModesAndOrderPriorityView {
     @GroupBy
     private String l_shipmode;

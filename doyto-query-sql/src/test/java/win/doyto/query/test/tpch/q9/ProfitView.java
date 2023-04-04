@@ -18,7 +18,7 @@ package win.doyto.query.test.tpch.q9;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.View;
+import win.doyto.query.annotation.CompositeView;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
 import win.doyto.query.test.tpch.domain.nation.NationEntity;
 import win.doyto.query.test.tpch.domain.orders.OrdersEntity;
@@ -37,7 +37,7 @@ import javax.persistence.Column;
  */
 @Getter
 @Setter
-@View({PartEntity.class, SupplierEntity.class, LineitemEntity.class, PartsuppEntity.class, OrdersEntity.class, NationEntity.class})
+@CompositeView({PartEntity.class, SupplierEntity.class, LineitemEntity.class, PartsuppEntity.class, OrdersEntity.class, NationEntity.class})
 public class ProfitView {
 
     @Column(name = "n_name")
