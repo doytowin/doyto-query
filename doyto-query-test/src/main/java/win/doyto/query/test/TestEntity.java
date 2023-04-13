@@ -21,6 +21,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.OptimisticLock;
 import win.doyto.query.entity.AbstractPersistable;
 
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ import javax.persistence.Transient;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = TestEntity.TABLE)
-public class TestEntity extends AbstractPersistable<Integer> {
+public class TestEntity extends AbstractPersistable<Integer> implements OptimisticLock {
     public static final String TABLE = "t_user";
     @Column
     private String username;
@@ -54,8 +55,16 @@ public class TestEntity extends AbstractPersistable<Integer> {
     private Integer score;
     private Boolean valid;
 
+    private Integer version;
+
     @Transient
     private Date createTime;
+
+    @Column(name = "version")
+    @Override
+    public Integer currentVersion() {
+        return version;
+    }
 
     private static final int INIT_SIZE = 5;
 

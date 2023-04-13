@@ -56,14 +56,19 @@ class CrudBuilderTest {
     @Test
     void create() {
         SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildCreateAndArgs(new TestEntity());
-        String expected = "INSERT INTO t_user (username, password, mobile, email, nickname, user_level, memo, score, valid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String expected = "INSERT INTO t_user (username, password, mobile, email, nickname, user_level, memo, score, valid, version) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         assertEquals(expected, sqlAndArgs.getSql());
     }
 
     @Test
     void update() {
-        SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildUpdateAndArgs(new TestEntity());
-        String expected = "UPDATE t_user SET username = ?, password = ?, mobile = ?, email = ?, nickname = ?, user_level = ?, memo = ?, score = ?, valid = ? WHERE id = ?";
+        TestEntity testEntity = new TestEntity();
+        testEntity.setId(2);
+        testEntity.setVersion(20);
+
+        SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildUpdateAndArgs(testEntity);
+        String expected = "UPDATE t_user SET username = ?, password = ?, mobile = ?, email = ?, nickname = ?, " +
+                "user_level = ?, memo = ?, score = ?, valid = ?, version = version + 1 WHERE id = ? AND version = ?";
         assertEquals(expected, sqlAndArgs.getSql());
     }
 
@@ -132,7 +137,7 @@ class CrudBuilderTest {
 
         SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildPatchAndArgsWithId(testEntity);
 
-        assertEquals("UPDATE t_user SET user_level = ?, valid = ? WHERE id = ?", sqlAndArgs.getSql());
+        assertEquals("UPDATE t_user SET version = version + 1, user_level = ?, valid = ? WHERE id = ?", sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly(0, true, 1);
     }
 
@@ -140,8 +145,8 @@ class CrudBuilderTest {
     void createMulti() {
         SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildCreateAndArgs(Arrays.asList(new TestEntity(), new TestEntity(), new TestEntity()));
         assertEquals(
-                "INSERT INTO t_user (username, password, mobile, email, nickname, user_level, memo, score, valid) VALUES " +
-                        "(?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?)", sqlAndArgs.getSql());
+                "INSERT INTO t_user (username, password, mobile, email, nickname, user_level, memo, score, valid, version) VALUES " +
+                        "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", sqlAndArgs.getSql());
     }
 
     @Test
@@ -178,8 +183,8 @@ class CrudBuilderTest {
                 "mobile", "email"
         );
         assertEquals(
-                "INSERT INTO t_user (username, password, mobile, email, nickname, user_level, memo, score, valid) VALUES " +
-                        "(?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?)" +
+                "INSERT INTO t_user (username, password, mobile, email, nickname, user_level, memo, score, valid, version) VALUES " +
+                        "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" +
                         " ON DUPLICATE KEY UPDATE " +
                         "mobile = VALUES (mobile), " +
                         "email = VALUES (email)",
@@ -200,7 +205,7 @@ class CrudBuilderTest {
 
         SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildPatchAndArgsWithId(testPatch);
 
-        assertEquals("UPDATE t_user SET valid = ?, score = score + ? WHERE id = ?", sqlAndArgs.getSql());
+        assertEquals("UPDATE t_user SET version = version + 1, valid = ?, score = score + ? WHERE id = ?", sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly(true, 20, 1);
     }
 
@@ -210,8 +215,18 @@ class CrudBuilderTest {
 
         SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildPatchAndArgsWithId(testPatch);
 
-        assertEquals("UPDATE t_user SET valid = ?, score = score - ? WHERE id = ?", sqlAndArgs.getSql());
+        assertEquals("UPDATE t_user SET version = version + 1, valid = ?, score = score - ? WHERE id = ?", sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly(true, 20, 1);
+    }
+
+    @Test
+    void supportUpdateWith() {
+        TestEntity testEntity = TestEntity.builder().valid(true).id(5).version(21).build();
+
+        SqlAndArgs sqlAndArgs = testEntityCrudBuilder.buildPatchAndArgsWithId(testEntity);
+
+        assertEquals("UPDATE t_user SET version = version + 1, valid = ? WHERE id = ? AND version = ?", sqlAndArgs.getSql());
+        assertThat(sqlAndArgs.getArgs()).containsExactly(true, 5, 21);
     }
 
 }
