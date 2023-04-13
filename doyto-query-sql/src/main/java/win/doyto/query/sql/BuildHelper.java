@@ -125,6 +125,8 @@ public class BuildHelper {
     public static String buildLock(DoytoQuery pageQuery) {
         if (pageQuery.getLockMode() == LockMode.PESSIMISTIC_READ) {
             return GlobalConfiguration.dialect().forShare();
+        } else if (pageQuery.getLockMode() == LockMode.PESSIMISTIC_WRITE) {
+            return GlobalConfiguration.dialect().forUpdate();
         }
         return EMPTY;
     }

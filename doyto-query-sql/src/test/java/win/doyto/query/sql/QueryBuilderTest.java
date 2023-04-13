@@ -476,4 +476,14 @@ class QueryBuilderTest {
         assertThat(sql).isEqualTo("SELECT * FROM t_user t WHERE id = ? FOR SHARE");
         assertThat(argList).containsExactly(1);
     }
+
+    @Test
+    void buildSelectForUpdate() {
+        TestQuery testQuery = TestQuery.builder().id(1).lockMode(LockMode.PESSIMISTIC_WRITE).build();
+
+        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
+
+        assertThat(sql).isEqualTo("SELECT * FROM t_user t WHERE id = ? FOR UPDATE");
+        assertThat(argList).containsExactly(1);
+    }
 }

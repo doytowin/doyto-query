@@ -56,4 +56,8 @@ public interface Dialect {
     default String forShare() {
         return " FOR SHARE";
     }
+
+    default String forUpdate() {
+        return " FOR UPDATE";
+    }
 }

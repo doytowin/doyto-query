@@ -23,5 +23,5 @@ package win.doyto.query.core;
  * @since 1.0.2
  */
 public enum LockMode {
-    PESSIMISTIC_READ
+    PESSIMISTIC_WRITE, PESSIMISTIC_READ
 }
