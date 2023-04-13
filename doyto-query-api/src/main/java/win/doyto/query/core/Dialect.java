@@ -52,4 +52,8 @@ public interface Dialect {
                               .collect(Collectors.joining(", "));
         insertSqlBuilder.append(update);
     }
+
+    default String forShare() {
+        return " FOR SHARE";
+    }
 }

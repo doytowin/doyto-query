@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.CompositeView;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.core.LockMode;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.sql.field.FieldMapper;
 import win.doyto.query.util.ColumnUtil;
@@ -119,6 +120,13 @@ public class BuildHelper {
             return EMPTY;
         }
         return orderBy + PTN_SORT.matcher(pageQuery.getSort()).replaceAll(" $1").replace(";", SEPARATOR);
+    }
+
+    public static String buildLock(DoytoQuery pageQuery) {
+        if (pageQuery.getLockMode() == LockMode.PESSIMISTIC_READ) {
+            return GlobalConfiguration.dialect().forShare();
+        }
+        return EMPTY;
     }
 
     public static String buildPaging(String sql, DoytoQuery pageQuery) {
