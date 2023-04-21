@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,10 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.QueryField;
+import win.doyto.query.annotation.Subquery;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.perm.PermissionQuery;
+import win.doyto.query.test.user.UserEntity;
 
 import java.util.Date;
 import java.util.List;
@@ -34,6 +36,7 @@ import java.util.List;
  *
  * @author f0rb
  */
+@SuppressWarnings("java:S116")
 @Getter
 @Setter
 @SuperBuilder
@@ -52,7 +55,6 @@ public class TestQuery extends PageQuery {
     private Integer idLe;
     private String username;
     private String usernameEq;
-    private String usernameContain;
 
     @QueryField(and = "(username = ? OR email = ? OR mobile = ?)")
     private String account;
@@ -68,8 +70,12 @@ public class TestQuery extends PageQuery {
 
     private String usernameLike;
     private String usernameNotLike;
+    private String usernameContain;
+    private String usernameNotContain;
     private String usernameStart;
+    private String usernameNotStart;
     private String usernameEnd;
+    private String usernameNotEnd;
     private String testLikeEq;
 
     private String usernameOrUserCodeLike;
@@ -91,6 +97,28 @@ public class TestQuery extends PageQuery {
     private Date createTimeLe;
 
     private Boolean valid;
+
+    @Subquery(select = "score", from = UserEntity.class)
+    private TestQuery scoreGtAny;
+
+    @Subquery(select = "score", from = UserEntity.class)
+    private TestQuery scoreLtAll;
+
+    @Subquery(select = "avg(score)", from = UserEntity.class)
+    private TestQuery scoreGt1;
+    private TestQuery scoreGt$avgScoreFromUser;
+
+    private Double scoreGt;  // score > ?
+    private Double scoreGt2; // unsupported
+
+    @Subquery(select = "score", from = UserEntity.class)
+    private TestQuery scoreIn;
+
+    @DomainPath(value = "user", foreignField = "createUserId")
+    private TestQuery userExists;
+
+    @DomainPath(value = "user", foreignField = "createUserId")
+    private TestQuery userNotExists;
 
     // for MongoDB
     private Boolean statusExists;

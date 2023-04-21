@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,6 +56,9 @@ public class PageQuery implements DoytoQuery {
     @Transient
     @jakarta.validation.constraints.Pattern(regexp = SORT_RX, message = "Sorting field format error", groups = PageGroup.class)
     private String sort;
+
+    @Transient
+    private LockMode lockMode;
 
     public void setPage(Integer pageNumber) {
         this.setPageNumber(pageNumber);

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package win.doyto.query.jdbc;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 import win.doyto.query.config.GlobalConfiguration;
@@ -38,6 +37,7 @@ import java.util.Set;
 public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2> {
 
     private static final GlobalConfiguration instance = GlobalConfiguration.instance();
+    @Autowired
     private DatabaseOperations databaseOperations;
     private final AssociationSqlBuilder<K1, K2> sqlBuilder;
     private final SingleColumnRowMapper<K1> k1RowMapper = new SingleColumnRowMapper<>();
@@ -59,11 +59,6 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
                 instance.formatJoinId(domain2),
                 createUserColumn
         );
-    }
-
-    @Autowired
-    public void setJdbcOperations(JdbcOperations jdbcOperations) {
-        this.databaseOperations = new DatabaseTemplate(jdbcOperations);
     }
 
     @Override

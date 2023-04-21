@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -194,11 +194,11 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     }
 
     private int doUpdate(E e, CacheInvoker<Integer> cacheInvoker) {
-        userIdProvider.setupUserId(e);
         E origin;
         if (e == null || (origin = dataAccess.get(e.toIdWrapper())) == null) {
             return 0;
         }
+        userIdProvider.setupUserId(e);
         if (!entityAspects.isEmpty()) {
             transactionOperations.execute(s -> {
                 cacheInvoker.invoke();
@@ -226,7 +226,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     }
 
     public int patch(E e, Q q) {
-        userIdProvider.setupUserId(e);
+        userIdProvider.setupPatchUserId(e);
         int patch = dataAccess.patch(e, q);
         clearCache();
         return patch;

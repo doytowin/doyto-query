@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import win.doyto.query.core.PageList;
 import win.doyto.query.validation.PageGroup;
 import win.doyto.query.validation.PatchGroup;
 import win.doyto.query.validation.UpdateGroup;
+import win.doyto.query.web.component.NotEmptyQuery;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,12 +35,12 @@ import java.util.List;
  */
 public interface RestApi<I, Q extends DoytoQuery, R, S> {
 
-    List<S> query(Q q);
+    List<S> query(Q query);
 
-    long count(Q q);
+    long count(Q query);
 
     @GetMapping("/")
-    PageList<S> page(@Validated(PageGroup.class) Q q);
+    PageList<S> page(@Validated(PageGroup.class) Q query);
 
     @GetMapping("{id}")
     S get(I id);
@@ -47,11 +48,17 @@ public interface RestApi<I, Q extends DoytoQuery, R, S> {
     @DeleteMapping("{id}")
     S delete(I id);
 
+    @DeleteMapping
+    int delete(@NotEmptyQuery Q query);
+
     @PutMapping("{id}")
     void update(@RequestBody @Validated(UpdateGroup.class) R request);
 
     @PatchMapping("{id}")
     void patch(@RequestBody @Validated(PatchGroup.class) R request);
+
+    @PatchMapping
+    int patch(@RequestBody R request, @NotEmptyQuery Q query);
 
     default void create(R request) {
         create(Collections.singletonList(request));

@@ -5,10 +5,9 @@ on:
   push:
     branches:
       - main
-      - modules/jdbc
-      - modules/mongodb
       - 'modules/**'
       - 'features/**'
+      - 'issues/**'
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -26,24 +25,30 @@ jobs:
           java-version: 17
           distribution: 'adopt'
       - name: Cache SonarCloud packages
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
       - name: Cache Maven packages
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+      - name: Cache Embed Mongo distribution
+        uses: actions/cache@v3
+        with:
+          path: ~/.embedmongo
+          key: ${{ runner.os }}-mongo
+          restore-keys: ${{ runner.os }}-mongo
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mvn -B clean test && \
-          mvn -B jacoco:report sonar:sonar javadoc:javadoc \
+          mvn -B jacoco:report sonar:sonar \
           -Dsonar.projectKey=win.doyto:doyto-query \
           -Dsonar.projectName=doyto-query \
           -Dsonar.exclusions=doyto-query-test/**,doyto-query-integration-test/**,**/pom.xml

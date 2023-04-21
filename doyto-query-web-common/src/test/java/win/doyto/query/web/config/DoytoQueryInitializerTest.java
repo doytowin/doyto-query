@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package win.doyto.query.web.config;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceLock;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -27,7 +26,6 @@ import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.Dialect;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 import static win.doyto.query.web.config.DoytoQueryInitializer.key;
 
 /**
@@ -52,7 +50,6 @@ class DoytoQueryInitializerTest {
         doytoQueryInitializer.initialize(context);
     }
 
-    @ResourceLock(value = "ignoreCacheException", mode = READ)
     @Test
     void initialize() {
         GlobalConfiguration globalConfiguration = GlobalConfiguration.instance();

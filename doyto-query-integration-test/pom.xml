@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright © 2019-2022 Forb Yuan
+  ~ Copyright © 2019-2023 Forb Yuan
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -48,6 +48,18 @@
             <groupId>win.doyto</groupId>
             <artifactId>doyto-query-dialect</artifactId>
             <version>0.0.1-RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>win.doyto</groupId>
+            <artifactId>doyto-query-mongodb</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.flapdoodle.embed</groupId>
+            <artifactId>de.flapdoodle.embed.mongo</artifactId>
+            <version>3.5.4</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

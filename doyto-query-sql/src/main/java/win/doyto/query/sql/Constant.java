@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ package win.doyto.query.sql;
  * @author f0rb on 2019-06-03
  */
 @SuppressWarnings({"java:S1214", "java:S115"})
-interface Constant {
+public interface Constant {
     String SEPARATOR = ", ";
     String PLACE_HOLDER = "?";
     String SPACE = " ";
@@ -33,7 +33,7 @@ interface Constant {
     String FROM = " FROM ";
     String WHERE = " WHERE ";
     String EMPTY = "";
-    String SPACE_OR = " OR ";
+    String OR = " OR ";
     String DELETE_FROM = "DELETE" + FROM;
     String AND = " AND ";
     String IN = " IN ";
@@ -48,4 +48,7 @@ interface Constant {
     String VALUES = " VALUES ";
     String HAVING_PREFIX = "_having_";
     String WHERE_ = "\nWHERE ";
+    String TABLE_ALIAS = "t";
+    String LIKE = "LIKE";
+    String NOT_LIKE = "NOT LIKE";
 }

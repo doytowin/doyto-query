@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import win.doyto.query.core.Having;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.relation.DomainPathDetail;
 import win.doyto.query.util.ColumnUtil;
+import win.doyto.query.util.CommonUtil;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -47,7 +48,6 @@ import static win.doyto.query.sql.Constant.*;
 @UtilityClass
 public class RelationalQueryBuilder {
 
-    private static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
     public static final String KEY_COLUMN = "MAIN_ENTITY_ID";
 
     public static SqlAndArgs buildSelectAndArgs(DoytoQuery q, Class<?> entityClass) {
@@ -56,15 +56,37 @@ public class RelationalQueryBuilder {
             EntityMetadata entityMetadata = EntityMetadata.build(entityClass);
             StringBuilder sqlBuilder = new StringBuilder()
                     .append(SELECT).append(entityMetadata.getColumnsForSelect())
-                    .append(FROM).append(entityMetadata.getTableName())
-                    .append(buildWhere(query, argList))
-                    .append(entityMetadata.getGroupBySql());
+                    .append(FROM);
+            EntityMetadata nested = entityMetadata.getNested();
+            if (nested != null) {
+                buildNestedView(nested, CommonUtil.readField(query, entityMetadata.getTableName() + "Query"), sqlBuilder, argList);
+            }
+
+            sqlBuilder.append(entityMetadata.getTableName());
+            if (entityMetadata.getJoinConditions().isEmpty()) {
+                sqlBuilder.append(buildWhere(query, argList));
+            } else {
+                sqlBuilder.append(entityMetadata.getJoinConditions());
+                sqlBuilder.append(buildCondition(AND, query, argList));
+            }
+            sqlBuilder.append(entityMetadata.getGroupBySql());
             if (query instanceof AggregationQuery) {
                 sqlBuilder.append(buildHaving(((AggregationQuery) query).getHaving(), argList));
             }
             sqlBuilder.append(buildOrderBy(query));
             return buildPaging(sqlBuilder.toString(), query);
         });
+    }
+
+    private static void buildNestedView(EntityMetadata nested, Object nestedQuery, StringBuilder sqlBuilder, List<Object> argList) {
+        sqlBuilder.append(OP).append(SELECT)
+                  .append(nested.getColumnsForSelect())
+                  .append(FROM).append(nested.getTableName())
+                  .append(nested.getJoinConditions());
+        if (nestedQuery instanceof DoytoQuery) {
+            sqlBuilder.append(buildCondition(AND, nestedQuery, argList));
+        }
+        sqlBuilder.append(CP).append(AS);
     }
 
     private static String buildHaving(Having having, List<Object> argList) {
@@ -99,7 +121,7 @@ public class RelationalQueryBuilder {
         DomainPath domainPath = joinField.getAnnotation(DomainPath.class);
         String[] domains = domainPath.value();
         String mainTableName = resolveTableName(joinField.getDeclaringClass());
-        String subTableName = String.format(TABLE_FORMAT, domains[0]);
+        String subTableName = GlobalConfiguration.formatTable(domains[0]);
         String subColumns = buildSubDomainColumns(joinEntityClass);
         LinkedList<Object> queryArgs = new LinkedList<>();
         StringBuilder sqlBuilder;

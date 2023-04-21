@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,22 +23,31 @@ import java.io.Serializable;
  *
  * @author f0rb
  */
-public interface UserIdProvider<I extends Serializable> {
+public interface UserIdProvider<U extends Serializable> {
 
-    I getUserId();
+    U getUserId();
 
     @SuppressWarnings("unchecked")
     default void setupUserId(Object e) {
-        I userId = getUserId();
+        U userId = getUserId();
         if (userId != null) {
             if (e instanceof Persistable && ((Persistable<?>) e).isNew() && e instanceof CreateUserAware) {
-                CreateUserAware<I> createUserAware = (CreateUserAware<I>) e;
+                CreateUserAware<U> createUserAware = (CreateUserAware<U>) e;
                 createUserAware.setCreateUserId(userId);
             }
             if (e instanceof UpdateUserAware) {
-                UpdateUserAware<I> updateUserAware = (UpdateUserAware<I>) e;
+                UpdateUserAware<U> updateUserAware = (UpdateUserAware<U>) e;
                 updateUserAware.setUpdateUserId(userId);
             }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    default void setupPatchUserId(Object e) {
+        U userId = getUserId();
+        if (userId != null && e instanceof UpdateUserAware) {
+            UpdateUserAware<U> updateUserAware = (UpdateUserAware<U>) e;
+            updateUserAware.setUpdateUserId(userId);
         }
     }
 

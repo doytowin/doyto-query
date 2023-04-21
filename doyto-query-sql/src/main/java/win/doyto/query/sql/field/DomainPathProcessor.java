@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql;
+package win.doyto.query.sql.field;
 
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.relation.DomainPathDetail;
+import win.doyto.query.sql.BuildHelper;
 import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
@@ -35,8 +36,7 @@ import static win.doyto.query.sql.Constant.*;
  * @author f0rb on 2022-05-10
  * @since 0.3.1
  */
-class DomainPathProcessor implements FieldProcessor.Processor {
-    private static final String TABLE_FORMAT = GlobalConfiguration.instance().getTableFormat();
+class DomainPathProcessor implements FieldProcessor {
     private final DomainPathDetail domainPathDetail;
 
     public DomainPathProcessor(Field field) {
@@ -45,7 +45,7 @@ class DomainPathProcessor implements FieldProcessor.Processor {
     }
 
     @Override
-    public String process(List<Object> argList, Object value) {
+    public String process(String alias, List<Object> argList, Object value) {
         return buildClause(argList, (DoytoQuery) value);
     }
 
@@ -89,7 +89,7 @@ class DomainPathProcessor implements FieldProcessor.Processor {
             return;
         }
         String where = buildWhere((DoytoQuery) domainQuery, argList);
-        String table = String.format(TABLE_FORMAT, currentDomain);
+        String table = GlobalConfiguration.formatTable(currentDomain);
         subQueryBuilder.append(SELECT).append(ID).append(FROM).append(table).append(where);
         subQueryBuilder.append(INTERSECT);
     }

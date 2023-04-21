@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,6 +63,16 @@ class ValidationGroupTest extends DemoApplicationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.code").value(5))
+        ;
+    }
+
+    @Test
+    void shouldRejectWhenDeleteWithoutQueryParameters() throws Exception {
+        mockMvc.perform(delete("/role/").session(session))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.success").value(false))
+               .andExpect(jsonPath("$.code").value(5))
+               .andExpect(jsonPath("$.hints.roleQuery").value("不能为空"))
         ;
     }
 

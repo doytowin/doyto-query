@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import win.doyto.query.core.DataQueryClient;
-import win.doyto.query.jdbc.JdbcDataQueryClient;
+import win.doyto.query.mongodb.session.MongoSessionSupplier;
+import win.doyto.query.mongodb.session.MongoSessionThreadLocalSupplier;
 import win.doyto.query.web.WebMvcConfigurerAdapter;
 
 /**
@@ -40,8 +39,8 @@ public class DemoApplication extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public DataQueryClient jdbcDataQueryClient(JdbcOperations jdbcOperations) {
-        return new JdbcDataQueryClient(jdbcOperations);
+    public MongoSessionSupplier mongoSessionSupplier(MongoClient mongoClient) {
+        return MongoSessionThreadLocalSupplier.create(mongoClient);
     }
 
 }

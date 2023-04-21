@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import win.doyto.query.validation.CreateGroup;
 import win.doyto.query.validation.PatchGroup;
 import win.doyto.query.validation.UpdateGroup;
@@ -33,8 +35,10 @@ import java.io.Serializable;
  *
  * @author f0rb on 2021-06-27
  */
-@Getter
-@Setter
+@Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public abstract class AbstractPersistable<I extends Serializable> implements Persistable<I>, Serializable {
     private static final long serialVersionUID = -4538555675455803732L;
     @Id

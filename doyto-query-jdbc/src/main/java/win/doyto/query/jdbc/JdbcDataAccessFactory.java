@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package win.doyto.query.jdbc;
 
 import jakarta.persistence.EntityType;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.jdbc.core.JdbcOperations;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.entity.Persistable;
@@ -42,8 +41,8 @@ public class JdbcDataAccessFactory implements DataAccessFactory {
     @Override
     public <E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
     DataAccess<E, I, Q> createDataAccess(BeanFactory beanFactory, Class<E> entityClass) {
-        JdbcOperations jdbcOperations = beanFactory.getBean(JdbcOperations.class);
-        return new JdbcDataAccess<>(jdbcOperations, entityClass);
+        DatabaseOperations databaseOperations = beanFactory.getBean(DatabaseOperations.class);
+        return new JdbcDataAccess<>(databaseOperations, entityClass);
     }
 
 }

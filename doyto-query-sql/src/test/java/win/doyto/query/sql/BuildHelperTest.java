@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package win.doyto.query.sql;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.test.TestQuery;
 
 import java.util.ArrayList;
@@ -30,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author f0rb on 2021-02-16
  */
-@ResourceLock(value = "mapCamelCaseToUnderscore")
 class BuildHelperTest {
 
     @Test
@@ -51,9 +49,9 @@ class BuildHelperTest {
         assertEquals("t_user_detail", tableName);
     }
 
-
     private static class UserDetailView {
     }
+
     @Test
     void resolveTableNameForViewWithoutAnnotationTable() {
         String tableName = BuildHelper.resolveTableName(UserDetailView.class);

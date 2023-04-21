@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright © 2019-2022 Forb Yuan
+  ~ Copyright © 2019-2023 Forb Yuan
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -40,10 +40,11 @@
         <snakeyaml.version>1.33</snakeyaml.version>
 
         <sourceDirectory>src/main/java</sourceDirectory>
-        <skipDeploy>false</skipDeploy>
+        <skipDeploy>true</skipDeploy>
 
         <jacoco.destFile>${user.dir}/target/jacoco.exec</jacoco.destFile>
         <jacoco.dataFile>${user.dir}/target/jacoco.exec</jacoco.dataFile>
+        <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
     </properties>
 
     <modules>
