@@ -36,6 +36,12 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+      - name: Cache Embed Mongo distribution
+        uses: actions/cache@v3
+        with:
+          path: ~/.embedmongo
+          key: ${{ runner.os }}-mongo
+          restore-keys: ${{ runner.os }}-mongo
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
