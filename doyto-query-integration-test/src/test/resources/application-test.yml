@@ -16,7 +16,6 @@ spring:
     type: simple
   mongodb:
     embedded:
-      version: 5.0.5
       storage:
         oplog-size: 10
         repl-set-name: rs0
