@@ -58,7 +58,7 @@ public class EmbeddedMongoConfig {
 
     @Bean
     public MongodConfig embeddedMongoConfiguration(EmbeddedMongoProperties embeddedProperties) throws IOException {
-        ImmutableMongodConfig.Builder builder = MongodConfig.builder().version(Version.V5_0_5);
+        ImmutableMongodConfig.Builder builder = MongodConfig.builder().version(Version.V6_0_2);
         EmbeddedMongoProperties.Storage storage = embeddedProperties.getStorage();
         String databaseDir = storage.getDatabaseDir();
         String replSetName = storage.getReplSetName();
