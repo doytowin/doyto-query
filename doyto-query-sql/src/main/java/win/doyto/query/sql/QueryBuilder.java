@@ -72,6 +72,7 @@ public class QueryBuilder {
         if (!(columns.length == 1 && COUNT == columns[0])) {
             // not SELECT COUNT(*)
             sql += BuildHelper.buildOrderBy(query);
+            sql += BuildHelper.buildLock(query);
             sql = BuildHelper.buildPaging(sql, query);
         }
         return sql;

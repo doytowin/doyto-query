@@ -57,6 +57,9 @@ public class PageQuery implements DoytoQuery {
     @javax.validation.constraints.Pattern(regexp = SORT_RX, message = "Sorting field format error", groups = PageGroup.class)
     private String sort;
 
+    @Transient
+    private LockMode lockMode;
+
     public void setPage(Integer pageNumber) {
         this.setPageNumber(pageNumber);
     }

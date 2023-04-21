@@ -13,39 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package win.doyto.query.core;
 
-import java.io.Serializable;
-
 /**
- * DoytoQuery
+ * LockMode
  *
- * @author f0rb on 2021-12-02
- * @since 0.3.0
+ * @author f0rb on 2023/4/13
+ * @since 1.0.2
  */
-public interface DoytoQuery extends Serializable {
-
-    void forcePaging();
-
-    boolean needPaging();
-
-    void setPageSize(Integer size);
-
-    int getPageSize();
-
-    void setPageNumber(Integer page);
-
-    int getPageNumber();
-
-    void setSort(String sort);
-
-    String getSort();
-
-    LockMode getLockMode();
-
-    @SuppressWarnings("java:S3740")
-    default IdWrapper toIdWrapper() {
-        return IdWrapper.build(null);
-    }
+public enum LockMode {
+    PESSIMISTIC_WRITE, PESSIMISTIC_READ
 }
-

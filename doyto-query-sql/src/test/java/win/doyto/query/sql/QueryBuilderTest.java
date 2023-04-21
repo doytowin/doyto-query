@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.Dialect;
 import win.doyto.query.core.IdWrapper;
+import win.doyto.query.core.LockMode;
 import win.doyto.query.test.*;
 import win.doyto.query.test.tpch.domain.partsupp.PartsuppEntity;
 import win.doyto.query.test.tpch.domain.partsupp.PartsuppKey;
@@ -464,5 +465,25 @@ class QueryBuilderTest {
 
         assertThat(sqlAndArgs.getSql()).isEqualTo("SELECT * FROM t_partsupp WHERE ps_partkey = ? AND ps_suppkey = ?");
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 2);
+    }
+
+    @Test
+    void buildSelectForShare() {
+        TestQuery testQuery = TestQuery.builder().id(1).lockMode(LockMode.PESSIMISTIC_READ).build();
+
+        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
+
+        assertThat(sql).isEqualTo("SELECT * FROM t_user t WHERE id = ? FOR SHARE");
+        assertThat(argList).containsExactly(1);
+    }
+
+    @Test
+    void buildSelectForUpdate() {
+        TestQuery testQuery = TestQuery.builder().id(1).lockMode(LockMode.PESSIMISTIC_WRITE).build();
+
+        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
+
+        assertThat(sql).isEqualTo("SELECT * FROM t_user t WHERE id = ? FOR UPDATE");
+        assertThat(argList).containsExactly(1);
     }
 }
