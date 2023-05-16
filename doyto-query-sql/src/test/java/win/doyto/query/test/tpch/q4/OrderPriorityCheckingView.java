@@ -16,12 +16,11 @@
 
 package win.doyto.query.test.tpch.q4;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.GroupBy;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
 
 /**
  * OrderPriorityCheckingView

@@ -48,7 +48,7 @@ public interface RestApi<I, Q extends DoytoQuery, R, S> {
     @DeleteMapping("{id}")
     S delete(I id);
 
-    @DeleteMapping
+    @DeleteMapping("/")
     int delete(@NotEmptyQuery Q query);
 
     @PutMapping("{id}")
@@ -57,7 +57,7 @@ public interface RestApi<I, Q extends DoytoQuery, R, S> {
     @PatchMapping("{id}")
     void patch(@RequestBody @Validated(PatchGroup.class) R request);
 
-    @PatchMapping
+    @PatchMapping("/")
     int patch(@RequestBody R request, @NotEmptyQuery Q query);
 
     default void create(R request) {

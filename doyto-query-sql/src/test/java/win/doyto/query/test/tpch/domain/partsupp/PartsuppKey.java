@@ -1,6 +1,7 @@
 package win.doyto.query.test.tpch.domain.partsupp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,6 @@ import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
-import javax.persistence.Id;
 
 /**
  * PartsuppKey

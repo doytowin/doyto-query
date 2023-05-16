@@ -16,11 +16,12 @@
 
 package win.doyto.query.web.component;
 
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import javax.validation.Constraint;
-import javax.validation.Payload;
 
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -37,7 +38,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface NotEmptyQuery {
 
-    String message() default "{javax.validation.constraints.NotEmpty.message}";
+    String message() default "{jakarta.validation.constraints.NotEmpty.message}";
 
     Class<?>[] groups() default { };
 

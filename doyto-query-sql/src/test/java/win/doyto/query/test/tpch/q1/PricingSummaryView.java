@@ -16,6 +16,7 @@
 
 package win.doyto.query.test.tpch.q1;
 
+import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.CompositeView;
@@ -23,7 +24,6 @@ import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
 
 import java.math.BigDecimal;
-import javax.persistence.Column;
 
 /**
  * PricingSummaryView

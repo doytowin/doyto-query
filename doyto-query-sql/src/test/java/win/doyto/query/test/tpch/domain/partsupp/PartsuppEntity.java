@@ -16,11 +16,11 @@
 
 package win.doyto.query.test.tpch.domain.partsupp;
 
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import javax.persistence.Entity;
 
 /**
  * PartsuppEntity

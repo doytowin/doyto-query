@@ -16,12 +16,12 @@
 
 package win.doyto.query.web.component;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 
 import static win.doyto.query.core.QuerySuffix.isValidValue;
 import static win.doyto.query.util.CommonUtil.readFieldGetter;

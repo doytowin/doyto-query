@@ -16,6 +16,7 @@
 
 package win.doyto.query.test.tpch.q10;
 
+import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.CompositeView;
@@ -24,8 +25,6 @@ import win.doyto.query.test.tpch.domain.customer.CustomerEntity;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
 import win.doyto.query.test.tpch.domain.nation.NationEntity;
 import win.doyto.query.test.tpch.domain.orders.OrdersEntity;
-
-import javax.persistence.Column;
 
 /**
  * ReturnedItemReportingView

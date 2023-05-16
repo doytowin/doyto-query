@@ -16,6 +16,7 @@
 
 package win.doyto.query.jdbc;
 
+import jakarta.annotation.Resource;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,6 @@ import win.doyto.query.test.role.RoleViewQuery;
 import win.doyto.query.test.user.*;
 
 import java.util.List;
-import javax.annotation.Resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

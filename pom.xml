@@ -36,8 +36,7 @@
         <revision>2.0.0-SNAPSHOT</revision>
 
         <java.version>17</java.version>
-        <spring-boot.version>3.0.0-RC2</spring-boot.version>
-        <snakeyaml.version>1.33</snakeyaml.version>
+        <spring-boot.version>3.0.6</spring-boot.version>
 
         <sourceDirectory>src/main/java</sourceDirectory>
         <skipDeploy>true</skipDeploy>

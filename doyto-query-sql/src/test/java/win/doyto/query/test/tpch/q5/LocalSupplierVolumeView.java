@@ -16,6 +16,7 @@
 
 package win.doyto.query.test.tpch.q5;
 
+import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.CompositeView;
@@ -28,7 +29,6 @@ import win.doyto.query.test.tpch.domain.region.RegionEntity;
 import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
 
 import java.math.BigDecimal;
-import javax.persistence.Column;
 
 /**
  * LocalSupplierVolumeView

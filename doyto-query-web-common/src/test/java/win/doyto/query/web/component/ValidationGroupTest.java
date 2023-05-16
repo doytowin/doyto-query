@@ -72,7 +72,7 @@ class ValidationGroupTest extends DemoApplicationTest {
                .andExpect(status().isOk())
                .andExpect(jsonPath("$.success").value(false))
                .andExpect(jsonPath("$.code").value(5))
-               .andExpect(jsonPath("$.hints.roleQuery").value("不能为空"))
+               .andExpect(jsonPath("$.hints.arg0").value("不能为空"))
         ;
     }
 

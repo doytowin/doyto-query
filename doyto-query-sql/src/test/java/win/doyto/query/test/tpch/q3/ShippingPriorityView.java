@@ -16,6 +16,7 @@
 
 package win.doyto.query.test.tpch.q3;
 
+import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.CompositeView;
@@ -25,7 +26,6 @@ import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
 import win.doyto.query.test.tpch.domain.orders.OrdersEntity;
 
 import java.sql.Date;
-import javax.persistence.Column;
 
 /**
  * ShippingPriorityView
