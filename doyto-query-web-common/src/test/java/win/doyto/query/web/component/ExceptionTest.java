@@ -75,7 +75,7 @@ class ExceptionTest extends DemoApplicationTest {
     @Test
     void testConstraintViolationException() throws Exception {
         performAndExpectFail("参数校验失败", get("/role/roleName?roleName=sa"))
-                .andExpect(jsonPath("$.hints.arg0").value("个数必须在4和20之间"));
+                .andExpect(jsonPath("$.hints.roleName").value("个数必须在4和20之间"));
         performAndExpectSuccess(get("/role/roleName?roleName=f0rb"))
                 .andExpect(jsonPath("$.data.roleCode").doesNotExist());
     }
@@ -83,7 +83,7 @@ class ExceptionTest extends DemoApplicationTest {
     @Test
     void testBindException() throws Exception {
         performAndExpectFail("参数校验失败", get("/role/roleName"))
-                .andExpect(jsonPath("$.hints.arg0").value("不能为null"));
+                .andExpect(jsonPath("$.hints.roleName").value("不能为null"));
 
 
         performAndExpectSuccess(get("/role/roleName?roleName=test"));
