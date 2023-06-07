@@ -17,8 +17,13 @@
 package win.doyto.query.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.*;
+import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.sql.SqlAndArgs;
 
 import java.sql.PreparedStatement;
@@ -27,14 +32,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * DbTemplate
+ * DatabaseTemplate
  *
  * @author f0rb on 2021-08-30
  */
 @RequiredArgsConstructor
 public class DatabaseTemplate implements DatabaseOperations {
 
-    private static final RowMapper<Long> countRowMapper = new SingleColumnRowMapper<>(Long.class);
     private final JdbcOperations jdbcOperations;
 
     @Override
@@ -52,10 +56,9 @@ public class DatabaseTemplate implements DatabaseOperations {
         return jdbcOperations.update(sqlAndArgs.getSql(), sqlAndArgs.getArgs());
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     public long count(SqlAndArgs sqlAndArgs) {
-        return jdbcOperations.queryForObject(sqlAndArgs.getSql(), countRowMapper, sqlAndArgs.getArgs());
+        return jdbcOperations.queryForObject(sqlAndArgs.getSql(), long.class, sqlAndArgs.getArgs());
     }
 
     @Override
@@ -68,7 +71,12 @@ public class DatabaseTemplate implements DatabaseOperations {
                 pss.setValues(ps);
                 return ps;
             }, keyHolder);
-            return keyHolder.getKeyAs(idClass);
+            try {
+                return keyHolder.getKeyAs(idClass);
+            } catch (DataRetrievalFailureException e) {
+                Number key = keyHolder.getKey();
+                return GlobalConfiguration.dialect().resolveKey(key, idClass);
+            }
         } finally {
             pss.cleanupParameters();
         }

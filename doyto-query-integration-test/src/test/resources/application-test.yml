@@ -4,6 +4,8 @@ logging:
     win.doyto.query.core: debug
     org.springframework.test.context.transaction.TransactionContext: warn
     org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: trace
+    org.springframework.boot.autoconfigure.mongo.embedded: warn
+    org.mongodb.driver.protocol.command: info
 
 server:
   servlet:
@@ -19,10 +21,17 @@ spring:
       storage:
         oplog-size: 10
         repl-set-name: rs0
+  datasource:
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://localhost:1433;databaseName=master;trustServerCertificate=true;
+    username: doytowin
+    password: ${SQL_SERVER_PASSWORD}
+    hikari:
+      transaction-isolation: 4096
 
 doyto:
   query:
     config:
-      dialect: win.doyto.query.dialect.HSQLDBDialect
+      dialect: win.doyto.query.web.demo.common.SQLServerDialect
       map-camel-case-to-underscore: true
     caches: UserEntity, MenuEntity

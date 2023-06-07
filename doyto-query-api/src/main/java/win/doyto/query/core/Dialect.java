@@ -60,4 +60,9 @@ public interface Dialect {
     default String forUpdate() {
         return " FOR UPDATE";
     }
+
+    default <I> I resolveKey(Number key, Class<I> idClass) {
+        return null;
+    }
+
 }
