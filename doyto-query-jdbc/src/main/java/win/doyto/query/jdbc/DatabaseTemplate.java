@@ -23,6 +23,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.sql.SqlAndArgs;
 
@@ -30,6 +31,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * DatabaseTemplate
@@ -56,6 +58,7 @@ public class DatabaseTemplate implements DatabaseOperations {
         return jdbcOperations.update(sqlAndArgs.getSql(), sqlAndArgs.getArgs());
     }
 
+    @SuppressWarnings("java:S2259")
     @Override
     public long count(SqlAndArgs sqlAndArgs) {
         return jdbcOperations.queryForObject(sqlAndArgs.getSql(), long.class, sqlAndArgs.getArgs());
@@ -65,20 +68,24 @@ public class DatabaseTemplate implements DatabaseOperations {
     public <I> I insert(SqlAndArgs sqlAndArgs, Class<I> idClass) {
         ArgumentPreparedStatementSetter pss = new ArgumentPreparedStatementSetter(sqlAndArgs.getArgs());
         try {
-            GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+            KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcOperations.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(sqlAndArgs.getSql(), Statement.RETURN_GENERATED_KEYS);
                 pss.setValues(ps);
                 return ps;
             }, keyHolder);
-            try {
-                return keyHolder.getKeyAs(idClass);
-            } catch (DataRetrievalFailureException e) {
-                Number key = keyHolder.getKey();
-                return GlobalConfiguration.dialect().resolveKey(key, idClass);
-            }
+            return resolveKey(idClass, keyHolder);
         } finally {
             pss.cleanupParameters();
+        }
+    }
+
+    static <I> I resolveKey(Class<I> idClass, KeyHolder keyHolder) {
+        try {
+            return keyHolder.getKeyAs(idClass);
+        } catch (DataRetrievalFailureException e) {
+            Number key = keyHolder.getKey();
+            return GlobalConfiguration.dialect().resolveKey(Objects.requireNonNull(key), idClass);
         }
     }
 }

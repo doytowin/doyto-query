@@ -62,7 +62,7 @@ public interface Dialect {
     }
 
     default <I> I resolveKey(Number key, Class<I> idClass) {
-        return null;
+        return idClass.cast(key.longValue());
     }
 
 }
