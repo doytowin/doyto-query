@@ -36,4 +36,14 @@ class DatabaseTemplateTest {
 
         assertEquals(20L, key);
     }
+
+    @Test
+    void shouldResolveForIntegerWhenKeyIsBigDecimal() {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        keyHolder.getKeyList().add(Collections.singletonMap("Key", new BigDecimal(20)));
+
+        Integer key = DatabaseTemplate.resolveKey(Integer.class, keyHolder);
+
+        assertEquals(20, key);
+    }
 }

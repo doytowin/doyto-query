@@ -62,6 +62,9 @@ public interface Dialect {
     }
 
     default <I> I resolveKey(Number key, Class<I> idClass) {
+        if (idClass.equals(Integer.class)) {
+            return idClass.cast(key.intValue());
+        }
         return idClass.cast(key.longValue());
     }
 
