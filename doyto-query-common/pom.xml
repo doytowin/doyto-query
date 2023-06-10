@@ -39,7 +39,6 @@
         <dependency>
             <groupId>win.doyto</groupId>
             <artifactId>doyto-query-api</artifactId>
-            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

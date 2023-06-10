@@ -40,12 +40,12 @@
         <dependency>
             <groupId>win.doyto</groupId>
             <artifactId>doyto-query-memory</artifactId>
-            <version>${revision}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>win.doyto</groupId>
             <artifactId>doyto-query-web-common</artifactId>
-            <version>${revision}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>

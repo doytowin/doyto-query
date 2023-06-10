@@ -37,12 +37,12 @@
         <dependency>
             <groupId>win.doyto</groupId>
             <artifactId>doyto-query-web</artifactId>
-            <version>${revision}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>win.doyto</groupId>
             <artifactId>doyto-query-jdbc</artifactId>
-            <version>${revision}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>win.doyto</groupId>
