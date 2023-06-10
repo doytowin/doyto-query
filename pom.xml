@@ -44,6 +44,8 @@
         <jacoco.destFile>${user.dir}/target/jacoco.exec</jacoco.destFile>
         <jacoco.dataFile>${user.dir}/target/jacoco.exec</jacoco.dataFile>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
+
+        <sonar.exclusions>doyto-query-test/**,doyto-query-integration-test/**,**/pom.xml</sonar.exclusions>
     </properties>
 
     <modules>
