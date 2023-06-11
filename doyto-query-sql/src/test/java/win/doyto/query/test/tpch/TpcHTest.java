@@ -65,6 +65,7 @@ import win.doyto.query.test.tpch.q5.LocalSupplierVolumeQuery;
 import win.doyto.query.test.tpch.q5.LocalSupplierVolumeView;
 import win.doyto.query.test.tpch.q6.ForecastingRevenueChangeQuery;
 import win.doyto.query.test.tpch.q6.ForecastingRevenueChangeView;
+import win.doyto.query.test.tpch.q7.*;
 import win.doyto.query.test.tpch.q9.ProductTypeProfitMeasureQuery;
 import win.doyto.query.test.tpch.q9.ProductTypeProfitMeasureView;
 import win.doyto.query.test.tpch.q9.ProfitQuery;
@@ -229,7 +230,7 @@ class TpcHTest {
                 " AND r_name = ?" +
                 " AND o_orderdate >= ?" +
                 " AND o_orderdate < ?" +
-                " GROUP BY n_name"+
+                " GROUP BY n_name" +
                 " ORDER BY revenue DESC";
 
         LocalDate date = LocalDate.of(1994, 1, 1);
@@ -269,6 +270,57 @@ class TpcHTest {
         assertThat(sqlAndArgs.getArgs()).containsExactly(
                 Date.valueOf(date), Date.valueOf(date.plus(1, YEARS)),
                 BigDecimal.valueOf(0.05), BigDecimal.valueOf(0.07), 24);
+    }
+
+    @Test
+    void q7ForVolumeShippingQuery() {
+        String expected = "SELECT supp_nation," +
+                " cust_nation," +
+                " l_year," +
+                " SUM(volume) AS revenue" +
+                " FROM (SELECT n1.n_name AS supp_nation," +
+                " n2.n_name AS cust_nation," +
+                " YEAR(l_shipdate) AS l_year," +
+                " l_extendedprice * (1 - l_discount" +
+                ") AS volume" +
+                " FROM supplier, lineitem, orders, customer, nation n1, nation n2" +
+                " WHERE s_nationkey = n1.n_nationkey" +
+                " AND l_orderkey = o_orderkey" +
+                " AND l_suppkey = s_suppkey" +
+                " AND o_custkey = c_custkey" +
+                " AND c_nationkey = n2.n_nationkey" +
+                " AND ((n1.n_name = ? AND n2.n_name = ?)" +
+                " OR (n1.n_name = ? AND n2.n_name = ?))" +
+                " AND l_shipdate >= ? AND l_shipdate <= ?" +
+                ") AS shipping" +
+                " GROUP BY supp_nation, cust_nation, l_year" +
+                " ORDER BY supp_nation, cust_nation, l_year";
+
+        Date startShipdate = Date.valueOf(LocalDate.of(1995, 1, 1));
+        Date endShipdate = Date.valueOf(LocalDate.of(1996, 12, 31));
+
+        ShippingQuery shippingQuery = ShippingQuery
+                .builder()
+                .nameOr(NameOr
+                        .builder()
+                        .n1(new NameComparison("FRANCE", "GERMANY"))
+                        .n2(new NameComparison("GERMANY", "FRANCE"))
+                        .build())
+                .l_shipdateGe(startShipdate)
+                .l_shipdateLe(endShipdate)
+                .build();
+        VolumeShippingQuery query = VolumeShippingQuery
+                .builder()
+                .shippingQuery(shippingQuery)
+                .sort("supp_nation;cust_nation;l_year")
+                .build();
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, VolumeShippingView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(
+                "FRANCE", "GERMANY",
+                "GERMANY", "FRANCE",
+                startShipdate, endShipdate);
     }
 
     @Test

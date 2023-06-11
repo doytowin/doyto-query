@@ -19,7 +19,9 @@ package win.doyto.query.sql;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import win.doyto.query.annotation.ComplexView;
 import win.doyto.query.annotation.CompositeView;
+import win.doyto.query.annotation.EntityAlias;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.LockMode;
@@ -59,10 +61,22 @@ public class BuildHelper {
         } else if (entityClass.isAnnotationPresent(CompositeView.class)) {
             CompositeView compositeViewAnno = entityClass.getAnnotation(CompositeView.class);
             tableName = resolveTableName(compositeViewAnno.value());
+        } else if (entityClass.isAnnotationPresent(ComplexView.class)) {
+            ComplexView complexView = entityClass.getAnnotation(ComplexView.class);
+            tableName = resolveTableName(complexView.value());
         } else {
             tableName = defaultTableName(entityClass);
         }
         return tableName;
+    }
+
+    private static String resolveTableName(EntityAlias[] entityAliases) {
+        return Arrays.stream(entityAliases)
+                     .map(entityAlias -> {
+                         String tableName = BuildHelper.resolveTableName(entityAlias.value());
+                         String alias = entityAlias.alias();
+                         return !alias.isEmpty() ? tableName + SPACE + alias : tableName;
+                     }).collect(Collectors.joining(SEPARATOR));
     }
 
     static String defaultTableName(Class<?> entityClass) {
