@@ -97,7 +97,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForPricingSummaryReport() {
+    void q1PricingSummaryReportQuery() {
         String expected = "SELECT " +
                 "l_returnflag, " +
                 "l_linestatus, " +
@@ -125,7 +125,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForMinimumCostSupplier() {
+    void q2MinimumCostSupplierQuery() {
         String expected = "SELECT s_acctbal, s_name, n_name, p_partkey, p_mfgr, s_address, s_phone, s_comment" +
                 " FROM part, supplier, partsupp, nation, region" +
                 " WHERE s_nationkey = n_nationkey" +
@@ -160,7 +160,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForShippingPriority() {
+    void q3ShippingPriorityQuery() {
         String expected = "SELECT " +
                 "l_orderkey, " +
                 "SUM(l_extendedprice * (1 - l_discount)) AS revenue, " +
@@ -189,7 +189,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForOrderPriorityChecking() {
+    void q4OrderPriorityCheckingQuery() {
         String expected = "SELECT o_orderpriority, count(*) AS order_count" +
                 " FROM orders t" +
                 " WHERE o_orderdate >= ?" +
@@ -217,7 +217,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForLocalSupplierVolume() {
+    void q5LocalSupplierVolumeQuery() {
         String expected = "SELECT n_name, SUM(l_extendedprice * (1 - l_discount)) AS revenue" +
                 " FROM customer, orders, lineitem, supplier, nation, region" +
                 " WHERE c_nationkey = n_nationkey" +
@@ -248,7 +248,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForForecastingRevenueChange() {
+    void q6ForecastingRevenueChangeQuery() {
         String expected = "SELECT SUM(l_extendedprice * l_discount) AS revenue" +
                 " FROM lineitem" +
                 " WHERE l_shipdate >= ?" +
@@ -272,7 +272,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForProductTypeProfitMeasure() {
+    void q9ProductTypeProfitMeasureQuery() {
         String expected = "SELECT nation, o_year, SUM(amount) AS sum_profit" +
                 " FROM " +
                 "(SELECT n_name AS nation, YEAR(o_orderdate) AS o_year, l_extendedprice * (1 - l_discount) - ps_supplycost * l_quantity AS amount" +
@@ -301,7 +301,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForReturnedItemReporting() {
+    void q10ReturnedItemReportingQuery() {
         String expected = "SELECT" +
                 " c_custkey," +
                 " c_name," +
@@ -346,7 +346,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForImportantStockIdentification() {
+    void q11ImportantStockIdentificationQuery() {
         String expected = "SELECT" +
                 " ps_partkey," +
                 " SUM(ps_supplycost * ps_availqty) AS value" +
@@ -381,7 +381,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForShippingModesAndOrderPriority() {
+    void q12ShippingModesAndOrderPriorityQuery() {
         String expected = "SELECT l_shipmode," +
                 " SUM(CASE WHEN o_orderpriority = '1-URGENT'OR o_orderpriority = '2-HIGH'THEN 1 ELSE 0 END) AS high_line_count," +
                 " SUM(CASE WHEN o_orderpriority <> '1-URGENT'AND o_orderpriority <> '2-HIGH'THEN 1 ELSE 0 END) AS low_line_count" +
@@ -414,7 +414,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForPromotionEffect() {
+    void q14PromotionEffectQuery() {
         String expected = "SELECT" +
                 " 100.00 * SUM(CASE WHEN p_type LIKE 'PROMO%'THEN l_extendedprice * (1 - l_discount)ELSE 0 END) / SUM(l_extendedprice * (1 - l_discount)) AS promo_revenue" +
                 " FROM lineitem, part" +
@@ -435,7 +435,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForPartsSupplierRelationship() {
+    void q16PartsSupplierRelationshipQuery() {
         String expected = "SELECT p_brand, p_type, p_size, COUNT(DISTINCT ps_suppkey) AS supplier_cnt" +
                 " FROM partsupp, part" +
                 " WHERE ps_partkey = p_partkey" +
@@ -466,7 +466,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForSmallQuantityOrderRevenue() {
+    void q17SmallQuantityOrderRevenueQuery() {
         String expected = "SELECT SUM(l_extendedprice) / 7.0 AS avg_yearly" +
                 " FROM lineitem, part" +
                 " WHERE l_partkey = p_partkey" +
@@ -490,7 +490,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForLargeVolumeCustomer() {
+    void q18LargeVolumeCustomerQuery() {
         String expected = "SELECT" +
                 " c_name," +
                 " c_custkey," +
@@ -524,7 +524,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForDiscountedRevenue() {
+    void q19DiscountedRevenueQuery() {
         String expected = "SELECT" +
                 " SUM(l_extendedprice * (1 - l_discount)) AS revenue" +
                 " FROM lineitem, part" +
@@ -602,7 +602,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForPotentialPartPromotion() {
+    void q20PotentialPartPromotionQuery() {
         String expected = "SELECT s_name, s_address" +
                 " FROM supplier, nation" +
                 " WHERE s_nationkey = n_nationkey" +
