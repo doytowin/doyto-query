@@ -66,6 +66,9 @@ import win.doyto.query.test.tpch.q5.LocalSupplierVolumeView;
 import win.doyto.query.test.tpch.q6.ForecastingRevenueChangeQuery;
 import win.doyto.query.test.tpch.q6.ForecastingRevenueChangeView;
 import win.doyto.query.test.tpch.q7.*;
+import win.doyto.query.test.tpch.q8.AllNationsQuery;
+import win.doyto.query.test.tpch.q8.NationalMarketShareQuery;
+import win.doyto.query.test.tpch.q8.NationalMarketShareView;
 import win.doyto.query.test.tpch.q9.ProductTypeProfitMeasureQuery;
 import win.doyto.query.test.tpch.q9.ProductTypeProfitMeasureView;
 import win.doyto.query.test.tpch.q9.ProfitQuery;
@@ -321,6 +324,54 @@ class TpcHTest {
                 "FRANCE", "GERMANY",
                 "GERMANY", "FRANCE",
                 startShipdate, endShipdate);
+    }
+
+    @Test
+    void q8ForNationalMarketShareQuery() {
+        String expected = "SELECT" +
+                " o_year," +
+                " SUM(CASE WHEN nation = ? THEN volume ELSE 0 END) / SUM(volume) AS mkt_share" +
+                " FROM" +
+                " (SELECT" +
+                " YEAR(o_orderdate) AS o_year," +
+                " l_extendedprice * (1 - l_discount) AS volume," +
+                " n2.n_name AS nation" +
+                " FROM part, lineitem, orders, customer, supplier, nation n1, nation n2, region" +
+                " WHERE l_orderkey = o_orderkey" +
+                " AND l_suppkey = s_suppkey" +
+                " AND l_partkey = p_partkey" +
+                " AND o_custkey = c_custkey" +
+                " AND c_nationkey = n1.n_nationkey" +
+                " AND s_nationkey = n2.n_nationkey" +
+                " AND n1.n_regionkey = r_regionkey" +
+                " AND r_name = ?" +
+                " AND o_orderdate >= ?" +
+                " AND o_orderdate <= ?" +
+                " AND p_type = ?" +
+                ") AS all_nations" +
+                " GROUP BY o_year" +
+                " ORDER BY o_year";
+
+        Date startShipdate = Date.valueOf(LocalDate.of(1995, 1, 1));
+        Date endShipdate = Date.valueOf(LocalDate.of(1996, 12, 31));
+
+        AllNationsQuery allNationsQuery = AllNationsQuery
+                .builder()
+                .r_name("AMERICA")
+                .o_orderdateGe(startShipdate)
+                .o_orderdateLe(endShipdate)
+                .p_type("ECONOMY ANODIZED STEEL")
+                .build();
+
+        NationalMarketShareQuery query = NationalMarketShareQuery.builder()
+                .n_name("BRAZIL")
+                .allNationsQuery(allNationsQuery).sort("o_year")
+                .build();
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, NationalMarketShareView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(
+                "BRAZIL", "AMERICA", startShipdate, endShipdate, "ECONOMY ANODIZED STEEL");
     }
 
     @Test

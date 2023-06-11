@@ -92,8 +92,9 @@ public class EntityMetadata {
                       if (viewIndex != null || parentColumns.contains(fkAnno.field())) {
                           String c1 = ColumnUtil.convertColumn(field.getName());
                           String c2 = ColumnUtil.convertColumn(fkAnno.field());
+                          String alias1 = currentViewIndex.getAlias();
                           String alias2 = viewIndex != null ? viewIndex.getAlias() : "";
-                          relations.add(c1 + EQUAL + alias2 + c2);
+                          relations.add(alias1 + c1 + EQUAL + alias2 + c2);
                       }
                   });
             currentViewIndex.voteUp();

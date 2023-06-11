@@ -28,6 +28,7 @@ import win.doyto.query.config.GlobalConfiguration;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
@@ -47,15 +48,16 @@ public class CommonUtil {
     public static final Collector<CharSequence, ?, String> CLT_COMMA_WITH_PAREN
             = Collectors.joining(", ", "(", ")");
     private static final Pattern PTN_REPLACE = Pattern.compile("\\w*");
-    private static final Pattern PTN_$EX = Pattern.compile("\\$\\{(\\w+)}");
+    private static final Pattern PTN_DOLLAR_EX = Pattern.compile("\\$\\{(\\w+)}");
+    private static final Pattern PTN_SHARP_EX = Pattern.compile("#\\{(\\w+)}");
     private static final Pattern PTN_SPLIT_OR = Pattern.compile("Or(?=[A-Z])");
 
     public static boolean isDynamicTable(String input) {
-        return PTN_$EX.matcher(input).find();
+        return PTN_DOLLAR_EX.matcher(input).find();
     }
 
     public static String replaceHolderInString(Object target, String input) {
-        Matcher matcher = PTN_$EX.matcher(input);
+        Matcher matcher = PTN_DOLLAR_EX.matcher(input);
         if (!matcher.find()) {
             return input;
         }
@@ -67,7 +69,25 @@ public class CommonUtil {
             String replacement = String.valueOf(value);
             if (PTN_REPLACE.matcher(replacement).matches()) {
                 matcher.appendReplacement(sb, replacement);
+            } else {
+                log.warn("Unexpected argument: {}", replacement);
             }
+        } while (matcher.find());
+        return matcher.appendTail(sb).toString();
+    }
+
+    public static String replaceVariableInString(String input, Object target, List<Object> args) {
+        Matcher matcher = PTN_SHARP_EX.matcher(input);
+        if (!matcher.find()) {
+            return input;
+        }
+
+        StringBuffer sb = new StringBuffer();
+        do {
+            String fieldName = matcher.group(1);
+            Object value = readFieldGetter(target, fieldName);
+            args.add(value);
+            matcher.appendReplacement(sb, "?");
         } while (matcher.find());
         return matcher.appendTail(sb).toString();
     }
