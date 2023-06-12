@@ -16,10 +16,7 @@
 
 package win.doyto.query.test.tpch.q9;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.core.PageQuery;
 
@@ -35,5 +32,9 @@ import win.doyto.query.core.PageQuery;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProfitQuery extends PageQuery {
-    private String p_nameLike;
+    @Builder.Default
+    private boolean psSuppkeyEqLSuppkey = true;
+    @Builder.Default
+    private boolean psPartkeyEqLPartkey = true;
+    private String pNameLike;
 }

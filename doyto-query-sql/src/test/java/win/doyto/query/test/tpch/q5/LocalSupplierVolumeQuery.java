@@ -16,10 +16,7 @@
 
 package win.doyto.query.test.tpch.q5;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.core.PageQuery;
 
@@ -37,7 +34,9 @@ import java.sql.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LocalSupplierVolumeQuery extends PageQuery {
-    private String r_name;
-    private Date o_orderdateGe;
-    private Date o_orderdateLt;
+    @Builder.Default
+    private boolean cNationkeyEqSNationkey = true;
+    private String rName;
+    private Date oOrderdateGe;
+    private Date oOrderdateLt;
 }

@@ -228,8 +228,8 @@ class TpcHTest {
                 " AND o_custkey = c_custkey" +
                 " AND l_orderkey = o_orderkey" +
                 " AND l_suppkey = s_suppkey" +
-                " AND s_nationkey = n_nationkey" +
                 " AND n_regionkey = r_regionkey" +
+                " AND c_nationkey = s_nationkey" +
                 " AND r_name = ?" +
                 " AND o_orderdate >= ?" +
                 " AND o_orderdate < ?" +
@@ -241,9 +241,9 @@ class TpcHTest {
         Date orderDateLt = Date.valueOf(date.plus(1, YEARS));
         LocalSupplierVolumeQuery query = LocalSupplierVolumeQuery
                 .builder()
-                .r_name("ASIA")
-                .o_orderdateGe(orderDateGe)
-                .o_orderdateLt(orderDateLt)
+                .rName("ASIA")
+                .oOrderdateGe(orderDateGe)
+                .oOrderdateLt(orderDateLt)
                 .sort("revenue,DESC")
                 .build();
 
@@ -363,7 +363,8 @@ class TpcHTest {
                 .p_type("ECONOMY ANODIZED STEEL")
                 .build();
 
-        NationalMarketShareQuery query = NationalMarketShareQuery.builder()
+        NationalMarketShareQuery query = NationalMarketShareQuery
+                .builder()
                 .n_name("BRAZIL")
                 .allNationsQuery(allNationsQuery).sort("o_year")
                 .build();
@@ -378,20 +379,21 @@ class TpcHTest {
     void q9ProductTypeProfitMeasureQuery() {
         String expected = "SELECT nation, o_year, SUM(amount) AS sum_profit" +
                 " FROM " +
-                "(SELECT n_name AS nation, YEAR(o_orderdate) AS o_year, l_extendedprice * (1 - l_discount) - ps_supplycost * l_quantity AS amount" +
+                "(SELECT n_name AS nation, YEAR(o_orderdate) AS o_year," +
+                " l_extendedprice * (1 - l_discount) - ps_supplycost * l_quantity AS amount" +
                 " FROM part, supplier, lineitem, partsupp, orders, nation" +
                 " WHERE s_nationkey = n_nationkey" +
                 " AND l_orderkey = o_orderkey" +
                 " AND l_suppkey = s_suppkey" +
                 " AND l_partkey = p_partkey" +
-                " AND ps_partkey = p_partkey" +
-                " AND ps_suppkey = s_suppkey" +
+                " AND ps_suppkey = l_suppkey" +
+                " AND ps_partkey = l_partkey" +
                 " AND p_name LIKE ?" +
                 ") AS profit" +
                 " GROUP BY nation, o_year" +
                 " ORDER BY nation, o_year DESC";
 
-        ProfitQuery profitQuery = ProfitQuery.builder().p_nameLike("green").build();
+        ProfitQuery profitQuery = ProfitQuery.builder().pNameLike("green").build();
         ProductTypeProfitMeasureQuery query = ProductTypeProfitMeasureQuery
                 .builder()
                 .profitQuery(profitQuery)

@@ -33,6 +33,11 @@ class ViewIndex {
         this.alias = entityAlias.alias();
     }
 
+    ViewIndex(Class<?> entity) {
+        this.entity = entity;
+        this.alias = "";
+    }
+
     @Getter
     private Class<?> entity;
     private String alias;

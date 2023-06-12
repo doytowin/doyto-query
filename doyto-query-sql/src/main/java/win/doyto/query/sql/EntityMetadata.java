@@ -59,27 +59,17 @@ public class EntityMetadata {
     }
 
     public static List<String> resolveEntityRelations(Class<?>[] viewClasses, Set<Object> parentColumns) {
-        List<String> relations = new ArrayList<>();
-        for (int i = 0, len = viewClasses.length; i < len; i++) {
-            List<Class<?>> otherClassList = new ArrayList<>(Arrays.asList(viewClasses));
-            otherClassList.remove(i);
-            Arrays.stream(ColumnUtil.initFields(viewClasses[i]))
-                  .filter(field -> field.isAnnotationPresent(ForeignKey.class))
-                  .forEach(field -> {
-                      ForeignKey fkAnno = field.getAnnotation(ForeignKey.class);
-                      if (parentColumns.contains(fkAnno.field()) || otherClassList.contains(fkAnno.entity())) {
-                          String c1 = ColumnUtil.convertColumn(field.getName());
-                          String c2 = ColumnUtil.convertColumn(fkAnno.field());
-                          relations.add(c1 + EQUAL + c2);
-                      }
-                  });
-        }
-        return relations;
+        List<ViewIndex> viewIndices = Arrays.stream(viewClasses).map(ViewIndex::new).collect(Collectors.toList());
+        return resolveEntityRelations(parentColumns, viewIndices);
     }
 
     public static List<String> resolveEntityRelations(EntityAlias[] entityAliases, Set<Object> parentColumns) {
-        List<String> relations = new ArrayList<>();
         List<ViewIndex> viewIndices = Arrays.stream(entityAliases).map(ViewIndex::new).collect(Collectors.toList());
+        return resolveEntityRelations(parentColumns, viewIndices);
+    }
+
+    private static List<String> resolveEntityRelations(Set<Object> parentColumns, List<ViewIndex> viewIndices) {
+        List<String> relations = new ArrayList<>();
         viewIndices.forEach(currentViewIndex -> {
             currentViewIndex.voteDown();
             // iterate the fields of current table to compare with the rest tables
