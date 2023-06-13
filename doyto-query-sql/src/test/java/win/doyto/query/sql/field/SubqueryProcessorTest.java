@@ -40,4 +40,11 @@ class SubqueryProcessorTest {
         assertThat(clauseFormat).isEqualTo("min_score > ANY(SELECT score FROM user%s)");
     }
 
+
+    @Test
+    void givenCamelCaseWithAllWhenBuildShouldBeConvertedToSnakeCase() {
+        String clauseFormat = SubqueryProcessor.buildClauseFormat("minScoreGtAll", "score", "user");
+        assertThat(clauseFormat).isEqualTo("min_score > ALL(SELECT score FROM user%s)");
+    }
+
 }
