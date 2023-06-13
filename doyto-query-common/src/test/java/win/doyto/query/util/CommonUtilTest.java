@@ -21,10 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static win.doyto.query.util.CommonUtil.*;
 
@@ -62,17 +58,6 @@ class CommonUtilTest {
     @Test
     void replaceHolderInStringShouldReadGetterFirst() {
         assertEquals("_test1_test2_", replaceHolderInString(new PlaceHolderObject("test1"), "_${part1}_${part2}_"));
-    }
-
-    @Test
-    void replaceVariableInString() {
-        String input = "SELECT o_year, SUM(CASE WHEN nation = #{part1} THEN volume ELSE 0 END) / SUM(volume) AS mkt_share";
-        List<Object> args = new ArrayList<>();
-
-        String sql = CommonUtil.replaceVariableInString(input, new PlaceHolderObject("BRAZIL"), args);
-
-        assertThat(sql).isEqualTo("SELECT o_year, SUM(CASE WHEN nation = ? THEN volume ELSE 0 END) / SUM(volume) AS mkt_share");
-        assertThat(args).containsExactly("BRAZIL");
     }
 
     @Getter

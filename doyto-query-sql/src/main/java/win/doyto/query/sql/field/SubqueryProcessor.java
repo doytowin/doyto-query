@@ -42,7 +42,6 @@ import static win.doyto.query.sql.Constant.*;
  * @since 1.0.1
  */
 public class SubqueryProcessor implements FieldProcessor {
-    private static final Pattern PTN_DIGITS_END = Pattern.compile("\\d++$");
     private static final Pattern PTN_SUBQUERY = Pattern.compile("^(\\w+)\\$(\\w+)From(\\w+)$");
     private final String clauseFormat;
     private String joinConditions = EMPTY;
@@ -50,9 +49,7 @@ public class SubqueryProcessor implements FieldProcessor {
 
     public SubqueryProcessor(Field field) {
         Subquery subquery = field.getAnnotation(Subquery.class);
-        String fieldName = field.getName();
-        fieldName = PTN_DIGITS_END.matcher(fieldName).replaceFirst(EMPTY);
-
+        String fieldName = BuildHelper.resolveFieldName(field.getName());
         String tableName = BuildHelper.resolveTableName(subquery.from());
 
         if (subquery.distinct()) {

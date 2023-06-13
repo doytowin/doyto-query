@@ -123,4 +123,7 @@ public class TestQuery extends PageQuery {
     // for MongoDB
     private Boolean statusExists;
 
+    private String nation;
+    private String nationEq;
+
 }

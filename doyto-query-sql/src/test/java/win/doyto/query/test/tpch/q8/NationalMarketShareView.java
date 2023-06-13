@@ -36,6 +36,6 @@ import javax.persistence.Column;
 public class NationalMarketShareView {
     @GroupBy
     private String o_year;
-    @Column(name = "SUM(CASE WHEN nation = #{n_name} THEN volume ELSE 0 END) / SUM(volume)")
+    @Column(name = "SUM(CASE WHEN #{nationEq} THEN volume ELSE 0 END) / SUM(volume)")
     private BigDecimal mkt_share;
 }

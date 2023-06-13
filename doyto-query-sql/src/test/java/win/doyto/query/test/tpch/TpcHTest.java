@@ -365,7 +365,7 @@ class TpcHTest {
 
         NationalMarketShareQuery query = NationalMarketShareQuery
                 .builder()
-                .n_name("BRAZIL")
+                .nationEq("BRAZIL")
                 .allNationsQuery(allNationsQuery).sort("o_year")
                 .build();
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, NationalMarketShareView.class);
@@ -488,8 +488,8 @@ class TpcHTest {
     @Test
     void q12ShippingModesAndOrderPriorityQuery() {
         String expected = "SELECT l_shipmode," +
-                " SUM(CASE WHEN o_orderpriority = '1-URGENT'OR o_orderpriority = '2-HIGH'THEN 1 ELSE 0 END) AS high_line_count," +
-                " SUM(CASE WHEN o_orderpriority <> '1-URGENT'AND o_orderpriority <> '2-HIGH'THEN 1 ELSE 0 END) AS low_line_count" +
+                " SUM(CASE WHEN o_orderpriority = ? OR o_orderpriority = ? THEN 1 ELSE 0 END) AS high_line_count," +
+                " SUM(CASE WHEN o_orderpriority <> ? AND o_orderpriority <> ? THEN 1 ELSE 0 END) AS low_line_count" +
                 " FROM orders, lineitem" +
                 " WHERE l_orderkey = o_orderkey" +
                 " AND l_shipmode IN (?, ?)" +
@@ -503,6 +503,8 @@ class TpcHTest {
         LocalDate date = LocalDate.of(1994, 1, 1);
         ShippingModesAndOrderPriorityQuery query = ShippingModesAndOrderPriorityQuery
                 .builder()
+                .o_orderpriority1("1-URGENT")
+                .o_orderpriority2("2-HIGH")
                 .l_shipmodeIn(Arrays.asList("MAIL", "SHIP"))
                 .l_receiptdateGe(Date.valueOf(date))
                 .l_receiptdateLt(Date.valueOf(date.plus(1, YEARS)))
@@ -513,6 +515,8 @@ class TpcHTest {
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(
+                "1-URGENT", "2-HIGH",
+                "1-URGENT", "2-HIGH",
                 "MAIL", "SHIP",
                 Date.valueOf(date), Date.valueOf(date.plus(1, YEARS))
         );
@@ -521,22 +525,26 @@ class TpcHTest {
     @Test
     void q14PromotionEffectQuery() {
         String expected = "SELECT" +
-                " 100.00 * SUM(CASE WHEN p_type LIKE 'PROMO%'THEN l_extendedprice * (1 - l_discount)ELSE 0 END) / SUM(l_extendedprice * (1 - l_discount)) AS promo_revenue" +
+                " 100.00 * SUM(CASE WHEN p_type LIKE ? THEN l_extendedprice * (1 - l_discount) ELSE 0 END)" +
+                " / SUM(l_extendedprice * (1 - l_discount)) AS promo_revenue" +
                 " FROM lineitem, part" +
                 " WHERE l_partkey = p_partkey" +
                 " AND l_shipdate >= ?" +
                 " AND l_shipdate < ?";
 
-        LocalDate date = LocalDate.of(1995, 12, 1);
+        Date startShipdate = Date.valueOf(LocalDate.of(1995, 12, 1));
+        Date endShipdate = Date.valueOf(LocalDate.of(1995, 12, 31));
         PromotionEffectQuery query = PromotionEffectQuery
                 .builder()
-                .l_shipdateGe(Date.valueOf(date))
-                .l_shipdateLt(Date.valueOf(date.plus(1, MONTHS)))
+                .pTypeStart("PROMO")
+                .l_shipdateGe(startShipdate)
+                .l_shipdateLt(endShipdate)
                 .build();
 
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, PromotionEffectView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly("PROMO%", startShipdate, endShipdate);
     }
 
     @Test

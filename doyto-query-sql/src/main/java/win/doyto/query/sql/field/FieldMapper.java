@@ -50,6 +50,7 @@ public final class FieldMapper {
     }
 
     public static void init(Field field) {
+        if (FIELD_PROCESSOR_MAP.containsKey(field)) return;
         FieldProcessor processor;
         if (Or.class.isAssignableFrom(field.getType())) {
             processor = new ConnectableFieldProcessor(field, OR);

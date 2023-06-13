@@ -28,7 +28,6 @@ import win.doyto.query.config.GlobalConfiguration;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
@@ -49,7 +48,6 @@ public class CommonUtil {
             = Collectors.joining(", ", "(", ")");
     private static final Pattern PTN_REPLACE = Pattern.compile("\\w*");
     private static final Pattern PTN_DOLLAR_EX = Pattern.compile("\\$\\{(\\w+)}");
-    private static final Pattern PTN_SHARP_EX = Pattern.compile("#\\{(\\w+)}");
     private static final Pattern PTN_SPLIT_OR = Pattern.compile("Or(?=[A-Z])");
 
     public static boolean isDynamicTable(String input) {
@@ -76,23 +74,7 @@ public class CommonUtil {
         return matcher.appendTail(sb).toString();
     }
 
-    public static String replaceVariableInString(String input, Object target, List<Object> args) {
-        Matcher matcher = PTN_SHARP_EX.matcher(input);
-        if (!matcher.find()) {
-            return input;
-        }
-
-        StringBuffer sb = new StringBuffer();
-        do {
-            String fieldName = matcher.group(1);
-            Object value = readFieldGetter(target, fieldName);
-            args.add(value);
-            matcher.appendReplacement(sb, "?");
-        } while (matcher.find());
-        return matcher.appendTail(sb).toString();
-    }
-
-    static Object readFieldGetter(Object target, String fieldName) {
+    public static Object readFieldGetter(Object target, String fieldName) {
         Object value;
         try {
             value = MethodUtils.invokeMethod(target, true, "get" + StringUtils.capitalize(fieldName));

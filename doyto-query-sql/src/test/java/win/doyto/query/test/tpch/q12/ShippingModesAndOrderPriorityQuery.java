@@ -22,6 +22,7 @@ import win.doyto.query.core.PageQuery;
 
 import java.sql.Date;
 import java.util.List;
+import javax.persistence.Transient;
 
 /**
  * ShippingModesAndOrderPriorityQuery
@@ -35,6 +36,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ShippingModesAndOrderPriorityQuery extends PageQuery {
+    @Transient
+    private String o_orderpriority1;
+    @Transient
+    private String o_orderpriority2;
+
     private List<String> l_shipmodeIn;
 
     @Builder.Default

@@ -55,7 +55,7 @@ public class RelationalQueryBuilder {
             DoytoQuery query = SerializationUtils.clone(q);
             EntityMetadata entityMetadata = EntityMetadata.build(entityClass);
 
-            String columns = CommonUtil.replaceVariableInString(entityMetadata.getColumnsForSelect(), q, argList);
+            String columns = BuildHelper.replaceExpressionInString(entityMetadata.getColumnsForSelect(), query, argList);
             StringBuilder sqlBuilder = new StringBuilder(SELECT).append(columns).append(FROM);
 
             if (entityMetadata.getNested() != null) {

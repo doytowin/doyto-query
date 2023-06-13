@@ -38,6 +38,6 @@ import javax.persistence.Transient;
 @AllArgsConstructor
 public class NationalMarketShareQuery extends PageQuery {
     @Transient
-    private String n_name;
+    private String nationEq;
     private AllNationsQuery allNationsQuery;
 }

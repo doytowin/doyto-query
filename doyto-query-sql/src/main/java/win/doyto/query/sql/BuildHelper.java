@@ -25,6 +25,7 @@ import win.doyto.query.annotation.EntityAlias;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.LockMode;
+import win.doyto.query.core.QuerySuffix;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.sql.field.FieldMapper;
 import win.doyto.query.util.ColumnUtil;
@@ -35,6 +36,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -42,6 +44,7 @@ import javax.persistence.Entity;
 
 import static win.doyto.query.core.QuerySuffix.isValidValue;
 import static win.doyto.query.sql.Constant.*;
+import static win.doyto.query.util.CommonUtil.getField;
 import static win.doyto.query.util.CommonUtil.readFieldGetter;
 
 /**
@@ -52,6 +55,8 @@ import static win.doyto.query.util.CommonUtil.readFieldGetter;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BuildHelper {
     private static final Pattern PTN_SORT = Pattern.compile(",(asc|desc)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PTN_SHARP_EX = Pattern.compile("#\\{(\\w+)}");
+    private static final Pattern PTN_DIGITS_END = Pattern.compile("\\d++$");
 
     static String resolveTableName(Class<?> entityClass) {
         String tableName;
@@ -160,4 +165,32 @@ public class BuildHelper {
                         .collect(CommonUtil.CLT_COMMA_WITH_PAREN);
     }
 
+    public static String replaceExpressionInString(String input, Object target, List<Object> args) {
+        Matcher matcher = PTN_SHARP_EX.matcher(input);
+        if (!matcher.find()) {
+            return input;
+        }
+
+        StringBuffer sb = new StringBuffer();
+        do {
+            String fieldName = matcher.group(1);
+            Object value = readFieldGetter(target, fieldName);
+
+            QuerySuffix suffix = QuerySuffix.resolve(BuildHelper.resolveFieldName(fieldName));
+            if (suffix == QuerySuffix.NONE) {
+                matcher.appendReplacement(sb, "?");
+                args.add(value);
+            } else {
+                Field field = getField(target, fieldName);
+                FieldMapper.init(field);
+                String ex = FieldMapper.execute(field, EMPTY, args, value);
+                matcher.appendReplacement(sb, ex);
+            }
+        } while (matcher.find());
+        return matcher.appendTail(sb).toString();
+    }
+
+    public static String resolveFieldName(String fieldName) {
+        return PTN_DIGITS_END.matcher(fieldName).replaceFirst(EMPTY);
+    }
 }
