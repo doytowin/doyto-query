@@ -45,5 +45,5 @@ public class MinimumCostSupplierQuery extends PageQuery {
     private String r_name;
     @Subquery(select = "MIN(ps_supplycost)", parentColumns = {"p_partkey"},
             from = {PartsuppEntity.class, SupplierEntity.class, NationEntity.class, RegionEntity.class})
-    private SupplyCostQuery ps_supplycost;
+    private SupplyCostQuery psSupplycost;
 }

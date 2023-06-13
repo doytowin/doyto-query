@@ -78,7 +78,7 @@ public class SubqueryProcessor implements FieldProcessor {
         return matcher.find() ? matcher : null;
     }
 
-    private static String buildClauseFormat(String fieldName, String column, String table) {
+    static String buildClauseFormat(String fieldName, String column, String table) {
         SqlQuerySuffix querySuffix = SqlQuerySuffix.resolve(fieldName);
 
         String clause;
@@ -91,6 +91,7 @@ public class SubqueryProcessor implements FieldProcessor {
             clause = columnName + SPACE + querySuffix1.getOp() + SPACE + querySuffix.getOp();
         } else {
             String columnName = querySuffix.removeSuffix(fieldName);
+            columnName = ColumnUtil.convertColumn(columnName);
             clause = columnName + SPACE + querySuffix.getOp() + SPACE;
         }
         return clause + OP + SELECT + column + FROM + table + "%s" + CP;

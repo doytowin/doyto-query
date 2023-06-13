@@ -155,7 +155,7 @@ class TpcHTest {
                 .p_size(15)
                 .p_typeEnd("BRASS")
                 .r_name("EUROPE")
-                .ps_supplycost(SupplyCostQuery.builder().r_name("EUROPE").build())
+                .psSupplycost(SupplyCostQuery.builder().r_name("EUROPE").build())
                 .sort("s_acctbal,DESC;n_name;s_name;p_partkey")
                 .build();
 
