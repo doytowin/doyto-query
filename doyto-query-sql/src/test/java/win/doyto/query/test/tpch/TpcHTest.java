@@ -114,13 +114,14 @@ class TpcHTest {
                 "avg(l_discount) AS avg_disc, " +
                 "count(*) AS count_order" +
                 " FROM lineitem" +
-                " WHERE l_shipdate <= date '1998-12-01' - interval '?' day (3)" +
+                " WHERE l_shipdate <= ?" +
                 " GROUP BY l_returnflag, l_linestatus" +
                 " ORDER BY l_returnflag, l_linestatus";
 
+        Date date = Date.valueOf(LocalDate.of(1998, 9, 1));
         PricingSummaryQuery query = PricingSummaryQuery
                 .builder()
-                .shipdateDelta(90)
+                .lShipdateLe(date)
                 .sort("l_returnflag;l_linestatus")
                 .build();
 

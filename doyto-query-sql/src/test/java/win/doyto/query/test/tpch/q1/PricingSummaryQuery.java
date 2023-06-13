@@ -21,8 +21,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.QueryField;
 import win.doyto.query.core.PageQuery;
+
+import java.util.Date;
 
 /**
  * PricingSummaryQuery
@@ -36,6 +37,5 @@ import win.doyto.query.core.PageQuery;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PricingSummaryQuery extends PageQuery {
-    @QueryField(and = "l_shipdate <= date '1998-12-01' - interval '?' day (3)")
-    private int shipdateDelta;
+    private Date lShipdateLe;
 }
