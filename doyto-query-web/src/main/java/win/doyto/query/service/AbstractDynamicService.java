@@ -92,8 +92,15 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
         try {
             EntityType entityType = getEntityType();
             dataAccess = DataAccessManager.create(entityType, beanFactory, entityClass);
+            checkAspect();
         } catch (Exception e) {
             throw new BeanInitializationException("Failed to create DataAccess for " + entityClass.getName(), e);
+        }
+    }
+
+    void checkAspect() {
+        if (!entityAspects.isEmpty()) {
+            dataAccess = new AspectDataAccess<>(dataAccess, entityAspects, transactionOperations);
         }
     }
 
@@ -174,15 +181,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
 
     public void create(E e) {
         userIdProvider.setupUserId(e);
-        if (!entityAspects.isEmpty()) {
-            transactionOperations.execute(s -> {
-                dataAccess.create(e);
-                entityAspects.forEach(entityAspect -> entityAspect.afterCreate(e));
-                return null;
-            });
-        } else {
-            dataAccess.create(e);
-        }
+        dataAccess.create(e);
         evictCache(resolveCacheKey(e.toIdWrapper()));
     }
 
@@ -195,21 +194,11 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     }
 
     private int doUpdate(E e, CacheInvoker<Integer> cacheInvoker) {
-        E origin;
-        if (e == null || (origin = dataAccess.get(e.toIdWrapper())) == null) {
+        if (e == null) {
             return 0;
         }
         userIdProvider.setupUserId(e);
-        if (!entityAspects.isEmpty()) {
-            transactionOperations.execute(s -> {
-                cacheInvoker.invoke();
-                E current = dataAccess.get(e.toIdWrapper());
-                entityAspects.forEach(entityAspect -> entityAspect.afterUpdate(origin, current));
-                return null;
-            });
-        } else {
-            cacheInvoker.invoke();
-        }
+        cacheInvoker.invoke();
         evictCache(resolveCacheKey(e.toIdWrapper()));
         return 1;
     }
@@ -256,15 +245,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     public E delete(IdWrapper<I> w) {
         E e = get(w);
         if (e != null) {
-            if (!entityAspects.isEmpty()) {
-                transactionOperations.execute(s -> {
-                    dataAccess.delete(w);
-                    entityAspects.forEach(entityAspect -> entityAspect.afterDelete(e));
-                    return null;
-                });
-            } else {
-                dataAccess.delete(w);
-            }
+            dataAccess.delete(w);
             String key = resolveCacheKey(w);
             evictCache(key);
             entityCacheWrapper.execute(key, () -> null);

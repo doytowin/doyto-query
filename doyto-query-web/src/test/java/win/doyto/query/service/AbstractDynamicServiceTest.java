@@ -66,7 +66,7 @@ class AbstractDynamicServiceTest {
         TestEntity testEntity = testService.get(1);
         testService.update(testEntity);
         testService.get(1);
-        verify(testService.dataAccess, times(3)).get(IdWrapper.build(1));
+        verify(testService.dataAccess, times(2)).get(IdWrapper.build(1));
     }
 
     @Test
@@ -81,6 +81,8 @@ class AbstractDynamicServiceTest {
         });
 
         testService.entityAspects.add(entityAspect);
+        testService.checkAspect();
+
         TestEntity e = new TestEntity();
         e.setUsername("test1");
         testService.create(e);
