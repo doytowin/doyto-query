@@ -23,6 +23,6 @@ jobs:
   deploy:
     name: Call Deploy Workflow
     needs: build
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     uses: doytowin/doyto-devops/.github/workflows/deploy.yml@main
     secrets: inherit
