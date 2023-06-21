@@ -71,7 +71,8 @@ class ReplSetConfig implements InitializingBean {
 
     private boolean isReplicaInitializing(Document document) {
         Document electionCandidateMetrics = document.get("electionCandidateMetrics", Document.class);
-        return !electionCandidateMetrics.containsKey("wMajorityWriteAvailabilityDate");
+        return electionCandidateMetrics != null &&
+                !electionCandidateMetrics.containsKey("wMajorityWriteAvailabilityDate");
     }
 
     private Document getReplicaStatus(MongoDatabase admin) {
