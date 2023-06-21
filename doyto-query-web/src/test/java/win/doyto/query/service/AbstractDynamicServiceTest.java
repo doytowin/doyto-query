@@ -19,6 +19,7 @@ package win.doyto.query.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.PageList;
 import win.doyto.query.entity.EntityAspect;
@@ -39,11 +40,13 @@ import static win.doyto.query.test.TestEntity.initUserEntities;
  */
 class AbstractDynamicServiceTest {
     TestService testService;
+    DataAccess<TestEntity, Integer, TestQuery> spyDataAccess;
 
     @BeforeEach
     void setUp() {
         testService = new TestService();
         testService.dataAccess = spy(testService.dataAccess);
+        spyDataAccess = testService.dataAccess;
         testService.create(initUserEntities());
     }
 
@@ -57,16 +60,15 @@ class AbstractDynamicServiceTest {
         Thread.sleep(10L);
 
         testService.get(1);
-        verify(testService.dataAccess, times(1)).get(IdWrapper.build(1));
+        verify(spyDataAccess, times(1)).get(IdWrapper.build(1));
     }
 
     @Test
     void supportEvictCache() {
-        testService.setCacheManager(new ConcurrentMapCacheManager());
         TestEntity testEntity = testService.get(1);
         testService.update(testEntity);
         testService.get(1);
-        verify(testService.dataAccess, times(2)).get(IdWrapper.build(1));
+        verify(spyDataAccess, times(2)).get(IdWrapper.build(1));
     }
 
     @Test

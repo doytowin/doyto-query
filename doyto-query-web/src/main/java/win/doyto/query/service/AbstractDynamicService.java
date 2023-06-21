@@ -17,20 +17,19 @@
 package win.doyto.query.service;
 
 import lombok.Setter;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.support.NoOpCache;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.*;
-import win.doyto.query.cache.CacheInvoker;
-import win.doyto.query.cache.CacheWrapper;
+import org.springframework.transaction.support.SimpleTransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionOperations;
+import org.springframework.transaction.support.TransactionTemplate;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
@@ -40,14 +39,14 @@ import win.doyto.query.entity.UserIdProvider;
 import win.doyto.query.memory.MemoryDataAccess;
 import win.doyto.query.util.BeanUtil;
 
+import javax.annotation.Resource;
+import javax.persistence.Entity;
+import javax.persistence.EntityType;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.annotation.Resource;
-import javax.persistence.Entity;
-import javax.persistence.EntityType;
 
 /**
  * AbstractDynamicService
@@ -60,9 +59,6 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     protected DataAccess<E, I, Q> dataAccess;
 
     protected final Class<E> entityClass;
-
-    protected final CacheWrapper<E> entityCacheWrapper = CacheWrapper.createInstance();
-    protected final CacheWrapper<List<E>> queryCacheWrapper = CacheWrapper.createInstance();
 
     @Autowired(required = false)
     private UserIdProvider<?> userIdProvider = () -> null;
@@ -114,57 +110,25 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
         transactionOperations = new TransactionTemplate(transactionManager);
     }
 
-    @SuppressWarnings("java:S4973")
+    @SuppressWarnings({"java:S4973", "StringEquality"})
     @Value("${doyto.query.caches:}")
     public void setCacheList(String caches) {
         List<String> cacheList = Arrays.stream(caches.split("[,\\s]")).filter(s -> !s.isEmpty()).collect(Collectors.toList());
         if (cacheManager != null) {
             String cacheName = getCacheName();
             if (cacheList.contains(cacheName) || cacheName != entityClass.getSimpleName().intern()) {
-                entityCacheWrapper.setCache(cacheManager.getCache(cacheName));
-                queryCacheWrapper.setCache(cacheManager.getCache(getQueryCacheName()));
+                dataAccess = new CachedDataAccess<>(dataAccess, cacheManager, cacheName);
             }
         }
-    }
-
-    protected String resolveCacheKey(IdWrapper<I> w) {
-        return w.toCacheKey();
     }
 
     protected String getCacheName() {
         return entityClass.getSimpleName().intern();
     }
 
-    private String getQueryCacheName() {
-        return getCacheName() + ":query";
-    }
-
-    protected void clearCache() {
-        entityCacheWrapper.clear();
-        queryCacheWrapper.clear();
-    }
-
-    protected void evictCache(String key) {
-        entityCacheWrapper.evict(key);
-        queryCacheWrapper.clear();
-    }
-
-    protected boolean cacheable() {
-        return !(entityCacheWrapper.getCache() instanceof NoOpCache);
-    }
-
     @Override
     public List<E> query(Q query) {
-        String key = generateCacheKey(query);
-        return queryCacheWrapper.execute(key, () -> dataAccess.query(query));
-    }
-
-    protected String generateCacheKey(Q query) {
-        String key = null;
-        if (cacheable() && !TransactionSynchronizationManager.isActualTransactionActive()) {
-            key = ToStringBuilder.reflectionToString(query, NonNullToStringStyle.NO_CLASS_NAME_NON_NULL_STYLE);
-        }
-        return key;
+        return dataAccess.query(query);
     }
 
     public long count(Q query) {
@@ -182,25 +146,16 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     public void create(E e) {
         userIdProvider.setupUserId(e);
         dataAccess.create(e);
-        evictCache(resolveCacheKey(e.toIdWrapper()));
     }
 
     public int update(E e) {
-        return doUpdate(e, () -> dataAccess.update(e));
+        userIdProvider.setupPatchUserId(e);
+        return dataAccess.update(e);
     }
 
     public int patch(E e) {
-        return doUpdate(e, () -> dataAccess.patch(e));
-    }
-
-    private int doUpdate(E e, CacheInvoker<Integer> cacheInvoker) {
-        if (e == null) {
-            return 0;
-        }
-        userIdProvider.setupUserId(e);
-        cacheInvoker.invoke();
-        evictCache(resolveCacheKey(e.toIdWrapper()));
-        return 1;
+        userIdProvider.setupPatchUserId(e);
+        return dataAccess.patch(e);
     }
 
     @Override
@@ -210,34 +165,28 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
                 userIdProvider.setupUserId(e);
             }
         }
-        int insert = dataAccess.batchInsert(entities, columns);
-        clearCache();
-        return insert;
+        return dataAccess.batchInsert(entities, columns);
     }
 
     public int patch(E e, Q q) {
         userIdProvider.setupPatchUserId(e);
-        int patch = dataAccess.patch(e, q);
-        clearCache();
-        return patch;
+        return dataAccess.patch(e, q);
     }
 
     public int delete(Q query) {
-        int delete = dataAccess.delete(query);
-        clearCache();
-        return delete;
+        return dataAccess.delete(query);
     }
 
     @Override
     public E get(IdWrapper<I> w) {
-        if (TransactionSynchronizationManager.isActualTransactionActive()) {
-            return fetch(w);
-        }
-        return entityCacheWrapper.execute(resolveCacheKey(w), () -> fetch(w));
+        return dataAccess.get(w);
     }
 
     @Override
     public E fetch(IdWrapper<I> w) {
+        if (dataAccess instanceof CachedDataAccess) {
+            return ((CachedDataAccess<E, I, Q>) dataAccess).getDelegate().get(w);
+        }
         return dataAccess.get(w);
     }
 
@@ -246,9 +195,6 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
         E e = get(w);
         if (e != null) {
             dataAccess.delete(w);
-            String key = resolveCacheKey(w);
-            evictCache(key);
-            entityCacheWrapper.execute(key, () -> null);
         }
         return e;
     }
