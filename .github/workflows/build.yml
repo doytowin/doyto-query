@@ -8,6 +8,7 @@ on:
       - 'modules/**'
       - 'features/**'
       - 'issues/**'
+      - 'refactor/**'
   pull_request:
     types: [opened, synchronize, reopened]
 
