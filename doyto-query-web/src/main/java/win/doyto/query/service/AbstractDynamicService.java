@@ -17,9 +17,9 @@
 package win.doyto.query.service;
 
 import lombok.Setter;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
  * @author f0rb on 2019-05-28
  */
 public abstract class AbstractDynamicService<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
-        implements DynamicService<E, I, Q> {
+        implements DynamicService<E, I, Q>, InitializingBean {
 
     protected DataAccess<E, I, Q> dataAccess;
 
@@ -72,6 +72,10 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     protected List<EntityAspect<E>> entityAspects = new LinkedList<>();
 
     protected TransactionOperations transactionOperations = NoneTransactionOperations.instance;
+    private List<String> cacheList;
+
+    @Resource
+    private BeanFactory beanFactory;
 
     @SuppressWarnings("unchecked")
     protected AbstractDynamicService() {
@@ -83,21 +87,18 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
         return getClass();
     }
 
-    @Resource
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        try {
-            EntityType entityType = getEntityType();
-            dataAccess = DataAccessManager.create(entityType, beanFactory, entityClass);
-            checkAspect();
-        } catch (Exception e) {
-            throw new BeanInitializationException("Failed to create DataAccess for " + entityClass.getName(), e);
-        }
+    @Autowired(required = false)
+    public void setTransactionManager(PlatformTransactionManager transactionManager) {
+        transactionOperations = new TransactionTemplate(transactionManager);
     }
 
-    void checkAspect() {
-        if (!entityAspects.isEmpty()) {
-            dataAccess = new AspectDataAccess<>(dataAccess, entityAspects, transactionOperations);
-        }
+    @Value("${doyto.query.caches:}")
+    public void setCacheList(String caches) {
+        cacheList = Arrays.stream(caches.split("[,\\s]")).filter(s -> !s.isEmpty()).collect(Collectors.toList());
+    }
+
+    protected String getCacheName() {
+        return entityClass.getSimpleName().intern();
     }
 
     private EntityType getEntityType() {
@@ -105,25 +106,26 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
         return entity != null ? entity.type() : EntityType.RELATIONAL;
     }
 
-    @Autowired(required = false)
-    public void setTransactionManager(PlatformTransactionManager transactionManager) {
-        transactionOperations = new TransactionTemplate(transactionManager);
-    }
-
     @SuppressWarnings({"java:S4973", "StringEquality"})
-    @Value("${doyto.query.caches:}")
-    public void setCacheList(String caches) {
-        List<String> cacheList = Arrays.stream(caches.split("[,\\s]")).filter(s -> !s.isEmpty()).collect(Collectors.toList());
-        if (cacheManager != null) {
-            String cacheName = getCacheName();
-            if (cacheList.contains(cacheName) || cacheName != entityClass.getSimpleName().intern()) {
-                dataAccess = new CachedDataAccess<>(dataAccess, cacheManager, cacheName);
+    @Override
+    public void afterPropertiesSet() {
+        try {
+            if (beanFactory != null) {
+                EntityType entityType = getEntityType();
+                dataAccess = DataAccessManager.create(entityType, beanFactory, entityClass);
             }
+            if (!entityAspects.isEmpty()) {
+                dataAccess = new AspectDataAccess<>(dataAccess, entityAspects, transactionOperations);
+            }
+            if (cacheManager != null) {
+                String cacheName = getCacheName();
+                if (cacheList.contains(cacheName) || cacheName != entityClass.getSimpleName().intern()) {
+                    dataAccess = new CachedDataAccess<>(dataAccess, cacheManager, cacheName);
+                }
+            }
+        } catch (Exception e) {
+            throw new BeanInitializationException("Failed to create DataAccess for " + entityClass.getName(), e);
         }
-    }
-
-    protected String getCacheName() {
-        return entityClass.getSimpleName().intern();
     }
 
     @Override

@@ -55,6 +55,8 @@ class AbstractDynamicServiceTest {
     void supportCache() throws InterruptedException {
         testService.setCacheManager(new ConcurrentMapCacheManager());
         testService.setCacheList("");
+        testService.afterPropertiesSet();
+
         testService.get(1);
 
         Thread.sleep(10L);
@@ -83,7 +85,7 @@ class AbstractDynamicServiceTest {
         });
 
         testService.entityAspects.add(entityAspect);
-        testService.checkAspect();
+        testService.afterPropertiesSet();
 
         TestEntity e = new TestEntity();
         e.setUsername("test1");
