@@ -16,10 +16,13 @@
 
 package win.doyto.query.service;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Delegate;
 import org.springframework.transaction.support.TransactionOperations;
 import win.doyto.query.core.DataAccess;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.entity.EntityAspect;
 import win.doyto.query.entity.Persistable;
@@ -33,9 +36,10 @@ import java.util.List;
  * @author f0rb on 2023/6/16
  * @since 1.0.2
  */
-@SuppressWarnings("DataFlowIssue")
+@SuppressWarnings({"DataFlowIssue", "java:S2259"})
 @AllArgsConstructor
-public class AspectDataAccess<E extends Persistable<I>, I extends Serializable, Q> implements DataAccess<E, I, Q> {
+public class AspectDataAccess<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
+        implements DataAccess<E, I, Q> {
 
     @Delegate(excludes = ExcludedDataAccess.class)
     private final DataAccess<E, I, Q> delegate;
@@ -94,10 +98,12 @@ public class AspectDataAccess<E extends Persistable<I>, I extends Serializable, 
 
 
     @SuppressWarnings({"unused", "java:S1610"})
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     private abstract class ExcludedDataAccess {
         public abstract void create(E e);
 
         public abstract void update(E e);
+
         public abstract void patch(E e);
 
         public abstract int delete(IdWrapper<I> w);

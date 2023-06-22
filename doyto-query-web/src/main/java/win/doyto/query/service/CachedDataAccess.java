@@ -23,6 +23,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import win.doyto.query.cache.CacheWrapper;
 import win.doyto.query.core.DataAccess;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.entity.Persistable;
 
@@ -35,7 +36,7 @@ import java.util.List;
  * @author f0rb on 2023/6/16
  * @since 1.0.2
  */
-public class CachedDataAccess<E extends Persistable<I>, I extends Serializable, Q>
+public class CachedDataAccess<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
         implements DataAccess<E, I, Q> {
 
     @Getter

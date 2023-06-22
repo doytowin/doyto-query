@@ -16,7 +16,9 @@
 
 package win.doyto.query.service;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Delegate;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
@@ -71,6 +73,7 @@ public class UserIdDataAccess<E extends Persistable<I>, I extends Serializable, 
     }
 
     @SuppressWarnings({"unused", "java:S1610"})
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     private abstract class ExcludedDataAccess {
         public abstract void create(E e);
         public abstract int batchInsert(Iterable<E> entities, String... columns);
