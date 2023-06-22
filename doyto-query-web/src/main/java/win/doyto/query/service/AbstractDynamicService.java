@@ -44,6 +44,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityType;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -161,7 +162,7 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     }
 
     @Override
-    public int create(Iterable<E> entities, String... columns) {
+    public int create(Collection<E> entities, String... columns) {
         return dataAccess.batchInsert(entities, columns);
     }
 

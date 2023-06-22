@@ -21,6 +21,7 @@ import win.doyto.query.core.IdWrapper;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -62,10 +63,10 @@ public interface DynamicService<E extends Persistable<I>, I extends Serializable
      * </ol>
      *
      * @param entities entities to insert
-     * @param columns update columns on duplicate
+     * @param columns  update columns on duplicate
      * @return amount of updated entities
      */
-    int create(Iterable<E> entities, String... columns);
+    int create(Collection<E> entities, String... columns);
 
     /**
      * 执行<i>UPDATE [TABLE] SET ... WHERE ...</i>
