@@ -4,6 +4,8 @@ logging:
     win.doyto.query.core: debug
     org.springframework.test.context.transaction.TransactionContext: warn
     org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: trace
+    org.springframework.boot.autoconfigure.mongo.embedded: warn
+    org.mongodb.driver.protocol.command: info
 
 server:
   servlet:

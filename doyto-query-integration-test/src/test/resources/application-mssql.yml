@@ -1,0 +1,18 @@
+logging:
+  level:
+    win.doyto.query.core: info
+    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: info
+
+spring:
+  datasource:
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://localhost:1433;databaseName=master;trustServerCertificate=true;
+    username: doytowin
+    password: Pa55word
+    hikari:
+      transaction-isolation: 4096
+
+doyto:
+  query:
+    config:
+      dialect: win.doyto.query.dialect.SQLServerDialect
