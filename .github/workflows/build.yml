@@ -9,7 +9,7 @@ on:
       - 'features/**'
       - 'issues/**'
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [ opened, synchronize, reopened ]
 
 jobs:
   build:
@@ -37,11 +37,15 @@ jobs:
     with:
       image-name: ${{ matrix.image-name }}
       docker-run: ${{ matrix.docker-run }}
+  javadoc:
+    name: Call Javadoc Workflow
+    uses: doytowin/doyto-devops/.github/workflows/javadoc.yml@main
   deploy:
     name: Call Deploy Workflow
     needs:
-    - build
-    - test
+      - build
+      - test
+      - javadoc
     if: github.event_name != 'pull_request'
     uses: doytowin/doyto-devops/.github/workflows/deploy.yml@main
     secrets: inherit
