@@ -123,11 +123,10 @@ public enum QuerySuffix {
     static class NotInPredicate extends InPredicate {
         @Override
         public boolean test(Object o) {
-            if (o instanceof Collection && !((Collection<?>) o).isEmpty() || o instanceof DoytoQuery) {
-                return true;
+            if (!(o instanceof Collection || o instanceof DoytoQuery)) {
+                log.warn("Type of field which ends with In/NotIn should be Collection or DoytoQuery.");
             }
-            log.warn("Type of field which ends with In/NotIn should be Collection or DoytoQuery.");
-            return false;
+            return o instanceof Collection && !((Collection<?>) o).isEmpty() || o instanceof DoytoQuery;
         }
     }
 
