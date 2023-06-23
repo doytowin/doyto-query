@@ -19,9 +19,19 @@ jobs:
     with:
       sonar-project-name: 'doyto-query'
       sonar-project-key: 'win.doyto:doyto-query'
+  mysql8:
+    name: With MySQL8
+    uses: ./.github/workflows/_integration-test.yml
+    with:
+      image-name: mysql8
+      docker-run: |
+        docker run -p 3306:3306 --name database -e MYSQL_RANDOM_ROOT_PASSWORD=Y \
+          -d ghcr.io/doytowin/doyto-query-image-mysql8:main
   deploy:
     name: Call Deploy Workflow
-    needs: build
+    needs:
+    - build
+    - mysql8
     if: github.event_name != 'pull_request'
     uses: doytowin/doyto-devops/.github/workflows/deploy.yml@main
     secrets: inherit
