@@ -12,6 +12,8 @@ server:
       force: true
 
 spring:
+  profiles:
+    active: @active.profiles@
   cache:
     type: simple
   mongodb:

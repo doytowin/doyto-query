@@ -26,6 +26,8 @@ import win.doyto.query.entity.Persistable;
 import win.doyto.query.sql.field.SqlQuerySuffix;
 import win.doyto.query.util.ColumnUtil;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -33,8 +35,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
-import javax.persistence.Column;
-import javax.persistence.Id;
 
 import static win.doyto.query.sql.Constant.*;
 import static win.doyto.query.util.ColumnUtil.filterFields;
@@ -263,15 +263,17 @@ public class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implemen
     @Override
     public SqlAndArgs buildDeleteAndArgs(DoytoQuery query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> buildDeleteFromTable(query.toIdWrapper())
-                + WHERE + wrappedIdColumn + IN
-                + OP + build(query, argList, idColumn) + CP);
+                + WHERE + wrappedIdColumn + IN + OP
+                + GlobalConfiguration.dialect().wrapSelectForUpdate(build(query, argList, idColumn), wrappedIdColumn)
+                + CP);
     }
 
     @Override
     public SqlAndArgs buildPatchAndArgs(E entity, DoytoQuery query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> buildPatchAndArgs(entity, argList)
-                + WHERE + wrappedIdColumn + IN
-                + OP + build(query, argList, idColumn) + CP);
+                + WHERE + wrappedIdColumn + IN + OP
+                + GlobalConfiguration.dialect().wrapSelectForUpdate(build(query, argList, idColumn), wrappedIdColumn)
+                + CP);
     }
 
     private String buildDeleteFromTable(IdWrapper<?> idWrapper) {

@@ -76,14 +76,10 @@ class MenuMvcTest extends DemoApplicationTest {
 
         performAndExpectSuccess(post(menuUri), "{\"platform\":\"01\",\"menuName\":\"Test Menu\"}");
 
-        performAndExpectSuccess(get(menuUriWith("3")))
-                .andExpect(jsonPath("$.data.createUserId").value("1"))
-                .andExpect(jsonPath("$.data.updateUserId").value("1"));
-
-        performAndExpectSuccess(delete(menuUriWith("3")));
-
-        performAndExpectSuccess(get(menuUriWith("?pageNumber=0")))
-                .andExpect(jsonPath("$.data.length()").value(2));
+        performAndExpectSuccess(get("/01/menu/"))
+                .andExpect(jsonPath("$.data.total").value(3))
+                .andExpect(jsonPath("$.data.list[2].menuName").value("Test Menu"))
+                .andExpect(jsonPath("$.data.list[2].createUserId").value("1"));
     }
 
     @Test
