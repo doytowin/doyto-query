@@ -168,5 +168,17 @@
                 </dependency>
             </dependencies>
         </profile>
+        <profile>
+            <id>postgres</id>
+            <properties>
+                <active.profiles>postgres</active.profiles>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 </project>

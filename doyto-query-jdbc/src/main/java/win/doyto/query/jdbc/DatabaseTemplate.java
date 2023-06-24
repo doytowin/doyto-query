@@ -18,6 +18,7 @@ package win.doyto.query.jdbc;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -84,6 +85,10 @@ public class DatabaseTemplate implements DatabaseOperations {
         } catch (DataRetrievalFailureException e) {
             Number key = keyHolder.getKey();
             return GlobalConfiguration.dialect().resolveKey(Objects.requireNonNull(key), idClass);
+        } catch (InvalidDataAccessApiUsageException e) {
+            Map<String, Object> keys = keyHolder.getKeys();
+            assert keys != null;
+            return idClass.cast(keys.get("ID"));
         }
     }
 }
