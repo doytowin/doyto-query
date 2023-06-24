@@ -22,7 +22,6 @@ jobs:
   test:
     strategy:
       matrix:
-        image-name: [ mysql8, mssql ]
         include:
           - image-name: mysql8
             docker-run: |
@@ -32,6 +31,10 @@ jobs:
             docker-run: |
               docker run -p 1433:1433 --name mssql \
                 -d ghcr.io/doytowin/doyto-query-image-mssql:main
+          - image-name: postgres
+            docker-run: |
+                docker run -p 5432:5432 --name postgres -e TZ='Asia/Shanghai' \
+                -d ghcr.io/doytowin/doyto-query-image-postgres:main
     name: With ${{ matrix.image-name }}
     uses: ./.github/workflows/_integration-test.yml
     with:
