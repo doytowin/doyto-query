@@ -1,9 +1,6 @@
 logging:
   level:
     root: info
-    win.doyto.query.core: debug
-    org.springframework.test.context.transaction.TransactionContext: warn
-    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: trace
     org.springframework.boot.autoconfigure.mongo.embedded: warn
     org.mongodb.driver.protocol.command: info
 
@@ -27,6 +24,5 @@ spring:
 doyto:
   query:
     config:
-      dialect: win.doyto.query.dialect.HSQLDBDialect
       map-camel-case-to-underscore: true
     caches: UserEntity, MenuEntity

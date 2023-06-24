@@ -1,0 +1,9 @@
+logging:
+  level:
+    win.doyto.query.core: debug
+    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: trace
+
+doyto:
+  query:
+    config:
+      dialect: win.doyto.query.dialect.HSQLDBDialect

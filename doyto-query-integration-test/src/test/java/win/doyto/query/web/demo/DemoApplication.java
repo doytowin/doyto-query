@@ -16,14 +16,10 @@
 
 package win.doyto.query.web.demo;
 
-import com.mongodb.client.MongoClient;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import win.doyto.query.mongodb.session.MongoSessionSupplier;
-import win.doyto.query.mongodb.session.MongoSessionThreadLocalSupplier;
 import win.doyto.query.web.WebMvcConfigurerAdapter;
 
 /**
@@ -38,10 +34,4 @@ public class DemoApplication extends WebMvcConfigurerAdapter {
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class);
     }
-
-    @Bean
-    public MongoSessionSupplier mongoSessionSupplier(MongoClient mongoClient) {
-        return MongoSessionThreadLocalSupplier.create(mongoClient);
-    }
-
 }

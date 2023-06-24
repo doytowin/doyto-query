@@ -29,10 +29,6 @@
     <artifactId>doyto-query-integration-test</artifactId>
     <name>doyto-query-integration-test</name>
 
-    <properties>
-        <active.profiles>default</active.profiles>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>win.doyto</groupId>
@@ -48,18 +44,6 @@
             <groupId>win.doyto</groupId>
             <artifactId>doyto-query-dialect</artifactId>
             <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>win.doyto</groupId>
-            <artifactId>doyto-query-mongodb</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>de.flapdoodle.embed</groupId>
-            <artifactId>de.flapdoodle.embed.mongo</artifactId>
-            <version>3.5.4</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -108,11 +92,6 @@
             <artifactId>json-path</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.hsqldb</groupId>
-            <artifactId>hsqldb</artifactId>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -140,6 +119,49 @@
             <properties>
                 <skipTests>false</skipTests>
             </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.8.1</version>
+                        <configuration>
+                            <testExcludes>
+                                <exclude>win/doyto/query/web/demo/mongodb/*</exclude>
+                                <exclude>win/doyto/query/web/demo/module/building/*</exclude>
+                                <exclude>**/BuildingMvcTest.*</exclude>
+                            </testExcludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>test</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <active.profiles>test</active.profiles>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>de.flapdoodle.embed</groupId>
+                    <artifactId>de.flapdoodle.embed.mongo</artifactId>
+                    <version>3.5.4</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>win.doyto</groupId>
+                    <artifactId>doyto-query-mongodb</artifactId>
+                    <version>1.0.0</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.hsqldb</groupId>
+                    <artifactId>hsqldb</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
         </profile>
         <profile>
             <id>mysql8</id>
