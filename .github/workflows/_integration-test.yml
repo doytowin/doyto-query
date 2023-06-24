@@ -45,3 +45,6 @@ jobs:
         run: ${{ inputs.docker-run }}
       - name: Run Test
         run: mvn -B clean test -P docker,${{ inputs.image-name }}
+      - name: Check log
+        if: failure()
+        run: docker logs ${{ inputs.image-name }}
