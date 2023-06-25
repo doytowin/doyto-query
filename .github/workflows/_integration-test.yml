@@ -7,7 +7,7 @@ on:
         required: true
         type: string
       docker-run:
-        required: true
+        required: false
         type: string
 
 jobs:
@@ -40,11 +40,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
       - name: Pull Image
+        if: ${{ inputs.docker-run != '' }}
         run: docker pull ghcr.io/doytowin/doyto-query-image-${{ inputs.image-name }}:main
       - name: Start Container
+        if: ${{ inputs.docker-run != '' }}
         run: ${{ inputs.docker-run }}
       - name: Run Test
         run: mvn -B clean test -P docker,${{ inputs.image-name }}
       - name: Check log
-        if: failure()
+        if: ${{ failure() && inputs.docker-run != '' }}
         run: docker logs ${{ inputs.image-name }}
