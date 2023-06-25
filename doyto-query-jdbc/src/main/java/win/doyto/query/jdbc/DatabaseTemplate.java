@@ -17,9 +17,10 @@
 package win.doyto.query.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.jdbc.core.*;
+import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import win.doyto.query.config.GlobalConfiguration;
@@ -29,7 +30,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * DatabaseTemplate
@@ -39,7 +40,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class DatabaseTemplate implements DatabaseOperations {
 
-    private static final RowMapper<Long> countRowMapper = new SingleColumnRowMapper<>(Long.class);
     private final JdbcOperations jdbcOperations;
 
     @Override
@@ -57,14 +57,14 @@ public class DatabaseTemplate implements DatabaseOperations {
         return jdbcOperations.update(sqlAndArgs.getSql(), sqlAndArgs.getArgs());
     }
 
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings({"java:S2259"})
     @Override
     public long count(SqlAndArgs sqlAndArgs) {
-        return jdbcOperations.queryForObject(sqlAndArgs.getSql(), countRowMapper, sqlAndArgs.getArgs());
+        return jdbcOperations.queryForObject(sqlAndArgs.getSql(), Long.class, sqlAndArgs.getArgs());
     }
 
     @Override
-    public <I> I insert(SqlAndArgs sqlAndArgs, Class<I> idClass) {
+    public <I> List<I> insert(SqlAndArgs sqlAndArgs, Class<I> keyClass, String keyColumn) {
         ArgumentPreparedStatementSetter pss = new ArgumentPreparedStatementSetter(sqlAndArgs.getArgs());
         try {
             KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -73,22 +73,12 @@ public class DatabaseTemplate implements DatabaseOperations {
                 pss.setValues(ps);
                 return ps;
             }, keyHolder);
-            return resolveKey(idClass, keyHolder);
+            return keyHolder.getKeyList().stream()
+                    .map(map -> GlobalConfiguration.dialect().resolveKey((Number) map.get(keyColumn), keyClass))
+                    .collect(Collectors.toList());
         } finally {
             pss.cleanupParameters();
         }
     }
 
-    static <I> I resolveKey(Class<I> idClass, KeyHolder keyHolder) {
-        try {
-            return keyHolder.getKeyAs(idClass);
-        } catch (DataRetrievalFailureException e) {
-            Number key = keyHolder.getKey();
-            return GlobalConfiguration.dialect().resolveKey(Objects.requireNonNull(key), idClass);
-        } catch (InvalidDataAccessApiUsageException e) {
-            Map<String, Object> keys = keyHolder.getKeys();
-            assert keys != null;
-            return idClass.cast(keys.get("ID"));
-        }
-    }
 }

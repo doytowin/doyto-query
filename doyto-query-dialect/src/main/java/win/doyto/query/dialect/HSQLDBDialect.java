@@ -28,4 +28,9 @@ public class HSQLDBDialect implements Dialect {
     public String buildPageSql(String sql, int limit, long offset) {
         return sql + " LIMIT " + limit + (sql.startsWith("SELECT") ? " OFFSET " + offset : "");
     }
+
+    @Override
+    public boolean supportMultiGeneratedKeys() {
+        return true;
+    }
 }

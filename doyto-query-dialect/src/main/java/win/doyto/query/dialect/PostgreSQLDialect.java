@@ -29,4 +29,9 @@ public class PostgreSQLDialect implements Dialect {
     public String buildPageSql(String sql, int limit, long offset) {
         return sql + " LIMIT " + limit + " OFFSET " + offset;
     }
+
+    @Override
+    public boolean supportMultiGeneratedKeys() {
+        return true;
+    }
 }

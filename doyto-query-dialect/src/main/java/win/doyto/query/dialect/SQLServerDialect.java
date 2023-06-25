@@ -36,4 +36,8 @@ public class SQLServerDialect implements Dialect {
         return sql + orderById + " offset " + offset + " row fetch next " + limit + " row only";
     }
 
+    @Override
+    public String resolveKeyColumn(String idColumn) {
+        return "GENERATED_KEYS";
+    }
 }

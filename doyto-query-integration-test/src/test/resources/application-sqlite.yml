@@ -2,3 +2,8 @@ spring:
   datasource:
     driver-class-name: org.sqlite.JDBC
     url: jdbc:sqlite:doytowin.db?date_string_format=yyyy-MM-dd'T'HH:mm:ss.SSS
+
+doyto:
+  query:
+    config:
+      dialect: win.doyto.query.dialect.SQLiteDialect

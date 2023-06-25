@@ -16,35 +16,22 @@
 
 package win.doyto.query.dialect;
 
-import java.util.HashSet;
-import java.util.Set;
+import win.doyto.query.core.Dialect;
 
 /**
- * MySQL8Dialect
+ * SQLiteDialect
  *
- * @author f0rb on 2020-04-02
+ * @author f0rb on 2023/6/25
+ * @since 1.0.2
  */
-public class MySQL8Dialect extends MySQLDialect {
-
-    private final Set<String> keywords;
-
-    public MySQL8Dialect() {
-        keywords = new HashSet<>();
-        keywords.add("rank");
-    }
-
+public class SQLiteDialect implements Dialect {
     @Override
-    public String wrapLabel(String fieldName) {
-        return keywords.contains(fieldName) ? "`" + fieldName + "`" : fieldName;
-    }
-
-    @Override
-    public boolean supportMultiGeneratedKeys() {
-        return true;
+    public String buildPageSql(String sql, int limit, long offset) {
+        return sql + " LIMIT " + limit + " OFFSET " + offset;
     }
 
     @Override
     public String resolveKeyColumn(String idColumn) {
-        return "GENERATED_KEY";
+        return "last_insert_rowid()";
     }
 }

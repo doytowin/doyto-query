@@ -71,4 +71,12 @@ public interface Dialect {
     default String wrapSelectForUpdate(String sql, String column) {
         return sql;
     }
+
+    default boolean supportMultiGeneratedKeys() {
+        return false;
+    }
+
+    default String resolveKeyColumn(String idColumn) {
+        return idColumn;
+    }
 }

@@ -21,6 +21,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
@@ -31,13 +32,13 @@ import win.doyto.query.sql.SqlBuilderFactory;
 import win.doyto.query.util.BeanUtil;
 import win.doyto.query.util.ColumnUtil;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 
 /**
  * JdbcDataAccess
@@ -60,6 +61,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     private final boolean isGeneratedId;
     private final SingleColumnRowMapper<I> idRowMapper = new SingleColumnRowMapper<>();
     private final Class<I> idClass;
+    private final String idColumn;
 
     public JdbcDataAccess(DatabaseOperations databaseOperations, Class<E> entityClass) {
         this(databaseOperations, entityClass, new BeanPropertyRowMapper<>(entityClass));
@@ -74,7 +76,8 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
 
         Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
         this.isGeneratedId = idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class);
-        this.idClass = BeanUtil.getIdClass(entityClass, idFields[0].getName());
+        this.idColumn = idFields[0].getName();
+        this.idClass = BeanUtil.getIdClass(entityClass, idColumn);
     }
 
     @Override
@@ -125,7 +128,8 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
         SqlAndArgs sqlAndArgs = sqlBuilder.buildCreateAndArgs(e);
 
         if (isGeneratedId) {
-            I id = databaseOperations.insert(sqlAndArgs, idClass);
+            String keyColumn = GlobalConfiguration.dialect().resolveKeyColumn(idColumn);
+            I id = databaseOperations.insert(sqlAndArgs, idClass, keyColumn).get(0);
             e.setId(id);
         } else {
             databaseOperations.update(sqlAndArgs);
@@ -137,8 +141,19 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
         if (!entities.iterator().hasNext()) {
             return 0;
         }
-        SqlAndArgs sqlAndArgs = sqlBuilder.buildCreateAndArgs(entities, columns);
-        return databaseOperations.update(sqlAndArgs);
+        if (GlobalConfiguration.dialect().supportMultiGeneratedKeys()) {
+            SqlAndArgs sqlAndArgs = sqlBuilder.buildCreateAndArgs(entities, columns);
+            String keyColumn = GlobalConfiguration.dialect().resolveKeyColumn(idColumn);
+            List<I> ids = databaseOperations.insert(sqlAndArgs, idClass, keyColumn);
+            int i = 0;
+            for (E entity : entities) {
+                entity.setId(ids.get(i++));
+            }
+            return ids.size();
+        } else {
+            SqlAndArgs sqlAndArgs = sqlBuilder.buildCreateAndArgs(entities, columns);
+            return databaseOperations.update(sqlAndArgs);
+        }
     }
 
     @Override
