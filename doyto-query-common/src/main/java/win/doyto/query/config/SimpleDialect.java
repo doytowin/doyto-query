@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test;
+package win.doyto.query.config;
 
 import win.doyto.query.core.Dialect;
 
 /**
- * MySQLDialect
+ * SimpleDialect
  *
  * @author f0rb on 2019-07-22
  */
