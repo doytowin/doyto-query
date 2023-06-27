@@ -113,6 +113,21 @@
             </dependencies>
         </profile>
         <profile>
+            <id>sqlite</id>
+            <properties>
+                <active.profiles>sqlite</active.profiles>
+                <skipTests>false</skipTests>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.xerial</groupId>
+                    <artifactId>sqlite-jdbc</artifactId>
+                    <version>3.42.0.0</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>oracle</id>
             <properties>
                 <active.profiles>oracle</active.profiles>

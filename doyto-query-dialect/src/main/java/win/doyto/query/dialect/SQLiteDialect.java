@@ -31,6 +31,11 @@ public class SQLiteDialect implements Dialect {
     }
 
     @Override
+    public String buildInsertIgnore(StringBuilder insertBuilder, String tableName, String k1, String k2) {
+        return insertBuilder.insert(insertBuilder.indexOf("INTO"), "OR IGNORE ").toString();
+    }
+
+    @Override
     public String resolveKeyColumn(String idColumn) {
         return "last_insert_rowid()";
     }
