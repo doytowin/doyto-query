@@ -113,6 +113,20 @@
             </dependencies>
         </profile>
         <profile>
+            <id>mysql8</id>
+            <properties>
+                <active.profiles>mysql8</active.profiles>
+                <skipTests>false</skipTests>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.mysql</groupId>
+                    <artifactId>mysql-connector-j</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>sqlite</id>
             <properties>
                 <active.profiles>sqlite</active.profiles>
