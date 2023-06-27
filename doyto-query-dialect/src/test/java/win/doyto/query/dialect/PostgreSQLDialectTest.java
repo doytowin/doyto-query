@@ -28,11 +28,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class PostgreSQLDialectTest {
 
-    private PostgreSQLDialect postgreSQLDialect = new PostgreSQLDialect();
+    private PostgreSQLDialect dialect = new PostgreSQLDialect();
 
     @Test
     void buildPageSqlForSelectWithoutOrderBy() {
-        String pageSql = postgreSQLDialect.buildPageSql("SELECT username, password FROM user WHERE valid = true", 10, 100);
+        String pageSql = dialect.buildPageSql("SELECT username, password FROM user WHERE valid = true", 10, 100);
         assertEquals("SELECT username, password FROM user WHERE valid = true LIMIT 10 OFFSET 100", pageSql);
     }
+
+    @Test
+    void buildInsertIgnore() {
+        String given = "INSERT INTO a_user_and_role (user_id, role_id, create_user_id) VALUES (?, ?, 0), (?, ?, 0)";
+        String actual = dialect.buildInsertIgnore(new StringBuilder(given), "a_user_and_role", "user_id", "role_id");
+        String expected = "INSERT INTO a_user_and_role (user_id, role_id, create_user_id) " +
+                "VALUES (?, ?, 0), (?, ?, 0) " +
+                "ON CONFLICT (user_id, role_id) DO NOTHING";
+        assertEquals(expected, actual);
+    }
+
 }

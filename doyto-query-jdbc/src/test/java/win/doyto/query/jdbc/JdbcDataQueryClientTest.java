@@ -29,8 +29,8 @@ import win.doyto.query.test.role.RoleView;
 import win.doyto.query.test.role.RoleViewQuery;
 import win.doyto.query.test.user.*;
 
-import java.util.List;
 import javax.annotation.Resource;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,7 +46,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
     @Test
     void queryForJoin() {
         UserQuery usersQuery = UserQuery.builder().build();
-        RoleViewQuery roleQuery = RoleViewQuery.builder().user(usersQuery).withUsers(usersQuery).build();
+        RoleViewQuery roleQuery = RoleViewQuery.builder().user(usersQuery).withUsers(usersQuery).sort("id,asc").build();
         List<RoleView> roleViews = jdbcDataQueryClient.query(roleQuery);
         assertThat(roleViews)
                 .extracting(roleView -> roleView.getUsers().size())

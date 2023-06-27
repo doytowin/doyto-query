@@ -127,6 +127,20 @@
             </dependencies>
         </profile>
         <profile>
+            <id>postgres</id>
+            <properties>
+                <active.profiles>postgres</active.profiles>
+                <skipTests>false</skipTests>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>sqlite</id>
             <properties>
                 <active.profiles>sqlite</active.profiles>

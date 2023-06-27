@@ -34,4 +34,9 @@ public class PostgreSQLDialect implements Dialect {
     public boolean supportMultiGeneratedKeys() {
         return true;
     }
+
+    @Override
+    public String buildInsertIgnore(StringBuilder insertBuilder, String tableName, String k1, String k2) {
+        return insertBuilder.append(" ON CONFLICT (").append(k1).append(", ").append(k2).append(") DO NOTHING").toString();
+    }
 }
