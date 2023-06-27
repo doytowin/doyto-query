@@ -171,7 +171,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
         assertThat(userLevelCountViews)
                 .hasSize(3)
                 .extracting("userLevel", "valid", "count")
-                .containsExactly(
+                .containsExactlyInAnyOrder(
                         new Tuple(UserLevel.高级, true, 1L),
                         new Tuple(UserLevel.普通, false, 1L),
                         new Tuple(UserLevel.普通, true, 2L)

@@ -41,7 +41,7 @@ public interface Dialect {
         return fieldName;
     }
 
-    default String buildInsertIgnore(StringBuilder insertBuilder) {
+    default String buildInsertIgnore(StringBuilder insertBuilder, String tableName, String k1, String k2) {
         return insertBuilder.insert(insertBuilder.indexOf("INTO"), "IGNORE ").toString();
     }
 
@@ -78,5 +78,9 @@ public interface Dialect {
 
     default String resolveKeyColumn(String idColumn) {
         return idColumn;
+    }
+
+    default String alterBatchInsert(String given) {
+        return given;
     }
 }

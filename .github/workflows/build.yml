@@ -39,6 +39,11 @@ jobs:
                 -e TZ='Asia/Shanghai' -e POSTGRES_PASSWORD=root \
                 -d ghcr.io/doytowin/doyto-query-image-postgres:main
           - image-name: sqlite
+          - image-name: oracle
+            docker-run: |
+              docker run -p 1521:1521 --name oracle -e TZ='Asia/Shanghai' \
+                -e ORACLE_SID=XE -e ORACLE_PASSWORD=oracle \
+                -d ghcr.io/doytowin/doyto-query-image-oracle:main
     name: With ${{ matrix.image-name }}
     uses: ./.github/workflows/_integration-test.yml
     with:

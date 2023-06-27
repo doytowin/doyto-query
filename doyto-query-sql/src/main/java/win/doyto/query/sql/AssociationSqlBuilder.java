@@ -33,6 +33,9 @@ import static win.doyto.query.sql.Constant.*;
  */
 @SuppressWarnings("java:S1068")
 public class AssociationSqlBuilder<K1, K2> {
+    private String tableName;
+    private String k1Column;
+    private String k2Column;
     @Getter
     private String selectK1ColumnByK2Id;
     @Getter
@@ -48,6 +51,10 @@ public class AssociationSqlBuilder<K1, K2> {
     private String countIn;
 
     public AssociationSqlBuilder(String tableName, String k1Column, String k2Column) {
+        this.tableName = tableName;
+        this.k1Column = k1Column;
+        this.k2Column = k2Column;
+
         selectK1ColumnByK2Id = SELECT + k1Column + FROM + tableName + WHERE + k2Column + EQUAL_HOLDER;
         selectK2ColumnByK1Id = SELECT + k2Column + FROM + tableName + WHERE + k1Column + EQUAL_HOLDER;
         deleteByK1 = DELETE_FROM + tableName + WHERE + k1Column + EQUAL_HOLDER;
@@ -80,7 +87,8 @@ public class AssociationSqlBuilder<K1, K2> {
             StringBuilder insertBuilder = new StringBuilder(insertSql);
             String ph = String.format(placeHolderFormat, userId);
             buildPlaceHolders(insertBuilder, keys.size(), ph);
-            return GlobalConfiguration.dialect().buildInsertIgnore(insertBuilder);
+            return GlobalConfiguration.dialect().buildInsertIgnore(
+                    insertBuilder, tableName, k1Column, k2Column);
         });
     }
 

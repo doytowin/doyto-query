@@ -75,6 +75,10 @@ public class GlobalConfiguration {
         return String.format(Singleton.instance.tableFormat, table);
     }
 
+    public boolean isOracle() {
+        return dialect().getClass().getSimpleName().contains("Oracle");
+    }
+
     public void setTableFormat(String tableFormat) {
         this.tableFormat = tableFormat;
         String regex = tableFormat.replace("%s", "[a-z_\\${}]+");

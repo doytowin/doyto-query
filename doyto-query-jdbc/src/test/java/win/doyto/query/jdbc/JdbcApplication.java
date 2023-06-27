@@ -42,7 +42,7 @@ public class JdbcApplication {
 
     @Bean
     public AssociationService<Long, Integer> userAndRoleAssociationService() {
-        return new JdbcAssociationService<>("user", "role", "create_user_id");
+        return new JdbcAssociationService<Long, Integer>("user", "role", "create_user_id") {};
     }
 
     @Bean

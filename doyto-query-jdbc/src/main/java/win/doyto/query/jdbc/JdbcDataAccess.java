@@ -32,13 +32,13 @@ import win.doyto.query.sql.SqlBuilderFactory;
 import win.doyto.query.util.BeanUtil;
 import win.doyto.query.util.ColumnUtil;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 /**
  * JdbcDataAccess
@@ -59,7 +59,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     private final SqlBuilder<E> sqlBuilder;
     private final String[] columnsForSelect;
     private final boolean isGeneratedId;
-    private final SingleColumnRowMapper<I> idRowMapper = new SingleColumnRowMapper<>();
+    private final SingleColumnRowMapper<I> idRowMapper;
     private final Class<I> idClass;
     private final String idColumn;
 
@@ -78,6 +78,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
         this.isGeneratedId = idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class);
         this.idColumn = idFields[0].getName();
         this.idClass = BeanUtil.getIdClass(entityClass, idColumn);
+        this.idRowMapper = new SingleColumnRowMapper<>(idClass);
     }
 
     @Override

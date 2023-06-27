@@ -99,6 +99,7 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
                 .builder()
                 .perm(PermissionQuery.builder().permNameStart("user").build())
                 .role(roleQuery)
+                .sort("ID")
                 .build();
 
         List<Long> userIds = userDataAccess.queryIds(userQuery);
@@ -108,6 +109,7 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
         UserQuery userQuery2 = UserQuery
                 .builder()
                 .perm(permQuery)
+                .sort("ID")
                 .build();
 
         List<Long> userIds2 = userDataAccess.queryIds(userQuery2);

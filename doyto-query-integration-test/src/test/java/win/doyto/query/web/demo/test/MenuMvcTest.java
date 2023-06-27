@@ -76,7 +76,7 @@ class MenuMvcTest extends DemoApplicationTest {
 
         performAndExpectSuccess(post(menuUri), "{\"platform\":\"01\",\"menuName\":\"Test Menu\"}");
 
-        performAndExpectSuccess(get("/01/menu/"))
+        performAndExpectSuccess(get("/01/menu/?sort=id,asc"))
                 .andExpect(jsonPath("$.data.total").value(3))
                 .andExpect(jsonPath("$.data.list[2].menuName").value("Test Menu"))
                 .andExpect(jsonPath("$.data.list[2].createUserId").value("1"));

@@ -219,5 +219,18 @@
                 </dependency>
             </dependencies>
         </profile>
+        <profile>
+            <id>oracle</id>
+            <properties>
+                <active.profiles>oracle</active.profiles>
+                <junit.parallel>false</junit.parallel>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.oracle.database.jdbc</groupId>
+                    <artifactId>ojdbc8</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 </project>

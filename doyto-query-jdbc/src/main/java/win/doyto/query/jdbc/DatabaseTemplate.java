@@ -69,7 +69,12 @@ public class DatabaseTemplate implements DatabaseOperations {
         try {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcOperations.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sqlAndArgs.getSql(), Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement ps;
+                if (GlobalConfiguration.instance().isOracle()) {
+                    ps = connection.prepareStatement(sqlAndArgs.getSql(), new String[]{keyColumn});
+                } else {
+                    ps = connection.prepareStatement(sqlAndArgs.getSql(), Statement.RETURN_GENERATED_KEYS);
+                }
                 pss.setValues(ps);
                 return ps;
             }, keyHolder);
