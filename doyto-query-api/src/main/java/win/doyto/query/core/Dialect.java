@@ -83,4 +83,7 @@ public interface Dialect {
     default String alterBatchInsert(String given) {
         return given;
     }
+    default String convertMultiColumnsIn(StringBuilder sqlBuilder, String k1Column, String k2Column, int size) {
+        return sqlBuilder.toString();
+    }
 }

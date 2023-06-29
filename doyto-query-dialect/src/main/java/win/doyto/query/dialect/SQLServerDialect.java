@@ -18,6 +18,9 @@ package win.doyto.query.dialect;
 
 import win.doyto.query.core.Dialect;
 
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 /**
  * SQLServerDialect
  *
@@ -36,8 +39,22 @@ public class SQLServerDialect implements Dialect {
         return sql + orderById + " offset " + offset + " row fetch next " + limit + " row only";
     }
 
+   @Override
+   public String buildInsertIgnore(StringBuilder insertBuilder, String tableName, String k1, String k2) {
+        return insertBuilder.toString();
+    }
+
     @Override
     public String resolveKeyColumn(String idColumn) {
         return "GENERATED_KEYS";
     }
+
+    @Override
+    public String convertMultiColumnsIn(StringBuilder sqlBuilder, String k1Column, String k2Column, int size) {
+        int indexOfWhere = sqlBuilder.indexOf("WHERE ") + 6;
+        String s1 = IntStream.range(0, size).mapToObj(i -> k1Column + " = ? AND " + k2Column + " = ?")
+                .collect(Collectors.joining(" OR "));
+        return sqlBuilder.replace(indexOfWhere, sqlBuilder.length(), s1).toString();
+    }
+
 }

@@ -73,7 +73,7 @@ public class AssociationSqlBuilder<K1, K2> {
         placeHolderFormat = "(?, ?, %s)";
     }
 
-    private void buildPlaceHolders(StringBuilder sb, int size, String placeHolders) {
+    private static void buildPlaceHolders(StringBuilder sb, int size, String placeHolders) {
         sb.append(IntStream.range(0, size).mapToObj(i -> placeHolders).collect(Collectors.joining(SEPARATOR)));
     }
 
@@ -97,7 +97,7 @@ public class AssociationSqlBuilder<K1, K2> {
             keys.stream().map(UniqueKey::toList).forEach(argList::addAll);
             StringBuilder deleteBuilder = new StringBuilder(deleteIn).append(OP);
             buildPlaceHolders(deleteBuilder, keys.size(), placeHolders);
-            return deleteBuilder.append(CP).toString();
+            return GlobalConfiguration.dialect().convertMultiColumnsIn(deleteBuilder.append(CP), k1Column, k2Column, keys.size());
         });
     }
 
@@ -106,7 +106,7 @@ public class AssociationSqlBuilder<K1, K2> {
             keys.stream().map(UniqueKey::toList).forEach(argList::addAll);
             StringBuilder countBuilder = new StringBuilder(countIn).append(OP);
             buildPlaceHolders(countBuilder, keys.size(), placeHolders);
-            return countBuilder.append(CP).toString();
+            return GlobalConfiguration.dialect().convertMultiColumnsIn(countBuilder.append(CP), k1Column, k2Column, keys.size());
         });
     }
 

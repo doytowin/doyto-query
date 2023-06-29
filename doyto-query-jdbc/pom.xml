@@ -141,6 +141,21 @@
             </dependencies>
         </profile>
         <profile>
+            <id>mssql</id>
+            <properties>
+                <active.profiles>mssql</active.profiles>
+                <skipTests>false</skipTests>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.microsoft.sqlserver</groupId>
+                    <artifactId>mssql-jdbc</artifactId>
+                    <version>12.3.0.jre8-preview</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>sqlite</id>
             <properties>
                 <active.profiles>sqlite</active.profiles>

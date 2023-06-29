@@ -28,20 +28,30 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class SQLServerDialectTest {
 
-    private SQLServerDialect sqlServerDialect;
+    private final SQLServerDialect dialect = new SQLServerDialect();
 
     @Test
     void buildPageSqlForSelectWithoutOrderBy() {
-        sqlServerDialect = new SQLServerDialect();
-        String pageSql = sqlServerDialect.buildPageSql("SELECT username, password FROM user WHERE valid = true", 10, 100);
+        String pageSql = dialect.buildPageSql("SELECT username, password FROM user WHERE valid = true", 10, 100);
         assertEquals("SELECT username, password FROM user WHERE valid = true ORDER BY id offset 100 row fetch next 10 row only", pageSql);
     }
-    
+
     @Test
     void buildPageSqlForSelectWithOrderBy() {
-        sqlServerDialect = new SQLServerDialect();
-        String pageSql = sqlServerDialect.buildPageSql("SELECT username, password FROM user WHERE valid = true ORDER BY username DESC", 10, 100);
+        String pageSql = dialect.buildPageSql("SELECT username, password FROM user WHERE valid = true ORDER BY username DESC", 10, 100);
         assertEquals("SELECT username, password FROM user WHERE valid = true ORDER BY username DESC offset 100 row fetch next 10 row only", pageSql);
     }
-    
+
+    @Test
+    void resolveKeyColumn() {
+        assertEquals("GENERATED_KEYS", dialect.resolveKeyColumn("id"));
+    }
+
+    @Test
+    void convertMultiColumnsIn() {
+
+        StringBuilder sqlBuilder = new StringBuilder("SELECT count(*) FROM a_user_and_role WHERE (user_id, role_id) IN ((?, ?), (?, ?))");
+        assertEquals("SELECT count(*) FROM a_user_and_role WHERE user_id = ? AND role_id = ? OR user_id = ? AND role_id = ?",
+                dialect.convertMultiColumnsIn(sqlBuilder, "user_id", "role_id", 2));
+    }
 }
