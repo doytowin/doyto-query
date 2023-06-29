@@ -19,7 +19,6 @@ package win.doyto.query.web.demo.test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
@@ -39,7 +38,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author f0rb
  */
 @Transactional
-@ActiveProfiles("test")
 @SpringBootTest(classes = DemoApplication.class)
 @AutoConfigureMockMvc
 abstract class DemoApplicationTest {

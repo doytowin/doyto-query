@@ -10,7 +10,7 @@ on:
       - 'issues/**'
       - 'refactor/**'
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [ opened, synchronize, reopened ]
 
 jobs:
   build:
@@ -20,9 +20,44 @@ jobs:
     with:
       sonar-project-name: 'doyto-query'
       sonar-project-key: 'win.doyto:doyto-query'
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image-name: mysql8
+            docker-run: |
+              docker run -p 3306:3306 --name mysql8 -e MYSQL_RANDOM_ROOT_PASSWORD=Y \
+                -d ghcr.io/doytowin/doyto-query-image-mysql8:main
+          - image-name: mssql
+            docker-run: |
+              docker run -p 1433:1433 --name mssql \
+                -d ghcr.io/doytowin/doyto-query-image-mssql:main
+          - image-name: postgres
+            docker-run: |
+              docker run -p 5432:5432 --name postgres \
+                -e TZ='Asia/Shanghai' -e POSTGRES_PASSWORD=root \
+                -d ghcr.io/doytowin/doyto-query-image-postgres:main
+          - image-name: sqlite
+          - image-name: oracle
+            docker-run: |
+              docker run -p 1521:1521 --name oracle -e TZ='Asia/Shanghai' \
+                -e ORACLE_SID=XE -e ORACLE_PASSWORD=oracle \
+                -d ghcr.io/doytowin/doyto-query-image-oracle:main
+    name: With ${{ matrix.image-name }}
+    uses: ./.github/workflows/_integration-test.yml
+    with:
+      image-name: ${{ matrix.image-name }}
+      docker-run: ${{ matrix.docker-run }}
+  javadoc:
+    name: Call Javadoc Workflow
+    uses: doytowin/doyto-devops/.github/workflows/javadoc.yml@main
   deploy:
     name: Call Deploy Workflow
-    needs: build
+    needs:
+      - build
+      - test
+      - javadoc
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     uses: doytowin/doyto-devops/.github/workflows/deploy.yml@main
     secrets: inherit

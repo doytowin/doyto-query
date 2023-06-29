@@ -41,7 +41,7 @@ public class GlobalConfiguration {
     private Pattern tablePtn;
     private Pattern wildcardPtn = Pattern.compile("[%|_]");
     private String joinTableFormat = "a_%s_and_%s";
-    private Dialect dialect = (sql, limit, offset) -> sql + " LIMIT " + limit + " OFFSET " + offset;
+    private Dialect dialect = new SimpleDialect();
     private Function<Integer, Integer> startPageNumberAdjuster;
 
     private GlobalConfiguration() {
@@ -73,6 +73,10 @@ public class GlobalConfiguration {
         }
         String table = ColumnUtil.convertTableName(domain);
         return String.format(Singleton.instance.tableFormat, table);
+    }
+
+    public boolean isOracle() {
+        return dialect().getClass().getSimpleName().contains("Oracle");
     }
 
     public void setTableFormat(String tableFormat) {

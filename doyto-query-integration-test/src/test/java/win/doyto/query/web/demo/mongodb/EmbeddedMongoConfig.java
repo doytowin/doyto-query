@@ -16,6 +16,7 @@
 
 package win.doyto.query.web.demo.mongodb;
 
+import com.mongodb.client.MongoClient;
 import de.flapdoodle.embed.mongo.config.*;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.runtime.Network;
@@ -28,6 +29,8 @@ import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoProper
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import win.doyto.query.mongodb.session.MongoSessionSupplier;
+import win.doyto.query.mongodb.session.MongoSessionThreadLocalSupplier;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -77,5 +80,10 @@ public class EmbeddedMongoConfig {
         }
 
         return builder.build();
+    }
+
+    @Bean
+    public MongoSessionSupplier mongoSessionSupplier(MongoClient mongoClient) {
+        return MongoSessionThreadLocalSupplier.create(mongoClient);
     }
 }

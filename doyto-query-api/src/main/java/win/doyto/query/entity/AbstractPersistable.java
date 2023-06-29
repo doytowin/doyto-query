@@ -24,11 +24,11 @@ import win.doyto.query.validation.CreateGroup;
 import win.doyto.query.validation.PatchGroup;
 import win.doyto.query.validation.UpdateGroup;
 
-import java.io.Serializable;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
+import java.io.Serializable;
 
 /**
  * AbstractId
@@ -50,4 +50,9 @@ public abstract class AbstractPersistable<I extends Serializable> implements Per
     public void setId(I id) {
         this.id = id;
     }
+
+    public String toString() {
+        return getClass().getSimpleName() + "(id=" + this.getId() + ")";
+    }
+
 }

@@ -41,7 +41,7 @@ public interface Dialect {
         return fieldName;
     }
 
-    default String buildInsertIgnore(StringBuilder insertBuilder) {
+    default String buildInsertIgnore(StringBuilder insertBuilder, String tableName, String k1, String k2) {
         return insertBuilder.insert(insertBuilder.indexOf("INTO"), "IGNORE ").toString();
     }
 
@@ -59,5 +59,31 @@ public interface Dialect {
 
     default String forUpdate() {
         return " FOR UPDATE";
+    }
+
+    default <I> I resolveKey(Number key, Class<I> idClass) {
+        if (idClass.isAssignableFrom(Long.class)) {
+            return idClass.cast(key.longValue());
+        }
+        return idClass.cast(key.intValue());
+    }
+
+    default String wrapSelectForUpdate(String sql, String column) {
+        return sql;
+    }
+
+    default boolean supportMultiGeneratedKeys() {
+        return false;
+    }
+
+    default String resolveKeyColumn(String idColumn) {
+        return idColumn;
+    }
+
+    default String alterBatchInsert(String given) {
+        return given;
+    }
+    default String convertMultiColumnsIn(StringBuilder sqlBuilder, String k1Column, String k2Column, int size) {
+        return sqlBuilder.toString();
     }
 }

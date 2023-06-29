@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/doytowin?useSSL=false
+    username: doytowin
+    password: doytowin
+
+doyto:
+  query:
+    config:
+      dialect: win.doyto.query.dialect.PostgreSQLDialect

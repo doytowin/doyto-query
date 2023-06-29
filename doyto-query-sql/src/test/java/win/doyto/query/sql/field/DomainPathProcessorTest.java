@@ -193,13 +193,15 @@ class DomainPathProcessorTest {
 
         String expected = "id IN (" +
                 "SELECT menu_id FROM a_perm_and_menu WHERE perm_id IN (" +
-                "SELECT id FROM t_perm WHERE valid = ?" +
-                "\nINTERSECT\n" +
-                "SELECT perm_id FROM a_role_and_perm WHERE role_id IN (" +
-                "SELECT id FROM t_role WHERE role_name LIKE ? AND valid = ?" +
-                "\nINTERSECT\n" +
-                "SELECT role_id FROM a_user_and_role WHERE user_id IN (" +
-                "SELECT id FROM t_user WHERE id = ?))))";
+                    "SELECT id FROM t_perm WHERE valid = ?" +
+                    "\nINTERSECT\n" +
+                    "SELECT perm_id FROM a_role_and_perm WHERE role_id IN (" +
+                        "SELECT id FROM t_role WHERE role_name LIKE ? AND valid = ?" +
+                        "\nINTERSECT\n" +
+                        "SELECT role_id FROM a_user_and_role WHERE user_id IN (SELECT id FROM t_user WHERE id = ?)" +
+                     ")" +
+                 ")" +
+                ")";
         assertThat(sql).isEqualTo(expected);
         assertThat(argList).containsExactly(true, "%vip%", true, 1);
     }
