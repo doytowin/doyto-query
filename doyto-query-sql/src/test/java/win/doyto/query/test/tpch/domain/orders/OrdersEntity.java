@@ -34,10 +34,10 @@ import java.sql.Date;
 @Setter
 public class OrdersEntity extends AbstractPersistable<Long> {
 
-    private String o_orderkey;
+    private Integer o_orderkey;
 
     @ForeignKey(entity = CustomerEntity.class, field = "c_custkey")
-    private String o_custkey;
+    private Integer o_custkey;
 
     private Date o_orderdate;
 

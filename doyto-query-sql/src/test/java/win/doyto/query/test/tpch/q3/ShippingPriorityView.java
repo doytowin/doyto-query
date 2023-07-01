@@ -24,8 +24,8 @@ import win.doyto.query.test.tpch.domain.customer.CustomerEntity;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
 import win.doyto.query.test.tpch.domain.orders.OrdersEntity;
 
-import java.sql.Date;
 import javax.persistence.Column;
+import java.sql.Date;
 
 /**
  * ShippingPriorityView
@@ -38,7 +38,7 @@ import javax.persistence.Column;
 @CompositeView({CustomerEntity.class, OrdersEntity.class, LineitemEntity.class})
 public class ShippingPriorityView {
     @GroupBy
-    private String l_orderkey;
+    private Integer l_orderkey;
     @Column(name = "SUM(l_extendedprice * (1 - l_discount))")
     private Double revenue;
     @GroupBy

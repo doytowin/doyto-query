@@ -40,9 +40,9 @@ public class LargeVolumeCustomerView {
     @GroupBy
     private String c_name;
     @GroupBy
-    private String c_custkey;
+    private Integer c_custkey;
     @GroupBy
-    private String o_orderkey;
+    private Integer o_orderkey;
     @GroupBy
     private Date o_orderdate;
     @GroupBy
