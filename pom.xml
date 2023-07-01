@@ -53,6 +53,7 @@
         <module>doyto-query-web-common</module>
         <module>doyto-query-web</module>
         <module>doyto-query-jdbc</module>
+        <module>doyto-query-dialect</module>
         <module>doyto-query-integration-test</module>
     </modules>
 
@@ -204,4 +205,13 @@
         <connection>scm:git:git@github.com:f0rb/doyto-query.git</connection>
         <developerConnection>scm:git:git@github.com:f0rb/doyto-query.git</developerConnection>
     </scm>
+
+    <profiles>
+        <profile>
+            <id>docker</id>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
+        </profile>
+    </profiles>
 </project>

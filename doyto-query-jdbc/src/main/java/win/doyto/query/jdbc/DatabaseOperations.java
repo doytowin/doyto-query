@@ -34,7 +34,7 @@ public interface DatabaseOperations {
 
     long count(SqlAndArgs sqlAndArgs);
 
-    <I> I insert(SqlAndArgs sqlAndArgs, Class<I> idClass);
+    <I> List<I> insert(SqlAndArgs sqlAndArgs, Class<I> idClass, String idColumn);
 
     int update(SqlAndArgs sqlAndArgs);
 

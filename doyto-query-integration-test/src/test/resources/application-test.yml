@@ -1,28 +1,9 @@
 logging:
   level:
-    root: info
     win.doyto.query.core: debug
-    org.springframework.test.context.transaction.TransactionContext: warn
     org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: trace
-
-server:
-  servlet:
-    encoding:
-      charset: UTF-8
-      force: true
-
-spring:
-  cache:
-    type: simple
-  mongodb:
-    embedded:
-      storage:
-        oplog-size: 10
-        repl-set-name: rs0
 
 doyto:
   query:
     config:
       dialect: win.doyto.query.dialect.HSQLDBDialect
-      map-camel-case-to-underscore: true
-    caches: UserEntity, MenuEntity

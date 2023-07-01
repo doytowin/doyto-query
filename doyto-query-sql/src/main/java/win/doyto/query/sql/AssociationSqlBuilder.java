@@ -33,6 +33,9 @@ import static win.doyto.query.sql.Constant.*;
  */
 @SuppressWarnings("java:S1068")
 public class AssociationSqlBuilder<K1, K2> {
+    private String tableName;
+    private String k1Column;
+    private String k2Column;
     @Getter
     private String selectK1ColumnByK2Id;
     @Getter
@@ -48,6 +51,10 @@ public class AssociationSqlBuilder<K1, K2> {
     private String countIn;
 
     public AssociationSqlBuilder(String tableName, String k1Column, String k2Column) {
+        this.tableName = tableName;
+        this.k1Column = k1Column;
+        this.k2Column = k2Column;
+
         selectK1ColumnByK2Id = SELECT + k1Column + FROM + tableName + WHERE + k2Column + EQUAL_HOLDER;
         selectK2ColumnByK1Id = SELECT + k2Column + FROM + tableName + WHERE + k1Column + EQUAL_HOLDER;
         deleteByK1 = DELETE_FROM + tableName + WHERE + k1Column + EQUAL_HOLDER;
@@ -66,7 +73,7 @@ public class AssociationSqlBuilder<K1, K2> {
         placeHolderFormat = "(?, ?, %s)";
     }
 
-    private void buildPlaceHolders(StringBuilder sb, int size, String placeHolders) {
+    private static void buildPlaceHolders(StringBuilder sb, int size, String placeHolders) {
         sb.append(IntStream.range(0, size).mapToObj(i -> placeHolders).collect(Collectors.joining(SEPARATOR)));
     }
 
@@ -80,7 +87,8 @@ public class AssociationSqlBuilder<K1, K2> {
             StringBuilder insertBuilder = new StringBuilder(insertSql);
             String ph = String.format(placeHolderFormat, userId);
             buildPlaceHolders(insertBuilder, keys.size(), ph);
-            return GlobalConfiguration.dialect().buildInsertIgnore(insertBuilder);
+            return GlobalConfiguration.dialect().buildInsertIgnore(
+                    insertBuilder, tableName, k1Column, k2Column);
         });
     }
 
@@ -89,7 +97,7 @@ public class AssociationSqlBuilder<K1, K2> {
             keys.stream().map(UniqueKey::toList).forEach(argList::addAll);
             StringBuilder deleteBuilder = new StringBuilder(deleteIn).append(OP);
             buildPlaceHolders(deleteBuilder, keys.size(), placeHolders);
-            return deleteBuilder.append(CP).toString();
+            return GlobalConfiguration.dialect().convertMultiColumnsIn(deleteBuilder.append(CP), k1Column, k2Column, keys.size());
         });
     }
 
@@ -98,7 +106,7 @@ public class AssociationSqlBuilder<K1, K2> {
             keys.stream().map(UniqueKey::toList).forEach(argList::addAll);
             StringBuilder countBuilder = new StringBuilder(countIn).append(OP);
             buildPlaceHolders(countBuilder, keys.size(), placeHolders);
-            return countBuilder.append(CP).toString();
+            return GlobalConfiguration.dialect().convertMultiColumnsIn(countBuilder.append(CP), k1Column, k2Column, keys.size());
         });
     }
 

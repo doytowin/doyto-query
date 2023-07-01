@@ -14,18 +14,29 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test;
+package win.doyto.query.dialect;
 
 import win.doyto.query.core.Dialect;
 
 /**
- * MySQLDialect
+ * SQLiteDialect
  *
- * @author f0rb on 2019-07-22
+ * @author f0rb on 2023/6/25
+ * @since 1.0.2
  */
-public class SimpleDialect implements Dialect {
+public class SQLiteDialect implements Dialect {
     @Override
     public String buildPageSql(String sql, int limit, long offset) {
         return sql + " LIMIT " + limit + " OFFSET " + offset;
+    }
+
+    @Override
+    public String buildInsertIgnore(StringBuilder insertBuilder, String tableName, String k1, String k2) {
+        return insertBuilder.insert(insertBuilder.indexOf("INTO"), "OR IGNORE ").toString();
+    }
+
+    @Override
+    public String resolveKeyColumn(String idColumn) {
+        return "last_insert_rowid()";
     }
 }
