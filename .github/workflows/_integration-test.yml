@@ -30,24 +30,6 @@ jobs:
           password: ${{ github.token }}
       - name: Set Image Name
         run: echo "IMAGE=ghcr.io/doytowin/doyto-query-image-${{ inputs.image-name }}:main" >> $GITHUB_ENV
-
-      # Cache Image
-      - name: Restore Image Cache if it exists
-        id: cache-image
-        uses: actions/cache@v3
-        with:
-          path: ~/cache/docker
-          key: cache-docker-${{ inputs.image-name }}
-      - name: Update Image Cache if Cache Miss
-        if: steps.cache-image.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p ~/cache/docker
-          docker pull ${{ env.IMAGE }}
-          docker image save ${{ env.IMAGE }} --output ~/cache/docker/${{ inputs.image-name }}.tar
-      - name: Use Image Cache if Cache Found
-        if: steps.cache-image.outputs.cache-hit == 'true'
-        run: docker image load --input ~/cache/docker/${{ inputs.image-name }}.tar
-
       - name: Start Container
         run: ${{ inputs.docker-run }} -d ${{ env.IMAGE }}
       - name: Run Test
