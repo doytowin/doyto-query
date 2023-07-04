@@ -29,7 +29,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
       - name: Set Image Name
-        run: echo "IMAGE=ghcr.io/doytowin/doyto-query-image-${{ inputs.image-name }}:main" >> $GITHUB_ENV
+        run: echo "IMAGE=ghcr.io/doytowin/doyto-query-image-${{ inputs.image-name }}:1" >> $GITHUB_ENV
       - name: Start Container
         run: ${{ inputs.docker-run }} -d ${{ env.IMAGE }}
       - name: Run Test
