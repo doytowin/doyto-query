@@ -31,7 +31,7 @@
     <description>The geo package contains the basic data structure for Geo data storage and query</description>
 
     <properties>
-        <skipDeploy>false</skipDeploy>
+        <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
 
     <dependencies>

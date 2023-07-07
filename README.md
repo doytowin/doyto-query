@@ -3,27 +3,26 @@
 [![Code Lines](https://sonarcloud.io/api/project_badges/measure?project=win.doyto%3Adoyto-query&metric=ncloc)](https://sonarcloud.io/component_measures?id=win.doyto%3Adoyto-query&metric=ncloc)
 [![Coverage Status](https://sonarcloud.io/api/project_badges/measure?project=win.doyto%3Adoyto-query&metric=coverage)](https://sonarcloud.io/component_measures?id=win.doyto%3Adoyto-query&metric=coverage)
 
-DoytoQuery - The best and the last ORM framework in Java.
+DoytoQuery - The First Implementation of Object SQL Mapping for Java Applications Over Relational Databases
 ---
 
 ## Introduction
 
-DoytoQuery is a powerful and easy-to-use ORM framework in Java. 
-It comes out from an idea which is mapping a query object directly to a WHERE clause in SQL to query database.
-With the development of DoytoQuery, the idea formed a new ORM theory.
+DoytoQuery is a powerful and easy-to-use Object SQL Mapping (OSM) framework for Java applications over relational databases. 
+Unlike object-relational mapping (ORM), which attempts to directly map the object model and the relational model,
+OSM introduces SQL as an intermediary between the object model and the relational model 
+and concludes a set of solutions to map objects to SQL statements.
 
-## The Modern ORM Theory
-
-1. We can define a query object mapping query statements.
-    - For SQL, see [QueryBuilderTest](https://github.com/doytowin/doyto-query/blob/main/doyto-query-sql/src/test/java/win/doyto/query/sql/QueryBuilderTest.java)
-    - For MongoDB, see [MongoFilterBuilderTest](https://github.com/doytowin/doyto-query/blob/main/doyto-query-mongodb/src/test/java/win/doyto/query/mongodb/filter/MongoFilterBuilderTest.java)
-2. We can define an entity object and cooperate with the query object to complete the CRUD operations of single-table.
-    - For SQL, see [CrudBuilderTest](https://github.com/doytowin/doyto-query/blob/main/doyto-query-sql/src/test/java/win/doyto/query/sql/CrudBuilderTest.java)
-    - For MongoDB, see [MongoDataAccessTest](https://github.com/doytowin/doyto-query/blob/edb365345912a84ee2a0f6c2c0d757e25ba1db7a/doyto-query-mongodb/src/test/java/win/doyto/query/mongodb/MongoDataAccessTest.java)
-3. **Data Manipulation Language can be classified into three categories**, corresponding to three different interfaces:
-    1. CRUD for business tables: [DataAccess](https://github.com/doytowin/doyto-query/blob/main/doyto-query-api/src/main/java/win/doyto/query/core/DataAccess.java)
-    2. CRD for association tables: [AssociationService](https://github.com/doytowin/doyto-query/blob/main/doyto-query-api/src/main/java/win/doyto/query/core/AssociationService.java)
-    3. Aggregate/Relational query: [DataQueryClient](https://github.com/doytowin/doyto-query/blob/main/doyto-query-api/src/main/java/win/doyto/query/core/DataQueryClient.java)
+## The Mapping Solutions
+- [The Query Mapping Solution in DoytoQuery](https://blog.doyto.win/post/the-query-mapping-solution-in-doyto-query/)
+- [The Paging and Sorting Solution in DoytoQuery](https://blog.doyto.win/post/paging-and-sorting-en/)
+- The Improved CRUD Solution in DoytoQuery
+- [The Related Query Solution in DoytoQuery](https://blog.doyto.win/post/the-related-query-solution-in-doyto-query/)
+- The Conditional Related Query Solution in DoytoQuery
+- [The Aggregation Solution in DoytoQuery](https://blog.doyto.win/post/the-aggregation-query-solution-in-doyto-query/)
+- The Natural Joins Mapping Solution
+- The Associative Table Solution in DoytoQuery
+- The Sharding Solution in DoytoQuery
 
 ## Features
 
@@ -45,7 +44,14 @@ With the development of DoytoQuery, the idea formed a new ORM theory.
   - Request/Entity/Response Transition.
   - Group Validation.
 - Seamless integration with Spring WebMvc.
-- Support for relational databases and MongoDB.
+- Supported Databases
+    - MySQL
+    - Oracle
+    - SQL Server
+    - PostgreSQL
+    - SQLite
+    - HSQLDB
+    - MongoDB
 
 ## Quick Usage
 
@@ -86,7 +92,7 @@ public class UserService extends AbstractCrudService<UserEntity, Long, UserQuery
 }
 ```
 
-Please refer to the tests for more usages.
+Please refer to the [demo](https://github.com/doytowin/doyto-query-demo) for more details.
 
 ## Architecture for 0.3.x and newer
 
@@ -94,34 +100,41 @@ Please refer to the tests for more usages.
 
 ## Versions
 
-| Module | Snapshot | Release |
-| --- | --- | --- |
-| doyto-query-geo | [![geo-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-geo/) | [![geo-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-geo/) |
-| doyto-query-api | [![api-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-api/) | [![api-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-api/) |
-| doyto-query-common | [![common-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-common/) | [![common-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-common/) |
-| doyto-query-memory | [![memory-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-memory/) | [![memory-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-memory/) |
-| doyto-query-sql | [![sql-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-sql/) | [![sql-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-sql/) |
-| doyto-query-jdbc | [![jdbc-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-jdbc/) | [![jdbc-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-jdbc/) |
-| doyto-query-mongodb | [![mongodb-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-mongodb/) | [![mongodb-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-mongodb/) |
-| doyto-query-web-common | [![web-common-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-web-commoncommon/) | [![web-common-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-web-common/) |
-| doyto-query-web | [![web-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-web/) | [![web-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-web/) |
-| doyto-query-dialect | [![dialect-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-dialect/) | [![dialect-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-dialect/) |
+| Module                 | Snapshot                                                                                                                 | Release                                                                                          |
+|------------------------|--------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| doyto-query-api        | [![api-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-api/)               | [![api-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-api/)               |
+| doyto-query-geo        | [![geo-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-geo/)               | [![geo-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-geo/)               |
+| doyto-query-common     | [![common-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-common/)         | [![common-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-common/)         |
+| doyto-query-memory     | [![memory-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-memory/)         | [![memory-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-memory/)         |
+| doyto-query-sql        | [![sql-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-sql/)               | [![sql-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-sql/)               |
+| doyto-query-jdbc       | [![jdbc-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-jdbc/)             | [![jdbc-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-jdbc/)             |
+| doyto-query-web-common | [![web-common-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-web-common/) | [![web-common-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-web-common/) |
+| doyto-query-web        | [![web-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-web/)               | [![web-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-web/)               |
+| doyto-query-dialect    | [![dialect-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-dialect/)       | [![dialect-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-dialect/)       |
 
-## Related resources
+## Related Resources
 
-- Github
-  - [doyto-query](https://github.com/doytowin/doyto-query)
-  - [doyto-query-reactive](https://github.com/doytowin/doyto-query-reactive)
-  - [doyto-query-dialect](https://github.com/doytowin/doyto-query-dialect)
+- Frameworks
+    - [doyto-query](https://github.com/doytowin/doyto-query)
+    - [doyto-query-reactive](https://github.com/doytowin/doyto-query-reactive)
+    - [doyto-query-mongodb](https://github.com/doytowin/doyto-query-mongodb)
+    - [doyto-query-language](https://github.com/doytowin/doyto-query-language)
+    - [doyto-query-memorydb](https://github.com/doytowin/doyto-query-memorydb)
+
+- DevOps
+    - [OSS](https://github.com/doytowin/doyto-oss-parent)
+    - [Workflows](https://github.com/doytowin/doyto-devops)
+    - [Templates](https://github.com/doytowin/doyto-query-template)
+    - [Images](https://github.com/doytowin/doyto-query-image)
 
 - Projects
-  - [Demo](https://github.com/doytowin/doyto-query-demo)
-  - [Idea plugin](https://github.com/doytowin/doyto-query-intellij-plugin)
-  - [I18n management service](https://github.com/doytowin/doyto-service-i18n)
-  - [Code generator service](https://github.com/doytowin/doyto-service-generator)
+    - [Demo](https://github.com/doytowin/doyto-query-demo)
+    - [Idea plugin](https://github.com/doytowin/doyto-query-intellij-plugin)
+    - [I18n management service](https://github.com/doytowin/doyto-service-i18n)
+    - [Code generator service](https://github.com/doytowin/doyto-service-generator)
 
 - Documentation
-  -  [https://query.doyto.win/](https://query.doyto.win/)
+    - [https://query.doyto.win/](https://query.doyto.win/)
 
 License
 -------
@@ -139,8 +152,6 @@ This project is under the [Apache Licence v2](https://www.apache.org/licenses/LI
 [sql-release-img]: https://img.shields.io/maven-central/v/win.doyto/doyto-query-sql?color=brightgreen
 [jdbc-snapshots-img]: https://img.shields.io/nexus/s/win.doyto/doyto-query-jdbc?color=blue&server=https%3A%2F%2Foss.sonatype.org
 [jdbc-release-img]: https://img.shields.io/maven-central/v/win.doyto/doyto-query-jdbc?color=brightgreen
-[mongodb-snapshots-img]: https://img.shields.io/nexus/s/win.doyto/doyto-query-mongodb?color=blue&server=https%3A%2F%2Foss.sonatype.org
-[mongodb-release-img]: https://img.shields.io/maven-central/v/win.doyto/doyto-query-mongodb?color=brightgreen
 [web-common-snapshots-img]: https://img.shields.io/nexus/s/win.doyto/doyto-query-web-common?color=blue&server=https%3A%2F%2Foss.sonatype.org
 [web-common-release-img]: https://img.shields.io/maven-central/v/win.doyto/doyto-query-web-common?color=brightgreen
 [web-snapshots-img]: https://img.shields.io/nexus/s/win.doyto/doyto-query-web?color=blue&server=https%3A%2F%2Foss.sonatype.org

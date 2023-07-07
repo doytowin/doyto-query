@@ -30,7 +30,7 @@
     <description>Dialect implementations for different databases</description>
 
     <properties>
-        <skipDeploy>false</skipDeploy>
+        <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
 
     <dependencies>

@@ -31,7 +31,7 @@
     <description>An in-memory implementation of DoytoQuery</description>
 
     <properties>
-        <skipDeploy>false</skipDeploy>
+        <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
 
     <dependencies>

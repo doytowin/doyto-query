@@ -36,9 +36,9 @@
         <revision>1.0.2-SNAPSHOT</revision>
 
         <spring-boot.version>2.7.12</spring-boot.version>
-        <snakeyaml.version>1.33</snakeyaml.version>
+        <snakeyaml.version>2.0</snakeyaml.version>
 
-        <skipDeploy>true</skipDeploy>
+        <maven.deploy.skip>true</maven.deploy.skip>
 
         <sonar.exclusions>doyto-query-test/**,doyto-query-integration-test/**,**/pom.xml</sonar.exclusions>
     </properties>
@@ -147,28 +147,11 @@
             </testResource>
         </testResources>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.5.2</version>
-                <configuration>
-                    <skip>${skipDeploy}</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.2</version>
-                <configuration>
-                    <skip>${skipDeploy}</skip>
-                </configuration>
-            </plugin>
-
             <!-- 更新pom版本号-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
-                <version>1.2.7</version>
+                <version>1.5.0</version>
                 <configuration>
                     <updatePomFile>true</updatePomFile>
                     <flattenMode>bom</flattenMode>
