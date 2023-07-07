@@ -229,6 +229,7 @@
                 <dependency>
                     <groupId>com.oracle.database.jdbc</groupId>
                     <artifactId>ojdbc8</artifactId>
+                    <scope>test</scope>
                 </dependency>
             </dependencies>
         </profile>
