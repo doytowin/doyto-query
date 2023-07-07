@@ -32,7 +32,7 @@
     <description>The common package for other packages</description>
 
     <properties>
-        <skipDeploy>false</skipDeploy>
+        <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
 
     <dependencies>

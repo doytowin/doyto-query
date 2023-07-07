@@ -31,7 +31,7 @@
     <description>The SQL executed layer based on Spring JDBC</description>
 
     <properties>
-        <skipDeploy>false</skipDeploy>
+        <maven.deploy.skip>false</maven.deploy.skip>
         <active.profiles>test</active.profiles>
         <junit.parallel>true</junit.parallel>
     </properties>

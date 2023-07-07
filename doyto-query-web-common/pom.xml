@@ -32,7 +32,7 @@
     <description>The common web package for integration with spring-webmvc and spring-webflux</description>
 
     <properties>
-        <skipDeploy>false</skipDeploy>
+        <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
 
     <dependencies>

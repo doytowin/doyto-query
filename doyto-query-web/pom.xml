@@ -32,7 +32,7 @@
     <description>The web layer integrate with Spring Web</description>
 
     <properties>
-        <skipDeploy>false</skipDeploy>
+        <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
 
     <dependencies>
