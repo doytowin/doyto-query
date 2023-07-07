@@ -27,6 +27,7 @@ import java.lang.annotation.Target;
  * @author f0rb on 2023/6/11
  * @since 1.0.2
  */
+@SuppressWarnings("java:S1452")
 @Target({})
 public @interface EntityAlias {
 
