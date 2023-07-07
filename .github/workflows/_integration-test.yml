@@ -21,32 +21,19 @@ jobs:
         with:
           java-version: 8
           distribution: 'adopt'
-      - name: Cache Maven packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: Cache Embed Mongo distribution
-        uses: actions/cache@v3
-        with:
-          path: ~/.embedmongo
-          key: ${{ runner.os }}-mongo
-          restore-keys: ${{ runner.os }}-mongo
+          cache: 'maven'
       - name: Log into Registry ghcr.io
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ github.token }}
-      - name: Pull Image
-        if: ${{ inputs.docker-run != '' }}
-        run: docker pull ghcr.io/doytowin/doyto-query-image-${{ inputs.image-name }}:main
+      - name: Set Image Name
+        run: echo "IMAGE=ghcr.io/doytowin/doyto-query-image-${{ inputs.image-name }}:1" >> $GITHUB_ENV
       - name: Start Container
-        if: ${{ inputs.docker-run != '' }}
-        run: ${{ inputs.docker-run }}
+        run: ${{ inputs.docker-run }} -d ${{ env.IMAGE }}
       - name: Run Test
         run: mvn -B clean test -P docker,${{ inputs.image-name }}
       - name: Check log
-        if: ${{ failure() && inputs.docker-run != '' }}
+        if: failure()
         run: docker logs ${{ inputs.image-name }}
