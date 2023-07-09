@@ -17,10 +17,7 @@
 package win.doyto.query.sql;
 
 import lombok.Getter;
-import win.doyto.query.annotation.CompositeView;
-import win.doyto.query.annotation.ForeignKey;
-import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.annotation.NestedView;
+import win.doyto.query.annotation.*;
 import win.doyto.query.util.ColumnUtil;
 
 import java.util.*;
@@ -35,20 +32,15 @@ import static win.doyto.query.sql.Constant.*;
  * @author f0rb on 2021-12-28
  */
 @SuppressWarnings("java:S1874")
+@Getter
 public class EntityMetadata {
     private static final Map<Class<?>, EntityMetadata> holder = new ConcurrentHashMap<>();
 
-    @Getter
     private final String columnsForSelect;
-    @Getter
     private final String tableName;
-    @Getter
     private final String joinConditions;
-    @Getter
     private final String groupByColumns;
-    @Getter
     private final String groupBySql;
-    @Getter
     private EntityMetadata nested;
 
     public EntityMetadata(Class<?> entityClass) {
@@ -67,29 +59,49 @@ public class EntityMetadata {
     }
 
     public static List<String> resolveEntityRelations(Class<?>[] viewClasses, Set<Object> parentColumns) {
+        List<ViewIndex> viewIndices = Arrays.stream(viewClasses).map(ViewIndex::new).collect(Collectors.toList());
+        return resolveEntityRelations(parentColumns, viewIndices);
+    }
+
+    public static List<String> resolveEntityRelations(EntityAlias[] entityAliases, Set<Object> parentColumns) {
+        List<ViewIndex> viewIndices = Arrays.stream(entityAliases).map(ViewIndex::new).collect(Collectors.toList());
+        return resolveEntityRelations(parentColumns, viewIndices);
+    }
+
+    private static List<String> resolveEntityRelations(Set<Object> parentColumns, List<ViewIndex> viewIndices) {
         List<String> relations = new ArrayList<>();
-        for (int i = 0, len = viewClasses.length; i < len; i++) {
-            List<Class<?>> otherClassList = new ArrayList<>(Arrays.asList(viewClasses));
-            otherClassList.remove(i);
-            Arrays.stream(ColumnUtil.initFields(viewClasses[i]))
+        viewIndices.forEach(currentViewIndex -> {
+            currentViewIndex.voteDown();
+            // iterate the fields of current table to compare with the rest tables
+            // to build connection conditions
+            Arrays.stream(ColumnUtil.initFields(currentViewIndex.getEntity()))
                   .filter(field -> field.isAnnotationPresent(ForeignKey.class))
                   .forEach(field -> {
                       ForeignKey fkAnno = field.getAnnotation(ForeignKey.class);
-                      if (parentColumns.contains(fkAnno.field()) || otherClassList.contains(fkAnno.entity())) {
+                      ViewIndex viewIndex = ViewIndex.searchEntity(viewIndices, fkAnno.entity());
+                      if (viewIndex != null || parentColumns.contains(fkAnno.field())) {
                           String c1 = ColumnUtil.convertColumn(field.getName());
                           String c2 = ColumnUtil.convertColumn(fkAnno.field());
-                          relations.add(c1 + EQUAL + c2);
+                          String alias1 = currentViewIndex.getAlias();
+                          String alias2 = viewIndex != null ? viewIndex.getAlias() : "";
+                          relations.add(alias1 + c1 + EQUAL + alias2 + c2);
                       }
                   });
-        }
+            currentViewIndex.voteUp();
+        });
         return relations;
     }
 
     static String resolveJoinConditions(Class<?> viewClass) {
         List<String> conditions = new ArrayList<>();
-        CompositeView compositeViewAnno = viewClass.getAnnotation(CompositeView.class);
-        if (compositeViewAnno != null && compositeViewAnno.value().length > 0) {
-            conditions.addAll(resolveEntityRelations(compositeViewAnno.value(), new HashSet<>()));
+        if (viewClass.isAnnotationPresent(CompositeView.class)) {
+            CompositeView viewAnno = viewClass.getAnnotation(CompositeView.class);
+            assert viewAnno.value().length > 0;
+            conditions.addAll(resolveEntityRelations(viewAnno.value(), new HashSet<>()));
+        } else if (viewClass.isAnnotationPresent(ComplexView.class)) {
+            ComplexView viewAnno = viewClass.getAnnotation(ComplexView.class);
+            assert viewAnno.value().length > 0;
+            conditions.addAll(resolveEntityRelations(viewAnno.value(), new HashSet<>()));
         }
         return conditions.isEmpty() ? EMPTY : WHERE + String.join(AND, conditions);
     }

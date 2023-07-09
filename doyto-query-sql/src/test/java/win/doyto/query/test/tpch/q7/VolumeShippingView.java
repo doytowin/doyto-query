@@ -14,32 +14,31 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q14;
+package win.doyto.query.test.tpch.q7;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.annotation.GroupBy;
+import win.doyto.query.annotation.NestedView;
 
-import java.sql.Date;
-import javax.persistence.Transient;
+import javax.persistence.Column;
 
 /**
- * PromotionEffectQuery
+ * VolumeShippingView
  *
- * @author f0rb on 2023/2/19
- * @since 1.0.1
+ * @author f0rb on 2023/6/10
+ * @since 1.0.2
  */
 @Getter
 @Setter
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class PromotionEffectQuery extends PageQuery {
-    @Transient
-    private String pTypeStart;
-    private Date l_shipdateGe;
-    private Date l_shipdateLt;
+@NestedView(ShippingView.class)
+public class VolumeShippingView {
+    @GroupBy
+    private String supp_nation;
+    @GroupBy
+    private String cust_nation;
+    @GroupBy
+    private String l_year;
+    @Column(name = "SUM(volume)")
+    private String revenue;
 }

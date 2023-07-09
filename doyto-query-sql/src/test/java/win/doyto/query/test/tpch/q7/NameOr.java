@@ -14,41 +14,27 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q12;
+package win.doyto.query.test.tpch.q7;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.PageQuery;
-
-import java.sql.Date;
-import java.util.List;
-import javax.persistence.Transient;
+import win.doyto.query.core.Or;
 
 /**
- * ShippingModesAndOrderPriorityQuery
+ * NameOr
  *
- * @author f0rb on 2023/2/18
- * @since 1.0.1
+ * @author f0rb on 2023/6/11
+ * @since 1.0.2
  */
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShippingModesAndOrderPriorityQuery extends PageQuery {
-    @Transient
-    private String o_orderpriority1;
-    @Transient
-    private String o_orderpriority2;
-
-    private List<String> l_shipmodeIn;
-
-    @Builder.Default
-    private boolean l_commitdateLtL_receiptdate = true;
-
-    @Builder.Default
-    private boolean l_shipdateLtL_commitdate = true;
-
-    private Date l_receiptdateGe;
-    private Date l_receiptdateLt;
+public class NameOr implements Or {
+    private NameComparison n1;
+    private NameComparison n2;
 }

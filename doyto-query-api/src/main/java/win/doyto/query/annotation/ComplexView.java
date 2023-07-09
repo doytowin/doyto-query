@@ -14,32 +14,22 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q14;
+package win.doyto.query.annotation;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.PageQuery;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import java.sql.Date;
-import javax.persistence.Transient;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * PromotionEffectQuery
+ * ComplexView
  *
- * @author f0rb on 2023/2/19
- * @since 1.0.1
+ * @author f0rb on 2023/6/11
+ * @since 1.0.2
  */
-@Getter
-@Setter
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class PromotionEffectQuery extends PageQuery {
-    @Transient
-    private String pTypeStart;
-    private Date l_shipdateGe;
-    private Date l_shipdateLt;
+@Target(TYPE)
+@Retention(RUNTIME)
+public @interface ComplexView {
+    EntityAlias[] value();
 }

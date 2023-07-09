@@ -14,50 +14,44 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q10;
+package win.doyto.query.test.tpch.q7;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.CompositeView;
-import win.doyto.query.annotation.GroupBy;
+import win.doyto.query.annotation.ComplexView;
+import win.doyto.query.annotation.EntityAlias;
 import win.doyto.query.test.tpch.domain.customer.CustomerEntity;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
 import win.doyto.query.test.tpch.domain.nation.NationEntity;
 import win.doyto.query.test.tpch.domain.orders.OrdersEntity;
+import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
 
+import java.math.BigDecimal;
 import javax.persistence.Column;
 
 /**
- * ReturnedItemReportingView
+ * AnnualVolumeView
  *
- * @author f0rb on 2023/2/18
- * @since 1.0.1
+ * @author f0rb on 2023/6/10
+ * @since 1.0.2
  */
 @Getter
 @Setter
-@CompositeView({CustomerEntity.class, OrdersEntity.class, LineitemEntity.class, NationEntity.class})
-public class ReturnedItemReportingView {
-    @GroupBy
-    private Integer c_custkey;
-
-    @GroupBy
-    private String c_name;
-
-    @Column(name = "SUM(l_extendedprice * (1 - l_discount))")
-    private String revenue;
-
-    @GroupBy
-    private String c_acctbal;
-
-    @GroupBy
-    private String n_name;
-
-    @GroupBy
-    private String c_address;
-
-    @GroupBy
-    private String c_phone;
-
-    @GroupBy
-    private String c_comment;
+@ComplexView({
+        @EntityAlias(SupplierEntity.class),
+        @EntityAlias(LineitemEntity.class),
+        @EntityAlias(OrdersEntity.class),
+        @EntityAlias(CustomerEntity.class),
+        @EntityAlias(value = NationEntity.class, alias = "n1"),
+        @EntityAlias(value = NationEntity.class, alias = "n2")
+})
+public class ShippingView {
+    @Column(name = "n1.n_name")
+    private String supp_nation;
+    @Column(name = "n2.n_name")
+    private String cust_nation;
+    @Column(name = "YEAR(l_shipdate)")
+    private String l_year;
+    @Column(name = "l_extendedprice * (1 - l_discount)")
+    private BigDecimal volume;
 }

@@ -47,15 +47,15 @@ public class CommonUtil {
     public static final Collector<CharSequence, ?, String> CLT_COMMA_WITH_PAREN
             = Collectors.joining(", ", "(", ")");
     private static final Pattern PTN_REPLACE = Pattern.compile("\\w*");
-    private static final Pattern PTN_$EX = Pattern.compile("\\$\\{(\\w+)}");
+    private static final Pattern PTN_DOLLAR_EX = Pattern.compile("\\$\\{(\\w+)}");
     private static final Pattern PTN_SPLIT_OR = Pattern.compile("Or(?=[A-Z])");
 
     public static boolean isDynamicTable(String input) {
-        return PTN_$EX.matcher(input).find();
+        return PTN_DOLLAR_EX.matcher(input).find();
     }
 
     public static String replaceHolderInString(Object target, String input) {
-        Matcher matcher = PTN_$EX.matcher(input);
+        Matcher matcher = PTN_DOLLAR_EX.matcher(input);
         if (!matcher.find()) {
             return input;
         }
@@ -67,12 +67,14 @@ public class CommonUtil {
             String replacement = String.valueOf(value);
             if (PTN_REPLACE.matcher(replacement).matches()) {
                 matcher.appendReplacement(sb, replacement);
+            } else {
+                log.warn("Unexpected argument: {}", replacement);
             }
         } while (matcher.find());
         return matcher.appendTail(sb).toString();
     }
 
-    static Object readFieldGetter(Object target, String fieldName) {
+    public static Object readFieldGetter(Object target, String fieldName) {
         Object value;
         try {
             value = MethodUtils.invokeMethod(target, true, "get" + StringUtils.capitalize(fieldName));

@@ -24,8 +24,8 @@ import win.doyto.query.test.tpch.domain.nation.NationEntity;
 import win.doyto.query.test.tpch.domain.partsupp.PartsuppEntity;
 import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
 
-import java.math.BigDecimal;
 import javax.persistence.Column;
+import java.math.BigDecimal;
 
 /**
  * ImportantStockIdentificationView
@@ -39,7 +39,7 @@ import javax.persistence.Column;
 public class ImportantStockIdentificationView {
 
     @GroupBy
-    private String ps_partkey;
+    private Integer ps_partkey;
 
     @Column(name = "SUM(ps_supplycost * ps_availqty)")
     private BigDecimal value;

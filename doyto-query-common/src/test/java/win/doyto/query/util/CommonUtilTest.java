@@ -47,7 +47,7 @@ class CommonUtilTest {
 
     @Test
     void testSplitByOr() {
-        assertArrayEquals(new String[] {"user", "emailAddress", "order"}, splitByOr("userOrEmailAddressOrOrder"));
+        assertArrayEquals(new String[]{"user", "emailAddress", "order"}, splitByOr("userOrEmailAddressOrOrder"));
     }
 
     @Test

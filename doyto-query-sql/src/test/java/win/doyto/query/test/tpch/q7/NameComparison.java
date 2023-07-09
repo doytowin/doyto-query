@@ -14,32 +14,23 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q14;
+package win.doyto.query.test.tpch.q7;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.PageQuery;
-
-import java.sql.Date;
-import javax.persistence.Transient;
+import win.doyto.query.core.And;
 
 /**
- * PromotionEffectQuery
+ * NameCompare
  *
- * @author f0rb on 2023/2/19
- * @since 1.0.1
+ * @author f0rb on 2023/6/11
+ * @since 1.0.2
  */
 @Getter
 @Setter
-@SuperBuilder
-@NoArgsConstructor
 @AllArgsConstructor
-public class PromotionEffectQuery extends PageQuery {
-    @Transient
-    private String pTypeStart;
-    private Date l_shipdateGe;
-    private Date l_shipdateLt;
+public class NameComparison implements And {
+    private String n1$n_name;
+    private String n2$n_name;
 }

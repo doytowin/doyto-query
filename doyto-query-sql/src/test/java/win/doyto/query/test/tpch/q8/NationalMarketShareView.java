@@ -14,32 +14,28 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q14;
+package win.doyto.query.test.tpch.q8;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.annotation.GroupBy;
+import win.doyto.query.annotation.NestedView;
 
-import java.sql.Date;
-import javax.persistence.Transient;
+import java.math.BigDecimal;
+import javax.persistence.Column;
 
 /**
- * PromotionEffectQuery
+ * NationalMarketShareView
  *
- * @author f0rb on 2023/2/19
- * @since 1.0.1
+ * @author f0rb on 2023/6/11
+ * @since 1.0.2
  */
 @Getter
 @Setter
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class PromotionEffectQuery extends PageQuery {
-    @Transient
-    private String pTypeStart;
-    private Date l_shipdateGe;
-    private Date l_shipdateLt;
+@NestedView(AllNationsView.class)
+public class NationalMarketShareView {
+    @GroupBy
+    private String o_year;
+    @Column(name = "SUM(CASE WHEN #{nationEq} THEN volume ELSE 0 END) / SUM(volume)")
+    private BigDecimal mkt_share;
 }

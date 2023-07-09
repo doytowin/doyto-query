@@ -139,6 +139,7 @@ public enum SqlQuerySuffix {
             columnName = ColumnUtil.resolveColumn(columnName);
         } else {
             columnName = ColumnUtil.convertColumn(columnName);
+            columnName = columnName.replace("$", ".");
         }
         return sqlQuerySuffix.buildColumnCondition(columnName, argList, value);
     }

@@ -65,6 +65,10 @@ import win.doyto.query.test.tpch.q5.LocalSupplierVolumeQuery;
 import win.doyto.query.test.tpch.q5.LocalSupplierVolumeView;
 import win.doyto.query.test.tpch.q6.ForecastingRevenueChangeQuery;
 import win.doyto.query.test.tpch.q6.ForecastingRevenueChangeView;
+import win.doyto.query.test.tpch.q7.*;
+import win.doyto.query.test.tpch.q8.AllNationsQuery;
+import win.doyto.query.test.tpch.q8.NationalMarketShareQuery;
+import win.doyto.query.test.tpch.q8.NationalMarketShareView;
 import win.doyto.query.test.tpch.q9.ProductTypeProfitMeasureQuery;
 import win.doyto.query.test.tpch.q9.ProductTypeProfitMeasureView;
 import win.doyto.query.test.tpch.q9.ProfitQuery;
@@ -97,7 +101,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForPricingSummaryReport() {
+    void q1PricingSummaryReportQuery() {
         String expected = "SELECT " +
                 "l_returnflag, " +
                 "l_linestatus, " +
@@ -110,13 +114,14 @@ class TpcHTest {
                 "avg(l_discount) AS avg_disc, " +
                 "count(*) AS count_order" +
                 " FROM lineitem" +
-                " WHERE l_shipdate <= date '1998-12-01' - interval '?' day (3)" +
+                " WHERE l_shipdate <= ?" +
                 " GROUP BY l_returnflag, l_linestatus" +
                 " ORDER BY l_returnflag, l_linestatus";
 
+        Date date = Date.valueOf(LocalDate.of(1998, 9, 1));
         PricingSummaryQuery query = PricingSummaryQuery
                 .builder()
-                .shipdateDelta(90)
+                .lShipdateLe(date)
                 .sort("l_returnflag;l_linestatus")
                 .build();
 
@@ -125,7 +130,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForMinimumCostSupplier() {
+    void q2MinimumCostSupplierQuery() {
         String expected = "SELECT s_acctbal, s_name, n_name, p_partkey, p_mfgr, s_address, s_phone, s_comment" +
                 " FROM part, supplier, partsupp, nation, region" +
                 " WHERE s_nationkey = n_nationkey" +
@@ -151,7 +156,7 @@ class TpcHTest {
                 .p_size(15)
                 .p_typeEnd("BRASS")
                 .r_name("EUROPE")
-                .ps_supplycost(SupplyCostQuery.builder().r_name("EUROPE").build())
+                .psSupplycost(SupplyCostQuery.builder().r_name("EUROPE").build())
                 .sort("s_acctbal,DESC;n_name;s_name;p_partkey")
                 .build();
 
@@ -160,7 +165,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForShippingPriority() {
+    void q3ShippingPriorityQuery() {
         String expected = "SELECT " +
                 "l_orderkey, " +
                 "SUM(l_extendedprice * (1 - l_discount)) AS revenue, " +
@@ -189,7 +194,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForOrderPriorityChecking() {
+    void q4OrderPriorityCheckingQuery() {
         String expected = "SELECT o_orderpriority, count(*) AS order_count" +
                 " FROM orders t" +
                 " WHERE o_orderdate >= ?" +
@@ -217,19 +222,19 @@ class TpcHTest {
     }
 
     @Test
-    void queryForLocalSupplierVolume() {
+    void q5LocalSupplierVolumeQuery() {
         String expected = "SELECT n_name, SUM(l_extendedprice * (1 - l_discount)) AS revenue" +
                 " FROM customer, orders, lineitem, supplier, nation, region" +
                 " WHERE c_nationkey = n_nationkey" +
                 " AND o_custkey = c_custkey" +
                 " AND l_orderkey = o_orderkey" +
                 " AND l_suppkey = s_suppkey" +
-                " AND s_nationkey = n_nationkey" +
                 " AND n_regionkey = r_regionkey" +
+                " AND c_nationkey = s_nationkey" +
                 " AND r_name = ?" +
                 " AND o_orderdate >= ?" +
                 " AND o_orderdate < ?" +
-                " GROUP BY n_name"+
+                " GROUP BY n_name" +
                 " ORDER BY revenue DESC";
 
         LocalDate date = LocalDate.of(1994, 1, 1);
@@ -237,9 +242,9 @@ class TpcHTest {
         Date orderDateLt = Date.valueOf(date.plus(1, YEARS));
         LocalSupplierVolumeQuery query = LocalSupplierVolumeQuery
                 .builder()
-                .r_name("ASIA")
-                .o_orderdateGe(orderDateGe)
-                .o_orderdateLt(orderDateLt)
+                .rName("ASIA")
+                .oOrderdateGe(orderDateGe)
+                .oOrderdateLt(orderDateLt)
                 .sort("revenue,DESC")
                 .build();
 
@@ -248,7 +253,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForForecastingRevenueChange() {
+    void q6ForecastingRevenueChangeQuery() {
         String expected = "SELECT SUM(l_extendedprice * l_discount) AS revenue" +
                 " FROM lineitem" +
                 " WHERE l_shipdate >= ?" +
@@ -272,23 +277,124 @@ class TpcHTest {
     }
 
     @Test
-    void queryForProductTypeProfitMeasure() {
+    void q7ForVolumeShippingQuery() {
+        String expected = "SELECT supp_nation," +
+                " cust_nation," +
+                " l_year," +
+                " SUM(volume) AS revenue" +
+                " FROM (SELECT n1.n_name AS supp_nation," +
+                " n2.n_name AS cust_nation," +
+                " YEAR(l_shipdate) AS l_year," +
+                " l_extendedprice * (1 - l_discount" +
+                ") AS volume" +
+                " FROM supplier, lineitem, orders, customer, nation n1, nation n2" +
+                " WHERE s_nationkey = n1.n_nationkey" +
+                " AND l_orderkey = o_orderkey" +
+                " AND l_suppkey = s_suppkey" +
+                " AND o_custkey = c_custkey" +
+                " AND c_nationkey = n2.n_nationkey" +
+                " AND ((n1.n_name = ? AND n2.n_name = ?)" +
+                " OR (n1.n_name = ? AND n2.n_name = ?))" +
+                " AND l_shipdate >= ? AND l_shipdate <= ?" +
+                ") AS shipping" +
+                " GROUP BY supp_nation, cust_nation, l_year" +
+                " ORDER BY supp_nation, cust_nation, l_year";
+
+        Date startShipdate = Date.valueOf(LocalDate.of(1995, 1, 1));
+        Date endShipdate = Date.valueOf(LocalDate.of(1996, 12, 31));
+
+        ShippingQuery shippingQuery = ShippingQuery
+                .builder()
+                .nameOr(NameOr
+                        .builder()
+                        .n1(new NameComparison("FRANCE", "GERMANY"))
+                        .n2(new NameComparison("GERMANY", "FRANCE"))
+                        .build())
+                .l_shipdateGe(startShipdate)
+                .l_shipdateLe(endShipdate)
+                .build();
+        VolumeShippingQuery query = VolumeShippingQuery
+                .builder()
+                .shippingQuery(shippingQuery)
+                .sort("supp_nation;cust_nation;l_year")
+                .build();
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, VolumeShippingView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(
+                "FRANCE", "GERMANY",
+                "GERMANY", "FRANCE",
+                startShipdate, endShipdate);
+    }
+
+    @Test
+    void q8ForNationalMarketShareQuery() {
+        String expected = "SELECT" +
+                " o_year," +
+                " SUM(CASE WHEN nation = ? THEN volume ELSE 0 END) / SUM(volume) AS mkt_share" +
+                " FROM" +
+                " (SELECT" +
+                " YEAR(o_orderdate) AS o_year," +
+                " l_extendedprice * (1 - l_discount) AS volume," +
+                " n2.n_name AS nation" +
+                " FROM part, lineitem, orders, customer, supplier, nation n1, nation n2, region" +
+                " WHERE l_orderkey = o_orderkey" +
+                " AND l_suppkey = s_suppkey" +
+                " AND l_partkey = p_partkey" +
+                " AND o_custkey = c_custkey" +
+                " AND c_nationkey = n1.n_nationkey" +
+                " AND s_nationkey = n2.n_nationkey" +
+                " AND n1.n_regionkey = r_regionkey" +
+                " AND r_name = ?" +
+                " AND o_orderdate >= ?" +
+                " AND o_orderdate <= ?" +
+                " AND p_type = ?" +
+                ") AS all_nations" +
+                " GROUP BY o_year" +
+                " ORDER BY o_year";
+
+        Date startShipdate = Date.valueOf(LocalDate.of(1995, 1, 1));
+        Date endShipdate = Date.valueOf(LocalDate.of(1996, 12, 31));
+
+        AllNationsQuery allNationsQuery = AllNationsQuery
+                .builder()
+                .r_name("AMERICA")
+                .o_orderdateGe(startShipdate)
+                .o_orderdateLe(endShipdate)
+                .p_type("ECONOMY ANODIZED STEEL")
+                .build();
+
+        NationalMarketShareQuery query = NationalMarketShareQuery
+                .builder()
+                .nationEq("BRAZIL")
+                .allNationsQuery(allNationsQuery).sort("o_year")
+                .build();
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, NationalMarketShareView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(
+                "BRAZIL", "AMERICA", startShipdate, endShipdate, "ECONOMY ANODIZED STEEL");
+    }
+
+    @Test
+    void q9ProductTypeProfitMeasureQuery() {
         String expected = "SELECT nation, o_year, SUM(amount) AS sum_profit" +
                 " FROM " +
-                "(SELECT n_name AS nation, YEAR(o_orderdate) AS o_year, l_extendedprice * (1 - l_discount) - ps_supplycost * l_quantity AS amount" +
+                "(SELECT n_name AS nation, YEAR(o_orderdate) AS o_year," +
+                " l_extendedprice * (1 - l_discount) - ps_supplycost * l_quantity AS amount" +
                 " FROM part, supplier, lineitem, partsupp, orders, nation" +
                 " WHERE s_nationkey = n_nationkey" +
                 " AND l_orderkey = o_orderkey" +
                 " AND l_suppkey = s_suppkey" +
                 " AND l_partkey = p_partkey" +
-                " AND ps_partkey = p_partkey" +
-                " AND ps_suppkey = s_suppkey" +
+                " AND ps_suppkey = l_suppkey" +
+                " AND ps_partkey = l_partkey" +
                 " AND p_name LIKE ?" +
                 ") AS profit" +
                 " GROUP BY nation, o_year" +
                 " ORDER BY nation, o_year DESC";
 
-        ProfitQuery profitQuery = ProfitQuery.builder().p_nameLike("green").build();
+        ProfitQuery profitQuery = ProfitQuery.builder().pNameLike("green").build();
         ProductTypeProfitMeasureQuery query = ProductTypeProfitMeasureQuery
                 .builder()
                 .profitQuery(profitQuery)
@@ -301,7 +407,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForReturnedItemReporting() {
+    void q10ReturnedItemReportingQuery() {
         String expected = "SELECT" +
                 " c_custkey," +
                 " c_name," +
@@ -346,7 +452,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForImportantStockIdentification() {
+    void q11ImportantStockIdentificationQuery() {
         String expected = "SELECT" +
                 " ps_partkey," +
                 " SUM(ps_supplycost * ps_availqty) AS value" +
@@ -381,10 +487,10 @@ class TpcHTest {
     }
 
     @Test
-    void queryForShippingModesAndOrderPriority() {
+    void q12ShippingModesAndOrderPriorityQuery() {
         String expected = "SELECT l_shipmode," +
-                " SUM(CASE WHEN o_orderpriority = '1-URGENT'OR o_orderpriority = '2-HIGH'THEN 1 ELSE 0 END) AS high_line_count," +
-                " SUM(CASE WHEN o_orderpriority <> '1-URGENT'AND o_orderpriority <> '2-HIGH'THEN 1 ELSE 0 END) AS low_line_count" +
+                " SUM(CASE WHEN o_orderpriority = ? OR o_orderpriority = ? THEN 1 ELSE 0 END) AS high_line_count," +
+                " SUM(CASE WHEN o_orderpriority <> ? AND o_orderpriority <> ? THEN 1 ELSE 0 END) AS low_line_count" +
                 " FROM orders, lineitem" +
                 " WHERE l_orderkey = o_orderkey" +
                 " AND l_shipmode IN (?, ?)" +
@@ -398,6 +504,8 @@ class TpcHTest {
         LocalDate date = LocalDate.of(1994, 1, 1);
         ShippingModesAndOrderPriorityQuery query = ShippingModesAndOrderPriorityQuery
                 .builder()
+                .o_orderpriority1("1-URGENT")
+                .o_orderpriority2("2-HIGH")
                 .l_shipmodeIn(Arrays.asList("MAIL", "SHIP"))
                 .l_receiptdateGe(Date.valueOf(date))
                 .l_receiptdateLt(Date.valueOf(date.plus(1, YEARS)))
@@ -408,34 +516,40 @@ class TpcHTest {
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(
+                "1-URGENT", "2-HIGH",
+                "1-URGENT", "2-HIGH",
                 "MAIL", "SHIP",
                 Date.valueOf(date), Date.valueOf(date.plus(1, YEARS))
         );
     }
 
     @Test
-    void queryForPromotionEffect() {
+    void q14PromotionEffectQuery() {
         String expected = "SELECT" +
-                " 100.00 * SUM(CASE WHEN p_type LIKE 'PROMO%'THEN l_extendedprice * (1 - l_discount)ELSE 0 END) / SUM(l_extendedprice * (1 - l_discount)) AS promo_revenue" +
+                " 100.00 * SUM(CASE WHEN p_type LIKE ? THEN l_extendedprice * (1 - l_discount) ELSE 0 END)" +
+                " / SUM(l_extendedprice * (1 - l_discount)) AS promo_revenue" +
                 " FROM lineitem, part" +
                 " WHERE l_partkey = p_partkey" +
                 " AND l_shipdate >= ?" +
                 " AND l_shipdate < ?";
 
-        LocalDate date = LocalDate.of(1995, 12, 1);
+        Date startShipdate = Date.valueOf(LocalDate.of(1995, 12, 1));
+        Date endShipdate = Date.valueOf(LocalDate.of(1995, 12, 31));
         PromotionEffectQuery query = PromotionEffectQuery
                 .builder()
-                .l_shipdateGe(Date.valueOf(date))
-                .l_shipdateLt(Date.valueOf(date.plus(1, MONTHS)))
+                .pTypeStart("PROMO")
+                .l_shipdateGe(startShipdate)
+                .l_shipdateLt(endShipdate)
                 .build();
 
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, PromotionEffectView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly("PROMO%", startShipdate, endShipdate);
     }
 
     @Test
-    void queryForPartsSupplierRelationship() {
+    void q16PartsSupplierRelationshipQuery() {
         String expected = "SELECT p_brand, p_type, p_size, COUNT(DISTINCT ps_suppkey) AS supplier_cnt" +
                 " FROM partsupp, part" +
                 " WHERE ps_partkey = p_partkey" +
@@ -466,7 +580,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForSmallQuantityOrderRevenue() {
+    void q17SmallQuantityOrderRevenueQuery() {
         String expected = "SELECT SUM(l_extendedprice) / 7.0 AS avg_yearly" +
                 " FROM lineitem, part" +
                 " WHERE l_partkey = p_partkey" +
@@ -490,7 +604,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForLargeVolumeCustomer() {
+    void q18LargeVolumeCustomerQuery() {
         String expected = "SELECT" +
                 " c_name," +
                 " c_custkey," +
@@ -524,7 +638,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForDiscountedRevenue() {
+    void q19DiscountedRevenueQuery() {
         String expected = "SELECT" +
                 " SUM(l_extendedprice * (1 - l_discount)) AS revenue" +
                 " FROM lineitem, part" +
@@ -602,7 +716,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForPotentialPartPromotion() {
+    void q20PotentialPartPromotionQuery() {
         String expected = "SELECT s_name, s_address" +
                 " FROM supplier, nation" +
                 " WHERE s_nationkey = n_nationkey" +

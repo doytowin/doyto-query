@@ -54,12 +54,14 @@ public class RelationalQueryBuilder {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             DoytoQuery query = SerializationUtils.clone(q);
             EntityMetadata entityMetadata = EntityMetadata.build(entityClass);
-            StringBuilder sqlBuilder = new StringBuilder()
-                    .append(SELECT).append(entityMetadata.getColumnsForSelect())
-                    .append(FROM);
-            EntityMetadata nested = entityMetadata.getNested();
-            if (nested != null) {
-                buildNestedView(nested, CommonUtil.readField(query, entityMetadata.getTableName() + "Query"), sqlBuilder, argList);
+
+            String columns = BuildHelper.replaceExpressionInString(entityMetadata.getColumnsForSelect(), query, argList);
+            StringBuilder sqlBuilder = new StringBuilder(SELECT).append(columns).append(FROM);
+
+            if (entityMetadata.getNested() != null) {
+                String queryFieldName = CommonUtil.toCamelCase(entityMetadata.getTableName() + "Query");
+                Object nestedQuery = CommonUtil.readField(query, queryFieldName);
+                buildNestedView(entityMetadata.getNested(), nestedQuery, sqlBuilder, argList);
             }
 
             sqlBuilder.append(entityMetadata.getTableName());
