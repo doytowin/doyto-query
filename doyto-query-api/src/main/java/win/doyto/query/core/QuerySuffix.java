@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public enum QuerySuffix {
     Not,
+    Ne,
     NotLike(Constants.LIKE_PREDICATE),
     Like(Constants.LIKE_PREDICATE),
     NotContain(Constants.LIKE_PREDICATE),

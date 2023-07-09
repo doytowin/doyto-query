@@ -24,6 +24,8 @@ import win.doyto.query.sql.BuildHelper;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -31,8 +33,6 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 
 import static win.doyto.query.sql.Constant.*;
 
@@ -47,6 +47,7 @@ import static win.doyto.query.sql.Constant.*;
 @Slf4j
 public enum SqlQuerySuffix {
     Not("!="),
+    Ne("<>"),
     NotLike(NOT_LIKE, ValueProcessor.LIKE_VALUE_PROCESSOR),
     Like(LIKE, ValueProcessor.LIKE_VALUE_PROCESSOR),
     NotContain(NOT_LIKE, ValueProcessor.CONTAIN_VALUE_PROCESSOR),
