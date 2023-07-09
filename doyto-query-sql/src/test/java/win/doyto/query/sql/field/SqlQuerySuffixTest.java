@@ -46,6 +46,7 @@ class SqlQuerySuffixTest {
     @CsvSource(value = {
             "id, 1, id = ?, 1",
             "idNot, 2, id != ?, 2",
+            "idNe, 2, id <> ?, 2",
             "testLikeEq, test, test_like = ?, test",
             "usernameLike, test, username LIKE ?, %test%",
             "usernameNotLike, test, username NOT LIKE ?, %test%",
