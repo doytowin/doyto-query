@@ -47,7 +47,9 @@ public class EntityMetadata {
         if (entityClass.isAnnotationPresent(NestedView.class)) {
             NestedView anno = entityClass.getAnnotation(NestedView.class);
             Class<?> clazz = anno.value();
-            this.nested = EntityMetadata.build(clazz);
+            // We don't need to cache the nested EntityMetadata,
+            // since the host EntityMetadata is already cached.
+            this.nested = new EntityMetadata(clazz);
             this.tableName = BuildHelper.defaultTableName(clazz);
         } else {
             this.tableName = BuildHelper.resolveTableName(entityClass);
