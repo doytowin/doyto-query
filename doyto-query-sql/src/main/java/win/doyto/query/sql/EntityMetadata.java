@@ -20,7 +20,10 @@ import lombok.Getter;
 import win.doyto.query.annotation.*;
 import win.doyto.query.util.ColumnUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -60,17 +63,17 @@ public class EntityMetadata {
         this.groupBySql = buildGroupBySql(groupByColumns);
     }
 
-    public static List<String> resolveEntityRelations(Class<?>[] viewClasses, Set<Object> parentColumns) {
+    public static List<String> resolveEntityRelations(Class<?>[] viewClasses) {
         List<ViewIndex> viewIndices = Arrays.stream(viewClasses).map(ViewIndex::new).collect(Collectors.toList());
-        return resolveEntityRelations(parentColumns, viewIndices);
+        return resolveEntityRelations(viewIndices);
     }
 
-    public static List<String> resolveEntityRelations(EntityAlias[] entityAliases, Set<Object> parentColumns) {
+    public static List<String> resolveEntityRelations(EntityAlias[] entityAliases) {
         List<ViewIndex> viewIndices = Arrays.stream(entityAliases).map(ViewIndex::new).collect(Collectors.toList());
-        return resolveEntityRelations(parentColumns, viewIndices);
+        return resolveEntityRelations(viewIndices);
     }
 
-    private static List<String> resolveEntityRelations(Set<Object> parentColumns, List<ViewIndex> viewIndices) {
+    private static List<String> resolveEntityRelations(List<ViewIndex> viewIndices) {
         List<String> relations = new ArrayList<>();
         viewIndices.forEach(currentViewIndex -> {
             currentViewIndex.voteDown();
@@ -81,11 +84,11 @@ public class EntityMetadata {
                   .forEach(field -> {
                       ForeignKey fkAnno = field.getAnnotation(ForeignKey.class);
                       ViewIndex viewIndex = ViewIndex.searchEntity(viewIndices, fkAnno.entity());
-                      if (viewIndex != null || parentColumns.contains(fkAnno.field())) {
+                      if (viewIndex != null) {
                           String c1 = ColumnUtil.convertColumn(field.getName());
                           String c2 = ColumnUtil.convertColumn(fkAnno.field());
                           String alias1 = currentViewIndex.getAlias();
-                          String alias2 = viewIndex != null ? viewIndex.getAlias() : "";
+                          String alias2 = viewIndex.getAlias();
                           relations.add(alias1 + c1 + EQUAL + alias2 + c2);
                       }
                   });
@@ -99,11 +102,11 @@ public class EntityMetadata {
         if (viewClass.isAnnotationPresent(CompositeView.class)) {
             CompositeView viewAnno = viewClass.getAnnotation(CompositeView.class);
             assert viewAnno.value().length > 0;
-            conditions.addAll(resolveEntityRelations(viewAnno.value(), new HashSet<>()));
+            conditions.addAll(resolveEntityRelations(viewAnno.value()));
         } else if (viewClass.isAnnotationPresent(ComplexView.class)) {
             ComplexView viewAnno = viewClass.getAnnotation(ComplexView.class);
             assert viewAnno.value().length > 0;
-            conditions.addAll(resolveEntityRelations(viewAnno.value(), new HashSet<>()));
+            conditions.addAll(resolveEntityRelations(viewAnno.value()));
         }
         return conditions.isEmpty() ? EMPTY : WHERE + String.join(AND, conditions);
     }
