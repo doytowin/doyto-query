@@ -53,9 +53,9 @@ public final class FieldMapper {
         if (FIELD_PROCESSOR_MAP.containsKey(field)) return;
         FieldProcessor processor;
         if (Or.class.isAssignableFrom(field.getType())) {
-            processor = new ConnectableFieldProcessor(field, OR);
+            processor = new ConnectableFieldProcessor(field.getType(), OR);
         } else if (And.class.isAssignableFrom(field.getType())) {
-            processor = new ConnectableFieldProcessor(field, AND);
+            processor = new ConnectableFieldProcessor(field.getType(), AND);
         } else if (DoytoQuery.class.isAssignableFrom(field.getType())) {
             processor = initDoytoQueryField(field);
         } else if (field.isAnnotationPresent(QueryField.class)) {
@@ -64,6 +64,8 @@ public final class FieldMapper {
             processor = initHavingField(field);
         } else if (boolean.class.isAssignableFrom(field.getType())) {
             processor = new PrimitiveBooleanProcessor(field.getName());
+        } else if (OrCollectionProcessor.support(field)) {
+            processor = new OrCollectionProcessor(field);
         } else {
             processor = initCommonField(field);
         }

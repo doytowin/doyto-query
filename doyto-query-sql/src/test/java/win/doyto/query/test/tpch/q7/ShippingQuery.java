@@ -24,6 +24,7 @@ import lombok.experimental.SuperBuilder;
 import win.doyto.query.core.PageQuery;
 
 import java.sql.Date;
+import java.util.List;
 
 /**
  * AnnualVolumeQuery
@@ -37,7 +38,7 @@ import java.sql.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ShippingQuery extends PageQuery {
-    private NameOr nameOr;
+    private List<NameComparison> nameOr;
     private Date l_shipdateGe;
     private Date l_shipdateLe;
 }

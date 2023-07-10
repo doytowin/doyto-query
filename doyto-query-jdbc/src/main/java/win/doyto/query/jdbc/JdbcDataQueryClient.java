@@ -32,8 +32,6 @@ import win.doyto.query.util.CommonUtil;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -125,17 +123,10 @@ public class JdbcDataQueryClient implements DataQueryClient {
 
     private <E extends Persistable<I>, I extends Serializable, R>
     void queryEntitiesForJoinField(Field joinField, List<E> mainEntities, List<I> mainIds, DoytoQuery query, Class<I> keyClass) {
-        Class<R> joinEntityClass = resolveActualReturnClass(joinField);
+        Class<R> joinEntityClass = CommonUtil.resolveActualReturnClass(joinField);
         SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(query, joinEntityClass, joinField, mainIds);
         Map<I, List<R>> subDomainMap = queryIntoMainEntity(keyClass, joinEntityClass, sqlAndArgs);
         mainEntities.forEach(e -> writeResultToMainDomain(joinField, subDomainMap, e));
-    }
-
-    @SuppressWarnings("unchecked")
-    private <R> Class<R> resolveActualReturnClass(Field field) {
-        ParameterizedType genericType = (ParameterizedType) field.getGenericType();
-        Type[] actualTypeArguments = genericType.getActualTypeArguments();
-        return (Class<R>) actualTypeArguments[0];
     }
 
     @SuppressWarnings("unchecked")

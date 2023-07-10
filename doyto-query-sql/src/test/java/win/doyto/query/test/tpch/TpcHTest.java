@@ -48,7 +48,6 @@ import win.doyto.query.test.tpch.q18.LineitemQuantityQuery;
 import win.doyto.query.test.tpch.q19.DiscountedRevenueQuery;
 import win.doyto.query.test.tpch.q19.DiscountedRevenueView;
 import win.doyto.query.test.tpch.q19.LineitemFilter;
-import win.doyto.query.test.tpch.q19.LineitemOr;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierQuery;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierView;
 import win.doyto.query.test.tpch.q2.SupplyCostQuery;
@@ -65,7 +64,10 @@ import win.doyto.query.test.tpch.q5.LocalSupplierVolumeQuery;
 import win.doyto.query.test.tpch.q5.LocalSupplierVolumeView;
 import win.doyto.query.test.tpch.q6.ForecastingRevenueChangeQuery;
 import win.doyto.query.test.tpch.q6.ForecastingRevenueChangeView;
-import win.doyto.query.test.tpch.q7.*;
+import win.doyto.query.test.tpch.q7.NameComparison;
+import win.doyto.query.test.tpch.q7.ShippingQuery;
+import win.doyto.query.test.tpch.q7.VolumeShippingQuery;
+import win.doyto.query.test.tpch.q7.VolumeShippingView;
 import win.doyto.query.test.tpch.q8.AllNationsQuery;
 import win.doyto.query.test.tpch.q8.NationalMarketShareQuery;
 import win.doyto.query.test.tpch.q8.NationalMarketShareView;
@@ -277,7 +279,7 @@ class TpcHTest {
     }
 
     @Test
-    void q7ForVolumeShippingQuery() {
+    void q7VolumeShippingQuery() {
         String expected = "SELECT supp_nation," +
                 " cust_nation," +
                 " l_year," +
@@ -305,11 +307,10 @@ class TpcHTest {
 
         ShippingQuery shippingQuery = ShippingQuery
                 .builder()
-                .nameOr(NameOr
-                        .builder()
-                        .n1(new NameComparison("FRANCE", "GERMANY"))
-                        .n2(new NameComparison("GERMANY", "FRANCE"))
-                        .build())
+                .nameOr(Arrays.asList(
+                        new NameComparison("FRANCE", "GERMANY"),
+                        new NameComparison("GERMANY", "FRANCE")
+                ))
                 .l_shipdateGe(startShipdate)
                 .l_shipdateLe(endShipdate)
                 .build();
@@ -328,7 +329,7 @@ class TpcHTest {
     }
 
     @Test
-    void q8ForNationalMarketShareQuery() {
+    void q8NationalMarketShareQuery() {
         String expected = "SELECT" +
                 " o_year," +
                 " SUM(CASE WHEN nation = ? THEN volume ELSE 0 END) / SUM(volume) AS mkt_share" +
@@ -697,16 +698,9 @@ class TpcHTest {
                 .p_sizeLe(15)
                 .l_shipmodeIn(Arrays.asList("AIR", "AIR REG"))
                 .build();
-        LineitemOr lineitemOr = LineitemOr
-                .builder()
-                .lineitemFilter1(lineitemFilter1)
-                .lineitemFilter2(lineitemFilter2)
-                .lineitemFilter3(lineitemFilter3)
-                .lineitemFilter4(new LineitemFilter())
-                .build();
         DiscountedRevenueQuery query = DiscountedRevenueQuery
                 .builder()
-                .lineitemOr(lineitemOr)
+                .lineitemOr(Arrays.asList(lineitemFilter1, lineitemFilter2, lineitemFilter3))
                 .l_shipinstruct("DELIVER IN PERSON")
                 .build();
 

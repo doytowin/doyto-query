@@ -36,8 +36,8 @@ public class ConnectableFieldProcessor implements FieldProcessor {
     private final Field[] fields;
     private final String connector;
 
-    public ConnectableFieldProcessor(Field field, String connector) {
-        this.fields = ColumnUtil.initFields(field.getType(), FieldMapper::init);
+    public ConnectableFieldProcessor(Class<?> fieldType, String connector) {
+        this.fields = ColumnUtil.initFields(fieldType, FieldMapper::init);
         this.connector = connector;
     }
 
