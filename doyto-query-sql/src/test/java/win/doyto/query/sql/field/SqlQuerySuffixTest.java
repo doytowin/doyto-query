@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SqlQuerySuffixTest {
 
     @SneakyThrows
-    private static String fieldInTestQuery(String fieldName) {
+    static String fieldInTestQuery(String fieldName) {
         return TestQuery.class.getDeclaredField(fieldName).getName();
     }
 
@@ -72,22 +72,6 @@ class SqlQuerySuffixTest {
         assertEquals("(null)", inValueProcessor.getPlaceHolderEx(Arrays.asList()));
         assertEquals("(?)", inValueProcessor.getPlaceHolderEx(Arrays.asList(1)));
         assertEquals("(?, ?)", inValueProcessor.getPlaceHolderEx(Arrays.asList(1, 2)));
-    }
-
-    @Test
-    void buildConditionForFieldContainsOr() {
-        ArrayList<Object> argList = new ArrayList<>();
-        String condition = SqlQuerySuffix.buildConditionForFieldContainsOr(fieldInTestQuery("usernameOrUserCodeLike"), argList, "test");
-        assertEquals("(username = ? OR user_code LIKE ?)", condition);
-        assertThat(argList).containsExactly("test", "%test%");
-    }
-
-    @Test
-    void buildConditionForFieldContainsOrAndAlias() {
-        ArrayList<Object> argList = new ArrayList<>();
-        String condition = SqlQuerySuffix.buildConditionForFieldContainsOr("u." + fieldInTestQuery("usernameOrUserCodeLike"), argList, "test");
-        assertEquals("(u.username = ? OR u.user_code LIKE ?)", condition);
-        assertThat(argList).containsExactly("test", "%test%");
     }
 
     @Test

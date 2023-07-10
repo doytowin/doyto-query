@@ -24,7 +24,6 @@ import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.annotation.QueryField;
 import win.doyto.query.annotation.Subquery;
 import win.doyto.query.core.*;
-import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -67,7 +66,7 @@ public final class FieldMapper {
         } else if (OrCollectionProcessor.support(field)) {
             processor = new OrCollectionProcessor(field);
         } else {
-            processor = initCommonField(field);
+            processor = initCommonField(field.getName());
         }
         FIELD_PROCESSOR_MAP.put(field, processor);
     }
@@ -93,22 +92,17 @@ public final class FieldMapper {
         return processor;
     }
 
-    private static FieldProcessor initCommonField(Field field) {
-        String fieldName = field.getName();
-        return chooseProcessorForFieldWithOr(fieldName);
-    }
-
     private static FieldProcessor initHavingField(Field field) {
         String fieldName = field.getName();
         if (!field.isAnnotationPresent(GroupBy.class)) {
-             fieldName = HAVING_PREFIX + field.getName();
+             fieldName = HAVING_PREFIX + fieldName;
         }
-        return chooseProcessorForFieldWithOr(fieldName);
+        return initCommonField(fieldName);
     }
 
-    private static FieldProcessor chooseProcessorForFieldWithOr(String fieldName) {
-        if (CommonUtil.containsOr(fieldName)) {
-            return (alias, argList, value) -> SqlQuerySuffix.buildConditionForFieldContainsOr(alias + fieldName, argList, value);
+    private static FieldProcessor initCommonField(String fieldName) {
+        if (OrFieldProcessor.support(fieldName)) {
+            return new OrFieldProcessor(fieldName);
         } else {
             return (alias, argList, value) -> SqlQuerySuffix.buildConditionForField(alias + fieldName, argList, value);
         }
