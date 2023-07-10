@@ -117,7 +117,7 @@ public enum SqlQuerySuffix {
         return matcher.find() ? valueOf(matcher.group()) : NONE;
     }
 
-    static String buildConditionForField(String fieldName, List<Object> argList, Object value) {
+    static String buildConditionForField(String alias, String fieldName, List<Object> argList, Object value) {
         SqlQuerySuffix sqlQuerySuffix = resolve(fieldName);
         value = sqlQuerySuffix.valueProcessor.escapeValue(value);
         String columnName = sqlQuerySuffix.removeSuffix(fieldName);
@@ -128,7 +128,7 @@ public enum SqlQuerySuffix {
             columnName = ColumnUtil.convertColumn(columnName);
             columnName = columnName.replace("$", ".");
         }
-        return sqlQuerySuffix.buildColumnCondition(columnName, argList, value);
+        return sqlQuerySuffix.buildColumnCondition(alias + columnName, argList, value);
     }
 
     public String removeSuffix(String fieldName) {

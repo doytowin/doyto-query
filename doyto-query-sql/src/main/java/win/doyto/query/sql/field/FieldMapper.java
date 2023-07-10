@@ -104,7 +104,8 @@ public final class FieldMapper {
         if (OrFieldProcessor.support(fieldName)) {
             return new OrFieldProcessor(fieldName);
         } else {
-            return (alias, argList, value) -> SqlQuerySuffix.buildConditionForField(alias + fieldName, argList, value);
+            return (alias, argList, value) ->
+                    SqlQuerySuffix.buildConditionForField(alias, fieldName, argList, value);
         }
     }
 

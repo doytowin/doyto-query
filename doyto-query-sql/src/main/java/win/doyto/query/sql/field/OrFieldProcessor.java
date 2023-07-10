@@ -44,7 +44,7 @@ public class OrFieldProcessor implements FieldProcessor {
     @Override
     public String process(String alias, List<Object> argList, Object value) {
         return Arrays.stream(fieldNames)
-                     .map(fieldName -> SqlQuerySuffix.buildConditionForField(alias + fieldName, argList, value))
+                     .map(fieldName -> SqlQuerySuffix.buildConditionForField(alias, fieldName, argList, value))
                      .collect(Collectors.joining(OR, OP, CP));
     }
 }
