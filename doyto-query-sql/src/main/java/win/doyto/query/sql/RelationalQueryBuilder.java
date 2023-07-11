@@ -54,41 +54,34 @@ public class RelationalQueryBuilder {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             DoytoQuery query = SerializationUtils.clone(q);
             EntityMetadata entityMetadata = EntityMetadata.build(entityClass);
-
-            String columns = BuildHelper.replaceExpressionInString(entityMetadata.getColumnsForSelect(), query, argList);
-            StringBuilder sqlBuilder = new StringBuilder(SELECT).append(columns).append(FROM);
-
-            if (entityMetadata.getNested() != null) {
-                String queryFieldName = CommonUtil.toCamelCase(entityMetadata.getTableName() + "Query");
-                Object nestedQuery = CommonUtil.readField(query, queryFieldName);
-                buildNestedView(entityMetadata.getNested(), nestedQuery, sqlBuilder, argList);
-            }
-
-            sqlBuilder.append(entityMetadata.getTableName());
-            if (entityMetadata.getJoinConditions().isEmpty()) {
-                sqlBuilder.append(buildWhere(query, argList));
-            } else {
-                sqlBuilder.append(entityMetadata.getJoinConditions());
-                sqlBuilder.append(buildCondition(AND, query, argList));
-            }
-            sqlBuilder.append(entityMetadata.getGroupBySql());
-            if (query instanceof AggregationQuery) {
-                sqlBuilder.append(buildHaving(((AggregationQuery) query).getHaving(), argList));
-            }
-            sqlBuilder.append(buildOrderBy(query));
-            return buildPaging(sqlBuilder.toString(), query);
+            return buildSqlForEntity(entityMetadata, query, argList);
         });
     }
 
-    private static void buildNestedView(EntityMetadata nested, Object nestedQuery, StringBuilder sqlBuilder, List<Object> argList) {
-        sqlBuilder.append(OP).append(SELECT)
-                  .append(nested.getColumnsForSelect())
-                  .append(FROM).append(nested.getTableName())
-                  .append(nested.getJoinConditions());
-        if (nestedQuery instanceof DoytoQuery) {
-            sqlBuilder.append(buildCondition(AND, nestedQuery, argList));
+    private static String buildSqlForEntity(EntityMetadata entityMetadata, DoytoQuery query, List<Object> argList) {
+        String columns = BuildHelper.replaceExpressionInString(entityMetadata.getColumnsForSelect(), query, argList);
+        StringBuilder sqlBuilder = new StringBuilder(SELECT).append(columns).append(FROM);
+
+        if (entityMetadata.getNested() != null) {
+            String queryFieldName = CommonUtil.toCamelCase(entityMetadata.getTableName() + "Query");
+            DoytoQuery nestedQuery = (DoytoQuery) CommonUtil.readField(query, queryFieldName);
+            String nestedSQL = buildSqlForEntity(entityMetadata.getNested(), nestedQuery, argList);
+            sqlBuilder.append(OP).append(nestedSQL).append(CP).append(AS);
         }
-        sqlBuilder.append(CP).append(AS);
+
+        sqlBuilder.append(entityMetadata.getTableName());
+        if (entityMetadata.getJoinConditions().isEmpty()) {
+            sqlBuilder.append(buildWhere(query, argList));
+        } else {
+            sqlBuilder.append(entityMetadata.getJoinConditions());
+            sqlBuilder.append(buildCondition(AND, query, argList));
+        }
+        sqlBuilder.append(entityMetadata.getGroupBySql());
+        if (query instanceof AggregationQuery) {
+            sqlBuilder.append(buildHaving(((AggregationQuery) query).getHaving(), argList));
+        }
+        sqlBuilder.append(buildOrderBy(query));
+        return buildPaging(sqlBuilder.toString(), query);
     }
 
     private static String buildHaving(Having having, List<Object> argList) {
