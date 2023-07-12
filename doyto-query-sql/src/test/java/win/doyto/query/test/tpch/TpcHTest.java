@@ -35,6 +35,10 @@ import win.doyto.query.test.tpch.q11.ValueHaving;
 import win.doyto.query.test.tpch.q11.ValueQuery;
 import win.doyto.query.test.tpch.q12.ShippingModesAndOrderPriorityQuery;
 import win.doyto.query.test.tpch.q12.ShippingModesAndOrderPriorityView;
+import win.doyto.query.test.tpch.q13.CustomerDistributionQuery;
+import win.doyto.query.test.tpch.q13.CustomerDistributionView;
+import win.doyto.query.test.tpch.q13.CustomerOrdersQuery;
+import win.doyto.query.test.tpch.q13.JoinOrders;
 import win.doyto.query.test.tpch.q14.PromotionEffectQuery;
 import win.doyto.query.test.tpch.q14.PromotionEffectView;
 import win.doyto.query.test.tpch.q16.PartsSupplierRelationshipQuery;
@@ -522,6 +526,33 @@ class TpcHTest {
                 "MAIL", "SHIP",
                 Date.valueOf(date), Date.valueOf(date.plus(1, YEARS))
         );
+    }
+
+    @Test
+    void q13CustomerDistributionQuery() {
+        String expected = "SELECT c_count, COUNT(*) AS custdist" +
+                " FROM" +
+                " (SELECT c_custkey," +
+                " COUNT(o_orderkey) AS c_count" +
+                " FROM customer c" +
+                " LEFT JOIN orders o ON" +
+                " o.o_custkey = c.c_custkey AND" +
+                " o.o_comment NOT LIKE ?" +
+                " GROUP BY c_custkey) AS customer_orders" +
+                " GROUP BY c_count" +
+                " ORDER BY custdist DESC, c_count DESC";
+
+        JoinOrders joinOrders = JoinOrders.builder().oCommentNotLike("%special%packages%").build();
+        CustomerOrdersQuery customerOrdersQuery = CustomerOrdersQuery.builder().joinOrders(joinOrders).build();
+        CustomerDistributionQuery query = CustomerDistributionQuery
+                .builder()
+                .customerOrdersQuery(customerOrdersQuery)
+                .sort("custdist,DESC;c_count,DESC")
+                .build();
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, CustomerDistributionView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly("%special%packages%");
     }
 
     @Test

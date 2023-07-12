@@ -20,6 +20,8 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.annotation.Join;
+import win.doyto.query.annotation.View;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DoytoQuery;
@@ -70,6 +72,7 @@ public class RelationalQueryBuilder {
         }
 
         sqlBuilder.append(entityMetadata.getTableName());
+        buildJoinClauses(sqlBuilder, query, argList);
         if (entityMetadata.getJoinConditions().isEmpty()) {
             sqlBuilder.append(buildWhere(query, argList));
         } else {
@@ -82,6 +85,27 @@ public class RelationalQueryBuilder {
         }
         sqlBuilder.append(buildOrderBy(query));
         return buildPaging(sqlBuilder.toString(), query);
+    }
+
+    private static void buildJoinClauses(StringBuilder sqlBuilder, DoytoQuery query, List<Object> argList) {
+        Field[] joinFields = FieldUtils.getFieldsWithAnnotation(query.getClass(), Join.class);
+        for (Field field : joinFields) {
+            Object joinObject = CommonUtil.readField(field, query);
+            buildJoinClause(sqlBuilder, joinObject, argList, field.getAnnotation(Join.class));
+        }
+    }
+
+    private static void buildJoinClause(StringBuilder sqlBuilder, Object joinQuery, List<Object> argList, Join join) {
+        String joinType = join.type().getValue();
+        View viewAnno = join.join();
+        String hostTable = BuildHelper.resolveTableName(viewAnno);
+        List<String> relations = EntityMetadata.resolveEntityRelations(new View[]{join.from(), viewAnno});
+        String onConditions = relations.stream().collect(Collectors.joining(AND, ON, EMPTY));
+        String andConditions = BuildHelper.buildCondition(AND, joinQuery, argList, viewAnno.alias());
+        sqlBuilder.append(joinType)
+                  .append(hostTable)
+                  .append(onConditions)
+                  .append(andConditions);
     }
 
     private static String buildHaving(Having having, List<Object> argList) {

@@ -69,13 +69,16 @@ public class BuildHelper {
         } else if (entityClass.isAnnotationPresent(ComplexView.class)) {
             ComplexView complexView = entityClass.getAnnotation(ComplexView.class);
             tableName = resolveTableName(complexView.value());
+        } else if (entityClass.isAnnotationPresent(View.class)) {
+            View[] views = entityClass.getAnnotationsByType(View.class);
+            tableName = resolveTableName(views);
         } else {
             tableName = defaultTableName(entityClass);
         }
         return tableName;
     }
 
-    private static String resolveTableName(View[] views) {
+    public static String resolveTableName(View... views) {
         return Arrays.stream(views)
                      .map(view -> {
                          String tableName = BuildHelper.resolveTableName(view.value());

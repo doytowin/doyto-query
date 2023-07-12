@@ -41,6 +41,7 @@ public interface Constant {
     String AND = " AND ";
     String IN = " IN ";
     String AS = " AS ";
+    String ON = " ON ";
     String LF = "\n";
     String ID = "id";
     String UNION_ALL = "\nUNION ALL\n";

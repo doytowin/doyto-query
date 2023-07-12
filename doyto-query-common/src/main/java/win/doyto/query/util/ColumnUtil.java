@@ -20,11 +20,16 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.annotation.Join;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.AggregationPrefix;
 import win.doyto.query.core.Dialect;
 import win.doyto.query.core.Having;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -37,10 +42,6 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Transient;
 
 /**
  * ColumnUtil
@@ -172,6 +173,7 @@ public class ColumnUtil {
                 && !Modifier.isStatic(field.getModifiers())      // static field
                 // Transient field, won't be used in where condition
                 && !field.isAnnotationPresent(Transient.class)
+                && !field.isAnnotationPresent(Join.class)
                 // Having field, will be used in having condition only
                 && !Having.class.isAssignableFrom(field.getType())
                 ;
