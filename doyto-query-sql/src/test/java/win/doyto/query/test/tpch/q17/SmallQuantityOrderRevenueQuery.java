@@ -25,6 +25,7 @@ import win.doyto.query.annotation.Subquery;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
+import win.doyto.query.test.tpch.domain.part.PartEntity;
 
 /**
  * SmallQuantityOrderRevenueQuery
@@ -40,6 +41,8 @@ import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
 public class SmallQuantityOrderRevenueQuery extends PageQuery {
     private String p_brand;
     private String p_container;
-    @Subquery(select = "2e-1 * AVG(l_quantity)", from = LineitemEntity.class)
+    @Subquery(select = "2e-1 * AVG(l_quantity)",
+            host = PartEntity.class,
+            from = LineitemEntity.class)
     private LineitemQuery l_quantityLt;
 }

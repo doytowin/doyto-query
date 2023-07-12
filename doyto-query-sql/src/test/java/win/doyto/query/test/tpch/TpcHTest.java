@@ -664,7 +664,7 @@ class TpcHTest {
                 .builder()
                 .p_brand("Brand#23")
                 .p_container("MED BOX")
-                .l_quantityLt(LineitemQuery.builder().l_partkeyEqP_partkey(true).build())
+                .l_quantityLt(LineitemQuery.builder().build())
                 .build();
 
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, SmallQuantityOrderRevenueView.class);

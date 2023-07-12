@@ -37,8 +37,6 @@ import java.sql.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LineitemQuery extends PageQuery {
-    private boolean l_partkeyEqP_partkey;
-
     private Date l_shipdateGe;
     private Date l_shipdateLt;
 }
