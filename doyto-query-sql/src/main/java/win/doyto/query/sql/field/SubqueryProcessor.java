@@ -51,7 +51,7 @@ public class SubqueryProcessor implements FieldProcessor {
         String tableName = BuildHelper.resolveTableName(subquery.from());
 
         if (subquery.distinct()) {
-            groupBy = " GROUP BY " + subquery.select();
+            groupBy = GROUP_BY + subquery.select();
         }
         Class<?>[] classes = combineArray(subquery.host(), subquery.from());
         List<String> relations = EntityMetadata.resolveEntityRelations(classes);
@@ -115,7 +115,7 @@ public class SubqueryProcessor implements FieldProcessor {
         if (value instanceof AggregationQuery) {
             Having having = ((AggregationQuery) value).getHaving();
             if (having != null) {
-                clause += buildCondition(" HAVING ", having, argList);
+                clause += buildCondition(HAVING, having, argList);
             }
         }
         return String.format(clauseFormat, clause);

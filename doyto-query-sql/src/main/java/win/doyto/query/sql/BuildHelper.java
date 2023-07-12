@@ -131,7 +131,7 @@ public class BuildHelper {
     }
 
     public static String buildOrderBy(DoytoQuery pageQuery) {
-        return buildOrderBy(pageQuery, " ORDER BY ");
+        return buildOrderBy(pageQuery, ORDER_BY);
     }
 
     static String buildOrderBy(DoytoQuery pageQuery, String orderBy) {

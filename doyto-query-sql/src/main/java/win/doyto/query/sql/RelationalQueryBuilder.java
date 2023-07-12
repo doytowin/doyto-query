@@ -88,7 +88,7 @@ public class RelationalQueryBuilder {
         if (having == null) {
             return EMPTY;
         }
-        return buildCondition(" HAVING ", having, argList);
+        return buildCondition(HAVING, having, argList);
     }
 
     public static SqlAndArgs buildCountAndArgs(DoytoQuery q, Class<?> entityClass) {

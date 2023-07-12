@@ -128,7 +128,7 @@ public class EntityMetadata {
     }
 
     static String buildGroupBySql(String groupByColumns) {
-        return !groupByColumns.isEmpty() ? " GROUP BY " + groupByColumns : "";
+        return !groupByColumns.isEmpty() ? GROUP_BY + groupByColumns : "";
     }
 
 }
