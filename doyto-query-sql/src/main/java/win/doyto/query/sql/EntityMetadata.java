@@ -68,8 +68,8 @@ public class EntityMetadata {
         return resolveEntityRelations(viewIndices);
     }
 
-    public static List<String> resolveEntityRelations(EntityAlias[] entityAliases) {
-        List<ViewIndex> viewIndices = Arrays.stream(entityAliases).map(ViewIndex::new).collect(Collectors.toList());
+    public static List<String> resolveEntityRelations(View[] views) {
+        List<ViewIndex> viewIndices = Arrays.stream(views).map(ViewIndex::new).collect(Collectors.toList());
         return resolveEntityRelations(viewIndices);
     }
 

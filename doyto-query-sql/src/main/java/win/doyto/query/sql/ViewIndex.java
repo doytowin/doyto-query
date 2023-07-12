@@ -17,7 +17,7 @@
 package win.doyto.query.sql;
 
 import lombok.Getter;
-import win.doyto.query.annotation.EntityAlias;
+import win.doyto.query.annotation.View;
 
 import java.util.List;
 
@@ -28,9 +28,9 @@ import java.util.List;
  * @since 1.0.2
  */
 class ViewIndex {
-    ViewIndex(EntityAlias entityAlias) {
-        this.entity = entityAlias.value();
-        this.alias = entityAlias.alias();
+    ViewIndex(View view) {
+        this.entity = view.value();
+        this.alias = view.alias();
     }
 
     ViewIndex(Class<?> entity) {

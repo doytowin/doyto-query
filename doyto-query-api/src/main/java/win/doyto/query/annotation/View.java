@@ -19,17 +19,24 @@ package win.doyto.query.annotation;
 import win.doyto.query.entity.Persistable;
 
 import java.io.Serializable;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 /**
- * EntityAlias
+ * View
  *
  * @author f0rb on 2023/6/11
  * @since 1.0.2
  */
 @SuppressWarnings("java:S1452")
-@Target({})
-public @interface EntityAlias {
+@Target(TYPE)
+@Retention(RUNTIME)
+@Repeatable(ComplexView.class)
+public @interface View {
 
     Class<? extends Persistable<? extends Serializable>> value();
 

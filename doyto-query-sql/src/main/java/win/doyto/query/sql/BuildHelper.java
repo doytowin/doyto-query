@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.ComplexView;
 import win.doyto.query.annotation.CompositeView;
-import win.doyto.query.annotation.EntityAlias;
+import win.doyto.query.annotation.View;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.LockMode;
@@ -31,6 +31,7 @@ import win.doyto.query.sql.field.FieldMapper;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
+import javax.persistence.Entity;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -40,7 +41,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.persistence.Entity;
 
 import static win.doyto.query.core.QuerySuffix.isValidValue;
 import static win.doyto.query.sql.Constant.*;
@@ -75,11 +75,11 @@ public class BuildHelper {
         return tableName;
     }
 
-    private static String resolveTableName(EntityAlias[] entityAliases) {
-        return Arrays.stream(entityAliases)
-                     .map(entityAlias -> {
-                         String tableName = BuildHelper.resolveTableName(entityAlias.value());
-                         String alias = entityAlias.alias();
+    private static String resolveTableName(View[] views) {
+        return Arrays.stream(views)
+                     .map(view -> {
+                         String tableName = BuildHelper.resolveTableName(view.value());
+                         String alias = view.alias();
                          return !alias.isEmpty() ? tableName + SPACE + alias : tableName;
                      }).collect(Collectors.joining(SEPARATOR));
     }
