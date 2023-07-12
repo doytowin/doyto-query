@@ -20,6 +20,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.core.PageQuery;
 import win.doyto.query.sql.RelationalQueryBuilder;
 import win.doyto.query.sql.SqlAndArgs;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
@@ -41,6 +42,8 @@ import win.doyto.query.test.tpch.q13.CustomerOrdersQuery;
 import win.doyto.query.test.tpch.q13.JoinOrders;
 import win.doyto.query.test.tpch.q14.PromotionEffectQuery;
 import win.doyto.query.test.tpch.q14.PromotionEffectView;
+import win.doyto.query.test.tpch.q15.TopSupplierQuery;
+import win.doyto.query.test.tpch.q15.TopSupplierView;
 import win.doyto.query.test.tpch.q16.PartsSupplierRelationshipQuery;
 import win.doyto.query.test.tpch.q16.PartsSupplierRelationshipView;
 import win.doyto.query.test.tpch.q17.SmallQuantityOrderRevenueQuery;
@@ -578,6 +581,41 @@ class TpcHTest {
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly("PROMO%", startShipdate, endShipdate);
+    }
+
+    @Test
+    void q15TopSupplierQuery() {
+        String expected = "WITH revenue AS" +
+                " (SELECT l_suppkey AS supplier_no," +
+                " SUM(l_extendedprice * (1 - l_discount)) AS total_revenue" +
+                " FROM lineitem" +
+                " WHERE l_shipdate >= ?" +
+                " AND l_shipdate < ?" +
+                " GROUP BY l_suppkey)" +
+                " SELECT s_suppkey, s_name, s_address, s_phone, total_revenue" +
+                " FROM supplier, revenue" +
+                " WHERE supplier_no = s_suppkey" +
+                " AND total_revenue = (SELECT MAX(total_revenue) FROM revenue)" +
+                " ORDER BY s_suppkey";
+
+        Date startShipdate = Date.valueOf(LocalDate.of(1995, 1, 1));
+        Date endShipdate = Date.valueOf(LocalDate.of(1995, 4, 1));
+        LineitemQuery lineitemQuery = LineitemQuery
+                .builder()
+                .l_shipdateGe(startShipdate)
+                .l_shipdateLt(endShipdate)
+                .build();
+        TopSupplierQuery query = TopSupplierQuery
+                .builder()
+                .lineitemRevenueQuery(lineitemQuery)
+                .total_revenue(new PageQuery())
+                .sort("s_suppkey")
+                .build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, TopSupplierView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(startShipdate, endShipdate);
     }
 
     @Test

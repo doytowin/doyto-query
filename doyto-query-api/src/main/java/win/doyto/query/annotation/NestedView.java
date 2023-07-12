@@ -28,7 +28,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * @author f0rb on 2023/2/20
  * @since 1.0.1
  */
-@SuppressWarnings("java:S1452")
 @Target(TYPE)
 @Retention(RUNTIME)
 public @interface NestedView {

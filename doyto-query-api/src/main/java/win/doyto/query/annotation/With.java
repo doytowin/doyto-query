@@ -16,7 +16,6 @@
 
 package win.doyto.query.annotation;
 
-import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -24,19 +23,15 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * View
+ * With
  *
- * @author f0rb on 2023/6/11
+ * @author f0rb on 2023/7/12
  * @since 1.0.2
  */
 @Target(TYPE)
 @Retention(RUNTIME)
-@Repeatable(ComplexView.class)
-public @interface View {
+public @interface With {
 
     Class<?> value();
-
-
-    String alias() default "";
 
 }

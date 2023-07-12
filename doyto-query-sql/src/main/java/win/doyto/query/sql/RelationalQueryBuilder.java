@@ -22,6 +22,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.Join;
 import win.doyto.query.annotation.View;
+import win.doyto.query.annotation.With;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DoytoQuery;
@@ -56,8 +57,24 @@ public class RelationalQueryBuilder {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             DoytoQuery query = SerializationUtils.clone(q);
             EntityMetadata entityMetadata = EntityMetadata.build(entityClass);
+
+            if (entityClass.isAnnotationPresent(With.class)) {
+                return buildWithSql(entityClass, argList, query)
+                        + buildSqlForEntity(entityMetadata, query, argList);
+            }
             return buildSqlForEntity(entityMetadata, query, argList);
         });
+    }
+
+    private static String buildWithSql(Class<?> entityClass, List<Object> argList, DoytoQuery query) {
+        With withAnno = entityClass.getAnnotation(With.class);
+        Class<?> withClass = withAnno.value().getSuperclass();
+        EntityMetadata withMeta = EntityMetadata.build(withClass);
+        String queryFieldName = CommonUtil.camelize(withClass.getSimpleName()).replace("View", "Query");
+        DoytoQuery withQuery = (DoytoQuery) CommonUtil.readField(query, queryFieldName);
+        String alias = resolveTableName(withAnno.value());
+        String withSQL = buildSqlForEntity(withMeta, withQuery, argList);
+        return "WITH " + alias + AS + OP + withSQL + CP + SPACE;
     }
 
     private static String buildSqlForEntity(EntityMetadata entityMetadata, DoytoQuery query, List<Object> argList) {
@@ -65,7 +82,7 @@ public class RelationalQueryBuilder {
         StringBuilder sqlBuilder = new StringBuilder(SELECT).append(columns).append(FROM);
 
         if (entityMetadata.getNested() != null) {
-            String queryFieldName = CommonUtil.toCamelCase(entityMetadata.getTableName() + "Query");
+            String queryFieldName = CommonUtil.toCamelCase(entityMetadata.getTableName()) + "Query";
             DoytoQuery nestedQuery = (DoytoQuery) CommonUtil.readField(query, queryFieldName);
             String nestedSQL = buildSqlForEntity(entityMetadata.getNested(), nestedQuery, argList);
             sqlBuilder.append(OP).append(nestedSQL).append(CP).append(AS);

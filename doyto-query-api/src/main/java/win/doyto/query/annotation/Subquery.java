@@ -42,6 +42,6 @@ public @interface Subquery {
 
     Class<? extends Persistable<? extends Serializable>>[] host() default {};
 
-    Class<? extends Persistable<? extends Serializable>>[] from();
+    Class<?>[] from();
 
 }

@@ -14,31 +14,31 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.domain.lineitem;
+package win.doyto.query.test.tpch.q15;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.annotation.Subquery;
+import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.PageQuery;
-
-import java.sql.Date;
+import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
 
 /**
- * LineitemQuery
+ * TopSupplierQuery
  *
- * @author f0rb on 2023/2/19
- * @since 1.0.1
+ * @author f0rb on 2023/6/13
+ * @since 1.0.2
  */
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LineitemQuery extends PageQuery {
-    private boolean l_partkeyEqP_partkey;
-
-    private Date l_shipdateGe;
-    private Date l_shipdateLt;
+public class TopSupplierQuery extends PageQuery implements AggregationQuery {
+    private LineitemQuery lineitemRevenueQuery;
+    @Subquery(select = "MAX(total_revenue)", from = RevenueView.class)
+    private PageQuery total_revenue;
 }

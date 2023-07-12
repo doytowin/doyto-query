@@ -26,13 +26,11 @@ import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.LockMode;
 import win.doyto.query.core.QuerySuffix;
-import win.doyto.query.entity.Persistable;
 import win.doyto.query.sql.field.FieldMapper;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
 import javax.persistence.Entity;
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
@@ -94,7 +92,7 @@ public class BuildHelper {
         return GlobalConfiguration.formatTable(entityName);
     }
 
-    public static String resolveTableName(Class<? extends Persistable<? extends Serializable>>[] value) {
+    public static String resolveTableName(Class<?>[] value) {
         return Arrays.stream(value)
                      .map(BuildHelper::resolveTableName)
                      .collect(Collectors.joining(SEPARATOR));

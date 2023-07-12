@@ -20,6 +20,7 @@ import lombok.Getter;
 import win.doyto.query.annotation.*;
 import win.doyto.query.util.ColumnUtil;
 
+import javax.persistence.Column;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -123,7 +124,13 @@ public class EntityMetadata {
 
     static String resolveGroupByColumns(Class<?> entityClass) {
         return ColumnUtil.filterFields(entityClass, field -> field.isAnnotationPresent(GroupBy.class))
-                         .map(field -> ColumnUtil.convertColumn(field.getName()))
+                         .map(field -> {
+                             if (field.isAnnotationPresent(Column.class)) {
+                                 return field.getAnnotation(Column.class).name();
+                             } else {
+                                 return ColumnUtil.convertColumn(field.getName());
+                             }
+                         })
                          .collect(Collectors.joining(SEPARATOR));
     }
 
