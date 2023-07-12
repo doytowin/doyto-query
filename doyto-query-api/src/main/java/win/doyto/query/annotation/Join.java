@@ -44,6 +44,9 @@ public @interface Join {
     @AllArgsConstructor
     @Getter
     enum JoinType {
+        INNER_JOIN(" INNER JOIN "),
+        FULL_JOIN(" FULL JOIN "),
+        RIGHT_JOIN(" RIGHT JOIN "),
         LEFT_JOIN(" LEFT JOIN ");
 
         private final String value;
