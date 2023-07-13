@@ -183,10 +183,10 @@
         </plugins>
     </build>
     <scm>
-        <tag>master</tag>
-        <url>git@github.com:f0rb/doyto-query.git</url>
-        <connection>scm:git:git@github.com:f0rb/doyto-query.git</connection>
-        <developerConnection>scm:git:git@github.com:f0rb/doyto-query.git</developerConnection>
+        <tag>main</tag>
+        <url>https://github.com/doytowin/doyto-query</url>
+        <connection>scm:git:https://github.com/doytowin/doyto-query.git</connection>
+        <developerConnection>scm:git:https://github.com/doytowin/doyto-query.git</developerConnection>
     </scm>
 
     <profiles>
