@@ -27,6 +27,7 @@
     </parent>
 
     <artifactId>doyto-query-dialect</artifactId>
+    <name>DoytoQueryDialect</name>
     <description>Dialect implementations for different databases</description>
 
     <properties>
