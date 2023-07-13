@@ -62,6 +62,9 @@ import win.doyto.query.test.tpch.q20.AvailableQtyQuery;
 import win.doyto.query.test.tpch.q20.PotentialPartPromotionQuery;
 import win.doyto.query.test.tpch.q20.PotentialPartPromotionView;
 import win.doyto.query.test.tpch.q20.SuppkeyQuery;
+import win.doyto.query.test.tpch.q21.LineitemExistsQuery;
+import win.doyto.query.test.tpch.q21.SuppliersWhoKeptOrdersWaitingQuery;
+import win.doyto.query.test.tpch.q21.SuppliersWhoKeptOrdersWaitingView;
 import win.doyto.query.test.tpch.q3.ShippingPriorityQuery;
 import win.doyto.query.test.tpch.q3.ShippingPriorityView;
 import win.doyto.query.test.tpch.q4.LineitemReceiptQuery;
@@ -824,6 +827,44 @@ class TpcHTest {
         assertThat(sqlAndArgs.getArgs()).containsExactly(
                 "forest%", Date.valueOf(date),
                 Date.valueOf(date.plus(1, YEARS)), "CANADA");
+    }
+
+    @Test
+    void q21SuppliersWhoKeptOrdersWaitingQuery() {
+        String expected = "SELECT" +
+                " s_name, count(*) AS numwait" +
+                " FROM supplier, lineitem l1, orders, nation" +
+                " WHERE s_nationkey = n_nationkey" +
+                " AND l1.l_orderkey = o_orderkey" +
+                " AND l1.l_suppkey = s_suppkey" +
+                " AND n_name = ?" +
+                " AND o_orderstatus = ?" +
+                " AND l1.l_receiptdate > l1.l_commitdate" +
+                " AND EXISTS(SELECT *" +
+                " FROM lineitem l2" +
+                " WHERE l1.l_orderkey = l2.l_orderkey" +
+                " AND l2.l_suppkey <> l1.l_suppkey)" +
+                " AND NOT EXISTS(SELECT *" +
+                " FROM lineitem l3" +
+                " WHERE l1.l_orderkey = l3.l_orderkey" +
+                " AND l3.l_suppkey <> l1.l_suppkey" +
+                " AND l3.l_receiptdate > l3.l_commitdate)" +
+                " GROUP BY s_name" +
+                " ORDER BY numwait DESC, s_name";
+
+        SuppliersWhoKeptOrdersWaitingQuery query = SuppliersWhoKeptOrdersWaitingQuery
+                .builder()
+                .o_orderstatus("F")
+                .n_name("CANADA")
+                .lineitemExists(new LineitemExistsQuery())
+                .lineitemNotExists(LineitemExistsQuery.builder().beforeCommitDate(true).build())
+                .sort("numwait,DESC;s_name")
+                .build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, SuppliersWhoKeptOrdersWaitingView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly("CANADA", "F");
     }
 
 }
