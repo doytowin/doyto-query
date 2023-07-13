@@ -65,6 +65,9 @@ import win.doyto.query.test.tpch.q20.SuppkeyQuery;
 import win.doyto.query.test.tpch.q21.LineitemExistsQuery;
 import win.doyto.query.test.tpch.q21.SuppliersWhoKeptOrdersWaitingQuery;
 import win.doyto.query.test.tpch.q21.SuppliersWhoKeptOrdersWaitingView;
+import win.doyto.query.test.tpch.q22.CustsaleQuery;
+import win.doyto.query.test.tpch.q22.GlobalSalesOpportunityQuery;
+import win.doyto.query.test.tpch.q22.GlobalSalesOpportunityView;
 import win.doyto.query.test.tpch.q3.ShippingPriorityQuery;
 import win.doyto.query.test.tpch.q3.ShippingPriorityView;
 import win.doyto.query.test.tpch.q4.LineitemReceiptQuery;
@@ -827,7 +830,7 @@ class TpcHTest {
         assertThat(sqlAndArgs.getArgs()).containsExactly(
                 "forest%", Date.valueOf(date),
                 Date.valueOf(date.plus(1, YEARS)), "CANADA");
-}
+    }
 
     @Test
     void q21SuppliersWhoKeptOrdersWaitingQuery() {
@@ -865,6 +868,47 @@ class TpcHTest {
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly("CANADA", "F");
+    }
+
+    @Test
+    void q22GlobalSalesOpportunityQuery() {
+        String expected = "SELECT" +
+                " cntrycode, count(*) AS numcust, sum(c_acctbal) AS totacctbal" +
+                " FROM (SELECT" +
+                " substring(c_phone from 1 for 2) AS cntrycode, c_acctbal" +
+                " FROM customer" +
+                " WHERE substring(c_phone from 1 for 2) IN (?, ?)" +
+                " AND c_acctbal > (SELECT avg(c_acctbal)" +
+                " FROM customer" +
+                " WHERE c_acctbal > ?" +
+                " AND substring(c_phone from 1 for 2) IN (?, ?))" +
+                " AND NOT EXISTS(SELECT * FROM orders" +
+                " WHERE c_custkey = o_custkey)" +
+                ") AS custsale" +
+                " GROUP BY cntrycode" +
+                " ORDER BY cntrycode";
+
+        CustsaleQuery anotherQuery = CustsaleQuery
+                .builder()
+                .c_acctbalGt(0)
+                .cntrycodeIn(Arrays.asList("28", "30"))
+                .build();
+        CustsaleQuery custsaleQuery = CustsaleQuery
+                .builder()
+                .cntrycodeIn(Arrays.asList("28", "30"))
+                .c_acctbalGt2(anotherQuery)
+                .ordersNotExists(new PageQuery())
+                .build();
+        GlobalSalesOpportunityQuery query = GlobalSalesOpportunityQuery
+                .builder()
+                .custsaleQuery(custsaleQuery)
+                .sort("cntrycode")
+                .build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, GlobalSalesOpportunityView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly("28", "30", 0, "28", "30");
     }
 
 }

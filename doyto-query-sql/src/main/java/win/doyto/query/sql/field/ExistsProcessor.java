@@ -45,8 +45,13 @@ public class ExistsProcessor implements FieldProcessor {
         String localAlias = domainPath.localAlias();
         foreignAlias = domainPath.foreignAlias();
         clauseFormat = (field.getName().endsWith("NotExists") ? "NOT " : EMPTY) + "EXISTS"
-                + OP + SELECT + "*" + FROM + domain + SPACE + foreignAlias
-                + WHERE + localAlias + "." + primaryId + EQUAL + foreignAlias + "." + foreignId + "%s" + CP;
+                + OP + SELECT + "*" + FROM + domain + defaultIfNotEmpty(foreignAlias, SPACE) + foreignAlias
+                + WHERE + localAlias + defaultIfNotEmpty(localAlias, ".") + primaryId + EQUAL
+                + foreignAlias + defaultIfNotEmpty(foreignAlias, ".") + foreignId + "%s" + CP;
+    }
+
+    private static String defaultIfNotEmpty(String text, String defaults) {
+        return text.isEmpty() ? EMPTY : defaults;
     }
 
     @Override
