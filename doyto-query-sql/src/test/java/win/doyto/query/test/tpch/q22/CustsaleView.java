@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q4;
+package win.doyto.query.test.tpch.q22;
 
-import lombok.*;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.PageQuery;
+import lombok.Getter;
+import lombok.Setter;
+import win.doyto.query.annotation.View;
+import win.doyto.query.test.tpch.domain.customer.CustomerEntity;
+
+import javax.persistence.Column;
 
 /**
- * LineitemReceiptQuery
+ * CustsaleView
  *
- * @author f0rb on 2023/2/18
- * @since 1.0.1
+ * @author f0rb on 2023/7/13
+ * @since 1.0.2
  */
 @Getter
 @Setter
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class LineitemReceiptQuery extends PageQuery {
-    @Builder.Default
-    private boolean t1$lCommitdateLtT1$lReceiptdate = true;
+@View(CustomerEntity.class)
+public class CustsaleView {
+   @Column(name = "substring(c_phone from 1 for 2)")
+   private String cntrycode;
+   private Long c_acctbal;
 }

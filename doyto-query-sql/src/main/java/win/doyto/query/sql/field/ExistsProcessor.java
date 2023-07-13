@@ -35,21 +35,27 @@ import static win.doyto.query.sql.Constant.*;
 public class ExistsProcessor implements FieldProcessor {
 
     private final String clauseFormat;
-    private final String alias;
+    private final String foreignAlias;
 
     public ExistsProcessor(Field field) {
         DomainPath domainPath = field.getAnnotation(DomainPath.class);
-        String domains = GlobalConfiguration.formatTable(domainPath.value()[0]);
+        String domain = GlobalConfiguration.formatTable(domainPath.value()[0]);
         String primaryId = ColumnUtil.convertColumn(domainPath.localField());
         String foreignId = ColumnUtil.convertColumn(domainPath.foreignField());
-        alias = "t1";
+        String localAlias = domainPath.localAlias();
+        foreignAlias = domainPath.foreignAlias();
         clauseFormat = (field.getName().endsWith("NotExists") ? "NOT " : EMPTY) + "EXISTS"
-                + OP + SELECT + "*" + FROM + domains + SPACE + alias
-                + WHERE + TABLE_ALIAS + "." + primaryId + EQUAL + alias + "." + foreignId + "%s" + CP;
+                + OP + SELECT + "*" + FROM + domain + defaultIfNotEmpty(foreignAlias, SPACE) + foreignAlias
+                + WHERE + localAlias + defaultIfNotEmpty(localAlias, ".") + primaryId + EQUAL
+                + foreignAlias + defaultIfNotEmpty(foreignAlias, ".") + foreignId + "%s" + CP;
+    }
+
+    private static String defaultIfNotEmpty(String text, String defaults) {
+        return text.isEmpty() ? EMPTY : defaults;
     }
 
     @Override
     public String process(String alias, List<Object> argList, Object query) {
-        return String.format(clauseFormat, BuildHelper.buildCondition(AND, query, argList, this.alias));
+        return String.format(clauseFormat, BuildHelper.buildCondition(AND, query, argList, this.foreignAlias));
     }
 }

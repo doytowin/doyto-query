@@ -14,24 +14,33 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q4;
+package win.doyto.query.test.tpch.q21;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.PageQuery;
 
 /**
- * LineitemReceiptQuery
+ * SuppliersWhoKeptOrdersWaitingQuery
  *
- * @author f0rb on 2023/2/18
- * @since 1.0.1
+ * @author f0rb on 2023/7/13
+ * @since 1.0.2
  */
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LineitemReceiptQuery extends PageQuery {
+public class SuppliersWhoKeptOrdersWaitingQuery extends PageQuery {
+    private String n_name;
+    private String o_orderstatus;
     @Builder.Default
-    private boolean t1$lCommitdateLtT1$lReceiptdate = true;
+    private boolean l1$lReceiptdateGtL1$lCommitdate = true;
+    @DomainPath(value = "lineitem", foreignAlias = "l2", foreignField = "l_orderkey",
+            localAlias = "l1", localField = "l_orderkey")
+    private LineitemExistsQuery lineitemExists;
+    @DomainPath(value = "lineitem", foreignAlias = "l3", foreignField = "l_orderkey",
+            localAlias = "l1", localField = "l_orderkey")
+    private LineitemExistsQuery lineitemNotExists;
 }

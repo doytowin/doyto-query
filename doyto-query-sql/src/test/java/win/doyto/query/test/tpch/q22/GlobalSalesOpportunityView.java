@@ -14,24 +14,29 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q4;
+package win.doyto.query.test.tpch.q22;
 
-import lombok.*;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.PageQuery;
+import lombok.Getter;
+import lombok.Setter;
+import win.doyto.query.annotation.GroupBy;
+import win.doyto.query.annotation.NestedView;
+
+import javax.persistence.Column;
 
 /**
- * LineitemReceiptQuery
+ * GlobalSalesOpportunityView
  *
- * @author f0rb on 2023/2/18
- * @since 1.0.1
+ * @author f0rb on 2023/7/13
+ * @since 1.0.2
  */
 @Getter
 @Setter
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class LineitemReceiptQuery extends PageQuery {
-    @Builder.Default
-    private boolean t1$lCommitdateLtT1$lReceiptdate = true;
+@NestedView(CustsaleView.class)
+public class GlobalSalesOpportunityView {
+    @GroupBy
+    private String cntrycode;
+    @Column(name = "count(*)")
+    private Long numcust;
+    @Column(name = "sum(c_acctbal)")
+    private Long totacctbal;
 }

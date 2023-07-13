@@ -16,6 +16,7 @@
 
 package win.doyto.query.sql.field;
 
+import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.util.ColumnUtil;
 
 import java.util.List;
@@ -43,6 +44,6 @@ public class PrimitiveBooleanProcessor implements FieldProcessor {
 
     @Override
     public String process(String alias, List<Object> argList, Object value) {
-        return Boolean.TRUE.equals(value) ? clause : null;
+        return Boolean.TRUE.equals(value) ? StringUtils.replace(clause, "alias.", alias) : null;
     }
 }

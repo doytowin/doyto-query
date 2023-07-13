@@ -38,6 +38,8 @@ public @interface DomainPath {
      */
     String[] value();
 
+    String localAlias() default  "t";
+
     /**
      * The field in this domain to maintain the relationship with the target domain.
      *
@@ -51,4 +53,6 @@ public @interface DomainPath {
      * @return name of the foreign field
      */
     String foreignField() default "id";
+
+    String foreignAlias() default "t1";
 }

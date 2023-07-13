@@ -25,6 +25,7 @@ import win.doyto.query.annotation.QueryField;
 import win.doyto.query.annotation.Subquery;
 import win.doyto.query.core.*;
 
+import javax.persistence.Column;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +66,8 @@ public final class FieldMapper {
             processor = new PrimitiveBooleanProcessor(field.getName());
         } else if (OrCollectionProcessor.support(field)) {
             processor = new OrCollectionProcessor(field);
+        } else if (field.isAnnotationPresent(Column.class)) {
+            processor = new ColumnFieldProcessor(field);
         } else {
             processor = initCommonField(field.getName());
         }
