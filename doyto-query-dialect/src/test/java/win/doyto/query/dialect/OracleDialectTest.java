@@ -33,9 +33,9 @@ class OracleDialectTest {
     void buildPageSql() {
         String pageSql = dialect.buildPageSql("SELECT username, password FROM user WHERE valid = true", 10, 100);
         String expected = "SELECT username, password FROM " +
-                "(SELECT ROWNUM rn, t1.* FROM (" +
+                "(SELECT ROWNUM rn, ora1.* FROM (" +
                 "SELECT * FROM user WHERE valid = true" +
-                ") t1 WHERE ROWNUM <= 110 ) t2 WHERE t2.rn > 100";
+                ") ora1 WHERE ROWNUM <= 110 ) ora2 WHERE ora2.rn > 100";
         assertEquals(expected, pageSql);
     }
 

@@ -117,21 +117,7 @@ public enum SqlQuerySuffix {
         return matcher.find() ? valueOf(matcher.group()) : NONE;
     }
 
-    static String buildConditionForFieldContainsOr(String fieldNameWithOr, List<Object> argList, Object value) {
-        final String alias;
-        int indexOfDot = fieldNameWithOr.indexOf('.') + 1;
-        if (indexOfDot > 0) {
-            alias = fieldNameWithOr.substring(0, indexOfDot);
-            fieldNameWithOr = fieldNameWithOr.substring(indexOfDot);
-        } else {
-            alias = "";
-        }
-        return Arrays.stream(CommonUtil.splitByOr(fieldNameWithOr))
-                     .map(fieldName -> buildConditionForField(alias + fieldName, argList, value))
-                     .collect(Collectors.joining(OR, OP, CP));
-    }
-
-    static String buildConditionForField(String fieldName, List<Object> argList, Object value) {
+    static String buildConditionForField(String alias, String fieldName, List<Object> argList, Object value) {
         SqlQuerySuffix sqlQuerySuffix = resolve(fieldName);
         value = sqlQuerySuffix.valueProcessor.escapeValue(value);
         String columnName = sqlQuerySuffix.removeSuffix(fieldName);
@@ -142,7 +128,7 @@ public enum SqlQuerySuffix {
             columnName = ColumnUtil.convertColumn(columnName);
             columnName = columnName.replace("$", ".");
         }
-        return sqlQuerySuffix.buildColumnCondition(columnName, argList, value);
+        return sqlQuerySuffix.buildColumnCondition(alias + columnName, argList, value);
     }
 
     public String removeSuffix(String fieldName) {

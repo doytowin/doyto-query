@@ -14,27 +14,31 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q14;
+package win.doyto.query.test.tpch.q15;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.CompositeView;
-import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
-import win.doyto.query.test.tpch.domain.part.PartEntity;
+import win.doyto.query.annotation.View;
+import win.doyto.query.annotation.With;
+import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
 
-import javax.persistence.Column;
+import java.math.BigDecimal;
 
 /**
- * PromotionEffectView
+ * TopSupplierView
  *
- * @author f0rb on 2023/2/19
- * @since 1.0.1
+ * @author f0rb on 2023/6/13
+ * @since 1.0.2
  */
 @Getter
 @Setter
-@CompositeView({LineitemEntity.class, PartEntity.class})
-public class PromotionEffectView {
-    @Column(name = "100.00 * SUM(CASE WHEN #{pTypeStart} THEN l_extendedprice * (1 - l_discount) ELSE 0 END) " +
-            "/ SUM(l_extendedprice * (1 - l_discount))")
-    private Integer promo_revenue;
+@View(SupplierEntity.class)
+@View(RevenueView.class)
+@With(RevenueView.class)
+public class TopSupplierView {
+    private Integer s_suppkey;
+    private String s_name;
+    private String s_address;
+    private String s_phone;
+    private BigDecimal total_revenue;
 }

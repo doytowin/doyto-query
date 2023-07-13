@@ -14,35 +14,32 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q17;
+package win.doyto.query.test.tpch.q13;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.Subquery;
+import win.doyto.query.annotation.Join;
+import win.doyto.query.annotation.View;
 import win.doyto.query.core.PageQuery;
-import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
-import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
-import win.doyto.query.test.tpch.domain.part.PartEntity;
+import win.doyto.query.test.tpch.domain.customer.CustomerEntity;
+import win.doyto.query.test.tpch.domain.orders.OrdersEntity;
 
 /**
- * SmallQuantityOrderRevenueQuery
+ * CustomerOrdersQuery
  *
- * @author f0rb on 2023/2/19
- * @since 1.0.1
+ * @author f0rb on 2023/6/15
+ * @since 1.0.2
  */
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SmallQuantityOrderRevenueQuery extends PageQuery {
-    private String p_brand;
-    private String p_container;
-    @Subquery(select = "2e-1 * AVG(l_quantity)",
-            host = PartEntity.class,
-            from = LineitemEntity.class)
-    private LineitemQuery l_quantityLt;
+public class CustomerOrdersQuery extends PageQuery {
+    @Join(from = @View(value = CustomerEntity.class, alias = "c"),
+            join = @View(value = OrdersEntity.class, alias = "o"))
+    private JoinOrders joinOrders;
 }

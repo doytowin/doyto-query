@@ -20,6 +20,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.core.PageQuery;
 import win.doyto.query.sql.RelationalQueryBuilder;
 import win.doyto.query.sql.SqlAndArgs;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
@@ -35,8 +36,14 @@ import win.doyto.query.test.tpch.q11.ValueHaving;
 import win.doyto.query.test.tpch.q11.ValueQuery;
 import win.doyto.query.test.tpch.q12.ShippingModesAndOrderPriorityQuery;
 import win.doyto.query.test.tpch.q12.ShippingModesAndOrderPriorityView;
+import win.doyto.query.test.tpch.q13.CustomerDistributionQuery;
+import win.doyto.query.test.tpch.q13.CustomerDistributionView;
+import win.doyto.query.test.tpch.q13.CustomerOrdersQuery;
+import win.doyto.query.test.tpch.q13.JoinOrders;
 import win.doyto.query.test.tpch.q14.PromotionEffectQuery;
 import win.doyto.query.test.tpch.q14.PromotionEffectView;
+import win.doyto.query.test.tpch.q15.TopSupplierQuery;
+import win.doyto.query.test.tpch.q15.TopSupplierView;
 import win.doyto.query.test.tpch.q16.PartsSupplierRelationshipQuery;
 import win.doyto.query.test.tpch.q16.PartsSupplierRelationshipView;
 import win.doyto.query.test.tpch.q17.SmallQuantityOrderRevenueQuery;
@@ -48,7 +55,6 @@ import win.doyto.query.test.tpch.q18.LineitemQuantityQuery;
 import win.doyto.query.test.tpch.q19.DiscountedRevenueQuery;
 import win.doyto.query.test.tpch.q19.DiscountedRevenueView;
 import win.doyto.query.test.tpch.q19.LineitemFilter;
-import win.doyto.query.test.tpch.q19.LineitemOr;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierQuery;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierView;
 import win.doyto.query.test.tpch.q2.SupplyCostQuery;
@@ -65,7 +71,10 @@ import win.doyto.query.test.tpch.q5.LocalSupplierVolumeQuery;
 import win.doyto.query.test.tpch.q5.LocalSupplierVolumeView;
 import win.doyto.query.test.tpch.q6.ForecastingRevenueChangeQuery;
 import win.doyto.query.test.tpch.q6.ForecastingRevenueChangeView;
-import win.doyto.query.test.tpch.q7.*;
+import win.doyto.query.test.tpch.q7.NameComparison;
+import win.doyto.query.test.tpch.q7.ShippingQuery;
+import win.doyto.query.test.tpch.q7.VolumeShippingQuery;
+import win.doyto.query.test.tpch.q7.VolumeShippingView;
 import win.doyto.query.test.tpch.q8.AllNationsQuery;
 import win.doyto.query.test.tpch.q8.NationalMarketShareQuery;
 import win.doyto.query.test.tpch.q8.NationalMarketShareView;
@@ -277,7 +286,7 @@ class TpcHTest {
     }
 
     @Test
-    void q7ForVolumeShippingQuery() {
+    void q7VolumeShippingQuery() {
         String expected = "SELECT supp_nation," +
                 " cust_nation," +
                 " l_year," +
@@ -305,11 +314,10 @@ class TpcHTest {
 
         ShippingQuery shippingQuery = ShippingQuery
                 .builder()
-                .nameOr(NameOr
-                        .builder()
-                        .n1(new NameComparison("FRANCE", "GERMANY"))
-                        .n2(new NameComparison("GERMANY", "FRANCE"))
-                        .build())
+                .nameOr(Arrays.asList(
+                        new NameComparison("FRANCE", "GERMANY"),
+                        new NameComparison("GERMANY", "FRANCE")
+                ))
                 .l_shipdateGe(startShipdate)
                 .l_shipdateLe(endShipdate)
                 .build();
@@ -328,7 +336,7 @@ class TpcHTest {
     }
 
     @Test
-    void q8ForNationalMarketShareQuery() {
+    void q8NationalMarketShareQuery() {
         String expected = "SELECT" +
                 " o_year," +
                 " SUM(CASE WHEN nation = ? THEN volume ELSE 0 END) / SUM(volume) AS mkt_share" +
@@ -524,6 +532,33 @@ class TpcHTest {
     }
 
     @Test
+    void q13CustomerDistributionQuery() {
+        String expected = "SELECT c_count, COUNT(*) AS custdist" +
+                " FROM" +
+                " (SELECT c_custkey," +
+                " COUNT(o_orderkey) AS c_count" +
+                " FROM customer c" +
+                " LEFT JOIN orders o ON" +
+                " o.o_custkey = c.c_custkey AND" +
+                " o.o_comment NOT LIKE ?" +
+                " GROUP BY c_custkey) AS customer_orders" +
+                " GROUP BY c_count" +
+                " ORDER BY custdist DESC, c_count DESC";
+
+        JoinOrders joinOrders = JoinOrders.builder().oCommentNotLike("%special%packages%").build();
+        CustomerOrdersQuery customerOrdersQuery = CustomerOrdersQuery.builder().joinOrders(joinOrders).build();
+        CustomerDistributionQuery query = CustomerDistributionQuery
+                .builder()
+                .customerOrdersQuery(customerOrdersQuery)
+                .sort("custdist,DESC;c_count,DESC")
+                .build();
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, CustomerDistributionView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly("%special%packages%");
+    }
+
+    @Test
     void q14PromotionEffectQuery() {
         String expected = "SELECT" +
                 " 100.00 * SUM(CASE WHEN p_type LIKE ? THEN l_extendedprice * (1 - l_discount) ELSE 0 END)" +
@@ -546,6 +581,41 @@ class TpcHTest {
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly("PROMO%", startShipdate, endShipdate);
+    }
+
+    @Test
+    void q15TopSupplierQuery() {
+        String expected = "WITH revenue AS" +
+                " (SELECT l_suppkey AS supplier_no," +
+                " SUM(l_extendedprice * (1 - l_discount)) AS total_revenue" +
+                " FROM lineitem" +
+                " WHERE l_shipdate >= ?" +
+                " AND l_shipdate < ?" +
+                " GROUP BY l_suppkey)" +
+                " SELECT s_suppkey, s_name, s_address, s_phone, total_revenue" +
+                " FROM supplier, revenue" +
+                " WHERE supplier_no = s_suppkey" +
+                " AND total_revenue = (SELECT MAX(total_revenue) FROM revenue)" +
+                " ORDER BY s_suppkey";
+
+        Date startShipdate = Date.valueOf(LocalDate.of(1995, 1, 1));
+        Date endShipdate = Date.valueOf(LocalDate.of(1995, 4, 1));
+        LineitemQuery lineitemQuery = LineitemQuery
+                .builder()
+                .l_shipdateGe(startShipdate)
+                .l_shipdateLt(endShipdate)
+                .build();
+        TopSupplierQuery query = TopSupplierQuery
+                .builder()
+                .lineitemRevenueQuery(lineitemQuery)
+                .total_revenue(new PageQuery())
+                .sort("s_suppkey")
+                .build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, TopSupplierView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(startShipdate, endShipdate);
     }
 
     @Test
@@ -594,7 +664,7 @@ class TpcHTest {
                 .builder()
                 .p_brand("Brand#23")
                 .p_container("MED BOX")
-                .l_quantityLt(LineitemQuery.builder().l_partkeyEqP_partkey(true).build())
+                .l_quantityLt(LineitemQuery.builder().build())
                 .build();
 
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, SmallQuantityOrderRevenueView.class);
@@ -697,16 +767,9 @@ class TpcHTest {
                 .p_sizeLe(15)
                 .l_shipmodeIn(Arrays.asList("AIR", "AIR REG"))
                 .build();
-        LineitemOr lineitemOr = LineitemOr
-                .builder()
-                .lineitemFilter1(lineitemFilter1)
-                .lineitemFilter2(lineitemFilter2)
-                .lineitemFilter3(lineitemFilter3)
-                .lineitemFilter4(new LineitemFilter())
-                .build();
         DiscountedRevenueQuery query = DiscountedRevenueQuery
                 .builder()
-                .lineitemOr(lineitemOr)
+                .lineitemOr(Arrays.asList(lineitemFilter1, lineitemFilter2, lineitemFilter3))
                 .l_shipinstruct("DELIVER IN PERSON")
                 .build();
 

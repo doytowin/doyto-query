@@ -18,16 +18,15 @@ package win.doyto.query.test.tpch.q7;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.ComplexView;
-import win.doyto.query.annotation.EntityAlias;
+import win.doyto.query.annotation.View;
 import win.doyto.query.test.tpch.domain.customer.CustomerEntity;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
 import win.doyto.query.test.tpch.domain.nation.NationEntity;
 import win.doyto.query.test.tpch.domain.orders.OrdersEntity;
 import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
 
-import java.math.BigDecimal;
 import javax.persistence.Column;
+import java.math.BigDecimal;
 
 /**
  * AnnualVolumeView
@@ -37,14 +36,12 @@ import javax.persistence.Column;
  */
 @Getter
 @Setter
-@ComplexView({
-        @EntityAlias(SupplierEntity.class),
-        @EntityAlias(LineitemEntity.class),
-        @EntityAlias(OrdersEntity.class),
-        @EntityAlias(CustomerEntity.class),
-        @EntityAlias(value = NationEntity.class, alias = "n1"),
-        @EntityAlias(value = NationEntity.class, alias = "n2")
-})
+@View(SupplierEntity.class)
+@View(LineitemEntity.class)
+@View(OrdersEntity.class)
+@View(CustomerEntity.class)
+@View(value = NationEntity.class, alias = "n1")
+@View(value = NationEntity.class, alias = "n2")
 public class ShippingView {
     @Column(name = "n1.n_name")
     private String supp_nation;

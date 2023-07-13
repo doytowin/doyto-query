@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql.field;
+package win.doyto.query.annotation;
 
-import java.util.List;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * FieldProcessor
+ * With
  *
- * @author f0rb on 2023/2/19
- * @since 1.0.1
+ * @author f0rb on 2023/7/12
+ * @since 1.0.2
  */
-interface FieldProcessor {
-    /**
-     * Generate SQL condition by provided value.
-     *
-     * @param alias empty or string ending with dot.
-     * @return SQL condition
-     */
-    String process(String alias, List<Object> argList, Object value);
+@Target(TYPE)
+@Retention(RUNTIME)
+public @interface With {
+
+    Class<?> value();
+
 }

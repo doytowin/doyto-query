@@ -26,8 +26,6 @@ import win.doyto.query.sql.EntityMetadata;
 import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,13 +51,20 @@ public class SubqueryProcessor implements FieldProcessor {
         String tableName = BuildHelper.resolveTableName(subquery.from());
 
         if (subquery.distinct()) {
-            groupBy = " GROUP BY " + subquery.select();
+            groupBy = GROUP_BY + subquery.select();
         }
-        List<String> relations = EntityMetadata.resolveEntityRelations(
-                subquery.from(), new HashSet<>(Arrays.asList(subquery.parentColumns())));
+        Class<?>[] classes = combineArray(subquery.host(), subquery.from());
+        List<String> relations = EntityMetadata.resolveEntityRelations(classes);
         joinConditions = String.join(AND, relations);
 
         clauseFormat = buildClauseFormat(fieldName, subquery.select(), tableName);
+    }
+
+    private static Class<?>[] combineArray(Class<?>[] host, Class<?>[] from) {
+        Class<?>[] classes = new Class<?>[host.length + from.length];
+        System.arraycopy(host, 0, classes, 0, host.length);
+        System.arraycopy(from, 0, classes, host.length, from.length);
+        return classes;
     }
 
     public SubqueryProcessor(String originFieldName) {
@@ -110,7 +115,7 @@ public class SubqueryProcessor implements FieldProcessor {
         if (value instanceof AggregationQuery) {
             Having having = ((AggregationQuery) value).getHaving();
             if (having != null) {
-                clause += buildCondition(" HAVING ", having, argList);
+                clause += buildCondition(HAVING, having, argList);
             }
         }
         return String.format(clauseFormat, clause);

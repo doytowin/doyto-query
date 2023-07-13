@@ -14,29 +14,41 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q19;
+package win.doyto.query.annotation;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.Or;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * LineitemOr
+ * Join
  *
- * @author f0rb on 2023/2/19
- * @since 1.0.1
+ * @author f0rb on 2023/7/11
+ * @since 1.0.2
  */
-@Getter
-@Setter
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class LineitemOr implements Or {
-    private LineitemFilter lineitemFilter1;
-    private LineitemFilter lineitemFilter2;
-    private LineitemFilter lineitemFilter3;
-    private LineitemFilter lineitemFilter4;
+
+@Target(FIELD)
+@Retention(RUNTIME)
+public @interface Join {
+    View from();
+
+    View join();
+
+    JoinType type() default JoinType.LEFT_JOIN;
+
+    @AllArgsConstructor
+    @Getter
+    enum JoinType {
+        INNER_JOIN(" INNER JOIN "),
+        FULL_JOIN(" FULL JOIN "),
+        RIGHT_JOIN(" RIGHT JOIN "),
+        LEFT_JOIN(" LEFT JOIN ");
+
+        private final String value;
+    }
 }

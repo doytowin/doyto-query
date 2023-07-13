@@ -23,6 +23,8 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.core.PageQuery;
 
+import java.sql.Date;
+
 /**
  * LineitemQuery
  *
@@ -35,5 +37,6 @@ import win.doyto.query.core.PageQuery;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LineitemQuery extends PageQuery {
-    private boolean l_partkeyEqP_partkey;
+    private Date l_shipdateGe;
+    private Date l_shipdateLt;
 }

@@ -18,8 +18,7 @@ package win.doyto.query.test.tpch.q8;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.ComplexView;
-import win.doyto.query.annotation.EntityAlias;
+import win.doyto.query.annotation.View;
 import win.doyto.query.test.tpch.domain.customer.CustomerEntity;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
 import win.doyto.query.test.tpch.domain.nation.NationEntity;
@@ -28,8 +27,8 @@ import win.doyto.query.test.tpch.domain.part.PartEntity;
 import win.doyto.query.test.tpch.domain.region.RegionEntity;
 import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
 
-import java.math.BigDecimal;
 import javax.persistence.Column;
+import java.math.BigDecimal;
 
 /**
  * AllNationsView
@@ -39,16 +38,14 @@ import javax.persistence.Column;
  */
 @Getter
 @Setter
-@ComplexView({
-        @EntityAlias(PartEntity.class),
-        @EntityAlias(LineitemEntity.class),
-        @EntityAlias(OrdersEntity.class),
-        @EntityAlias(CustomerEntity.class),
-        @EntityAlias(SupplierEntity.class),
-        @EntityAlias(value = NationEntity.class, alias = "n1"),
-        @EntityAlias(value = NationEntity.class, alias = "n2"),
-        @EntityAlias(RegionEntity.class)
-})
+@View(PartEntity.class)
+@View(LineitemEntity.class)
+@View(OrdersEntity.class)
+@View(CustomerEntity.class)
+@View(SupplierEntity.class)
+@View(value = NationEntity.class, alias = "n1")
+@View(value = NationEntity.class, alias = "n2")
+@View(RegionEntity.class)
 public class AllNationsView {
     @Column(name = "YEAR(o_orderdate)")
     private String o_year;

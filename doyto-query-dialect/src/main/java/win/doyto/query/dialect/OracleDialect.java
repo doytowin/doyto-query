@@ -31,11 +31,11 @@ public class OracleDialect implements Dialect {
         String select = sql.substring(0, fromIndex);
         sql = "SELECT * " + sql.substring(fromIndex);
         return select + "FROM " +
-                "(SELECT ROWNUM rn, t1.* FROM (" +
+                "(SELECT ROWNUM rn, ora1.* FROM (" +
                 sql +
-                ") t1 WHERE ROWNUM <= " +
+                ") ora1 WHERE ROWNUM <= " +
                 (offset + limit) +
-                " ) t2 WHERE t2.rn > " + offset;
+                " ) ora2 WHERE ora2.rn > " + offset;
     }
 
     @Override

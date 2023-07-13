@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
-package win.doyto.query.annotation;
+package win.doyto.query.test.tpch.q13;
 
-import win.doyto.query.entity.Persistable;
+import lombok.Getter;
+import lombok.Setter;
+import win.doyto.query.annotation.GroupBy;
+import win.doyto.query.annotation.View;
+import win.doyto.query.test.tpch.domain.customer.CustomerEntity;
 
-import java.io.Serializable;
-import java.lang.annotation.Target;
+import javax.persistence.Column;
 
 /**
- * EntityAlias
+ * CustomerOrdersView
  *
- * @author f0rb on 2023/6/11
+ * @author f0rb on 2023/6/15
  * @since 1.0.2
  */
-@SuppressWarnings("java:S1452")
-@Target({})
-public @interface EntityAlias {
-
-    Class<? extends Persistable<? extends Serializable>> value();
-
-
-    String alias() default "";
-
+@Getter
+@Setter
+@View(value = CustomerEntity.class, alias = "c")
+public class CustomerOrdersView {
+    @GroupBy
+    private Integer c_custkey;
+    @Column(name = "COUNT(o_orderkey)")
+    private Long c_count;
 }

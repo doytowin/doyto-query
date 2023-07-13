@@ -25,15 +25,17 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import win.doyto.query.config.GlobalConfiguration;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 
 /**
  * CommonUtil
@@ -156,7 +158,7 @@ public class CommonUtil {
 
     public static String[] splitByOr(String columnName) {
         return Arrays.stream(PTN_SPLIT_OR.split(columnName, 0))
-                     .map(CommonUtil::camelize).toArray(String[]::new);
+                .map(CommonUtil::camelize).toArray(String[]::new);
     }
 
     public static boolean containsOr(String input) {
@@ -170,5 +172,18 @@ public class CommonUtil {
             result.append(StringUtils.capitalize(parts[i]));
         }
         return result.toString();
+    }
+
+    /**
+     * Resolve the generic type of the field.
+     *
+     * @param field The type of the field should contains one and only one
+     *              generic parameter, e.g., {@code List<UserView> users;}
+     */
+    @SuppressWarnings("unchecked")
+    public static <R> Class<R> resolveActualReturnClass(Field field) {
+        ParameterizedType genericType = (ParameterizedType) field.getGenericType();
+        Type[] actualTypeArguments = genericType.getActualTypeArguments();
+        return (Class<R>) actualTypeArguments[0];
     }
 }

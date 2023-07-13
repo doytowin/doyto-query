@@ -21,17 +21,16 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.ComplexView;
 import win.doyto.query.annotation.CompositeView;
-import win.doyto.query.annotation.EntityAlias;
+import win.doyto.query.annotation.View;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.LockMode;
 import win.doyto.query.core.QuerySuffix;
-import win.doyto.query.entity.Persistable;
 import win.doyto.query.sql.field.FieldMapper;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
-import java.io.Serializable;
+import javax.persistence.Entity;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
@@ -40,7 +39,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.persistence.Entity;
 
 import static win.doyto.query.core.QuerySuffix.isValidValue;
 import static win.doyto.query.sql.Constant.*;
@@ -69,17 +67,20 @@ public class BuildHelper {
         } else if (entityClass.isAnnotationPresent(ComplexView.class)) {
             ComplexView complexView = entityClass.getAnnotation(ComplexView.class);
             tableName = resolveTableName(complexView.value());
+        } else if (entityClass.isAnnotationPresent(View.class)) {
+            View[] views = entityClass.getAnnotationsByType(View.class);
+            tableName = resolveTableName(views);
         } else {
             tableName = defaultTableName(entityClass);
         }
         return tableName;
     }
 
-    private static String resolveTableName(EntityAlias[] entityAliases) {
-        return Arrays.stream(entityAliases)
-                     .map(entityAlias -> {
-                         String tableName = BuildHelper.resolveTableName(entityAlias.value());
-                         String alias = entityAlias.alias();
+    public static String resolveTableName(View... views) {
+        return Arrays.stream(views)
+                     .map(view -> {
+                         String tableName = BuildHelper.resolveTableName(view.value());
+                         String alias = view.alias();
                          return !alias.isEmpty() ? tableName + SPACE + alias : tableName;
                      }).collect(Collectors.joining(SEPARATOR));
     }
@@ -91,7 +92,7 @@ public class BuildHelper {
         return GlobalConfiguration.formatTable(entityName);
     }
 
-    public static String resolveTableName(Class<? extends Persistable<? extends Serializable>>[] value) {
+    public static String resolveTableName(Class<?>[] value) {
         return Arrays.stream(value)
                      .map(BuildHelper::resolveTableName)
                      .collect(Collectors.joining(SEPARATOR));
@@ -131,7 +132,7 @@ public class BuildHelper {
     }
 
     public static String buildOrderBy(DoytoQuery pageQuery) {
-        return buildOrderBy(pageQuery, " ORDER BY ");
+        return buildOrderBy(pageQuery, ORDER_BY);
     }
 
     static String buildOrderBy(DoytoQuery pageQuery, String orderBy) {

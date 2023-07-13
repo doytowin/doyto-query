@@ -16,34 +16,35 @@
 
 package win.doyto.query.sql.field;
 
-import win.doyto.query.sql.BuildHelper;
-import win.doyto.query.util.ColumnUtil;
+import win.doyto.query.util.CommonUtil;
 
-import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static win.doyto.query.sql.Constant.CP;
-import static win.doyto.query.sql.Constant.OP;
+import static win.doyto.query.sql.Constant.*;
 
 /**
- * ConnectableFieldProcessor
+ * OrFieldProcessor
  *
- * @author f0rb on 2023/2/19
- * @since 1.0.1
+ * @author f0rb on 2023/7/10
+ * @since 1.0.2
  */
-public class ConnectableFieldProcessor implements FieldProcessor {
+public class OrFieldProcessor implements FieldProcessor {
+    private final String[] fieldNames;
 
-    private final Field[] fields;
-    private final String connector;
+    public OrFieldProcessor(String fieldName) {
+        this.fieldNames = CommonUtil.splitByOr(fieldName);
+    }
 
-    public ConnectableFieldProcessor(Class<?> fieldType, String connector) {
-        this.fields = ColumnUtil.initFields(fieldType, FieldMapper::init);
-        this.connector = connector;
+    static boolean support(String fieldName) {
+        return CommonUtil.containsOr(fieldName);
     }
 
     @Override
     public String process(String alias, List<Object> argList, Object value) {
-        String clause = BuildHelper.buildCondition(fields, value, argList, alias, connector);
-        return clause.length() == 0 ? null : OP + clause + CP;
+        return Arrays.stream(fieldNames)
+                     .map(fieldName -> SqlQuerySuffix.buildConditionForField(alias, fieldName, argList, value))
+                     .collect(Collectors.joining(OR, OP, CP));
     }
 }

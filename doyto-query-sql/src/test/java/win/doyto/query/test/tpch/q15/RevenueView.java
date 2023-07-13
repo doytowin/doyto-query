@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql.field;
-
-import java.util.List;
+package win.doyto.query.test.tpch.q15;
 
 /**
- * FieldProcessor
+ * RevenueView
  *
- * @author f0rb on 2023/2/19
- * @since 1.0.1
+ * @author f0rb on 2023/6/13
+ * @since 1.0.2
  */
-interface FieldProcessor {
-    /**
-     * Generate SQL condition by provided value.
-     *
-     * @param alias empty or string ending with dot.
-     * @return SQL condition
-     */
-    String process(String alias, List<Object> argList, Object value);
+class RevenueView extends LineitemRevenueView {
 }
+

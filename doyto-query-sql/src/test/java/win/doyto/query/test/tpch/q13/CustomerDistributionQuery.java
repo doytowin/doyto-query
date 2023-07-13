@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q7;
+package win.doyto.query.test.tpch.q13;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.Or;
+import win.doyto.query.core.PageQuery;
 
 /**
- * NameOr
+ * CustomerDistributionQuery
  *
- * @author f0rb on 2023/6/11
+ * @author f0rb on 2023/6/14
  * @since 1.0.2
  */
 @Getter
@@ -34,7 +34,6 @@ import win.doyto.query.core.Or;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NameOr implements Or {
-    private NameComparison n1;
-    private NameComparison n2;
+public class CustomerDistributionQuery extends PageQuery {
+    private CustomerOrdersQuery customerOrdersQuery;
 }

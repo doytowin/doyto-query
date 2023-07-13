@@ -25,10 +25,15 @@ import win.doyto.query.test.TestQuery;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static win.doyto.query.sql.Constant.EMPTY;
+import static win.doyto.query.sql.field.SqlQuerySuffix.buildConditionForField;
 
 /**
  * QuerySuffixTest
@@ -36,9 +41,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author f0rb on 2020-01-17
  */
 class SqlQuerySuffixTest {
+    ArrayList<Object> argList = new ArrayList<>();
 
     @SneakyThrows
-    private static String fieldInTestQuery(String fieldName) {
+    static String fieldInTestQuery(String fieldName) {
         return TestQuery.class.getDeclaredField(fieldName).getName();
     }
 
@@ -60,8 +66,7 @@ class SqlQuerySuffixTest {
             "usernameNotEnd, test, username NOT LIKE ?, %test",
     })
     void testClauseAndValueGeneration(String fieldName, String value, String expectedSql, String expectedValue) {
-        ArrayList<Object> argList = new ArrayList<>();
-        String andSql = SqlQuerySuffix.buildConditionForField(fieldInTestQuery(fieldName), argList, value);
+        String andSql = buildConditionForField(EMPTY, fieldInTestQuery(fieldName), argList, value);
         assertThat(andSql).isEqualTo(expectedSql);
         assertThat(argList).containsExactly(expectedValue);
     }
@@ -69,65 +74,45 @@ class SqlQuerySuffixTest {
     @Test
     void getPlaceHolderEx() {
         SqlQuerySuffix.ValueProcessor inValueProcessor = new SqlQuerySuffix.InValueProcessor();
-        assertEquals("(null)", inValueProcessor.getPlaceHolderEx(Arrays.asList()));
-        assertEquals("(?)", inValueProcessor.getPlaceHolderEx(Arrays.asList(1)));
+        assertEquals("(null)", inValueProcessor.getPlaceHolderEx(emptyList()));
+        assertEquals("(?)", inValueProcessor.getPlaceHolderEx(singletonList(1)));
         assertEquals("(?, ?)", inValueProcessor.getPlaceHolderEx(Arrays.asList(1, 2)));
     }
 
     @Test
-    void buildConditionForFieldContainsOr() {
-        ArrayList<Object> argList = new ArrayList<>();
-        String condition = SqlQuerySuffix.buildConditionForFieldContainsOr(fieldInTestQuery("usernameOrUserCodeLike"), argList, "test");
-        assertEquals("(username = ? OR user_code LIKE ?)", condition);
-        assertThat(argList).containsExactly("test", "%test%");
-    }
-
-    @Test
-    void buildConditionForFieldContainsOrAndAlias() {
-        ArrayList<Object> argList = new ArrayList<>();
-        String condition = SqlQuerySuffix.buildConditionForFieldContainsOr("u." + fieldInTestQuery("usernameOrUserCodeLike"), argList, "test");
-        assertEquals("(u.username = ? OR u.user_code LIKE ?)", condition);
-        assertThat(argList).containsExactly("test", "%test%");
-    }
-
-    @Test
     void buildLikeWithBlankValue() {
-        ArrayList<Object> argList = new ArrayList<>();
-        String andSql = SqlQuerySuffix.buildConditionForField(fieldInTestQuery("usernameLike"), argList, " ");
+        String andSql = buildConditionForField(EMPTY, fieldInTestQuery("usernameLike"), argList, " ");
         assertThat(andSql).isNull();
         assertThat(argList).isEmpty();
     }
 
     @Test
     void buildIn() {
-        ArrayList<Object> argList = new ArrayList<>();
-        String andSql = SqlQuerySuffix.buildConditionForField(fieldInTestQuery("idIn"), argList, Arrays.asList(1, 3, 5));
+        String andSql = buildConditionForField(EMPTY, fieldInTestQuery("idIn"), argList, Arrays.asList(1, 3, 5));
         assertThat(andSql).isEqualTo("id IN (?, ?, ?)");
         assertThat(argList).containsExactly(1, 3, 5);
     }
 
     @Test
     void buildInEnums() {
-        ArrayList<Object> argList = new ArrayList<>();
-        String andSql = SqlQuerySuffix.buildConditionForField(fieldInTestQuery("userLevelIn"), argList, Arrays.asList(TestEnum.VIP, TestEnum.NORMAL));
+        List<TestEnum> value = Arrays.asList(TestEnum.VIP, TestEnum.NORMAL);
+        String andSql = buildConditionForField(EMPTY, fieldInTestQuery("userLevelIn"), argList, value);
         assertThat(andSql).isEqualTo("user_level IN (?, ?)");
         assertThat(argList).containsExactly(0, 1);
     }
 
     @Test
     void buildInNull() {
-        ArrayList<Object> argList = new ArrayList<>();
-        String andSql = SqlQuerySuffix.buildConditionForField(fieldInTestQuery("userLevelIn"), argList, Arrays.asList());
+        String andSql = buildConditionForField(EMPTY, fieldInTestQuery("userLevelIn"), argList, emptyList());
         assertThat(andSql).isEqualTo("user_level IN (null)");
         assertThat(argList).isEmpty();
     }
 
     @Test
     void buildNotInNull() {
-        ArrayList<Object> argList = new ArrayList<>();
-        String andSql = SqlQuerySuffix.buildConditionForField(fieldInTestQuery("userLevelNotIn"), argList, Arrays.asList());
+        String andSql = buildConditionForField(EMPTY, fieldInTestQuery("userLevelNotIn"), argList, emptyList());
         assertThat(andSql).isNull();
-        assertThat(argList).containsExactly();
+        assertThat(argList).isEmpty();
     }
 
     @Test
