@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @AllArgsConstructor
 enum SqlComparator {
-    Ne(" != "),
+    Ne(" <> "),
     Gt(" > "),
     Ge(" >= "),
     Lt(" < "),
@@ -48,7 +48,7 @@ enum SqlComparator {
     static {
         String ptn = Arrays.stream(values())
                            .map(Enum::name)
-                           .collect(Collectors.joining("|", "(\\w+)(", ")(\\w+)"));
+                           .collect(Collectors.joining("|", "([\\w\\$]+)(", ")([A-Z][\\w\\$]+)"));
         CONDITION_PTN = Pattern.compile(ptn);
     }
 
@@ -57,12 +57,13 @@ enum SqlComparator {
     static String buildClause(String fieldName) {
         Matcher matcher = CONDITION_PTN.matcher(fieldName);
         if (!matcher.find()) {
+            log.warn("Invalid field name for primitive type: {}", fieldName);
             return null;
         }
         String c1 = ColumnUtil.convertColumn(matcher.group(1));
         String op = valueOf(matcher.group(2)).op;
         String c2 = ColumnUtil.convertColumn(CommonUtil.camelize(matcher.group(3)));
-        return c1 + op + c2;
+        return (c1 + op + c2).replace('$', '.');
     }
 
 }

@@ -19,7 +19,6 @@ package win.doyto.query.test.tpch.q21;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.annotation.QueryField;
 import win.doyto.query.core.PageQuery;
 
 /**
@@ -37,8 +36,7 @@ public class SuppliersWhoKeptOrdersWaitingQuery extends PageQuery {
     private String n_name;
     private String o_orderstatus;
     @Builder.Default
-    @QueryField(and = "l1.l_receiptdate > l1.l_commitdate")
-    private boolean receiptdateBeforeCommitdate = true;
+    private boolean l1$lReceiptdateGtL1$lCommitdate = true;
     @DomainPath(value = "lineitem", foreignAlias = "l2", foreignField = "l_orderkey",
             localAlias = "l1", localField = "l_orderkey")
     private LineitemExistsQuery lineitemExists;

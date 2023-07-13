@@ -18,7 +18,6 @@ package win.doyto.query.test.tpch.q21;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.QueryField;
 import win.doyto.query.core.PageQuery;
 
 /**
@@ -34,8 +33,6 @@ import win.doyto.query.core.PageQuery;
 @AllArgsConstructor
 public class LineitemExistsQuery extends PageQuery {
     @Builder.Default
-    @QueryField(and = "${ALIAS}l_suppkey <> l1.l_suppkey")
-    private Boolean l_suppkeyNotSame = true;
-    @QueryField(and = "${ALIAS}l_receiptdate > ${ALIAS}l_commitdate")
-    private Boolean beforeCommitDate;
+    private boolean alias$lSuppkeyNeL1$lSuppkey = true;
+    private boolean alias$lReceiptdateGtAlias$lCommitdate;
 }

@@ -827,7 +827,7 @@ class TpcHTest {
         assertThat(sqlAndArgs.getArgs()).containsExactly(
                 "forest%", Date.valueOf(date),
                 Date.valueOf(date.plus(1, YEARS)), "CANADA");
-    }
+}
 
     @Test
     void q21SuppliersWhoKeptOrdersWaitingQuery() {
@@ -857,7 +857,7 @@ class TpcHTest {
                 .o_orderstatus("F")
                 .n_name("CANADA")
                 .lineitemExists(new LineitemExistsQuery())
-                .lineitemNotExists(LineitemExistsQuery.builder().beforeCommitDate(true).build())
+                .lineitemNotExists(LineitemExistsQuery.builder().alias$lReceiptdateGtAlias$lCommitdate(true).build())
                 .sort("numwait,DESC;s_name")
                 .build();
 
