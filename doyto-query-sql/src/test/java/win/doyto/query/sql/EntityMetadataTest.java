@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,12 @@ package win.doyto.query.sql;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.annotation.GroupBy;
+import win.doyto.query.config.GlobalConfiguration;
 
 import javax.persistence.Entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ;
 
 /**
  * EntityMetadataTest
@@ -44,11 +43,21 @@ class EntityMetadataTest {
         private Double avgScore;
     }
 
-    @ResourceLock(value = "mapCamelCaseToUnderscore", mode = READ)
     @Test
-    void supportGroupByAnnotation() {
+    void supportGroupByAnnotationForUnderscoreColumn() {
         EntityMetadata entityMetadata = new EntityMetadata(ScoreGroupByStudentView.class);
         assertEquals("student_id AS studentId, avg(score) AS avgScore", entityMetadata.getColumnsForSelect());
+        assertEquals(" GROUP BY student_id", entityMetadata.getGroupBySql());
+    }
+
+    @Test
+    void supportGroupByAnnotationForCamelCaseColumn() {
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
+
+        EntityMetadata entityMetadata = new EntityMetadata(ScoreGroupByStudentView.class);
+        assertEquals("studentId, avg(score) AS avgScore", entityMetadata.getColumnsForSelect());
         assertEquals(" GROUP BY studentId", entityMetadata.getGroupBySql());
+
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
     }
 }

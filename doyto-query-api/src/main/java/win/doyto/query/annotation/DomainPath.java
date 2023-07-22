@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,8 @@ public @interface DomainPath {
      */
     String[] value();
 
+    String localAlias() default  "t";
+
     /**
      * The field in this domain to maintain the relationship with the target domain.
      *
@@ -51,4 +53,6 @@ public @interface DomainPath {
      * @return name of the foreign field
      */
     String foreignField() default "id";
+
+    String foreignAlias() default "t1";
 }

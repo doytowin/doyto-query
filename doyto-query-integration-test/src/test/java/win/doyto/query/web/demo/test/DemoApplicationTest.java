@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package win.doyto.query.web.demo.test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
@@ -39,7 +38,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author f0rb
  */
 @Transactional
-@ActiveProfiles("test")
 @SpringBootTest(classes = DemoApplication.class)
 @AutoConfigureMockMvc
 abstract class DemoApplicationTest {
@@ -68,8 +66,8 @@ abstract class DemoApplicationTest {
         return builder.content(content).contentType("application/json;charset=UTF-8").session(session);
     }
 
-    protected void performAndExpectFail(RequestBuilder requestBuilder, ErrorCode errorCode) throws Exception {
-        performAndExpectOk(requestBuilder).andExpect(jsonPath("$.code").value(errorCode.getCode()));
+    protected ResultActions performAndExpectFail(RequestBuilder requestBuilder, ErrorCode errorCode) throws Exception {
+        return performAndExpectOk(requestBuilder).andExpect(jsonPath("$.code").value(errorCode.getCode()));
     }
 
 }

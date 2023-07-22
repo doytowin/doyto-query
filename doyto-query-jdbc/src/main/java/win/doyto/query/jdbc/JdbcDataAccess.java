@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,11 @@
 package win.doyto.query.jdbc;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.springframework.jdbc.core.*;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.ColumnMapRowMapper;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
@@ -56,17 +60,17 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     private final SqlBuilder<E> sqlBuilder;
     private final String[] columnsForSelect;
     private final boolean isGeneratedId;
-    private final SingleColumnRowMapper<I> idRowMapper = new SingleColumnRowMapper<>();
+    private final SingleColumnRowMapper<I> idRowMapper;
     private final Class<I> idClass;
+    private final String idColumn;
 
-    public JdbcDataAccess(JdbcOperations jdbcOperations, Class<E> entityClass) {
-        this(new DatabaseTemplate(jdbcOperations), entityClass, new BeanPropertyRowMapper<>(entityClass));
+    public JdbcDataAccess(DatabaseOperations databaseOperations, Class<E> entityClass) {
+        this(databaseOperations, entityClass, new BeanPropertyRowMapper<>(entityClass));
     }
     public JdbcDataAccess(DataSource dataSource, Class<E> entityClass) {
         this(new JdbcDatabaseOperations(dataSource), entityClass, new BeanPropertyRowMapper<>(entityClass));
     }
 
-    @SuppressWarnings("unchecked")
     public JdbcDataAccess(DatabaseOperations databaseOperations, Class<E> entityClass, RowMapper<E> rowMapper) {
         classRowMapperMap.put(entityClass, rowMapper);
         this.databaseOperations = databaseOperations;
@@ -76,7 +80,9 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
 
         Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
         this.isGeneratedId = idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class);
-        this.idClass = BeanUtil.getIdClass(entityClass);
+        this.idColumn = idFields[0].getName();
+        this.idClass = BeanUtil.getIdClass(entityClass, idColumn);
+        this.idRowMapper = new SingleColumnRowMapper<>(idClass);
     }
 
     @Override
@@ -127,7 +133,8 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
         SqlAndArgs sqlAndArgs = sqlBuilder.buildCreateAndArgs(e);
 
         if (isGeneratedId) {
-            I id = databaseOperations.insert(sqlAndArgs, idClass);
+            String keyColumn = GlobalConfiguration.dialect().resolveKeyColumn(idColumn);
+            I id = databaseOperations.insert(sqlAndArgs, idClass, keyColumn).get(0);
             e.setId(id);
         } else {
             databaseOperations.update(sqlAndArgs);
@@ -139,8 +146,19 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
         if (!entities.iterator().hasNext()) {
             return 0;
         }
-        SqlAndArgs sqlAndArgs = sqlBuilder.buildCreateAndArgs(entities, columns);
-        return databaseOperations.update(sqlAndArgs);
+        if (GlobalConfiguration.dialect().supportMultiGeneratedKeys()) {
+            SqlAndArgs sqlAndArgs = sqlBuilder.buildCreateAndArgs(entities, columns);
+            String keyColumn = GlobalConfiguration.dialect().resolveKeyColumn(idColumn);
+            List<I> ids = databaseOperations.insert(sqlAndArgs, idClass, keyColumn);
+            int i = 0;
+            for (E entity : entities) {
+                entity.setId(ids.get(i++));
+            }
+            return ids.size();
+        } else {
+            SqlAndArgs sqlAndArgs = sqlBuilder.buildCreateAndArgs(entities, columns);
+            return databaseOperations.update(sqlAndArgs);
+        }
     }
 
     @Override

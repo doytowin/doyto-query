@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,27 @@
 package win.doyto.query.sql;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.reflect.FieldUtils;
+import win.doyto.query.annotation.Clause;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
+import win.doyto.query.core.OptimisticLock;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.sql.field.SqlQuerySuffix;
 import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
+import javax.persistence.Column;
 import javax.persistence.Id;
 
 import static win.doyto.query.sql.Constant.*;
+import static win.doyto.query.util.ColumnUtil.filterFields;
 import static win.doyto.query.util.CommonUtil.*;
 
 /**
@@ -40,27 +46,67 @@ import static win.doyto.query.util.CommonUtil.*;
  * @author f0rb
  */
 @Slf4j
-final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implements SqlBuilder<E> {
+public class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implements SqlBuilder<E> {
 
-    private final Field idField;
-    private final List<Field> fields;
+    public static final String DEFAULT_VERSION_COLUMN = "entity_version";
+
+    private final Class<E> entityClass;
+    private final List<Field> insertFields;
+    private final List<Field> updateFields;
     private final String wildInsertValue;   // ?, ?, ?
     private final String insertColumns;
     private final String wildSetClause;     // column1 = ?, column2 = ?
+    private final String versionColumn;
 
     public CrudBuilder(Class<E> entityClass) {
         super(entityClass);
-        idField = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class)[0];
+        this.entityClass = entityClass;
 
         // init fields
-        fields = ColumnUtil.getColumnFieldsFrom(entityClass);
+        insertFields = ColumnUtil.getColumnFieldsFrom(entityClass);
+        wildInsertValue = insertFields.stream().map(f -> PLACE_HOLDER).collect(CLT_COMMA_WITH_PAREN);
+        insertColumns = insertFields.stream().map(ColumnUtil::resolveColumn).collect(CLT_COMMA_WITH_PAREN);
 
-        wildInsertValue = fields.stream().map(f -> PLACE_HOLDER).collect(CLT_COMMA_WITH_PAREN);
+        versionColumn = resolveVersionColumn(entityClass);
+        updateFields = buildUpdateFields(entityClass, versionColumn);
+        wildSetClause = buildSetClause(entityClass, updateFields, versionColumn);
+    }
 
-        List<String> columnList = fields.stream().map(ColumnUtil::resolveColumn).collect(Collectors.toList());
-        insertColumns = columnList.stream().collect(CLT_COMMA_WITH_PAREN);
-        wildSetClause = columnList.stream().map(c -> c + EQUAL_HOLDER).collect(Collectors.joining(SEPARATOR));
+    private static String resolveVersionColumn(Class<?> entityClass) {
+        String column = null;
+        if (OptimisticLock.class.isAssignableFrom(entityClass)) {
+            try {
+                Method currentVersionMethod = entityClass.getMethod("currentVersion");
+                Column columnAnno = currentVersionMethod.getAnnotation(Column.class);
+                if (columnAnno == null || columnAnno.name().equals("")) {
+                    column = DEFAULT_VERSION_COLUMN;
+                } else {
+                    column = columnAnno.name();
+                }
+            } catch (NoSuchMethodException e) {
+                throw new InternalError();
+            }
+        }
+        return column;
+    }
 
+    private static List<Field> buildUpdateFields(Class<?> entityClass, String versionColumn) {
+        return filterFields(entityClass, field -> ColumnUtil.shouldRetain(field)
+                && !field.isAnnotationPresent(Id.class)
+                && !ColumnUtil.convertColumn(field.getName()).equals(versionColumn)
+        ).collect(Collectors.toList());
+    }
+
+    private static String buildSetClause(Class<?> entityClass, List<Field> updateFields, String versionColumn) {
+        String tempSetClause = updateFields.stream()
+                                           .map(ColumnUtil::resolveColumn)
+                                           .map(c -> c + EQUAL_HOLDER)
+                                           .collect(Collectors.joining(SEPARATOR));
+
+        if (OptimisticLock.class.isAssignableFrom(entityClass)) {
+            tempSetClause += SEPARATOR + versionColumn + EQUAL + versionColumn + " + 1";
+        }
+        return tempSetClause;
     }
 
     /**
@@ -72,13 +118,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
      * @return insert statement with placeholders
      */
     static String buildInsertSql(String table, String columns, String fields) {
-        return new StringBuilder(INSERT_INTO)
-                .append(table)
-                .append(SPACE)
-                .append(columns)
-                .append(VALUES)
-                .append(fields)
-                .toString();
+        return INSERT_INTO + table + SPACE + columns + VALUES + fields;
     }
 
     /**
@@ -90,12 +130,7 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
      * @return update statement with placeholders
      */
     static String buildUpdateSql(String tableName, String setClauses) {
-        return new StringJoiner(SPACE)
-                .add("UPDATE")
-                .add(tableName)
-                .add("SET")
-                .add(setClauses)
-                .toString();
+        return "UPDATE " + tableName + " SET " + setClauses;
     }
 
     private static void readValueToArgList(List<Field> fields, Object entity, List<Object> argList) {
@@ -112,11 +147,31 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
         }
     }
 
+    private static void readValueToArgList(Object entity, List<Object> argList, StringJoiner setClauses) {
+        List<Field> fieldsOfSubClass = Arrays.stream(entity.getClass().getDeclaredFields())
+                                             .filter(ColumnUtil::shouldRetain)
+                                             .collect(Collectors.toList());
+
+        for (Field field : fieldsOfSubClass) {
+            Object value = readFieldGetter(field, entity);
+            if (value != null) {
+                String setClause;
+                if (field.isAnnotationPresent(Clause.class)) {
+                    setClause = field.getAnnotation(Clause.class).value();
+                } else {
+                    setClause = CompoundOperatorsSuffix.mapField(field.getName());
+                }
+                setClauses.add(setClause);
+                argList.add(value);
+            }
+        }
+    }
+
     @Override
     public SqlAndArgs buildCreateAndArgs(E testEntity) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             String table = resolveTableName(testEntity);
-            readValueToArgList(fields, testEntity, argList);
+            readValueToArgList(insertFields, testEntity, argList);
             return buildInsertSql(table, replaceHolderInString(testEntity, insertColumns), wildInsertValue);
         });
     }
@@ -129,34 +184,50 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
 
             String insertSql = buildInsertSql(resolveTableName(next), insertColumns, wildInsertValue);
             StringBuilder insertSqlBuilder = new StringBuilder(insertSql);
-            readValueToArgList(fields, next, argList);
+            readValueToArgList(insertFields, next, argList);
             while (iterator.hasNext()) {
                 E entity = iterator.next();
-                readValueToArgList(fields, entity, argList);
+                readValueToArgList(insertFields, entity, argList);
                 insertSqlBuilder.append(SEPARATOR).append(wildInsertValue);
             }
             if (columns.length > 0) {
                 GlobalConfiguration.dialect().buildInsertUpdate(insertSqlBuilder, columns);
             }
 
-            return replaceHolderInString(next, insertSqlBuilder.toString());
+            String insert = replaceHolderInString(next, insertSqlBuilder.toString());
+            return GlobalConfiguration.dialect().alterBatchInsert(insert);
         });
+    }
+
+    private String addVersion(E entity, String sql, List<Object> argList) {
+        if (entity instanceof OptimisticLock && ((OptimisticLock) entity).currentVersion() != null) {
+            sql += AND + versionColumn + EQUAL_HOLDER;
+            appendArgsForId(argList, ((OptimisticLock) entity).currentVersion());
+        }
+        return sql;
     }
 
     @Override
     public SqlAndArgs buildUpdateAndArgs(E entity) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             String table = resolveTableName(entity);
-            readValueToArgList(fields, entity, argList);
-            argList.add(readField(idField, entity));
-            return buildUpdateSql(table, replaceHolderInString(entity, wildSetClause)) + whereId;
+            readValueToArgList(updateFields, entity, argList);
+            appendArgsForId(argList, entity.getId());
+            String sql = buildUpdateSql(table, replaceHolderInString(entity, wildSetClause)) + whereId;
+            return addVersion(entity, sql, argList);
         });
     }
 
     private String buildPatchAndArgs(E entity, List<Object> argList) {
         String table = resolveTableName(entity);
         StringJoiner setClauses = new StringJoiner(SEPARATOR);
-        readValueToArgList(fields, entity, argList, setClauses);
+        if (entity instanceof OptimisticLock) {
+            setClauses.add(versionColumn + EQUAL + versionColumn + " + 1");
+        }
+        readValueToArgList(updateFields, entity, argList, setClauses);
+        if (entity.getClass().getSuperclass().equals(entityClass)) {
+            readValueToArgList(entity, argList, setClauses);
+        }
         String setClausesText = replaceHolderInString(entity, setClauses.toString());
         return buildUpdateSql(table, setClausesText);
     }
@@ -165,15 +236,15 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
     public SqlAndArgs buildPatchAndArgsWithId(E entity) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
             String sql = buildPatchAndArgs(entity, argList) + whereId;
-            argList.add(readField(idField, entity));
-            return sql;
+            appendArgsForId(argList, entity.getId());
+            return addVersion(entity, sql, argList);
         });
     }
 
     @Override
     public SqlAndArgs buildDeleteById(IdWrapper<?> w) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
-            argList.add(w.getId());
+            appendArgsForId(argList, w.getId());
             return buildDeleteFromTable(w) + whereId;
         });
     }
@@ -193,15 +264,17 @@ final class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implement
     @Override
     public SqlAndArgs buildDeleteAndArgs(DoytoQuery query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> buildDeleteFromTable(query.toIdWrapper())
-                + WHERE + idColumn + IN
-                + OP + build(query, argList, idColumn) + CP);
+                + WHERE + wrappedIdColumn + IN + OP
+                + GlobalConfiguration.dialect().wrapSelectForUpdate(build(query, argList, idColumn), wrappedIdColumn)
+                + CP);
     }
 
     @Override
     public SqlAndArgs buildPatchAndArgs(E entity, DoytoQuery query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> buildPatchAndArgs(entity, argList)
-                + WHERE + idColumn + IN
-                + OP + build(query, argList, idColumn) + CP);
+                + WHERE + wrappedIdColumn + IN + OP
+                + GlobalConfiguration.dialect().wrapSelectForUpdate(build(query, argList, idColumn), wrappedIdColumn)
+                + CP);
     }
 
     private String buildDeleteFromTable(IdWrapper<?> idWrapper) {

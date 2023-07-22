@@ -1,0 +1,12 @@
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/doytowin?characterEncoding=utf8&allowPublicKeyRetrieval=true&useSSL=false
+    username: doytowin
+    password: doytowin
+
+doyto:
+  query:
+    config:
+      dialect: win.doyto.query.dialect.MySQL8Dialect

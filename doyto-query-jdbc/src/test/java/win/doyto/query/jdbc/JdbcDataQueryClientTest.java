@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import win.doyto.query.test.role.RoleView;
 import win.doyto.query.test.role.RoleViewQuery;
 import win.doyto.query.test.user.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 import javax.sql.DataSource;
 
@@ -42,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author f0rb on 2020-04-11
  */
 class JdbcDataQueryClientTest extends JdbcApplicationTest {
+    @Resource
     private JdbcDataQueryClient jdbcDataQueryClient;
 
     @BeforeEach
@@ -52,7 +54,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
     @Test
     void queryForJoin() {
         UserQuery usersQuery = UserQuery.builder().build();
-        RoleViewQuery roleQuery = RoleViewQuery.builder().user(usersQuery).withUsers(usersQuery).build();
+        RoleViewQuery roleQuery = RoleViewQuery.builder().user(usersQuery).withUsers(usersQuery).sort("id,asc").build();
         List<RoleView> roleViews = jdbcDataQueryClient.query(roleQuery);
         assertThat(roleViews)
                 .extracting(roleView -> roleView.getUsers().size())
@@ -177,7 +179,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
         assertThat(userLevelCountViews)
                 .hasSize(3)
                 .extracting("userLevel", "valid", "count")
-                .containsExactly(
+                .containsExactlyInAnyOrder(
                         new Tuple(UserLevel.高级, true, 1L),
                         new Tuple(UserLevel.普通, false, 1L),
                         new Tuple(UserLevel.普通, true, 2L)

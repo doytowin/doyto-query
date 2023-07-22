@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package win.doyto.query.config;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.core.PageQuery;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -37,5 +38,16 @@ class GlobalConfigurationTest {
 
         GlobalConfiguration.instance().setStartPageNumberFromOne(false);
         assertEquals(10, GlobalConfiguration.calcOffset(pageQuery));
+    }
+
+    @Test
+    void tableFormattingShouldIgnoreFormattedTableName() {
+        assertThat(GlobalConfiguration.formatTable("user")).isEqualTo("t_user");
+        assertThat(GlobalConfiguration.formatTable("t_user")).isEqualTo("t_user");
+    }
+
+    @Test
+    void tableFormattingShouldConvertTableNameToUnderscoreCase() {
+        assertThat(GlobalConfiguration.formatTable("UserDetail")).isEqualTo("t_user_detail");
     }
 }

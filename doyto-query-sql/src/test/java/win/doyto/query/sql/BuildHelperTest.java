@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 package win.doyto.query.sql;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceLock;
 import win.doyto.query.test.TestQuery;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author f0rb on 2021-02-16
  */
-@ResourceLock(value = "mapCamelCaseToUnderscore")
 class BuildHelperTest {
 
     @Test
@@ -51,9 +50,9 @@ class BuildHelperTest {
         assertEquals("t_user_detail", tableName);
     }
 
-
     private static class UserDetailView {
     }
+
     @Test
     void resolveTableNameForViewWithoutAnnotationTable() {
         String tableName = BuildHelper.resolveTableName(UserDetailView.class);
@@ -65,5 +64,29 @@ class BuildHelperTest {
         TestHaving having = TestHaving.builder().firstName("test").firstFirstName("test").build();
         String havingClause = BuildHelper.buildCondition(" HAVING ", having, new ArrayList<>());
         assertThat(havingClause).isEqualTo(" HAVING first_name = ? AND first(first_name) = ?");
+    }
+
+    @Test
+    void givenExWithoutSuffixWhenReplaceShouldBePlaceholder() {
+        String input = "SELECT o_year, SUM(CASE WHEN nation = #{nation} THEN volume ELSE 0 END) / SUM(volume) AS mkt_share";
+        List<Object> args = new ArrayList<>();
+
+        TestQuery query = TestQuery.builder().nation("BRAZIL").build();
+        String sql = BuildHelper.replaceExpressionInString(input,query, args);
+
+        assertThat(sql).isEqualTo("SELECT o_year, SUM(CASE WHEN nation = ? THEN volume ELSE 0 END) / SUM(volume) AS mkt_share");
+        assertThat(args).containsExactly("BRAZIL");
+    }
+
+    @Test
+    void givenExWithSuffixWhenReplaceShouldBeExpression() {
+        String input = "SELECT o_year, SUM(CASE WHEN #{nationEq} THEN volume ELSE 0 END) / SUM(volume) AS mkt_share";
+        List<Object> args = new ArrayList<>();
+
+        TestQuery query = TestQuery.builder().nationEq("BRAZIL").build();
+        String sql = BuildHelper.replaceExpressionInString(input, query,  args);
+
+        assertThat(sql).isEqualTo("SELECT o_year, SUM(CASE WHEN nation = ? THEN volume ELSE 0 END) / SUM(volume) AS mkt_share");
+        assertThat(args).containsExactly("BRAZIL");
     }
 }

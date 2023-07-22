@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,12 @@ import win.doyto.query.web.response.ErrorCode;
 import win.doyto.query.web.response.JsonBody;
 import win.doyto.query.web.response.PresetErrorCode;
 
+import javax.annotation.Resource;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import javax.annotation.Resource;
 
 /**
  * AbstractController
@@ -154,6 +154,7 @@ abstract class AbstractController<
     public void setBeanFactory(AutowireCapableBeanFactory beanFactory) throws BeansException {
         if (service.getClass().isAnonymousClass()) {
             beanFactory.autowireBean(service);
+            beanFactory.initializeBean(service, this.getClass().getName() + ".DynamicService");
         }
     }
 }

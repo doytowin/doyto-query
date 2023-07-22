@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.RequestBuilder;
+import win.doyto.query.web.response.PresetErrorCode;
 
 import static org.hamcrest.Matchers.containsInRelativeOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -128,6 +129,35 @@ class UserMvcTest extends DemoApplicationTest {
                 .andExpect(jsonPath("$.data.list").isArray())
                 .andExpect(jsonPath("$.data.list.size()").value(3))
                 .andExpect(jsonPath("$.data.list[*].id", containsInRelativeOrder(1, 3, 4)))
+        ;
+    }
+
+    @Test
+    @Rollback
+    void deleteByQuery() throws Exception {
+        performAndExpectFail(delete("/user/"), PresetErrorCode.ARGUMENT_VALIDATION_FAILED);
+        performAndExpectSuccess(delete("/user/?username=f0rb"))
+                .andExpect(jsonPath("$.data").value(1))
+        ;
+    }
+
+    @Test
+    @Rollback
+    void patchUserByQuery() throws Exception {
+        RequestBuilder requestBuilder = patch("/user/?emailLike=qq.com&valid=true")
+                .content("{\"valid\":false}").contentType(MediaType.APPLICATION_JSON);
+        performAndExpectSuccess(requestBuilder)
+                .andExpect(jsonPath("$.data").value(2))
+        ;
+    }
+
+    @Test
+    @Rollback
+    void patchUserByEmptyQuery() throws Exception {
+        RequestBuilder requestBuilder = patch("/user/")
+                .content("{\"valid\":false}").contentType(MediaType.APPLICATION_JSON);
+        performAndExpectFail(requestBuilder, PresetErrorCode.ARGUMENT_VALIDATION_FAILED)
+                .andExpect(jsonPath("$.hints.query").value("不能为空"))
         ;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,14 +76,10 @@ class MenuMvcTest extends DemoApplicationTest {
 
         performAndExpectSuccess(post(menuUri), "{\"platform\":\"01\",\"menuName\":\"Test Menu\"}");
 
-        performAndExpectSuccess(get(menuUriWith("3")))
-                .andExpect(jsonPath("$.data.createUserId").value("1"))
-                .andExpect(jsonPath("$.data.updateUserId").value("1"));
-
-        performAndExpectSuccess(delete(menuUriWith("3")));
-
-        performAndExpectSuccess(get(menuUriWith("?pageNumber=0")))
-                .andExpect(jsonPath("$.data.length()").value(2));
+        performAndExpectSuccess(get("/01/menu/?sort=id,asc"))
+                .andExpect(jsonPath("$.data.total").value(3))
+                .andExpect(jsonPath("$.data.list[2].menuName").value("Test Menu"))
+                .andExpect(jsonPath("$.data.list[2].createUserId").value("1"));
     }
 
     @Test

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public interface Dialect {
         return fieldName;
     }
 
-    default String buildInsertIgnore(StringBuilder insertBuilder) {
+    default String buildInsertIgnore(StringBuilder insertBuilder, String tableName, String k1, String k2) {
         return insertBuilder.insert(insertBuilder.indexOf("INTO"), "IGNORE ").toString();
     }
 
@@ -51,5 +51,39 @@ public interface Dialect {
                               .map(column -> column + " = VALUES (" + column + ")")
                               .collect(Collectors.joining(", "));
         insertSqlBuilder.append(update);
+    }
+
+    default String forShare() {
+        return " FOR SHARE";
+    }
+
+    default String forUpdate() {
+        return " FOR UPDATE";
+    }
+
+    default <I> I resolveKey(Number key, Class<I> idClass) {
+        if (idClass.isAssignableFrom(Long.class)) {
+            return idClass.cast(key.longValue());
+        }
+        return idClass.cast(key.intValue());
+    }
+
+    default String wrapSelectForUpdate(String sql, String column) {
+        return sql;
+    }
+
+    default boolean supportMultiGeneratedKeys() {
+        return false;
+    }
+
+    default String resolveKeyColumn(String idColumn) {
+        return idColumn;
+    }
+
+    default String alterBatchInsert(String given) {
+        return given;
+    }
+    default String convertMultiColumnsIn(StringBuilder sqlBuilder, String k1Column, String k2Column, int size) {
+        return sqlBuilder.toString();
     }
 }

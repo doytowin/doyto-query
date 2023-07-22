@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,6 +71,17 @@ public abstract class AbstractRestController<E extends Persistable<I>, I extends
         E e = service.delete(id);
         checkResult(e);
         return buildResponse(e);
+    }
+
+    @Override
+    public int delete(Q q) {
+        return service.delete(q);
+    }
+
+    @Override
+    public int patch(R request, Q q) {
+        E e = buildEntity(request);
+        return service.patch(e, q);
     }
 
 }

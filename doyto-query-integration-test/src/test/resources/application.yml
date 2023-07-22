@@ -1,0 +1,28 @@
+logging:
+  level:
+    root: info
+    org.springframework.boot.autoconfigure.mongo.embedded: warn
+    org.mongodb.driver.protocol.command: info
+
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+
+spring:
+  profiles:
+    active: @active.profiles@
+  cache:
+    type: simple
+  mongodb:
+    embedded:
+      storage:
+        oplog-size: 10
+        repl-set-name: rs0
+
+doyto:
+  query:
+    config:
+      map-camel-case-to-underscore: true
+    caches: UserEntity, MenuEntity

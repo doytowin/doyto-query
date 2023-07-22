@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,6 +97,7 @@ public class BeanUtil {
     public static Type[] getActualTypeArguments(Class<?> clazz) {
         Type genericSuperclass = clazz;
         do {
+            if (genericSuperclass == null) return new Type[0];
             genericSuperclass = ((Class<?>) genericSuperclass).getGenericSuperclass();
         } while (!(genericSuperclass instanceof ParameterizedType));
         return ((ParameterizedType) genericSuperclass).getActualTypeArguments();
@@ -155,10 +156,14 @@ public class BeanUtil {
         return objectMapper2.updateValue(to, from);
     }
 
+    public static <I> Class<I> getIdClass(Class<?> entityClass) {
+        return getIdClass(entityClass, "id");
+    }
+
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public static <I> Class<I> getIdClass(Class<?> entityClass) {
-        PropertyDescriptor propertyDescriptor = new PropertyDescriptor("id", entityClass);
+    public static <I> Class<I> getIdClass(Class<?> entityClass, String idName) {
+        PropertyDescriptor propertyDescriptor = new PropertyDescriptor(idName, entityClass);
         return (Class<I>) propertyDescriptor.getPropertyType();
     }
 

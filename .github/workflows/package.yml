@@ -1,0 +1,13 @@
+name: GitHub Package
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ package ]
+
+jobs:
+  package:
+    uses: doytowin/doyto-devops/.github/workflows/package.yml@main
+    secrets: inherit
+    with:
+      repo: ${{ github.repository }}

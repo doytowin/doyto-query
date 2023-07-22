@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,9 @@ import win.doyto.query.core.UniqueKey;
 import win.doyto.query.entity.UserIdProvider;
 import win.doyto.query.sql.AssociationSqlBuilder;
 import win.doyto.query.sql.SqlAndArgs;
+import win.doyto.query.util.BeanUtil;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Set;
 import javax.sql.DataSource;
@@ -35,9 +37,11 @@ import javax.sql.DataSource;
  *
  * @author f0rb on 2021-12-31
  */
+@SuppressWarnings("unchecked")
 public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2> {
 
     private static final GlobalConfiguration instance = GlobalConfiguration.instance();
+    @Autowired
     private DatabaseOperations databaseOperations;
     private final AssociationSqlBuilder<K1, K2> sqlBuilder;
     private final SingleColumnRowMapper<K1> k1RowMapper = new SingleColumnRowMapper<>();
@@ -50,6 +54,7 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
         this.sqlBuilder = new AssociationSqlBuilder<>(
                 instance.formatJoinTable(domain1, domain2), instance.formatJoinId(domain1), instance.formatJoinId(domain2)
         );
+        setRequiredType();
     }
 
     public JdbcAssociationService(String domain1, String domain2, String createUserColumn) {
@@ -59,6 +64,15 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
                 instance.formatJoinId(domain2),
                 createUserColumn
         );
+        setRequiredType();
+    }
+
+    private void setRequiredType() {
+        Type[] actualTypes = BeanUtil.getActualTypeArguments(getClass());
+        if (actualTypes.length == 2) {
+            k1RowMapper.setRequiredType((Class<K1>) actualTypes[0]);
+            k2RowMapper.setRequiredType((Class<K2>) actualTypes[1]);
+        }
     }
 
     @Autowired

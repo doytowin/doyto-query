@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,7 @@ class FilterExecutor {
         map.put(Lt, (qv, ev) -> ((Comparable<Object>) ev).compareTo(qv) < 0);
         map.put(Ge, (qv, ev) -> ((Comparable<Object>) ev).compareTo(qv) >= 0);
         map.put(Le, (qv, ev) -> ((Comparable<Object>) ev).compareTo(qv) <= 0);
+        map.put(Ne, (qv, ev) -> !qv.equals(ev));
         map.put(Not, (qv, ev) -> !qv.equals(ev));
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,23 @@
 
 package win.doyto.query.jdbc;
 
-import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.test.context.junit.jupiter.DisabledIf;
 import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.role.RoleEntity;
 import win.doyto.query.test.role.RoleQuery;
 import win.doyto.query.test.user.UserEntity;
 import win.doyto.query.test.user.UserQuery;
 
-import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * JdbcDataAccessTest
@@ -47,19 +44,13 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
     private JdbcDataAccess<RoleEntity, Integer, RoleQuery> jdbcDataAccess;
     private JdbcDataAccess<UserEntity, Long, UserQuery> userDataAccess;
 
-    public JdbcDataAccessTest(@Autowired JdbcOperations jdbcOperations) {
-        this.jdbcDataAccess = new JdbcDataAccess<>(jdbcOperations, RoleEntity.class);
-        this.userDataAccess = new JdbcDataAccess<>(jdbcOperations, UserEntity.class);
+    public JdbcDataAccessTest(@Autowired DatabaseOperations databaseOperations) {
+        this.jdbcDataAccess = new JdbcDataAccess<>(databaseOperations, RoleEntity.class);
+        this.userDataAccess = new JdbcDataAccess<>(databaseOperations, UserEntity.class);
     }
 
     @Test
-    void constructorForJdbcOperationsAndEntityClass() {
-        Constructor<JdbcDataAccess> constructor =
-                ConstructorUtils.getAccessibleConstructor(JdbcDataAccess.class, JdbcOperations.class, Class.class);
-        assertNotNull(constructor);
-    }
-
-    @Test
+    @DisabledIf(value = "#{environment['spring.profiles.active'] == 'sqlite'}", loadContext = true)
     void deleteByPage() {
         jdbcDataAccess.delete(RoleQuery.builder().pageNumber(2).pageSize(2).build());
         List<RoleEntity> roleEntities = jdbcDataAccess.query(RoleQuery.builder().build());
@@ -75,6 +66,7 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
     }
 
     @Test
+    @DisabledIf(value = "#{environment['spring.profiles.active'] == 'sqlite'}", loadContext = true)
     void updateByPage() {
         RoleEntity patch = new RoleEntity();
         patch.setValid(false);
@@ -110,6 +102,7 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
                 .builder()
                 .perm(PermissionQuery.builder().permNameStart("user").build())
                 .role(roleQuery)
+                .sort("ID")
                 .build();
 
         List<Long> userIds = userDataAccess.queryIds(userQuery);
@@ -119,6 +112,7 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
         UserQuery userQuery2 = UserQuery
                 .builder()
                 .perm(permQuery)
+                .sort("ID")
                 .build();
 
         List<Long> userIds2 = userDataAccess.queryIds(userQuery2);

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,13 @@ class AggregationPrefixTest {
     void shouldOnlyMatchPrefixWithTrailingCapitalLetter() {
         AggregationPrefix prefix = AggregationPrefix.resolveField("minute");
         assertThat(prefix).isEqualTo(AggregationPrefix.NONE);
+    }
+
+    @Test
+    void fixShouldIgnoreWhenFieldEndsWithCount() {
+        String fieldName = "discount";
+        String resolved = AggregationPrefix.resolveField(fieldName).resolveColumnName(fieldName);
+        assertThat(resolved).isEqualTo(fieldName);
     }
 
 }

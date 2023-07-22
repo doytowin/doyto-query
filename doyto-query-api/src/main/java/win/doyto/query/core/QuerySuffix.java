@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,10 +41,14 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public enum QuerySuffix {
     Not,
+    Ne,
     NotLike(Constants.LIKE_PREDICATE),
     Like(Constants.LIKE_PREDICATE),
+    NotContain(Constants.LIKE_PREDICATE),
     Contain(Constants.LIKE_PREDICATE),
+    NotStart(Constants.LIKE_PREDICATE),
     Start(Constants.LIKE_PREDICATE),
+    NotEnd(Constants.LIKE_PREDICATE),
     End(Constants.LIKE_PREDICATE),
     NotIn(new NotInPredicate()),
     In(new InPredicate()),
@@ -55,6 +59,9 @@ public enum QuerySuffix {
     Lt,
     Le,
     Eq,
+    Any,
+    All,
+
     Exists, // for MongoDB
 
     Near(Near.class::isInstance),
@@ -80,7 +87,7 @@ public enum QuerySuffix {
         this(c -> true);
     }
 
-    private Predicate<Object> typeValidator;
+    private final Predicate<Object> typeValidator;
 
     public static QuerySuffix resolve(String fieldName) {
         Matcher matcher = SUFFIX_PTN.matcher(fieldName);
@@ -106,10 +113,10 @@ public enum QuerySuffix {
     static class InPredicate implements Predicate<Object> {
         @Override
         public boolean test(Object o) {
-            if (o instanceof Collection) {
+            if (o instanceof Collection || o instanceof DoytoQuery) {
                 return true;
             }
-            log.warn("Type of field which ends with In/NotIn should be Collection.");
+            log.warn("Type of field which ends with In/NotIn should be Collection or DoytoQuery.");
             return false;
         }
     }
@@ -117,7 +124,10 @@ public enum QuerySuffix {
     static class NotInPredicate extends InPredicate {
         @Override
         public boolean test(Object o) {
-            return super.test(o) && !((Collection<?>) o).isEmpty();
+            if (!(o instanceof Collection || o instanceof DoytoQuery)) {
+                log.warn("Type of field which ends with In/NotIn should be Collection or DoytoQuery.");
+            }
+            return o instanceof Collection && !((Collection<?>) o).isEmpty() || o instanceof DoytoQuery;
         }
     }
 

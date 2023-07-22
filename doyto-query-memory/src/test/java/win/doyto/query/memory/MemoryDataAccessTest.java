@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,6 +130,12 @@ class MemoryDataAccessTest {
 
         TestQuery byNotNormalAndValid = TestQuery.builder().userLevelNot(TestEnum.VIP).valid(true).build();
         assertEquals(2, testMemoryDataAccess.count(byNotNormalAndValid));
+    }
+
+    @Test
+    void filterByNe() {
+        TestQuery testQuery = TestQuery.builder().idNe(3).build();
+        assertEquals(4, testMemoryDataAccess.query(testQuery).size());
     }
 
     @Test

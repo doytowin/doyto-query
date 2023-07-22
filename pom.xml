@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright © 2019-2022 Forb Yuan
+  ~ Copyright © 2019-2023 Forb Yuan
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,34 +15,30 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>win.doyto</groupId>
         <artifactId>doyto-oss-parent</artifactId>
-        <version>2</version>
+        <version>4</version>
     </parent>
 
     <artifactId>doyto-query-parent</artifactId>
     <name>DoytoQuery</name>
     <packaging>pom</packaging>
-    <version>${revision}</version>
+    <version>1.0.3-SNAPSHOT</version>
     <url>https://query.doyto.win/</url>
 
     <properties>
-        <revision>1.0.1-SNAPSHOT</revision>
+        <revision>1.0.2-SNAPSHOT</revision>
 
-        <spring-boot.version>2.7.5</spring-boot.version>
-        <snakeyaml.version>1.33</snakeyaml.version>
+        <spring-boot.version>2.7.12</spring-boot.version>
+        <snakeyaml.version>2.0</snakeyaml.version>
 
-        <sourceDirectory>src/main/java</sourceDirectory>
-        <skipDeploy>false</skipDeploy>
+        <maven.deploy.skip>true</maven.deploy.skip>
 
-        <jacoco.destFile>${user.dir}/target/jacoco.exec</jacoco.destFile>
-        <jacoco.dataFile>${user.dir}/target/jacoco.exec</jacoco.dataFile>
+        <sonar.exclusions>doyto-query-test/**,doyto-query-integration-test/**,**/pom.xml</sonar.exclusions>
     </properties>
 
     <modules>
@@ -55,6 +51,7 @@
         <module>doyto-query-web-common</module>
         <module>doyto-query-web</module>
         <module>doyto-query-jdbc</module>
+        <module>doyto-query-dialect</module>
         <module>doyto-query-integration-test</module>
     </modules>
 
@@ -104,22 +101,22 @@
             <dependency>
                 <groupId>win.doyto</groupId>
                 <artifactId>doyto-query-api</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>win.doyto</groupId>
                 <artifactId>doyto-query-common</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>win.doyto</groupId>
                 <artifactId>doyto-query-sql</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>win.doyto</groupId>
                 <artifactId>doyto-query-test</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -148,28 +145,11 @@
             </testResource>
         </testResources>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.5.2</version>
-                <configuration>
-                    <skip>${skipDeploy}</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.2</version>
-                <configuration>
-                    <skip>${skipDeploy}</skip>
-                </configuration>
-            </plugin>
-
             <!-- 更新pom版本号-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
-                <version>1.2.7</version>
+                <version>1.5.0</version>
                 <configuration>
                     <updatePomFile>true</updatePomFile>
                     <flattenMode>bom</flattenMode>
@@ -201,9 +181,18 @@
         </plugins>
     </build>
     <scm>
-        <tag>master</tag>
-        <url>git@github.com:f0rb/doyto-query.git</url>
-        <connection>scm:git:git@github.com:f0rb/doyto-query.git</connection>
-        <developerConnection>scm:git:git@github.com:f0rb/doyto-query.git</developerConnection>
+        <tag>main</tag>
+        <url>https://github.com/doytowin/doyto-query</url>
+        <connection>scm:git:https://github.com/doytowin/doyto-query.git</connection>
+        <developerConnection>scm:git:https://github.com/doytowin/doyto-query.git</developerConnection>
     </scm>
+
+    <profiles>
+        <profile>
+            <id>docker</id>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
+        </profile>
+    </profiles>
 </project>

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,16 +23,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import win.doyto.query.config.GlobalConfiguration;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 
 /**
  * CommonUtil
@@ -46,15 +49,15 @@ public class CommonUtil {
     public static final Collector<CharSequence, ?, String> CLT_COMMA_WITH_PAREN
             = Collectors.joining(", ", "(", ")");
     private static final Pattern PTN_REPLACE = Pattern.compile("\\w*");
-    private static final Pattern PTN_$EX = Pattern.compile("\\$\\{(\\w+)}");
+    private static final Pattern PTN_DOLLAR_EX = Pattern.compile("\\$\\{(\\w+)}");
     private static final Pattern PTN_SPLIT_OR = Pattern.compile("Or(?=[A-Z])");
 
     public static boolean isDynamicTable(String input) {
-        return PTN_$EX.matcher(input).find();
+        return PTN_DOLLAR_EX.matcher(input).find();
     }
 
     public static String replaceHolderInString(Object target, String input) {
-        Matcher matcher = PTN_$EX.matcher(input);
+        Matcher matcher = PTN_DOLLAR_EX.matcher(input);
         if (!matcher.find()) {
             return input;
         }
@@ -66,12 +69,14 @@ public class CommonUtil {
             String replacement = String.valueOf(value);
             if (PTN_REPLACE.matcher(replacement).matches()) {
                 matcher.appendReplacement(sb, replacement);
+            } else {
+                log.warn("Unexpected argument: {}", replacement);
             }
         } while (matcher.find());
         return matcher.appendTail(sb).toString();
     }
 
-    static Object readFieldGetter(Object target, String fieldName) {
+    public static Object readFieldGetter(Object target, String fieldName) {
         Object value;
         try {
             value = MethodUtils.invokeMethod(target, true, "get" + StringUtils.capitalize(fieldName));
@@ -142,7 +147,7 @@ public class CommonUtil {
     }
 
     private static String escape(String like) {
-        return like.replaceAll("[%|_]", "\\\\$0");
+        return GlobalConfiguration.instance().getWildcardPtn().matcher(like).replaceAll("\\\\$0");
     }
 
     public static String camelize(String input) {
@@ -153,7 +158,7 @@ public class CommonUtil {
 
     public static String[] splitByOr(String columnName) {
         return Arrays.stream(PTN_SPLIT_OR.split(columnName, 0))
-                     .map(CommonUtil::camelize).toArray(String[]::new);
+                .map(CommonUtil::camelize).toArray(String[]::new);
     }
 
     public static boolean containsOr(String input) {
@@ -167,5 +172,18 @@ public class CommonUtil {
             result.append(StringUtils.capitalize(parts[i]));
         }
         return result.toString();
+    }
+
+    /**
+     * Resolve the generic type of the field.
+     *
+     * @param field The type of the field should contains one and only one
+     *              generic parameter, e.g., {@code List<UserView> users;}
+     */
+    @SuppressWarnings("unchecked")
+    public static <R> Class<R> resolveActualReturnClass(Field field) {
+        ParameterizedType genericType = (ParameterizedType) field.getGenericType();
+        Type[] actualTypeArguments = genericType.getActualTypeArguments();
+        return (Class<R>) actualTypeArguments[0];
     }
 }
