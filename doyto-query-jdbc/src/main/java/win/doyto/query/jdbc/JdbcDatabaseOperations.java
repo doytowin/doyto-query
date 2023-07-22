@@ -23,15 +23,16 @@ import org.springframework.jdbc.core.RowMapperResultSetExtractor;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import win.doyto.query.sql.SqlAndArgs;
 
-import java.sql.*;
-import java.util.List;
 import javax.sql.DataSource;
+import java.sql.*;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * JdbcDatabaseOperations
  *
  * @author f0rb on 2022/12/12
- * @since 1.0.1
+ * @since 1.1.0
  */
 @AllArgsConstructor
 public class JdbcDatabaseOperations implements DatabaseOperations {
@@ -70,20 +71,18 @@ public class JdbcDatabaseOperations implements DatabaseOperations {
     }
 
     @Override
-    public <I> I insert(SqlAndArgs sqlAndArgs, Class<I> idClass) {
+    public <I> List<I> insert(SqlAndArgs sqlAndArgs, Class<I> idClass, String idColumn) {
         return withTransaction(dataSource, connection -> {
             try (PreparedStatement ps = connection.prepareStatement(sqlAndArgs.getSql(), Statement.RETURN_GENERATED_KEYS)) {
-
+                LinkedList<I> idList = new LinkedList<>();
                 setParameters(sqlAndArgs, ps);
-                int count = ps.executeUpdate();
+                ps.executeUpdate();
 
-                if (count > 0) {
-                    ResultSet rs = ps.getGeneratedKeys();
-                    if (rs.next()) {
-                        return rs.getObject(1, idClass);
-                    }
+                ResultSet rs = ps.getGeneratedKeys();
+                while (rs.next()) {
+                    idList.add(rs.getObject(idColumn, idClass));
                 }
-                return null;
+                return idList;
             }
         });
     }

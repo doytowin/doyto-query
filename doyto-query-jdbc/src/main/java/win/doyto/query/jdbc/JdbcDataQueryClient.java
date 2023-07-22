@@ -35,7 +35,6 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import javax.sql.DataSource;
 
 import static win.doyto.query.sql.RelationalQueryBuilder.*;
 
@@ -61,10 +60,6 @@ public class JdbcDataQueryClient implements DataQueryClient {
 
     private static final Map<Class<?>, RowMapper<?>> holder = new ConcurrentHashMap<>();
     private final DatabaseOperations databaseOperations;
-
-    public JdbcDataQueryClient(DataSource dataSource) {
-        this.databaseOperations = new JdbcDatabaseOperations(dataSource);
-    }
 
     @SuppressWarnings("unchecked")
     @Override

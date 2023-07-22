@@ -30,7 +30,6 @@ import win.doyto.query.util.BeanUtil;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Set;
-import javax.sql.DataSource;
 
 /**
  * JdbcAssociationService
@@ -75,10 +74,6 @@ public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2
         }
     }
 
-    @Autowired
-    public void setDataSource(DataSource dataSource) {
-        this.databaseOperations = new JdbcDatabaseOperations(dataSource);
-    }
 
     @Override
     public int associate(Set<UniqueKey<K1, K2>> uniqueKeys) {

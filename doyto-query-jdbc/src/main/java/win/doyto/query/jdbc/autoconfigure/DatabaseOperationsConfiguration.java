@@ -20,9 +20,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.jdbc.core.JdbcOperations;
 import win.doyto.query.jdbc.DatabaseOperations;
-import win.doyto.query.jdbc.DatabaseTemplate;
+import win.doyto.query.jdbc.JdbcDatabaseOperations;
+
+import javax.sql.DataSource;
 
 /**
  * DatabaseOperationsConfiguration
@@ -35,7 +36,7 @@ import win.doyto.query.jdbc.DatabaseTemplate;
 class DatabaseOperationsConfiguration {
     @Bean
     @Primary
-    public DatabaseOperations databaseOperations(JdbcOperations jdbcOperations) {
-        return new DatabaseTemplate(jdbcOperations);
+    public DatabaseOperations databaseOperations(DataSource dataSource) {
+        return new JdbcDatabaseOperations(dataSource);
     }
 }
