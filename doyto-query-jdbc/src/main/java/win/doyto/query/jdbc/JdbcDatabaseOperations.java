@@ -21,6 +21,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.RowMapperResultSetExtractor;
 import org.springframework.jdbc.datasource.DataSourceUtils;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.sql.SqlAndArgs;
 
 import javax.sql.DataSource;
@@ -73,7 +74,10 @@ public class JdbcDatabaseOperations implements DatabaseOperations {
     @Override
     public <I> List<I> insert(SqlAndArgs sqlAndArgs, Class<I> idClass, String idColumn) {
         return withTransaction(dataSource, connection -> {
-            try (PreparedStatement ps = connection.prepareStatement(sqlAndArgs.getSql(), Statement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement ps = GlobalConfiguration.instance().isOracle() ?
+                    connection.prepareStatement(sqlAndArgs.getSql(), new String[]{idColumn}) :
+                    connection.prepareStatement(sqlAndArgs.getSql(), Statement.RETURN_GENERATED_KEYS)
+            ) {
                 LinkedList<I> idList = new LinkedList<>();
                 setParameters(sqlAndArgs, ps);
                 ps.executeUpdate();
