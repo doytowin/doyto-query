@@ -32,8 +32,13 @@ import win.doyto.query.sql.SqlBuilderFactory;
 import win.doyto.query.util.BeanUtil;
 import win.doyto.query.util.ColumnUtil;
 
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -64,7 +69,16 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     private final String idColumn;
 
     public JdbcDataAccess(DatabaseOperations databaseOperations, Class<E> entityClass) {
-        this(databaseOperations, entityClass, new BeanPropertyRowMapper<>(entityClass));
+        this(databaseOperations, entityClass, new BeanPropertyRowMapper<E>(entityClass) {
+            @Override
+            protected Object getColumnValue(ResultSet rs, int index, PropertyDescriptor pd) throws SQLException {
+                if (pd.getPropertyType() == LocalDateTime.class) {
+                    Timestamp timestamp = rs.getTimestamp(index);
+                    return timestamp != null ? timestamp.toLocalDateTime() : null;
+                }
+                return super.getColumnValue(rs, index, pd);
+            }
+        });
     }
 
     public JdbcDataAccess(DatabaseOperations databaseOperations, Class<E> entityClass, RowMapper<E> rowMapper) {
