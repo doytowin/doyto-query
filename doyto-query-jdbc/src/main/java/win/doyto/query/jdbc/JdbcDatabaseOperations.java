@@ -74,7 +74,8 @@ public class JdbcDatabaseOperations implements DatabaseOperations {
     @Override
     public <I> List<I> insert(SqlAndArgs sqlAndArgs, Class<I> idClass, String idColumn) {
         return withTransaction(dataSource, connection -> {
-            try (PreparedStatement ps = GlobalConfiguration.instance().isOracle() ?
+            boolean isOracle = GlobalConfiguration.instance().isOracle();
+            try (PreparedStatement ps = isOracle ?
                     connection.prepareStatement(sqlAndArgs.getSql(), new String[]{idColumn}) :
                     connection.prepareStatement(sqlAndArgs.getSql(), Statement.RETURN_GENERATED_KEYS)
             ) {
@@ -83,8 +84,9 @@ public class JdbcDatabaseOperations implements DatabaseOperations {
                 ps.executeUpdate();
 
                 ResultSet rs = ps.getGeneratedKeys();
+                int idIndex = isOracle ? 1 : rs.findColumn(idColumn);
                 while (rs.next()) {
-                    idList.add(rs.getObject(idColumn, idClass));
+                    idList.add(rs.getObject(idIndex, idClass));
                 }
                 return idList;
             }
