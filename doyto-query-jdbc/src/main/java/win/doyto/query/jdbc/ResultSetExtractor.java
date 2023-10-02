@@ -16,25 +16,18 @@
 
 package win.doyto.query.jdbc;
 
-import org.springframework.jdbc.core.RowMapper;
-import win.doyto.query.sql.SqlAndArgs;
-
-import java.util.List;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
- * DbOperations
+ * ResultSetExtractor
  *
- * @author f0rb on 2021-08-29
+ * @author f0rb on 2023/10/1
+ * @since 2.0.0
  */
-public interface DatabaseOperations {
+@FunctionalInterface
+public interface ResultSetExtractor<T> {
 
-    <V> List<V> query(SqlAndArgs sqlAndArgs, RowMapper<V> rowMapper);
+    T extract(ResultSet rs) throws SQLException;
 
-    long count(SqlAndArgs sqlAndArgs);
-
-    <I> List<I> insert(SqlAndArgs sqlAndArgs, Class<I> idClass, String idColumn);
-
-    int update(SqlAndArgs sqlAndArgs);
-
-    <R> R query(SqlAndArgs sqlAndArgs, ResultSetExtractor<R> resultSetExtractor);
 }

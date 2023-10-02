@@ -17,15 +17,14 @@
 package win.doyto.query.jdbc;
 
 import lombok.AllArgsConstructor;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.RowMapperResultSetExtractor;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.sql.SqlAndArgs;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,9 +51,14 @@ public class JdbcDatabaseOperations implements DatabaseOperations {
         return withTransaction(dataSource, connection -> {
             try (PreparedStatement preparedStatement = connection.prepareStatement(sqlAndArgs.getSql())) {
                 setParameters(sqlAndArgs, preparedStatement);
-                ResultSetExtractor<List<V>> rse = new RowMapperResultSetExtractor<>(rowMapper);
                 ResultSet rs = preparedStatement.executeQuery();
-                return rse.extractData(rs);
+
+                List<V> results = new ArrayList<>(rs.getFetchSize());
+                int rowNum = 0;
+                while (rs.next()) {
+                    results.add(rowMapper.mapRow(rs, rowNum++));
+                }
+                return results;
             }
         });
     }
@@ -109,7 +113,7 @@ public class JdbcDatabaseOperations implements DatabaseOperations {
             try (PreparedStatement ps = connection.prepareStatement(sqlAndArgs.getSql())) {
                 setParameters(sqlAndArgs, ps);
                 ResultSet rs = ps.executeQuery();
-                return resultSetExtractor.extractData(rs);
+                return resultSetExtractor.extract(rs);
             }
         });
     }

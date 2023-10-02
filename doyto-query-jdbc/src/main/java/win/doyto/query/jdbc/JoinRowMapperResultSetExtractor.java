@@ -17,7 +17,6 @@
 package win.doyto.query.jdbc;
 
 import lombok.AllArgsConstructor;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
@@ -38,7 +37,7 @@ public class JoinRowMapperResultSetExtractor<I, R> implements ResultSetExtractor
     private final Class<I> keyClass;
     private final RowMapper<R> rowMapper;
 
-    public Map<I, List<R>> extractData(ResultSet rs) throws SQLException {
+    public Map<I, List<R>> extract(ResultSet rs) throws SQLException {
         Map<I, List<R>> results = new HashMap<>();
         int rowNum = 0;
 
