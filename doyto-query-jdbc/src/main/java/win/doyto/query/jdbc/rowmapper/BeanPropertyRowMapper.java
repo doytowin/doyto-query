@@ -85,6 +85,10 @@ public class BeanPropertyRowMapper<E> implements RowMapper<E> {
         Class<?> propertyType = pd.getPropertyType();
         if (propertyType.isEnum()) {
             String value = rs.getString(columnLabel);
+            if (NumberUtils.isCreatable(value)) {
+                Integer ordinal = NumberUtils.createInteger(value);
+                return propertyType.getEnumConstants()[ordinal];
+            }
             return stringToEnum(propertyType, value);
         }
         if (propertyType == LocalDateTime.class) {
