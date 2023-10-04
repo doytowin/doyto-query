@@ -168,6 +168,12 @@ public class ColumnUtil {
                 ;
     }
 
+    public static boolean filterForJoinEntity(Field field) {
+        return shouldRetain(field)
+                && !field.isAnnotationPresent(DomainPath.class)    // ignore join field
+                ;
+    }
+
     public static boolean shouldRetain(Field field) {
         return !field.getName().startsWith("$")                  // $jacocoData
                 && !Modifier.isStatic(field.getModifiers())      // static field

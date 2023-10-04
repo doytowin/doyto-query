@@ -17,9 +17,9 @@
 package win.doyto.query.jdbc;
 
 import lombok.AllArgsConstructor;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.jdbc.rowmapper.RowMapper;
 import win.doyto.query.sql.SqlAndArgs;
 
 import javax.sql.DataSource;
@@ -56,7 +56,7 @@ public class JdbcDatabaseOperations implements DatabaseOperations {
                 List<V> results = new ArrayList<>(rs.getFetchSize());
                 int rowNum = 0;
                 while (rs.next()) {
-                    results.add(rowMapper.mapRow(rs, rowNum++));
+                    results.add(rowMapper.map(rs, rowNum++));
                 }
                 return results;
             }

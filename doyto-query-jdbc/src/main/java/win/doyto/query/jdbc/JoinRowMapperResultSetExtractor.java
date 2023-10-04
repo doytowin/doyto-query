@@ -17,7 +17,7 @@
 package win.doyto.query.jdbc;
 
 import lombok.AllArgsConstructor;
-import org.springframework.jdbc.core.RowMapper;
+import win.doyto.query.jdbc.rowmapper.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,7 +43,7 @@ public class JoinRowMapperResultSetExtractor<I, R> implements ResultSetExtractor
 
         while (rs.next()) {
             I key = rs.getObject(keyColumn, keyClass);
-            R row = this.rowMapper.mapRow(rs, rowNum++);
+            R row = this.rowMapper.map(rs, rowNum++);
             List<R> rows = results.computeIfAbsent(key, i -> new ArrayList<>());
             rows.add(row);
         }

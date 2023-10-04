@@ -14,27 +14,16 @@
  * limitations under the License.
  */
 
-package win.doyto.query.jdbc;
+package win.doyto.query.jdbc.rowmapper;
 
-import win.doyto.query.jdbc.rowmapper.RowMapper;
-import win.doyto.query.sql.SqlAndArgs;
-
-import java.util.List;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
- * DbOperations
+ * RowMapper
  *
- * @author f0rb on 2021-08-29
+ * @author f0rb on 2021-09-02
  */
-public interface DatabaseOperations {
-
-    <V> List<V> query(SqlAndArgs sqlAndArgs, RowMapper<V> rowMapper);
-
-    long count(SqlAndArgs sqlAndArgs);
-
-    <I> List<I> insert(SqlAndArgs sqlAndArgs, Class<I> idClass, String idColumn);
-
-    int update(SqlAndArgs sqlAndArgs);
-
-    <R> R query(SqlAndArgs sqlAndArgs, ResultSetExtractor<R> resultSetExtractor);
+public interface RowMapper<E> {
+    E map(ResultSet rs, int rn) throws SQLException;
 }
