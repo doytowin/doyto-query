@@ -32,10 +32,10 @@ import javax.persistence.Id;
  */
 @Getter
 @Setter
-public class PermView implements Persistable<Long> {
+public class PermView implements Persistable<Integer> {
 
     @Id
-    private Long id;
+    private Integer id;
     private String permName;
     private Boolean valid;
 
