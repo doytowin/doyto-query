@@ -19,6 +19,7 @@ package win.doyto.query.jdbc;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.jdbc.rowmapper.ResultSetExtractor;
 import win.doyto.query.jdbc.rowmapper.RowMapper;
 import win.doyto.query.sql.SqlAndArgs;
 

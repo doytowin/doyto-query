@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.jdbc;
+package win.doyto.query.jdbc.rowmapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -16,6 +16,7 @@
 
 package win.doyto.query.jdbc;
 
+import win.doyto.query.jdbc.rowmapper.ResultSetExtractor;
 import win.doyto.query.jdbc.rowmapper.RowMapper;
 import win.doyto.query.sql.SqlAndArgs;
 

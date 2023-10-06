@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package win.doyto.query.jdbc;
+package win.doyto.query.jdbc.rowmapper;
 
 import lombok.AllArgsConstructor;
-import win.doyto.query.jdbc.rowmapper.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
