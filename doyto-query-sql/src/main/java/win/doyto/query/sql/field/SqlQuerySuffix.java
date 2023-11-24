@@ -234,7 +234,7 @@ public enum SqlQuerySuffix {
             if (GlobalConfiguration.instance().getWildcardPtn().matcher(like).find()) {
                 return like;
             }
-            return CommonUtil.escapeLike(String.valueOf(value));
+            return CommonUtil.escapeLike(like);
         }
     }
 
