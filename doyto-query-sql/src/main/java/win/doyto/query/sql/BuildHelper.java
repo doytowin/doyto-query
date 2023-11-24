@@ -118,17 +118,17 @@ public class BuildHelper {
     }
 
     public static String buildCondition(Field[] fields, Object query, List<Object> argList, String alias, String connector) {
-        StringJoiner whereJoiner = new StringJoiner(connector);
+        StringJoiner conditionJoiner = new StringJoiner(connector);
         for (Field field : fields) {
             Object value = readFieldGetter(field, query);
             if (isValidValue(value, field)) {
-                String and = FieldMapper.execute(field, alias, argList, value);
-                if (and != null) {
-                    whereJoiner.add(and);
+                String condition = FieldMapper.execute(field, alias, argList, value);
+                if (condition != null) {
+                    conditionJoiner.add(condition);
                 }
             }
         }
-        return whereJoiner.toString();
+        return conditionJoiner.toString();
     }
 
     public static String buildOrderBy(DoytoQuery pageQuery) {
