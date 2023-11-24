@@ -27,17 +27,20 @@ import java.util.List;
  * @author f0rb on 2023/10/9
  * @since 1.0.3
  */
-public class SuffixFieldProcessor implements FieldProcessor {
+class SuffixFieldProcessor implements FieldProcessor {
 
     private String columnName;
     private final SqlQuerySuffix sqlQuerySuffix;
 
     public SuffixFieldProcessor(Field field) {
-        this(field, false);
+        this(field.getName(), false);
     }
 
     public SuffixFieldProcessor(Field field, boolean isAggregateField) {
-        String fieldName = field.getName();
+        this(field.getName(), isAggregateField);
+    }
+
+    SuffixFieldProcessor(String fieldName, boolean isAggregateField) {
         this.sqlQuerySuffix = SqlQuerySuffix.resolve(fieldName);
         this.columnName = this.sqlQuerySuffix.removeSuffix(fieldName);
         if (isAggregateField) {

@@ -114,7 +114,8 @@ public class ColumnUtil {
     public static String convertColumn(String columnName) {
         columnName = CommonUtil.camelize(columnName);
         return GlobalConfiguration.instance().isMapCamelCaseToUnderscore() ?
-                camelCaseToUnderscore(columnName) : columnName;
+                camelCaseToUnderscore(columnName) :
+                CommonUtil.toCamelCase(columnName);
     }
 
     public static String convertTableName(String domain) {

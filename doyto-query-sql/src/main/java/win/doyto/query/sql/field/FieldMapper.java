@@ -71,7 +71,7 @@ public final class FieldMapper {
         } else if (field.isAnnotationPresent(Column.class)) {
             processor = new ColumnFieldProcessor(field);
         } else if (OrFieldProcessor.support(field.getName())) {
-            processor = new OrFieldProcessor(field.getName());
+            processor = new OrFieldProcessor(field);
         } else {
             processor = new SuffixFieldProcessor(field);
         }
@@ -103,7 +103,7 @@ public final class FieldMapper {
         String fieldName = field.getName();
         boolean isAggregateField = !field.isAnnotationPresent(GroupBy.class);
         if (OrFieldProcessor.support(fieldName)) {
-            return new OrFieldProcessor(fieldName);
+            return new OrFieldProcessor(field);
         } else {
             return new SuffixFieldProcessor(field, isAggregateField);
         }
