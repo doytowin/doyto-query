@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test;
+package win.doyto.query.relation;
 
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.annotation.DomainPath;
+
+import java.util.List;
 
 /**
- * TestChildQuery
+ * UserView
  *
- * @author f0rb on 2021-12-11
+ * @author f0rb on 2023/7/27
+ * @since 1.0.2
  */
 @Getter
 @Setter
-public class TestChildQuery extends TestQuery {
-    private String oneMoreField;
+public class UserView {
+    // one-to-many
+    @DomainPath(value = "role", foreignField = "create_user_id")
+    private List<RoleView> createRoles;
 }
