@@ -94,4 +94,12 @@ class SortTest {
                .andExpect(jsonPath("$.data").value("username,asc;memo,desc"));
     }
 
+    @Test
+    void shouldBeNullWhenNoSortableColumns() throws Exception {
+        mockMvc.perform(get("/sort?sort.memo=desc&score"))
+               .andDo(print())
+               .andExpect(jsonPath("$.success").value(true))
+               .andExpect(jsonPath("$.data").doesNotExist());
+    }
+
 }
