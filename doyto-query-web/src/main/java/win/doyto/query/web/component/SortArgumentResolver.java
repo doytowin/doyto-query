@@ -44,34 +44,39 @@ public class SortArgumentResolver extends ServletModelAttributeMethodProcessor {
         this.queryColumnsMap = queryColumnsMap;
     }
 
+    @SuppressWarnings("java:S135")
     @Override
     protected void bindRequestParameters(WebDataBinder binder, NativeWebRequest request) {
         super.bindRequestParameters(binder, request);
         Object target = binder.getTarget();
-        if (target instanceof DoytoQuery) {
-            DoytoQuery query = (DoytoQuery) target;
-            Collection<String> columns = queryColumnsMap.getOrDefault(query.getClass(), new HashSet<>());
-            Iterator<String> it = request.getParameterNames();
-            StringJoiner sj = new StringJoiner(";");
-            while (it.hasNext()) {
-                String key = it.next();
-                int dotIdx = key.indexOf(sortPrefix);
-                if (dotIdx == -1 || !columns.contains(key.substring(dotIdx + sortPrefixLen))) {
-                    continue;
-                }
-                String column = key.substring(dotIdx + sortPrefixLen);
-                String value = request.getParameter(key);
-                if (StringUtils.isBlank(value)) {
-                    sj.add(column + ",asc");
-                } else if (value.contains(",")) {
-                    sj.add("field(" + column + "," + value + ")");
-                } else {
-                    sj.add(column + "," + value);
-                }
+        if (!(target instanceof DoytoQuery)) {
+            return;
+        }
+        DoytoQuery query = (DoytoQuery) target;
+        Collection<String> columns = queryColumnsMap.getOrDefault(query.getClass(), new HashSet<>());
+        Iterator<String> it = request.getParameterNames();
+        StringJoiner sj = new StringJoiner(";");
+        while (it.hasNext()) {
+            String key = it.next();
+            int dotIdx = key.indexOf(sortPrefix);
+            if (dotIdx == -1) {
+                continue;
             }
-            if (sj.length() > 0) {
-                query.setSort(sj.toString());
+            String column = key.substring(dotIdx + sortPrefixLen);
+            if (!columns.isEmpty() && !columns.contains(key.substring(dotIdx + sortPrefixLen))) {
+                continue;
             }
+            String value = request.getParameter(key);
+            if (StringUtils.isBlank(value)) {
+                sj.add(column + ",asc");
+            } else if (value.contains(",")) {
+                sj.add("field(" + column + "," + value + ")");
+            } else {
+                sj.add(column + "," + value);
+            }
+        }
+        if (sj.length() > 0) {
+            query.setSort(sj.toString());
         }
     }
 

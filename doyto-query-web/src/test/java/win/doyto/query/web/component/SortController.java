@@ -20,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import win.doyto.query.test.TestQuery;
+import win.doyto.query.test.user.UserQuery;
 import win.doyto.query.validation.PageGroup;
 import win.doyto.query.web.response.JsonBody;
 
@@ -35,6 +36,11 @@ public class SortController {
 
     @GetMapping("sort")
     String getSort(@Validated(PageGroup.class) TestQuery query) {
+        return query.getSort();
+    }
+
+    @GetMapping("sort2")
+    String getSort(@Validated(PageGroup.class) UserQuery query) {
         return query.getSort();
     }
 
