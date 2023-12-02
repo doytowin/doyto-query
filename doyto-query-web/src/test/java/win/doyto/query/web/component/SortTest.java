@@ -78,4 +78,12 @@ class SortTest {
                .andExpect(jsonPath("$.data").value("id,asc;username,asc"));
     }
 
+    @Test
+    void shouldSupportCustomColumnsWhenConfigured() throws Exception {
+        mockMvc.perform(get("/sort?sort.username&sort.memo=desc"))
+               .andDo(print())
+               .andExpect(jsonPath("$.success").value(true))
+               .andExpect(jsonPath("$.data").value("username,asc"));
+    }
+
 }

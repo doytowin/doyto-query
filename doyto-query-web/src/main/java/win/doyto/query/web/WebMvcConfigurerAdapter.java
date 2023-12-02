@@ -35,8 +35,10 @@ import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import win.doyto.query.util.BeanUtil;
 import win.doyto.query.web.component.SortArgumentResolver;
+import win.doyto.query.web.config.SortFieldsProperties;
 import win.doyto.query.web.config.WebComponentsConfiguration;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -49,6 +51,9 @@ import java.util.*;
  */
 @Import(WebComponentsConfiguration.class)
 public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
+
+    @Resource
+    private SortFieldsProperties sortFieldsProperties;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -132,7 +137,8 @@ public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        argumentResolvers.add(new SortArgumentResolver());
+        argumentResolvers.add(new SortArgumentResolver(
+                sortFieldsProperties.getSortPrefix(), sortFieldsProperties.getSortFieldsMap()));
     }
 
 }

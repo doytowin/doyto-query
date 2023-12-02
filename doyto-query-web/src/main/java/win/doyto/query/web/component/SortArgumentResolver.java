@@ -22,8 +22,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ServletModelAttributeMethodProcessor;
 import win.doyto.query.core.DoytoQuery;
 
-import java.util.Iterator;
-import java.util.StringJoiner;
+import java.util.*;
 
 /**
  * SortArgumentResolver
@@ -33,10 +32,16 @@ import java.util.StringJoiner;
  */
 public class SortArgumentResolver extends ServletModelAttributeMethodProcessor {
 
-    public static final String SORT_PREFIX = "sort.";
+    public final String sortPrefix;
+    public final int sortPrefixLen;
 
-    public SortArgumentResolver() {
+    private final Map<Class<?>, Set<String>> queryColumnsMap;
+
+    public SortArgumentResolver(String sortPrefix, Map<Class<?>, Set<String>> queryColumnsMap) {
         super(true);
+        this.sortPrefix = sortPrefix;
+        this.sortPrefixLen = sortPrefix.length();
+        this.queryColumnsMap = queryColumnsMap;
     }
 
     @Override
@@ -45,15 +50,16 @@ public class SortArgumentResolver extends ServletModelAttributeMethodProcessor {
         Object target = binder.getTarget();
         if (target instanceof DoytoQuery) {
             DoytoQuery query = (DoytoQuery) target;
+            Collection<String> columns = queryColumnsMap.getOrDefault(query.getClass(), new HashSet<>());
             Iterator<String> it = request.getParameterNames();
             StringJoiner sj = new StringJoiner(";");
             while (it.hasNext()) {
                 String key = it.next();
-                int indexOfDot = key.indexOf(SORT_PREFIX);
-                if (indexOfDot == -1) {
+                int dotIdx = key.indexOf(sortPrefix);
+                if (dotIdx == -1 || !columns.contains(key.substring(dotIdx + sortPrefixLen))) {
                     continue;
                 }
-                String column = key.substring(indexOfDot + SORT_PREFIX.length());
+                String column = key.substring(dotIdx + sortPrefixLen);
                 String value = request.getParameter(key);
                 if (StringUtils.isBlank(value)) {
                     sj.add(column + ",asc");
