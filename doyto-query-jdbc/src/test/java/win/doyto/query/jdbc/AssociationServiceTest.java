@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.SingleColumnRowMapper;
 import win.doyto.query.core.AssociationService;
 import win.doyto.query.core.UniqueKey;
 
@@ -147,7 +146,7 @@ class AssociationServiceTest extends JdbcApplicationTest {
         userAndRoleAssociationService.associate(5L, 20);
 
         String sql = "select count(*) from a_user_and_role where create_user_id = 0";
-        Long ret = jdbcOperations.queryForObject(sql, new SingleColumnRowMapper<>(Long.class));
+        Long ret = jdbcOperations.queryForObject(sql, Long.class);
         assertThat(ret).isEqualTo(1L);
     }
 

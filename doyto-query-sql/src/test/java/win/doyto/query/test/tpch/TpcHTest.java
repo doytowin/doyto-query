@@ -20,6 +20,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.core.PageQuery;
 import win.doyto.query.sql.RelationalQueryBuilder;
 import win.doyto.query.sql.SqlAndArgs;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
@@ -35,8 +36,14 @@ import win.doyto.query.test.tpch.q11.ValueHaving;
 import win.doyto.query.test.tpch.q11.ValueQuery;
 import win.doyto.query.test.tpch.q12.ShippingModesAndOrderPriorityQuery;
 import win.doyto.query.test.tpch.q12.ShippingModesAndOrderPriorityView;
+import win.doyto.query.test.tpch.q13.CustomerDistributionQuery;
+import win.doyto.query.test.tpch.q13.CustomerDistributionView;
+import win.doyto.query.test.tpch.q13.CustomerOrdersQuery;
+import win.doyto.query.test.tpch.q13.JoinOrders;
 import win.doyto.query.test.tpch.q14.PromotionEffectQuery;
 import win.doyto.query.test.tpch.q14.PromotionEffectView;
+import win.doyto.query.test.tpch.q15.TopSupplierQuery;
+import win.doyto.query.test.tpch.q15.TopSupplierView;
 import win.doyto.query.test.tpch.q16.PartsSupplierRelationshipQuery;
 import win.doyto.query.test.tpch.q16.PartsSupplierRelationshipView;
 import win.doyto.query.test.tpch.q17.SmallQuantityOrderRevenueQuery;
@@ -48,7 +55,6 @@ import win.doyto.query.test.tpch.q18.LineitemQuantityQuery;
 import win.doyto.query.test.tpch.q19.DiscountedRevenueQuery;
 import win.doyto.query.test.tpch.q19.DiscountedRevenueView;
 import win.doyto.query.test.tpch.q19.LineitemFilter;
-import win.doyto.query.test.tpch.q19.LineitemOr;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierQuery;
 import win.doyto.query.test.tpch.q2.MinimumCostSupplierView;
 import win.doyto.query.test.tpch.q2.SupplyCostQuery;
@@ -56,6 +62,12 @@ import win.doyto.query.test.tpch.q20.AvailableQtyQuery;
 import win.doyto.query.test.tpch.q20.PotentialPartPromotionQuery;
 import win.doyto.query.test.tpch.q20.PotentialPartPromotionView;
 import win.doyto.query.test.tpch.q20.SuppkeyQuery;
+import win.doyto.query.test.tpch.q21.LineitemExistsQuery;
+import win.doyto.query.test.tpch.q21.SuppliersWhoKeptOrdersWaitingQuery;
+import win.doyto.query.test.tpch.q21.SuppliersWhoKeptOrdersWaitingView;
+import win.doyto.query.test.tpch.q22.CustsaleQuery;
+import win.doyto.query.test.tpch.q22.GlobalSalesOpportunityQuery;
+import win.doyto.query.test.tpch.q22.GlobalSalesOpportunityView;
 import win.doyto.query.test.tpch.q3.ShippingPriorityQuery;
 import win.doyto.query.test.tpch.q3.ShippingPriorityView;
 import win.doyto.query.test.tpch.q4.LineitemReceiptQuery;
@@ -65,6 +77,13 @@ import win.doyto.query.test.tpch.q5.LocalSupplierVolumeQuery;
 import win.doyto.query.test.tpch.q5.LocalSupplierVolumeView;
 import win.doyto.query.test.tpch.q6.ForecastingRevenueChangeQuery;
 import win.doyto.query.test.tpch.q6.ForecastingRevenueChangeView;
+import win.doyto.query.test.tpch.q7.NameComparison;
+import win.doyto.query.test.tpch.q7.ShippingQuery;
+import win.doyto.query.test.tpch.q7.VolumeShippingQuery;
+import win.doyto.query.test.tpch.q7.VolumeShippingView;
+import win.doyto.query.test.tpch.q8.AllNationsQuery;
+import win.doyto.query.test.tpch.q8.NationalMarketShareQuery;
+import win.doyto.query.test.tpch.q8.NationalMarketShareView;
 import win.doyto.query.test.tpch.q9.ProductTypeProfitMeasureQuery;
 import win.doyto.query.test.tpch.q9.ProductTypeProfitMeasureView;
 import win.doyto.query.test.tpch.q9.ProfitQuery;
@@ -97,7 +116,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForPricingSummaryReport() {
+    void q1PricingSummaryReportQuery() {
         String expected = "SELECT " +
                 "l_returnflag, " +
                 "l_linestatus, " +
@@ -110,13 +129,14 @@ class TpcHTest {
                 "avg(l_discount) AS avg_disc, " +
                 "count(*) AS count_order" +
                 " FROM lineitem" +
-                " WHERE l_shipdate <= date '1998-12-01' - interval '?' day (3)" +
+                " WHERE l_shipdate <= ?" +
                 " GROUP BY l_returnflag, l_linestatus" +
                 " ORDER BY l_returnflag, l_linestatus";
 
+        Date date = Date.valueOf(LocalDate.of(1998, 9, 1));
         PricingSummaryQuery query = PricingSummaryQuery
                 .builder()
-                .shipdateDelta(90)
+                .lShipdateLe(date)
                 .sort("l_returnflag;l_linestatus")
                 .build();
 
@@ -125,7 +145,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForMinimumCostSupplier() {
+    void q2MinimumCostSupplierQuery() {
         String expected = "SELECT s_acctbal, s_name, n_name, p_partkey, p_mfgr, s_address, s_phone, s_comment" +
                 " FROM part, supplier, partsupp, nation, region" +
                 " WHERE s_nationkey = n_nationkey" +
@@ -151,7 +171,7 @@ class TpcHTest {
                 .p_size(15)
                 .p_typeEnd("BRASS")
                 .r_name("EUROPE")
-                .ps_supplycost(SupplyCostQuery.builder().r_name("EUROPE").build())
+                .psSupplycost(SupplyCostQuery.builder().r_name("EUROPE").build())
                 .sort("s_acctbal,DESC;n_name;s_name;p_partkey")
                 .build();
 
@@ -160,7 +180,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForShippingPriority() {
+    void q3ShippingPriorityQuery() {
         String expected = "SELECT " +
                 "l_orderkey, " +
                 "SUM(l_extendedprice * (1 - l_discount)) AS revenue, " +
@@ -189,7 +209,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForOrderPriorityChecking() {
+    void q4OrderPriorityCheckingQuery() {
         String expected = "SELECT o_orderpriority, count(*) AS order_count" +
                 " FROM orders t" +
                 " WHERE o_orderdate >= ?" +
@@ -217,19 +237,19 @@ class TpcHTest {
     }
 
     @Test
-    void queryForLocalSupplierVolume() {
+    void q5LocalSupplierVolumeQuery() {
         String expected = "SELECT n_name, SUM(l_extendedprice * (1 - l_discount)) AS revenue" +
                 " FROM customer, orders, lineitem, supplier, nation, region" +
                 " WHERE c_nationkey = n_nationkey" +
                 " AND o_custkey = c_custkey" +
                 " AND l_orderkey = o_orderkey" +
                 " AND l_suppkey = s_suppkey" +
-                " AND s_nationkey = n_nationkey" +
                 " AND n_regionkey = r_regionkey" +
+                " AND c_nationkey = s_nationkey" +
                 " AND r_name = ?" +
                 " AND o_orderdate >= ?" +
                 " AND o_orderdate < ?" +
-                " GROUP BY n_name"+
+                " GROUP BY n_name" +
                 " ORDER BY revenue DESC";
 
         LocalDate date = LocalDate.of(1994, 1, 1);
@@ -237,9 +257,9 @@ class TpcHTest {
         Date orderDateLt = Date.valueOf(date.plus(1, YEARS));
         LocalSupplierVolumeQuery query = LocalSupplierVolumeQuery
                 .builder()
-                .r_name("ASIA")
-                .o_orderdateGe(orderDateGe)
-                .o_orderdateLt(orderDateLt)
+                .rName("ASIA")
+                .oOrderdateGe(orderDateGe)
+                .oOrderdateLt(orderDateLt)
                 .sort("revenue,DESC")
                 .build();
 
@@ -248,7 +268,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForForecastingRevenueChange() {
+    void q6ForecastingRevenueChangeQuery() {
         String expected = "SELECT SUM(l_extendedprice * l_discount) AS revenue" +
                 " FROM lineitem" +
                 " WHERE l_shipdate >= ?" +
@@ -272,23 +292,123 @@ class TpcHTest {
     }
 
     @Test
-    void queryForProductTypeProfitMeasure() {
+    void q7VolumeShippingQuery() {
+        String expected = "SELECT supp_nation," +
+                " cust_nation," +
+                " l_year," +
+                " SUM(volume) AS revenue" +
+                " FROM (SELECT n1.n_name AS supp_nation," +
+                " n2.n_name AS cust_nation," +
+                " YEAR(l_shipdate) AS l_year," +
+                " l_extendedprice * (1 - l_discount" +
+                ") AS volume" +
+                " FROM supplier, lineitem, orders, customer, nation n1, nation n2" +
+                " WHERE s_nationkey = n1.n_nationkey" +
+                " AND l_orderkey = o_orderkey" +
+                " AND l_suppkey = s_suppkey" +
+                " AND o_custkey = c_custkey" +
+                " AND c_nationkey = n2.n_nationkey" +
+                " AND ((n1.n_name = ? AND n2.n_name = ?)" +
+                " OR (n1.n_name = ? AND n2.n_name = ?))" +
+                " AND l_shipdate >= ? AND l_shipdate <= ?" +
+                ") AS shipping" +
+                " GROUP BY supp_nation, cust_nation, l_year" +
+                " ORDER BY supp_nation, cust_nation, l_year";
+
+        Date startShipdate = Date.valueOf(LocalDate.of(1995, 1, 1));
+        Date endShipdate = Date.valueOf(LocalDate.of(1996, 12, 31));
+
+        ShippingQuery shippingQuery = ShippingQuery
+                .builder()
+                .nameOr(Arrays.asList(
+                        new NameComparison("FRANCE", "GERMANY"),
+                        new NameComparison("GERMANY", "FRANCE")
+                ))
+                .l_shipdateGe(startShipdate)
+                .l_shipdateLe(endShipdate)
+                .build();
+        VolumeShippingQuery query = VolumeShippingQuery
+                .builder()
+                .shippingQuery(shippingQuery)
+                .sort("supp_nation;cust_nation;l_year")
+                .build();
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, VolumeShippingView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(
+                "FRANCE", "GERMANY",
+                "GERMANY", "FRANCE",
+                startShipdate, endShipdate);
+    }
+
+    @Test
+    void q8NationalMarketShareQuery() {
+        String expected = "SELECT" +
+                " o_year," +
+                " SUM(CASE WHEN nation = ? THEN volume ELSE 0 END) / SUM(volume) AS mkt_share" +
+                " FROM" +
+                " (SELECT" +
+                " YEAR(o_orderdate) AS o_year," +
+                " l_extendedprice * (1 - l_discount) AS volume," +
+                " n2.n_name AS nation" +
+                " FROM part, lineitem, orders, customer, supplier, nation n1, nation n2, region" +
+                " WHERE l_orderkey = o_orderkey" +
+                " AND l_suppkey = s_suppkey" +
+                " AND l_partkey = p_partkey" +
+                " AND o_custkey = c_custkey" +
+                " AND c_nationkey = n1.n_nationkey" +
+                " AND s_nationkey = n2.n_nationkey" +
+                " AND n1.n_regionkey = r_regionkey" +
+                " AND r_name = ?" +
+                " AND o_orderdate >= ?" +
+                " AND o_orderdate <= ?" +
+                " AND p_type = ?" +
+                ") AS all_nations" +
+                " GROUP BY o_year" +
+                " ORDER BY o_year";
+
+        Date startShipdate = Date.valueOf(LocalDate.of(1995, 1, 1));
+        Date endShipdate = Date.valueOf(LocalDate.of(1996, 12, 31));
+
+        AllNationsQuery allNationsQuery = AllNationsQuery
+                .builder()
+                .r_name("AMERICA")
+                .o_orderdateGe(startShipdate)
+                .o_orderdateLe(endShipdate)
+                .p_type("ECONOMY ANODIZED STEEL")
+                .build();
+
+        NationalMarketShareQuery query = NationalMarketShareQuery
+                .builder()
+                .nationEq("BRAZIL")
+                .allNationsQuery(allNationsQuery).sort("o_year")
+                .build();
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, NationalMarketShareView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(
+                "BRAZIL", "AMERICA", startShipdate, endShipdate, "ECONOMY ANODIZED STEEL");
+    }
+
+    @Test
+    void q9ProductTypeProfitMeasureQuery() {
         String expected = "SELECT nation, o_year, SUM(amount) AS sum_profit" +
                 " FROM " +
-                "(SELECT n_name AS nation, YEAR(o_orderdate) AS o_year, l_extendedprice * (1 - l_discount) - ps_supplycost * l_quantity AS amount" +
+                "(SELECT n_name AS nation, YEAR(o_orderdate) AS o_year," +
+                " l_extendedprice * (1 - l_discount) - ps_supplycost * l_quantity AS amount" +
                 " FROM part, supplier, lineitem, partsupp, orders, nation" +
                 " WHERE s_nationkey = n_nationkey" +
                 " AND l_orderkey = o_orderkey" +
                 " AND l_suppkey = s_suppkey" +
                 " AND l_partkey = p_partkey" +
-                " AND ps_partkey = p_partkey" +
-                " AND ps_suppkey = s_suppkey" +
+                " AND ps_suppkey = l_suppkey" +
+                " AND ps_partkey = l_partkey" +
                 " AND p_name LIKE ?" +
                 ") AS profit" +
                 " GROUP BY nation, o_year" +
                 " ORDER BY nation, o_year DESC";
 
-        ProfitQuery profitQuery = ProfitQuery.builder().p_nameLike("green").build();
+        ProfitQuery profitQuery = ProfitQuery.builder().pNameLike("green").build();
         ProductTypeProfitMeasureQuery query = ProductTypeProfitMeasureQuery
                 .builder()
                 .profitQuery(profitQuery)
@@ -301,7 +421,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForReturnedItemReporting() {
+    void q10ReturnedItemReportingQuery() {
         String expected = "SELECT" +
                 " c_custkey," +
                 " c_name," +
@@ -346,7 +466,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForImportantStockIdentification() {
+    void q11ImportantStockIdentificationQuery() {
         String expected = "SELECT" +
                 " ps_partkey," +
                 " SUM(ps_supplycost * ps_availqty) AS value" +
@@ -381,10 +501,10 @@ class TpcHTest {
     }
 
     @Test
-    void queryForShippingModesAndOrderPriority() {
+    void q12ShippingModesAndOrderPriorityQuery() {
         String expected = "SELECT l_shipmode," +
-                " SUM(CASE WHEN o_orderpriority = '1-URGENT'OR o_orderpriority = '2-HIGH'THEN 1 ELSE 0 END) AS high_line_count," +
-                " SUM(CASE WHEN o_orderpriority <> '1-URGENT'AND o_orderpriority <> '2-HIGH'THEN 1 ELSE 0 END) AS low_line_count" +
+                " SUM(CASE WHEN o_orderpriority = ? OR o_orderpriority = ? THEN 1 ELSE 0 END) AS high_line_count," +
+                " SUM(CASE WHEN o_orderpriority <> ? AND o_orderpriority <> ? THEN 1 ELSE 0 END) AS low_line_count" +
                 " FROM orders, lineitem" +
                 " WHERE l_orderkey = o_orderkey" +
                 " AND l_shipmode IN (?, ?)" +
@@ -398,6 +518,8 @@ class TpcHTest {
         LocalDate date = LocalDate.of(1994, 1, 1);
         ShippingModesAndOrderPriorityQuery query = ShippingModesAndOrderPriorityQuery
                 .builder()
+                .o_orderpriority1("1-URGENT")
+                .o_orderpriority2("2-HIGH")
                 .l_shipmodeIn(Arrays.asList("MAIL", "SHIP"))
                 .l_receiptdateGe(Date.valueOf(date))
                 .l_receiptdateLt(Date.valueOf(date.plus(1, YEARS)))
@@ -408,34 +530,102 @@ class TpcHTest {
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(
+                "1-URGENT", "2-HIGH",
+                "1-URGENT", "2-HIGH",
                 "MAIL", "SHIP",
                 Date.valueOf(date), Date.valueOf(date.plus(1, YEARS))
         );
     }
 
     @Test
-    void queryForPromotionEffect() {
+    void q13CustomerDistributionQuery() {
+        String expected = "SELECT c_count, COUNT(*) AS custdist" +
+                " FROM" +
+                " (SELECT c_custkey," +
+                " COUNT(o_orderkey) AS c_count" +
+                " FROM customer c" +
+                " LEFT JOIN orders o ON" +
+                " o.o_custkey = c.c_custkey AND" +
+                " o.o_comment NOT LIKE ?" +
+                " GROUP BY c_custkey) AS customer_orders" +
+                " GROUP BY c_count" +
+                " ORDER BY custdist DESC, c_count DESC";
+
+        JoinOrders joinOrders = JoinOrders.builder().oCommentNotLike("%special%packages%").build();
+        CustomerOrdersQuery customerOrdersQuery = CustomerOrdersQuery.builder().joinOrders(joinOrders).build();
+        CustomerDistributionQuery query = CustomerDistributionQuery
+                .builder()
+                .customerOrdersQuery(customerOrdersQuery)
+                .sort("custdist,DESC;c_count,DESC")
+                .build();
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, CustomerDistributionView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly("%special%packages%");
+    }
+
+    @Test
+    void q14PromotionEffectQuery() {
         String expected = "SELECT" +
-                " 100.00 * SUM(CASE WHEN p_type LIKE 'PROMO%'THEN l_extendedprice * (1 - l_discount)ELSE 0 END) / SUM(l_extendedprice * (1 - l_discount)) AS promo_revenue" +
+                " 100.00 * SUM(CASE WHEN p_type LIKE ? THEN l_extendedprice * (1 - l_discount) ELSE 0 END)" +
+                " / SUM(l_extendedprice * (1 - l_discount)) AS promo_revenue" +
                 " FROM lineitem, part" +
                 " WHERE l_partkey = p_partkey" +
                 " AND l_shipdate >= ?" +
                 " AND l_shipdate < ?";
 
-        LocalDate date = LocalDate.of(1995, 12, 1);
+        Date startShipdate = Date.valueOf(LocalDate.of(1995, 12, 1));
+        Date endShipdate = Date.valueOf(LocalDate.of(1995, 12, 31));
         PromotionEffectQuery query = PromotionEffectQuery
                 .builder()
-                .l_shipdateGe(Date.valueOf(date))
-                .l_shipdateLt(Date.valueOf(date.plus(1, MONTHS)))
+                .pTypeStart("PROMO")
+                .l_shipdateGe(startShipdate)
+                .l_shipdateLt(endShipdate)
                 .build();
 
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, PromotionEffectView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly("PROMO%", startShipdate, endShipdate);
     }
 
     @Test
-    void queryForPartsSupplierRelationship() {
+    void q15TopSupplierQuery() {
+        String expected = "WITH revenue AS" +
+                " (SELECT l_suppkey AS supplier_no," +
+                " SUM(l_extendedprice * (1 - l_discount)) AS total_revenue" +
+                " FROM lineitem" +
+                " WHERE l_shipdate >= ?" +
+                " AND l_shipdate < ?" +
+                " GROUP BY l_suppkey)" +
+                " SELECT s_suppkey, s_name, s_address, s_phone, total_revenue" +
+                " FROM supplier, revenue" +
+                " WHERE supplier_no = s_suppkey" +
+                " AND total_revenue = (SELECT MAX(total_revenue) FROM revenue)" +
+                " ORDER BY s_suppkey";
+
+        Date startShipdate = Date.valueOf(LocalDate.of(1995, 1, 1));
+        Date endShipdate = Date.valueOf(LocalDate.of(1995, 4, 1));
+        LineitemQuery lineitemQuery = LineitemQuery
+                .builder()
+                .l_shipdateGe(startShipdate)
+                .l_shipdateLt(endShipdate)
+                .build();
+        TopSupplierQuery query = TopSupplierQuery
+                .builder()
+                .lineitemRevenueQuery(lineitemQuery)
+                .total_revenue(new PageQuery())
+                .sort("s_suppkey")
+                .build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, TopSupplierView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly(startShipdate, endShipdate);
+    }
+
+    @Test
+    void q16PartsSupplierRelationshipQuery() {
         String expected = "SELECT p_brand, p_type, p_size, COUNT(DISTINCT ps_suppkey) AS supplier_cnt" +
                 " FROM partsupp, part" +
                 " WHERE ps_partkey = p_partkey" +
@@ -466,7 +656,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForSmallQuantityOrderRevenue() {
+    void q17SmallQuantityOrderRevenueQuery() {
         String expected = "SELECT SUM(l_extendedprice) / 7.0 AS avg_yearly" +
                 " FROM lineitem, part" +
                 " WHERE l_partkey = p_partkey" +
@@ -480,7 +670,7 @@ class TpcHTest {
                 .builder()
                 .p_brand("Brand#23")
                 .p_container("MED BOX")
-                .l_quantityLt(LineitemQuery.builder().l_partkeyEqP_partkey(true).build())
+                .l_quantityLt(LineitemQuery.builder().build())
                 .build();
 
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, SmallQuantityOrderRevenueView.class);
@@ -490,7 +680,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForLargeVolumeCustomer() {
+    void q18LargeVolumeCustomerQuery() {
         String expected = "SELECT" +
                 " c_name," +
                 " c_custkey," +
@@ -524,7 +714,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForDiscountedRevenue() {
+    void q19DiscountedRevenueQuery() {
         String expected = "SELECT" +
                 " SUM(l_extendedprice * (1 - l_discount)) AS revenue" +
                 " FROM lineitem, part" +
@@ -583,16 +773,9 @@ class TpcHTest {
                 .p_sizeLe(15)
                 .l_shipmodeIn(Arrays.asList("AIR", "AIR REG"))
                 .build();
-        LineitemOr lineitemOr = LineitemOr
-                .builder()
-                .lineitemFilter1(lineitemFilter1)
-                .lineitemFilter2(lineitemFilter2)
-                .lineitemFilter3(lineitemFilter3)
-                .lineitemFilter4(new LineitemFilter())
-                .build();
         DiscountedRevenueQuery query = DiscountedRevenueQuery
                 .builder()
-                .lineitemOr(lineitemOr)
+                .lineitemOr(Arrays.asList(lineitemFilter1, lineitemFilter2, lineitemFilter3))
                 .l_shipinstruct("DELIVER IN PERSON")
                 .build();
 
@@ -602,7 +785,7 @@ class TpcHTest {
     }
 
     @Test
-    void queryForPotentialPartPromotion() {
+    void q20PotentialPartPromotionQuery() {
         String expected = "SELECT s_name, s_address" +
                 " FROM supplier, nation" +
                 " WHERE s_nationkey = n_nationkey" +
@@ -647,6 +830,85 @@ class TpcHTest {
         assertThat(sqlAndArgs.getArgs()).containsExactly(
                 "forest%", Date.valueOf(date),
                 Date.valueOf(date.plus(1, YEARS)), "CANADA");
+    }
+
+    @Test
+    void q21SuppliersWhoKeptOrdersWaitingQuery() {
+        String expected = "SELECT" +
+                " s_name, count(*) AS numwait" +
+                " FROM supplier, lineitem l1, orders, nation" +
+                " WHERE s_nationkey = n_nationkey" +
+                " AND l1.l_orderkey = o_orderkey" +
+                " AND l1.l_suppkey = s_suppkey" +
+                " AND n_name = ?" +
+                " AND o_orderstatus = ?" +
+                " AND l1.l_receiptdate > l1.l_commitdate" +
+                " AND EXISTS(SELECT *" +
+                " FROM lineitem l2" +
+                " WHERE l1.l_orderkey = l2.l_orderkey" +
+                " AND l2.l_suppkey <> l1.l_suppkey)" +
+                " AND NOT EXISTS(SELECT *" +
+                " FROM lineitem l3" +
+                " WHERE l1.l_orderkey = l3.l_orderkey" +
+                " AND l3.l_suppkey <> l1.l_suppkey" +
+                " AND l3.l_receiptdate > l3.l_commitdate)" +
+                " GROUP BY s_name" +
+                " ORDER BY numwait DESC, s_name";
+
+        SuppliersWhoKeptOrdersWaitingQuery query = SuppliersWhoKeptOrdersWaitingQuery
+                .builder()
+                .o_orderstatus("F")
+                .n_name("CANADA")
+                .lineitemExists(new LineitemExistsQuery())
+                .lineitemNotExists(LineitemExistsQuery.builder().alias$lReceiptdateGtAlias$lCommitdate(true).build())
+                .sort("numwait,DESC;s_name")
+                .build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, SuppliersWhoKeptOrdersWaitingView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly("CANADA", "F");
+    }
+
+    @Test
+    void q22GlobalSalesOpportunityQuery() {
+        String expected = "SELECT" +
+                " cntrycode, count(*) AS numcust, sum(c_acctbal) AS totacctbal" +
+                " FROM (SELECT" +
+                " substring(c_phone from 1 for 2) AS cntrycode, c_acctbal" +
+                " FROM customer" +
+                " WHERE substring(c_phone from 1 for 2) IN (?, ?)" +
+                " AND c_acctbal > (SELECT avg(c_acctbal)" +
+                " FROM customer" +
+                " WHERE c_acctbal > ?" +
+                " AND substring(c_phone from 1 for 2) IN (?, ?))" +
+                " AND NOT EXISTS(SELECT * FROM orders" +
+                " WHERE c_custkey = o_custkey)" +
+                ") AS custsale" +
+                " GROUP BY cntrycode" +
+                " ORDER BY cntrycode";
+
+        CustsaleQuery anotherQuery = CustsaleQuery
+                .builder()
+                .c_acctbalGt(0)
+                .cntrycodeIn(Arrays.asList("28", "30"))
+                .build();
+        CustsaleQuery custsaleQuery = CustsaleQuery
+                .builder()
+                .cntrycodeIn(Arrays.asList("28", "30"))
+                .c_acctbalGt2(anotherQuery)
+                .ordersNotExists(new PageQuery())
+                .build();
+        GlobalSalesOpportunityQuery query = GlobalSalesOpportunityQuery
+                .builder()
+                .custsaleQuery(custsaleQuery)
+                .sort("cntrycode")
+                .build();
+
+        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, GlobalSalesOpportunityView.class);
+
+        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+        assertThat(sqlAndArgs.getArgs()).containsExactly("28", "30", 0, "28", "30");
     }
 
 }

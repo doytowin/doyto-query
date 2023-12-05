@@ -46,7 +46,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
     @Test
     void queryForJoin() {
         UserQuery usersQuery = UserQuery.builder().build();
-        RoleViewQuery roleQuery = RoleViewQuery.builder().user(usersQuery).withUsers(usersQuery).build();
+        RoleViewQuery roleQuery = RoleViewQuery.builder().user(usersQuery).withUsers(usersQuery).sort("id,asc").build();
         List<RoleView> roleViews = jdbcDataQueryClient.query(roleQuery);
         assertThat(roleViews)
                 .extracting(roleView -> roleView.getUsers().size())
@@ -171,7 +171,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
         assertThat(userLevelCountViews)
                 .hasSize(3)
                 .extracting("userLevel", "valid", "count")
-                .containsExactly(
+                .containsExactlyInAnyOrder(
                         new Tuple(UserLevel.高级, true, 1L),
                         new Tuple(UserLevel.普通, false, 1L),
                         new Tuple(UserLevel.普通, true, 2L)

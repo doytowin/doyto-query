@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.annotation.Transient;
 import win.doyto.query.core.PageQuery;
 
 import java.sql.Date;
@@ -37,6 +38,8 @@ import java.sql.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PromotionEffectQuery extends PageQuery {
+    @Transient
+    private String pTypeStart;
     private Date l_shipdateGe;
     private Date l_shipdateLt;
 }

@@ -18,6 +18,7 @@ package win.doyto.query.test.tpch.q12;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.annotation.Transient;
 import win.doyto.query.core.PageQuery;
 
 import java.sql.Date;
@@ -35,6 +36,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ShippingModesAndOrderPriorityQuery extends PageQuery {
+    @Transient
+    private String o_orderpriority1;
+    @Transient
+    private String o_orderpriority2;
+
     private List<String> l_shipmodeIn;
 
     @Builder.Default

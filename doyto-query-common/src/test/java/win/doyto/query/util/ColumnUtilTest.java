@@ -19,9 +19,9 @@ package win.doyto.query.util;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.core.PageQuery;
-import win.doyto.query.test.TestChildQuery;
-import win.doyto.query.test.TestEntity;
-import win.doyto.query.test.TestQuery;
+import win.doyto.query.util.menu.MenuEntity;
+import win.doyto.query.util.test.TestChildQuery;
+import win.doyto.query.util.test.TestQuery;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -44,8 +44,8 @@ class ColumnUtilTest {
 
     @Test
     void resolveSelectColumns() {
-        String columns = StringUtils.join(ColumnUtil.resolveSelectColumns(TestEntity.class), ", ");
-        assertEquals("username, password, mobile, email, nickname, user_level AS userLevel, memo, score, valid, version, id", columns);
+        String columns = StringUtils.join(ColumnUtil.resolveSelectColumns(MenuEntity.class), ", ");
+        assertEquals("platform, parent_id AS parentId, menu_name AS menuName, memo, valid, id", columns);
     }
 
     @Test

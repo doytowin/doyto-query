@@ -38,7 +38,7 @@ public class MinimumCostSupplierView {
     private String s_acctbal;
     private String s_name;
     private String n_name;
-    private String p_partkey;
+    private Integer p_partkey;
     private String p_mfgr;
     private String s_address;
     private String s_phone;

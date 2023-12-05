@@ -19,27 +19,30 @@ package win.doyto.query.sql;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import win.doyto.query.annotation.ComplexView;
 import win.doyto.query.annotation.CompositeView;
 import win.doyto.query.annotation.Entity;
+import win.doyto.query.annotation.View;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.LockMode;
-import win.doyto.query.entity.Persistable;
+import win.doyto.query.core.QuerySuffix;
 import win.doyto.query.sql.field.FieldMapper;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static win.doyto.query.core.QuerySuffix.isValidValue;
 import static win.doyto.query.sql.Constant.*;
+import static win.doyto.query.util.CommonUtil.getField;
 import static win.doyto.query.util.CommonUtil.readFieldGetter;
 
 /**
@@ -50,6 +53,8 @@ import static win.doyto.query.util.CommonUtil.readFieldGetter;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BuildHelper {
     private static final Pattern PTN_SORT = Pattern.compile(",(asc|desc)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PTN_SHARP_EX = Pattern.compile("#\\{(\\w+)}");
+    private static final Pattern PTN_DIGITS_END = Pattern.compile("\\d++$");
 
     static String resolveTableName(Class<?> entityClass) {
         String tableName;
@@ -59,10 +64,25 @@ public class BuildHelper {
         } else if (entityClass.isAnnotationPresent(CompositeView.class)) {
             CompositeView compositeViewAnno = entityClass.getAnnotation(CompositeView.class);
             tableName = resolveTableName(compositeViewAnno.value());
+        } else if (entityClass.isAnnotationPresent(ComplexView.class)) {
+            ComplexView complexView = entityClass.getAnnotation(ComplexView.class);
+            tableName = resolveTableName(complexView.value());
+        } else if (entityClass.isAnnotationPresent(View.class)) {
+            View[] views = entityClass.getAnnotationsByType(View.class);
+            tableName = resolveTableName(views);
         } else {
             tableName = defaultTableName(entityClass);
         }
         return tableName;
+    }
+
+    public static String resolveTableName(View... views) {
+        return Arrays.stream(views)
+                     .map(view -> {
+                         String tableName = BuildHelper.resolveTableName(view.value());
+                         String alias = view.alias();
+                         return !alias.isEmpty() ? tableName + SPACE + alias : tableName;
+                     }).collect(Collectors.joining(SEPARATOR));
     }
 
     static String defaultTableName(Class<?> entityClass) {
@@ -72,7 +92,7 @@ public class BuildHelper {
         return GlobalConfiguration.formatTable(entityName);
     }
 
-    public static String resolveTableName(Class<? extends Persistable<? extends Serializable>>[] value) {
+    public static String resolveTableName(Class<?>[] value) {
         return Arrays.stream(value)
                      .map(BuildHelper::resolveTableName)
                      .collect(Collectors.joining(SEPARATOR));
@@ -112,7 +132,7 @@ public class BuildHelper {
     }
 
     public static String buildOrderBy(DoytoQuery pageQuery) {
-        return buildOrderBy(pageQuery, " ORDER BY ");
+        return buildOrderBy(pageQuery, ORDER_BY);
     }
 
     static String buildOrderBy(DoytoQuery pageQuery, String orderBy) {
@@ -146,4 +166,32 @@ public class BuildHelper {
                         .collect(CommonUtil.CLT_COMMA_WITH_PAREN);
     }
 
+    public static String replaceExpressionInString(String input, Object target, List<Object> args) {
+        Matcher matcher = PTN_SHARP_EX.matcher(input);
+        if (!matcher.find()) {
+            return input;
+        }
+
+        StringBuffer sb = new StringBuffer();
+        do {
+            String fieldName = matcher.group(1);
+            Object value = readFieldGetter(target, fieldName);
+
+            QuerySuffix suffix = QuerySuffix.resolve(BuildHelper.resolveFieldName(fieldName));
+            if (suffix == QuerySuffix.NONE) {
+                matcher.appendReplacement(sb, "?");
+                args.add(value);
+            } else {
+                Field field = getField(target, fieldName);
+                FieldMapper.init(field);
+                String ex = FieldMapper.execute(field, EMPTY, args, value);
+                matcher.appendReplacement(sb, ex);
+            }
+        } while (matcher.find());
+        return matcher.appendTail(sb).toString();
+    }
+
+    public static String resolveFieldName(String fieldName) {
+        return PTN_DIGITS_END.matcher(fieldName).replaceFirst(EMPTY);
+    }
 }

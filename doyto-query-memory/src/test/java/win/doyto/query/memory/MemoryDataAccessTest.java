@@ -133,6 +133,12 @@ class MemoryDataAccessTest {
     }
 
     @Test
+    void filterByNe() {
+        TestQuery testQuery = TestQuery.builder().idNe(3).build();
+        assertEquals(4, testMemoryDataAccess.query(testQuery).size());
+    }
+
+    @Test
     void filterByNotIn() {
         TestQuery testQuery = TestQuery.builder().idNotIn(Arrays.asList(1, 2)).build();
         assertEquals(3, testMemoryDataAccess.count(testQuery));

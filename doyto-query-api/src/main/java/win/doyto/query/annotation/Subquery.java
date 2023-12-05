@@ -40,8 +40,8 @@ public @interface Subquery {
 
     boolean distinct() default false;
 
-    String[] parentColumns() default {};
+    Class<? extends Persistable<? extends Serializable>>[] host() default {};
 
-    Class<? extends Persistable<? extends Serializable>>[] from();
+    Class<?>[] from();
 
 }

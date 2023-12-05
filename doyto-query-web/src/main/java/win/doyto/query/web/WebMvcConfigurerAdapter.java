@@ -19,6 +19,7 @@ package win.doyto.query.web;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -26,6 +27,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -33,6 +35,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import win.doyto.query.util.BeanUtil;
+import win.doyto.query.web.component.SortArgumentResolver;
+import win.doyto.query.web.config.SortFieldsProperties;
 import win.doyto.query.web.config.WebComponentsConfiguration;
 
 import java.nio.charset.StandardCharsets;
@@ -46,6 +50,9 @@ import java.util.*;
  */
 @Import(WebComponentsConfiguration.class)
 public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
+
+    @Resource
+    private SortFieldsProperties sortFieldsProperties;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -118,6 +125,12 @@ public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
+    }
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        argumentResolvers.add(new SortArgumentResolver(
+                sortFieldsProperties.getSortPrefix(), sortFieldsProperties.getSortFieldsMap()));
     }
 
 }

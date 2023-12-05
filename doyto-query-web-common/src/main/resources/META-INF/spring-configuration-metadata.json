@@ -39,6 +39,16 @@
       "name": "doyto.query.caches",
       "type": "java.util.List<String>",
       "description": "Entity cache list."
+    },
+    {
+      "name": "doyto.query.config.sort-prefix",
+      "type": "java.lang.String",
+      "description": "Prefix for sortable fields used in query string. Default: `sort.`. Since 1.0.3."
+    },
+    {
+      "name": "doyto.query.config.sort-fields-map",
+      "type": "java.util.Map<win.doyto.query.core.DoytoQuery, java.util.Set<java.lang.String>",
+      "description": "Config sortable fields for query objects. Since 1.0.3."
     }
   ]
 }

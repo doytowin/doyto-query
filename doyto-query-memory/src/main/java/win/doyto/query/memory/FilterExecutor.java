@@ -51,6 +51,7 @@ class FilterExecutor {
         map.put(Lt, (qv, ev) -> ((Comparable<Object>) ev).compareTo(qv) < 0);
         map.put(Ge, (qv, ev) -> ((Comparable<Object>) ev).compareTo(qv) >= 0);
         map.put(Le, (qv, ev) -> ((Comparable<Object>) ev).compareTo(qv) <= 0);
+        map.put(Ne, (qv, ev) -> !qv.equals(ev));
         map.put(Not, (qv, ev) -> !qv.equals(ev));
     }
 

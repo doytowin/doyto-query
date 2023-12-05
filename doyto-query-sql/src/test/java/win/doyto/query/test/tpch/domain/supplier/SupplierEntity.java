@@ -31,8 +31,8 @@ import win.doyto.query.test.tpch.domain.nation.NationEntity;
 @Getter
 @Setter
 public class SupplierEntity extends AbstractPersistable<Long> {
-    private String s_suppkey;
+    private Integer s_suppkey;
     @ForeignKey(entity = NationEntity.class, field = "n_nationkey")
-    private String s_nationkey;
+    private Integer s_nationkey;
     private String s_comment;
 }

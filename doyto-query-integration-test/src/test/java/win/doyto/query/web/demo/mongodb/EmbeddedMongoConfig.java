@@ -16,18 +16,21 @@
 //
 //package win.doyto.query.web.demo.mongodb;
 //
+//import com.mongodb.client.MongoClient;
 //import de.flapdoodle.embed.mongo.config.*;
 //import de.flapdoodle.embed.mongo.distribution.Version;
-//import de.flapdoodle.embed.mongo.spring.autoconfigure.EmbeddedMongoAutoConfiguration;
-//import de.flapdoodle.embed.mongo.spring.autoconfigure.EmbeddedMongoProperties;
 //import de.flapdoodle.embed.process.runtime.Network;
 //import lombok.AllArgsConstructor;
 //import lombok.extern.slf4j.Slf4j;
 //import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 //import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+//import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
+//import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoProperties;
 //import org.springframework.boot.context.properties.EnableConfigurationProperties;
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;
+//import win.doyto.query.mongodb.session.MongoSessionSupplier;
+//import win.doyto.query.mongodb.session.MongoSessionThreadLocalSupplier;
 //
 //import java.io.IOException;
 //import java.net.InetAddress;
@@ -60,6 +63,7 @@
 //    public MongodConfig embeddedMongoConfiguration(EmbeddedMongoProperties embeddedProperties) throws IOException {
 //        ImmutableMongodConfig.Builder builder = MongodConfig.builder().version(Version.V6_0_2);
 //        EmbeddedMongoProperties.Storage storage = embeddedProperties.getStorage();
+//        String databaseDir = storage.getDatabaseDir();
 //        String replSetName = storage.getReplSetName();
 //        int oplogSize = (storage.getOplogSize() != null) ? (int) storage.getOplogSize().toMegabytes() : 0;
 //        builder.replication(new Storage(databaseDir, replSetName, oplogSize));
@@ -76,5 +80,10 @@
 //        }
 //
 //        return builder.build();
+//    }
+//
+//    @Bean
+//    public MongoSessionSupplier mongoSessionSupplier(MongoClient mongoClient) {
+//        return MongoSessionThreadLocalSupplier.create(mongoClient);
 //    }
 //}

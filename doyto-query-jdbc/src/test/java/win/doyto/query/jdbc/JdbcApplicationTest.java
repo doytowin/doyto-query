@@ -16,19 +16,31 @@
 
 package win.doyto.query.jdbc;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.Environment;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.dialect.OracleDialect;
+
+import java.util.Arrays;
 
 /**
  * JdbcApplicationTest
  *
  * @author f0rb on 2021-11-28
  */
-@ActiveProfiles("test")
 @Transactional
 @Rollback
 @SpringBootTest
 abstract class JdbcApplicationTest {
+
+    @BeforeAll
+    static void beforeAll(@Autowired Environment environment) {
+        if (Arrays.asList(environment.getActiveProfiles()).contains("oracle")) {
+            GlobalConfiguration.instance().setDialect(new OracleDialect());
+        }
+    }
 }

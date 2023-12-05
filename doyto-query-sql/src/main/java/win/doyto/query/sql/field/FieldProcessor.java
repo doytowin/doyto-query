@@ -25,5 +25,11 @@ import java.util.List;
  * @since 1.0.1
  */
 interface FieldProcessor {
+    /**
+     * Generate SQL condition by provided value.
+     *
+     * @param alias empty or string ending with dot.
+     * @return SQL condition
+     */
     String process(String alias, List<Object> argList, Object value);
 }

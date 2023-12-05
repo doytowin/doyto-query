@@ -17,24 +17,29 @@
 package win.doyto.query.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.*;
+import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.sql.SqlAndArgs;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
- * DbTemplate
+ * DatabaseTemplate
  *
  * @author f0rb on 2021-08-30
  */
 @RequiredArgsConstructor
 public class DatabaseTemplate implements DatabaseOperations {
 
-    private static final RowMapper<Long> countRowMapper = new SingleColumnRowMapper<>(Long.class);
     private final JdbcOperations jdbcOperations;
 
     @Override
@@ -55,22 +60,30 @@ public class DatabaseTemplate implements DatabaseOperations {
     @SuppressWarnings("java:S1874")
     @Override
     public long count(SqlAndArgs sqlAndArgs) {
-        return jdbcOperations.queryForObject(sqlAndArgs.getSql(), countRowMapper, sqlAndArgs.getArgs());
+        return jdbcOperations.queryForObject(sqlAndArgs.getSql(), Long.class, sqlAndArgs.getArgs());
     }
 
     @Override
-    public <I> I insert(SqlAndArgs sqlAndArgs, Class<I> idClass) {
+    public <I> List<I> insert(SqlAndArgs sqlAndArgs, Class<I> keyClass, String keyColumn) {
         ArgumentPreparedStatementSetter pss = new ArgumentPreparedStatementSetter(sqlAndArgs.getArgs());
         try {
-            GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+            KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcOperations.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sqlAndArgs.getSql(), Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement ps;
+                if (GlobalConfiguration.instance().isOracle()) {
+                    ps = connection.prepareStatement(sqlAndArgs.getSql(), new String[]{keyColumn});
+                } else {
+                    ps = connection.prepareStatement(sqlAndArgs.getSql(), Statement.RETURN_GENERATED_KEYS);
+                }
                 pss.setValues(ps);
                 return ps;
             }, keyHolder);
-            return keyHolder.getKeyAs(idClass);
+            return keyHolder.getKeyList().stream()
+                    .map(map -> GlobalConfiguration.dialect().resolveKey((Number) map.get(keyColumn), keyClass))
+                    .collect(Collectors.toList());
         } finally {
             pss.cleanupParameters();
         }
     }
+
 }

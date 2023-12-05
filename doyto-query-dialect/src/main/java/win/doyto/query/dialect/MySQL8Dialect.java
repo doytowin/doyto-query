@@ -14,30 +14,37 @@
  * limitations under the License.
  */
 
-package win.doyto.query.service;
+package win.doyto.query.dialect;
 
-import org.apache.commons.lang3.builder.ToStringStyle;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * NonNullToStringStyle
+ * MySQL8Dialect
  *
- * @author f0rb on 2019-07-14
+ * @author f0rb on 2020-04-02
  */
-class NonNullToStringStyle extends ToStringStyle {
+public class MySQL8Dialect extends MySQLDialect {
 
-    public static final NonNullToStringStyle NO_CLASS_NAME_NON_NULL_STYLE = new NonNullToStringStyle(false);
+    private final Set<String> keywords;
 
-    private NonNullToStringStyle(boolean useClassName) {
-        this.setUseClassName(useClassName);
-        this.setUseIdentityHashCode(false);
+    public MySQL8Dialect() {
+        keywords = new HashSet<>();
+        keywords.add("rank");
     }
 
     @Override
-    public void append(StringBuffer buffer, String fieldName, Object value, Boolean fullDetail) {
-        if (value != null) {
-            super.append(buffer, fieldName, value, fullDetail);
-        }
+    public String wrapLabel(String fieldName) {
+        return keywords.contains(fieldName) ? "`" + fieldName + "`" : fieldName;
     }
 
+    @Override
+    public boolean supportMultiGeneratedKeys() {
+        return true;
+    }
 
+    @Override
+    public String resolveKeyColumn(String idColumn) {
+        return "GENERATED_KEY";
+    }
 }

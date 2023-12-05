@@ -1,0 +1,8 @@
+logging:
+  level:
+    root: info
+    win.doyto.query.sql: debug
+
+spring:
+  profiles:
+    active: @active.profiles@

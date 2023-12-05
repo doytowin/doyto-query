@@ -38,13 +38,13 @@ import java.sql.Date;
 public class LineitemEntity extends AbstractPersistable<Long> {
 
     @ForeignKey(entity = OrdersEntity.class, field = "o_orderkey")
-    private String l_orderkey;
+    private Integer l_orderkey;
 
     @ForeignKey(entity = SupplierEntity.class, field = "s_suppkey")
-    private String l_suppkey;
+    private Integer l_suppkey;
 
     @ForeignKey(entity = PartEntity.class, field = "p_partkey")
-    private String l_partkey;
+    private Integer l_partkey;
 
     private Integer l_quantity;
 

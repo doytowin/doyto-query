@@ -37,9 +37,9 @@ public class ShippingModesAndOrderPriorityView {
     @GroupBy
     private String l_shipmode;
 
-    @Column(name = "SUM(CASE WHEN o_orderpriority = '1-URGENT'OR o_orderpriority = '2-HIGH'THEN 1 ELSE 0 END)")
+    @Column(name = "SUM(CASE WHEN o_orderpriority = #{o_orderpriority1} OR o_orderpriority = #{o_orderpriority2} THEN 1 ELSE 0 END)")
     private Integer high_line_count;
 
-    @Column(name = "SUM(CASE WHEN o_orderpriority <> '1-URGENT'AND o_orderpriority <> '2-HIGH'THEN 1 ELSE 0 END)")
+    @Column(name = "SUM(CASE WHEN o_orderpriority <> #{o_orderpriority1} AND o_orderpriority <> #{o_orderpriority2} THEN 1 ELSE 0 END)")
     private Integer low_line_count;
 }

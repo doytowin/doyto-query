@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import win.doyto.query.test.TestQuery;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -63,5 +64,29 @@ class BuildHelperTest {
         TestHaving having = TestHaving.builder().firstName("test").firstFirstName("test").build();
         String havingClause = BuildHelper.buildCondition(" HAVING ", having, new ArrayList<>());
         assertThat(havingClause).isEqualTo(" HAVING first_name = ? AND first(first_name) = ?");
+    }
+
+    @Test
+    void givenExWithoutSuffixWhenReplaceShouldBePlaceholder() {
+        String input = "SELECT o_year, SUM(CASE WHEN nation = #{nation} THEN volume ELSE 0 END) / SUM(volume) AS mkt_share";
+        List<Object> args = new ArrayList<>();
+
+        TestQuery query = TestQuery.builder().nation("BRAZIL").build();
+        String sql = BuildHelper.replaceExpressionInString(input,query, args);
+
+        assertThat(sql).isEqualTo("SELECT o_year, SUM(CASE WHEN nation = ? THEN volume ELSE 0 END) / SUM(volume) AS mkt_share");
+        assertThat(args).containsExactly("BRAZIL");
+    }
+
+    @Test
+    void givenExWithSuffixWhenReplaceShouldBeExpression() {
+        String input = "SELECT o_year, SUM(CASE WHEN #{nationEq} THEN volume ELSE 0 END) / SUM(volume) AS mkt_share";
+        List<Object> args = new ArrayList<>();
+
+        TestQuery query = TestQuery.builder().nationEq("BRAZIL").build();
+        String sql = BuildHelper.replaceExpressionInString(input, query,  args);
+
+        assertThat(sql).isEqualTo("SELECT o_year, SUM(CASE WHEN nation = ? THEN volume ELSE 0 END) / SUM(volume) AS mkt_share");
+        assertThat(args).containsExactly("BRAZIL");
     }
 }

@@ -23,6 +23,8 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.core.PageQuery;
 
+import java.util.List;
+
 /**
  * DiscountedRevenueQuery
  *
@@ -35,6 +37,6 @@ import win.doyto.query.core.PageQuery;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DiscountedRevenueQuery extends PageQuery {
-    private LineitemOr lineitemOr;
+    private List<LineitemFilter> lineitemOr;
     private String l_shipinstruct;
 }

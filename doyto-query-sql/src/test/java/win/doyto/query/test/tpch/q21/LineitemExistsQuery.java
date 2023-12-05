@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test;
+package win.doyto.query.test.tpch.q21;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.PageQuery;
 
 /**
- * TestChildQuery
+ * LineitemQuery
  *
- * @author f0rb on 2021-12-11
+ * @author f0rb on 2023/7/13
+ * @since 1.0.2
  */
 @Getter
 @Setter
-public class TestChildQuery extends TestQuery {
-    private String oneMoreField;
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public class LineitemExistsQuery extends PageQuery {
+    @Builder.Default
+    private boolean alias$lSuppkeyNeL1$lSuppkey = true;
+    private boolean alias$lReceiptdateGtAlias$lCommitdate;
 }

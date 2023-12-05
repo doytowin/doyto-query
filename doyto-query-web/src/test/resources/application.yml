@@ -1,0 +1,6 @@
+doyto.query.config:
+  sort-fields-map:
+    win.doyto.query.test.TestQuery:
+      - id
+      - username
+      - userLevel

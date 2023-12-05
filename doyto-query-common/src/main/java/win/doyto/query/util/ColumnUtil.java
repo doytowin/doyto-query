@@ -166,6 +166,7 @@ public class ColumnUtil {
                 && !Modifier.isStatic(field.getModifiers())      // static field
                 // Transient field, won't be used in where condition
                 && !field.isAnnotationPresent(Transient.class)
+                && !field.isAnnotationPresent(Join.class)
                 // Having field, will be used in having condition only
                 && !Having.class.isAssignableFrom(field.getType())
                 ;

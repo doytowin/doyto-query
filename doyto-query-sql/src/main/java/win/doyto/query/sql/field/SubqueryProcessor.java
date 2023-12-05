@@ -26,8 +26,6 @@ import win.doyto.query.sql.EntityMetadata;
 import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,7 +40,6 @@ import static win.doyto.query.sql.Constant.*;
  * @since 1.0.1
  */
 public class SubqueryProcessor implements FieldProcessor {
-    private static final Pattern PTN_DIGITS_END = Pattern.compile("\\d++$");
     private static final Pattern PTN_SUBQUERY = Pattern.compile("^(\\w+)\\$(\\w+)From(\\w+)$");
     private final String clauseFormat;
     private String joinConditions = EMPTY;
@@ -50,19 +47,24 @@ public class SubqueryProcessor implements FieldProcessor {
 
     public SubqueryProcessor(Field field) {
         Subquery subquery = field.getAnnotation(Subquery.class);
-        String fieldName = field.getName();
-        fieldName = PTN_DIGITS_END.matcher(fieldName).replaceFirst(EMPTY);
-
+        String fieldName = BuildHelper.resolveFieldName(field.getName());
         String tableName = BuildHelper.resolveTableName(subquery.from());
 
         if (subquery.distinct()) {
-            groupBy = " GROUP BY " + subquery.select();
+            groupBy = GROUP_BY + subquery.select();
         }
-        List<String> relations = EntityMetadata.resolveEntityRelations(
-                subquery.from(), new HashSet<>(Arrays.asList(subquery.parentColumns())));
+        Class<?>[] classes = combineArray(subquery.host(), subquery.from());
+        List<String> relations = EntityMetadata.resolveEntityRelations(classes);
         joinConditions = String.join(AND, relations);
 
         clauseFormat = buildClauseFormat(fieldName, subquery.select(), tableName);
+    }
+
+    private static Class<?>[] combineArray(Class<?>[] host, Class<?>[] from) {
+        Class<?>[] classes = new Class<?>[host.length + from.length];
+        System.arraycopy(host, 0, classes, 0, host.length);
+        System.arraycopy(from, 0, classes, host.length, from.length);
+        return classes;
     }
 
     public SubqueryProcessor(String originFieldName) {
@@ -81,7 +83,7 @@ public class SubqueryProcessor implements FieldProcessor {
         return matcher.find() ? matcher : null;
     }
 
-    private static String buildClauseFormat(String fieldName, String column, String table) {
+    static String buildClauseFormat(String fieldName, String column, String table) {
         SqlQuerySuffix querySuffix = SqlQuerySuffix.resolve(fieldName);
 
         String clause;
@@ -90,10 +92,12 @@ public class SubqueryProcessor implements FieldProcessor {
 
             SqlQuerySuffix querySuffix1 = SqlQuerySuffix.resolve(tempName);
             String columnName = querySuffix1.removeSuffix(tempName);
+            columnName = ColumnUtil.convertColumn(columnName);
 
             clause = columnName + SPACE + querySuffix1.getOp() + SPACE + querySuffix.getOp();
         } else {
             String columnName = querySuffix.removeSuffix(fieldName);
+            columnName = ColumnUtil.convertColumn(columnName);
             clause = columnName + SPACE + querySuffix.getOp() + SPACE;
         }
         return clause + OP + SELECT + column + FROM + table + "%s" + CP;
@@ -111,7 +115,7 @@ public class SubqueryProcessor implements FieldProcessor {
         if (value instanceof AggregationQuery aggregationQuery) {
             Having having = aggregationQuery.getHaving();
             if (having != null) {
-                clause += buildCondition(" HAVING ", having, argList);
+                clause += buildCondition(HAVING, having, argList);
             }
         }
         return String.format(clauseFormat, clause);

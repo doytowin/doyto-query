@@ -193,7 +193,8 @@ public class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implemen
                 GlobalConfiguration.dialect().buildInsertUpdate(insertSqlBuilder, columns);
             }
 
-            return replaceHolderInString(next, insertSqlBuilder.toString());
+            String insert = replaceHolderInString(next, insertSqlBuilder.toString());
+            return GlobalConfiguration.dialect().alterBatchInsert(insert);
         });
     }
 
@@ -262,15 +263,17 @@ public class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implemen
     @Override
     public SqlAndArgs buildDeleteAndArgs(DoytoQuery query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> buildDeleteFromTable(query.toIdWrapper())
-                + WHERE + wrappedIdColumn + IN
-                + OP + build(query, argList, idColumn) + CP);
+                + WHERE + wrappedIdColumn + IN + OP
+                + GlobalConfiguration.dialect().wrapSelectForUpdate(build(query, argList, idColumn), wrappedIdColumn)
+                + CP);
     }
 
     @Override
     public SqlAndArgs buildPatchAndArgs(E entity, DoytoQuery query) {
         return SqlAndArgs.buildSqlWithArgs(argList -> buildPatchAndArgs(entity, argList)
-                + WHERE + wrappedIdColumn + IN
-                + OP + build(query, argList, idColumn) + CP);
+                + WHERE + wrappedIdColumn + IN + OP
+                + GlobalConfiguration.dialect().wrapSelectForUpdate(build(query, argList, idColumn), wrappedIdColumn)
+                + CP);
     }
 
     private String buildDeleteFromTable(IdWrapper<?> idWrapper) {

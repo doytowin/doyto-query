@@ -32,12 +32,16 @@ public interface Constant {
     String COUNT = "count(*)";
     String FROM = " FROM ";
     String WHERE = " WHERE ";
+    String HAVING = " HAVING ";
+    String GROUP_BY = " GROUP BY ";
+    String ORDER_BY = " ORDER BY ";
     String EMPTY = "";
     String OR = " OR ";
     String DELETE_FROM = "DELETE" + FROM;
     String AND = " AND ";
     String IN = " IN ";
     String AS = " AS ";
+    String ON = " ON ";
     String LF = "\n";
     String ID = "id";
     String UNION_ALL = "\nUNION ALL\n";

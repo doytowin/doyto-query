@@ -153,6 +153,7 @@ abstract class AbstractController<
     public void setBeanFactory(AutowireCapableBeanFactory beanFactory) throws BeansException {
         if (service.getClass().isAnonymousClass()) {
             beanFactory.autowireBean(service);
+            beanFactory.initializeBean(service, this.getClass().getName() + ".DynamicService");
         }
     }
 }

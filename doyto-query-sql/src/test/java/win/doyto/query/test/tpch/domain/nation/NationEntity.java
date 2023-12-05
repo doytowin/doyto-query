@@ -31,7 +31,7 @@ import win.doyto.query.test.tpch.domain.region.RegionEntity;
 @Getter
 @Setter
 public class NationEntity extends AbstractPersistable<Long> {
-    private String n_nationkey;
+    private Integer n_nationkey;
     @ForeignKey(entity = RegionEntity.class, field = "r_regionkey")
-    private String n_regionkey;
+    private Integer n_regionkey;
 }

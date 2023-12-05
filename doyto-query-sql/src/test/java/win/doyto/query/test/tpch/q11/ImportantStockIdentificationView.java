@@ -39,7 +39,7 @@ import java.math.BigDecimal;
 public class ImportantStockIdentificationView {
 
     @GroupBy
-    private String ps_partkey;
+    private Integer ps_partkey;
 
     @Column(name = "SUM(ps_supplycost * ps_availqty)")
     private BigDecimal value;

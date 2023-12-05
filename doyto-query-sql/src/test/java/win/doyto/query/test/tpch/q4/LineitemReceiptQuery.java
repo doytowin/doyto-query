@@ -18,7 +18,6 @@ package win.doyto.query.test.tpch.q4;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.QueryField;
 import win.doyto.query.core.PageQuery;
 
 /**
@@ -33,7 +32,6 @@ import win.doyto.query.core.PageQuery;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LineitemReceiptQuery extends PageQuery {
-    @QueryField(and = "${ALIAS}l_commitdate < ${ALIAS}l_receiptdate")
     @Builder.Default
-    private boolean beforeReceiptDate = true;
+    private boolean t1$lCommitdateLtT1$lReceiptdate = true;
 }

@@ -14,18 +14,27 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test;
+package win.doyto.query.web.config;
 
-import win.doyto.query.core.Dialect;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.HashMap;
+import java.util.Set;
 
 /**
- * MySQLDialect
+ * SortFieldsProperties
  *
- * @author f0rb on 2019-07-22
+ * @author f0rb on 2023/12/2
+ * @since 1.0.3
  */
-public class SimpleDialect implements Dialect {
-    @Override
-    public String buildPageSql(String sql, int limit, long offset) {
-        return sql + " LIMIT " + limit + " OFFSET " + offset;
-    }
+@Getter
+@Setter
+@ConfigurationProperties(
+        prefix = "doyto.query.config"
+)
+public class SortFieldsProperties {
+    private String sortPrefix = "sort.";
+    private HashMap<Class<?>, Set<String>> sortFieldsMap = new HashMap<>();
 }

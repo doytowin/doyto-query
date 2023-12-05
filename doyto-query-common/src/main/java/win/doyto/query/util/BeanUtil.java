@@ -97,6 +97,7 @@ public class BeanUtil {
     public static Type[] getActualTypeArguments(Class<?> clazz) {
         Type genericSuperclass = clazz;
         do {
+            if (genericSuperclass == null) return new Type[0];
             genericSuperclass = ((Class<?>) genericSuperclass).getGenericSuperclass();
         } while (!(genericSuperclass instanceof ParameterizedType));
         return ((ParameterizedType) genericSuperclass).getActualTypeArguments();

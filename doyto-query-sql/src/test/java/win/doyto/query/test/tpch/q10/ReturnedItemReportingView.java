@@ -37,7 +37,7 @@ import win.doyto.query.test.tpch.domain.orders.OrdersEntity;
 @CompositeView({CustomerEntity.class, OrdersEntity.class, LineitemEntity.class, NationEntity.class})
 public class ReturnedItemReportingView {
     @GroupBy
-    private String c_custkey;
+    private Integer c_custkey;
 
     @GroupBy
     private String c_name;

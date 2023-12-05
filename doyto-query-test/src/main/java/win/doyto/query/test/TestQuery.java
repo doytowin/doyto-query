@@ -51,6 +51,7 @@ public class TestQuery extends PageQuery {
     private List<Integer> idNotIn;
     private Integer id;
     private Integer idNot;
+    private Integer idNe;
     private Integer idLt;
     private Integer idLe;
     private String username;
@@ -122,5 +123,8 @@ public class TestQuery extends PageQuery {
 
     // for MongoDB
     private Boolean statusExists;
+
+    private String nation;
+    private String nationEq;
 
 }

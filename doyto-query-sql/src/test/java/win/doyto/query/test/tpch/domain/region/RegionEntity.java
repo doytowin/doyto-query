@@ -29,5 +29,5 @@ import win.doyto.query.entity.AbstractPersistable;
 @Getter
 @Setter
 public class RegionEntity extends AbstractPersistable<Long> {
-    private String r_regionkey;
+    private Integer r_regionkey;
 }

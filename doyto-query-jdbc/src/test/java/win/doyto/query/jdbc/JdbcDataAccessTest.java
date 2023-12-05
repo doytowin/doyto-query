@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit.jupiter.DisabledIf;
 import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.role.RoleEntity;
 import win.doyto.query.test.role.RoleQuery;
@@ -48,6 +49,7 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
     }
 
     @Test
+    @DisabledIf(value = "#{environment['spring.profiles.active'] == 'sqlite'}", loadContext = true)
     void deleteByPage() {
         jdbcDataAccess.delete(RoleQuery.builder().pageNumber(2).pageSize(2).build());
         List<RoleEntity> roleEntities = jdbcDataAccess.query(RoleQuery.builder().build());
@@ -63,6 +65,7 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
     }
 
     @Test
+    @DisabledIf(value = "#{environment['spring.profiles.active'] == 'sqlite'}", loadContext = true)
     void updateByPage() {
         RoleEntity patch = new RoleEntity();
         patch.setValid(false);
@@ -98,6 +101,7 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
                 .builder()
                 .perm(PermissionQuery.builder().permNameStart("user").build())
                 .role(roleQuery)
+                .sort("ID")
                 .build();
 
         List<Long> userIds = userDataAccess.queryIds(userQuery);
@@ -107,6 +111,7 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
         UserQuery userQuery2 = UserQuery
                 .builder()
                 .perm(permQuery)
+                .sort("ID")
                 .build();
 
         List<Long> userIds2 = userDataAccess.queryIds(userQuery2);

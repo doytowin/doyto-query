@@ -16,12 +16,13 @@
 
 package win.doyto.query.web.demo.test;
 
-import jakarta.annotation.Resource;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.Test;
-import org.springframework.cache.support.NoOpCache;
-import win.doyto.query.cache.CacheWrapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import win.doyto.query.core.DataAccess;
+import win.doyto.query.service.CachedDataAccess;
 import win.doyto.query.web.demo.module.role.RoleController;
+import win.doyto.query.web.demo.module.user.UserService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,13 +33,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class CacheTest extends DemoApplicationTest {
 
-    @Resource
-    RoleController roleController;
+    @Test
+    void givenControllerWhenGetDataAccessThenTypeIsNotCachedDataAccess(
+            @Autowired RoleController roleController) throws IllegalAccessException {
+        Object service = FieldUtils.readField(roleController, "service", true);
+        DataAccess<?, ?, ?> dataAccess = (DataAccess<?, ?, ?>)
+                FieldUtils.readField(service, "dataAccess", true);
+        assertThat(dataAccess).isNotInstanceOf(CachedDataAccess.class);
+    }
 
     @Test
-    void defaultNoCache() throws IllegalAccessException {
-        Object service = FieldUtils.readField(roleController, "service", true);
-        CacheWrapper<?> entityCacheWrapper = (CacheWrapper<?>) FieldUtils.readField(service, "entityCacheWrapper", true);
-        assertThat(entityCacheWrapper.getCache()).isInstanceOf(NoOpCache.class);
+    void givenControllerConfiguredCacheInYamlWhenGetDataAccessThenTypeIsCachedDataAccess(
+            @Autowired UserService service) throws IllegalAccessException {
+        DataAccess<?, ?, ?> dataAccess = (DataAccess<?, ?, ?>)
+                FieldUtils.readField(service, "dataAccess", true);
+        assertThat(dataAccess).isInstanceOf(CachedDataAccess.class);
     }
 }

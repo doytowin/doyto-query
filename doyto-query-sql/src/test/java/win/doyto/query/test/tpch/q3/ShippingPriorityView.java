@@ -38,7 +38,7 @@ import java.sql.Date;
 @CompositeView({CustomerEntity.class, OrdersEntity.class, LineitemEntity.class})
 public class ShippingPriorityView {
     @GroupBy
-    private String l_orderkey;
+    private Integer l_orderkey;
     @Column(name = "SUM(l_extendedprice * (1 - l_discount))")
     private Double revenue;
     @GroupBy

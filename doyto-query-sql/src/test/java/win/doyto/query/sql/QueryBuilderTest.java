@@ -47,7 +47,6 @@ class QueryBuilderTest {
 
     @BeforeEach
     void setUp() {
-        GlobalConfiguration.instance().setDialect(new SimpleDialect());
         argList = new ArrayList<>();
     }
 
