@@ -14,32 +14,20 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.perm;
+package win.doyto.query.jdbc.rowmapper;
 
-import lombok.Getter;
-import lombok.Setter;
-import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.annotation.Id;
-import win.doyto.query.entity.Persistable;
-import win.doyto.query.test.user.UserView;
-
-import java.util.List;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
- * PermView
+ * ResultSetExtractor
  *
- * @author f0rb on 2022-03-26
+ * @author f0rb on 2023/10/1
+ * @since 2.0.0
  */
-@Getter
-@Setter
-public class PermView implements Persistable<Integer> {
+@FunctionalInterface
+public interface ResultSetExtractor<T> {
 
-    @Id
-    private Integer id;
-    private String permName;
-    private Boolean valid;
-
-    @DomainPath({"perm", "~", "role", "~", "user"})
-    private List<UserView> users;
+    T extract(ResultSet rs) throws SQLException;
 
 }

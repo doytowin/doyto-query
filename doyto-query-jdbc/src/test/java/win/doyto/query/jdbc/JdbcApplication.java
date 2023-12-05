@@ -37,7 +37,7 @@ public class JdbcApplication {
 
     @Bean
     public AssociationService<Integer, Integer> roleAndPermissionAssociativeService() {
-        return new JdbcAssociationService<>("role", "perm");
+        return new JdbcAssociationService<Integer, Integer>("role", "perm") {};
     }
 
     @Bean

@@ -16,12 +16,11 @@
 
 package win.doyto.query.jdbc;
 
-import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowMapper;
+import win.doyto.query.jdbc.rowmapper.ResultSetExtractor;
+import win.doyto.query.jdbc.rowmapper.RowMapper;
 import win.doyto.query.sql.SqlAndArgs;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * DbOperations
@@ -38,5 +37,5 @@ public interface DatabaseOperations {
 
     int update(SqlAndArgs sqlAndArgs);
 
-    <I, R> Map<I, List<R>> query(SqlAndArgs sqlAndArgs, ResultSetExtractor<Map<I, List<R>>> resultSetExtractor);
+    <R> R query(SqlAndArgs sqlAndArgs, ResultSetExtractor<R> resultSetExtractor);
 }

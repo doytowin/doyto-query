@@ -32,10 +32,10 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class MenuView implements Persistable<Long> {
+public class MenuView implements Persistable<Integer> {
 
     @Id
-    private Long id;
+    private Integer id;
     private String menuName;
     private String platform;
 

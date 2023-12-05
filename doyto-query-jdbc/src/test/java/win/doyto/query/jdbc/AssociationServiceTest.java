@@ -19,9 +19,9 @@ package win.doyto.query.jdbc;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.JdbcOperations;
 import win.doyto.query.core.AssociationService;
 import win.doyto.query.core.UniqueKey;
+import win.doyto.query.sql.SqlAndArgs;
 
 import java.util.*;
 
@@ -142,11 +142,11 @@ class AssociationServiceTest extends JdbcApplicationTest {
     }
 
     @Test
-    void associateWithCreateUserId(@Autowired JdbcOperations jdbcOperations) {
+    void associateWithCreateUserId(@Autowired DatabaseOperations databaseOperations) {
         userAndRoleAssociationService.associate(5L, 20);
 
         String sql = "select count(*) from a_user_and_role where create_user_id = 0";
-        Long ret = jdbcOperations.queryForObject(sql, Long.class);
+        Long ret = databaseOperations.count(new SqlAndArgs(sql));
         assertThat(ret).isEqualTo(1L);
     }
 

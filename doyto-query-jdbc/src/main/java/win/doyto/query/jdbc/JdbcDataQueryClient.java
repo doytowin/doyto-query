@@ -20,13 +20,14 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.RowMapper;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.jdbc.rowmapper.BeanPropertyRowMapper;
+import win.doyto.query.jdbc.rowmapper.JoinRowMapperResultSetExtractor;
+import win.doyto.query.jdbc.rowmapper.RowMapper;
 import win.doyto.query.sql.SqlAndArgs;
 import win.doyto.query.util.CommonUtil;
 

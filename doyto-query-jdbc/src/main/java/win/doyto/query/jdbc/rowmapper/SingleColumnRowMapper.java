@@ -14,32 +14,25 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.perm;
+package win.doyto.query.jdbc.rowmapper;
 
-import lombok.Getter;
-import lombok.Setter;
-import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.annotation.Id;
-import win.doyto.query.entity.Persistable;
-import win.doyto.query.test.user.UserView;
+import lombok.AllArgsConstructor;
 
-import java.util.List;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
- * PermView
+ * SingleColumnRowMapper
  *
- * @author f0rb on 2022-03-26
+ * @author f0rb on 2022/12/23
+ * @since 1.0.0
  */
-@Getter
-@Setter
-public class PermView implements Persistable<Integer> {
+@AllArgsConstructor
+public class SingleColumnRowMapper<V> implements RowMapper<V> {
+    private Class<V> clazz;
 
-    @Id
-    private Integer id;
-    private String permName;
-    private Boolean valid;
-
-    @DomainPath({"perm", "~", "role", "~", "user"})
-    private List<UserView> users;
-
+    @Override
+    public V map(ResultSet rs, int rn) throws SQLException {
+        return rs.getObject(1, clazz);
+    }
 }

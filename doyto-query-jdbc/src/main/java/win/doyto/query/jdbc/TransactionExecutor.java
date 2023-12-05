@@ -14,32 +14,14 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.perm;
-
-import lombok.Getter;
-import lombok.Setter;
-import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.annotation.Id;
-import win.doyto.query.entity.Persistable;
-import win.doyto.query.test.user.UserView;
-
-import java.util.List;
+package win.doyto.query.jdbc;
 
 /**
- * PermView
+ * TransactionExecutor
  *
- * @author f0rb on 2022-03-26
+ * @author f0rb on 2023/12/5
+ * @since 1.0.3
  */
-@Getter
-@Setter
-public class PermView implements Persistable<Integer> {
-
-    @Id
-    private Integer id;
-    private String permName;
-    private Boolean valid;
-
-    @DomainPath({"perm", "~", "role", "~", "user"})
-    private List<UserView> users;
-
+public interface TransactionExecutor {
+    <T> T withTransaction(TransactionBody<T> sql);
 }

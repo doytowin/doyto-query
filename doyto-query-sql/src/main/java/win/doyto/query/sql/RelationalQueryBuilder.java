@@ -245,15 +245,9 @@ public class RelationalQueryBuilder {
 
     private static String buildSubDomainColumns(Class<?> joinEntityClass) {
         return FieldUtils.getAllFieldsList(joinEntityClass).stream()
-                         .filter(RelationalQueryBuilder::filterForJoinEntity)
+                         .filter(ColumnUtil::filterForJoinEntity)
                          .map(ColumnUtil::selectAs)
                          .collect(Collectors.joining(SEPARATOR));
-    }
-
-    private static boolean filterForJoinEntity(Field field) {
-        return ColumnUtil.shouldRetain(field)
-                && !field.isAnnotationPresent(DomainPath.class)    // ignore join field
-                ;
     }
 
 }

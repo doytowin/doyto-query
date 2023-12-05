@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package win.doyto.query.jdbc;
+package win.doyto.query.jdbc.rowmapper;
 
 import lombok.AllArgsConstructor;
-import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,13 +36,13 @@ public class JoinRowMapperResultSetExtractor<I, R> implements ResultSetExtractor
     private final Class<I> keyClass;
     private final RowMapper<R> rowMapper;
 
-    public Map<I, List<R>> extractData(ResultSet rs) throws SQLException {
+    public Map<I, List<R>> extract(ResultSet rs) throws SQLException {
         Map<I, List<R>> results = new HashMap<>();
         int rowNum = 0;
 
         while (rs.next()) {
             I key = rs.getObject(keyColumn, keyClass);
-            R row = this.rowMapper.mapRow(rs, rowNum++);
+            R row = this.rowMapper.map(rs, rowNum++);
             List<R> rows = results.computeIfAbsent(key, i -> new ArrayList<>());
             rows.add(row);
         }

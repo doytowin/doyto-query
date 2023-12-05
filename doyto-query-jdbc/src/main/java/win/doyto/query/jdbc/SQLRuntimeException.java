@@ -14,32 +14,16 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.perm;
-
-import lombok.Getter;
-import lombok.Setter;
-import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.annotation.Id;
-import win.doyto.query.entity.Persistable;
-import win.doyto.query.test.user.UserView;
-
-import java.util.List;
+package win.doyto.query.jdbc;
 
 /**
- * PermView
+ * SQLRuntimeException
  *
- * @author f0rb on 2022-03-26
+ * @author f0rb on 2023/12/3
+ * @since 1.0.3
  */
-@Getter
-@Setter
-public class PermView implements Persistable<Integer> {
-
-    @Id
-    private Integer id;
-    private String permName;
-    private Boolean valid;
-
-    @DomainPath({"perm", "~", "role", "~", "user"})
-    private List<UserView> users;
-
+public class SQLRuntimeException extends RuntimeException {
+    public SQLRuntimeException(Throwable e) {
+        super(e);
+    }
 }
