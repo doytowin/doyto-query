@@ -70,4 +70,9 @@ public class WebComponentsConfiguration {
     public ListValidator listValidator() {
         return new ListValidator();
     }
+
+    @Bean
+    public SortFieldsProperties sortFieldsProperties() {
+        return new SortFieldsProperties();
+    }
 }
