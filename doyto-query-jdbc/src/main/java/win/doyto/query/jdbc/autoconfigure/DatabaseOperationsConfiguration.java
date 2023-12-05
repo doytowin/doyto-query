@@ -16,14 +16,17 @@
 
 package win.doyto.query.jdbc.autoconfigure;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import win.doyto.query.jdbc.DatabaseOperations;
-import win.doyto.query.jdbc.JdbcDatabaseOperations;
+import org.springframework.jdbc.datasource.DataSourceUtils;
+import win.doyto.query.jdbc.*;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * DatabaseOperationsConfiguration
@@ -36,7 +39,26 @@ import javax.sql.DataSource;
 class DatabaseOperationsConfiguration {
     @Bean
     @Primary
-    public DatabaseOperations databaseOperations(DataSource dataSource) {
-        return new JdbcDatabaseOperations(dataSource);
+    public DatabaseOperations databaseOperations(TransactionExecutor transactionExecutor) {
+        return new JdbcDatabaseOperations(transactionExecutor);
+    }
+
+    @Bean
+    @ConditionalOnClass(DataSourceUtils.class)
+    @ConditionalOnMissingBean(TransactionExecutor.class)
+    public TransactionExecutor sessionProvider(DataSource dataSource) {
+        return new TransactionExecutor() {
+            @Override
+            public <T> T withTransaction(TransactionBody<T> sql) {
+                Connection connection = DataSourceUtils.getConnection(dataSource);
+                try {
+                    return sql.execute(connection);
+                } catch (SQLException e) {
+                    throw new SQLRuntimeException(e);
+                } finally {
+                    DataSourceUtils.releaseConnection(connection, dataSource);
+                }
+            }
+        };
     }
 }

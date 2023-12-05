@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Forb Yuan
+ * Copyright © 2019-2023 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,15 @@
 package win.doyto.query.jdbc;
 
 import lombok.AllArgsConstructor;
-import org.springframework.jdbc.datasource.DataSourceUtils;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.jdbc.rowmapper.ResultSetExtractor;
 import win.doyto.query.jdbc.rowmapper.RowMapper;
 import win.doyto.query.sql.SqlAndArgs;
 
-import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,7 +39,7 @@ import java.util.List;
 @AllArgsConstructor
 public class JdbcDatabaseOperations implements DatabaseOperations {
 
-    private final DataSource dataSource;
+    private final TransactionExecutor transactionExecutor;
 
     private static void setParameters(SqlAndArgs sqlAndArgs, PreparedStatement ps) throws SQLException {
         Object[] args = sqlAndArgs.getArgs();
@@ -49,7 +50,7 @@ public class JdbcDatabaseOperations implements DatabaseOperations {
 
     @Override
     public <V> List<V> query(SqlAndArgs sqlAndArgs, RowMapper<V> rowMapper) {
-        return withTransaction(dataSource, connection -> {
+        return transactionExecutor.withTransaction(connection -> {
             try (PreparedStatement preparedStatement = connection.prepareStatement(sqlAndArgs.getSql())) {
                 setParameters(sqlAndArgs, preparedStatement);
                 ResultSet rs = preparedStatement.executeQuery();
@@ -66,7 +67,7 @@ public class JdbcDatabaseOperations implements DatabaseOperations {
 
     @Override
     public long count(SqlAndArgs sqlAndArgs) {
-        return withTransaction(dataSource, connection -> {
+        return transactionExecutor.withTransaction(connection -> {
             try (PreparedStatement preparedStatement = connection.prepareStatement(sqlAndArgs.getSql())) {
                 setParameters(sqlAndArgs, preparedStatement);
                 ResultSet resultSet = preparedStatement.executeQuery();
@@ -78,7 +79,7 @@ public class JdbcDatabaseOperations implements DatabaseOperations {
 
     @Override
     public <I> List<I> insert(SqlAndArgs sqlAndArgs, Class<I> idClass, String idColumn) {
-        return withTransaction(dataSource, connection -> {
+        return transactionExecutor.withTransaction(connection -> {
             boolean isOracle = GlobalConfiguration.instance().isOracle();
             try (PreparedStatement ps = isOracle ?
                     connection.prepareStatement(sqlAndArgs.getSql(), new String[]{idColumn}) :
@@ -100,7 +101,7 @@ public class JdbcDatabaseOperations implements DatabaseOperations {
 
     @Override
     public int update(SqlAndArgs sqlAndArgs) {
-        return withTransaction(dataSource, connection -> {
+        return transactionExecutor.withTransaction(connection -> {
             try (PreparedStatement ps = connection.prepareStatement(sqlAndArgs.getSql())) {
                 setParameters(sqlAndArgs, ps);
                 return ps.executeUpdate();
@@ -110,7 +111,7 @@ public class JdbcDatabaseOperations implements DatabaseOperations {
 
     @Override
     public <R> R query(SqlAndArgs sqlAndArgs, ResultSetExtractor<R> resultSetExtractor) {
-        return withTransaction(dataSource, connection -> {
+        return transactionExecutor.withTransaction(connection -> {
             try (PreparedStatement ps = connection.prepareStatement(sqlAndArgs.getSql())) {
                 setParameters(sqlAndArgs, ps);
                 ResultSet rs = ps.executeQuery();
@@ -119,20 +120,4 @@ public class JdbcDatabaseOperations implements DatabaseOperations {
         });
     }
 
-    @SuppressWarnings("java:S112")
-    private static <T> T withTransaction(DataSource dataSource, SQLExecutor<T> sql) {
-        Connection connection = DataSourceUtils.getConnection(dataSource);
-        try {
-            return sql.execute(connection);
-        } catch (SQLException e) {
-            DataSourceUtils.releaseConnection(connection, dataSource);
-            throw new RuntimeException(e);
-        } finally {
-            DataSourceUtils.releaseConnection(connection, dataSource);
-        }
-    }
-
-    private interface SQLExecutor<T> {
-        T execute(Connection connection) throws SQLException;
-    }
 }

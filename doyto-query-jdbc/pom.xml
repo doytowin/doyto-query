@@ -59,6 +59,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <!--test-->
