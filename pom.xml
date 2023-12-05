@@ -32,7 +32,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <spring-boot.version>3.0.6</spring-boot.version>
+        <spring-boot.version>3.2.0</spring-boot.version>
 
         <maven.deploy.skip>true</maven.deploy.skip>
 
@@ -143,38 +143,21 @@
             </testResource>
         </testResources>
         <plugins>
-            <!-- 更新pom版本号-->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>flatten-maven-plugin</artifactId>
-                <version>1.5.0</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
                 <configuration>
-                    <updatePomFile>true</updatePomFile>
-                    <flattenMode>bom</flattenMode>
-                    <flattenedPomFilename>target/${project.artifactId}.pom.xml</flattenedPomFilename>
-                    <pomElements>
-                        <version>resolve</version>
-                        <properties>resolve</properties>
-                        <dependencies>resolve</dependencies>
-                        <pluginManagement>resolve</pluginManagement>
-                    </pomElements>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <testSource>${java.version}</testSource>
+                    <testTarget>${java.version}</testTarget>
+                    <fork>true</fork>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                        <arg>-Xlint:unchecked</arg>
+                    </compilerArgs>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>flatten</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>flatten</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>flatten.clean</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
