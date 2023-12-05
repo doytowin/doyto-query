@@ -16,13 +16,13 @@
 
 package win.doyto.query.jdbc;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
+import win.doyto.query.annotation.GeneratedValue;
+import win.doyto.query.annotation.Id;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;

@@ -16,10 +16,10 @@
 
 package win.doyto.query.test.tpch.q4;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.annotation.Column;
+import win.doyto.query.annotation.Entity;
 import win.doyto.query.annotation.GroupBy;
 
 /**

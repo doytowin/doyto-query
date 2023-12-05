@@ -16,9 +16,9 @@
 
 package win.doyto.query.test.role;
 
-import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.annotation.Entity;
 
 import java.io.Serializable;
 

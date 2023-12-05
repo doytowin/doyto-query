@@ -16,10 +16,10 @@
 
 package win.doyto.query.web.demo.module.user;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.annotation.Entity;
+import win.doyto.query.annotation.Transient;
 import win.doyto.query.entity.Persistable;
 
 /**

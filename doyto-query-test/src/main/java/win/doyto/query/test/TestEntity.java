@@ -16,14 +16,14 @@
 
 package win.doyto.query.test;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.annotation.Column;
+import win.doyto.query.annotation.Entity;
+import win.doyto.query.annotation.Transient;
 import win.doyto.query.core.OptimisticLock;
 import win.doyto.query.entity.AbstractPersistable;
 
@@ -44,7 +44,6 @@ import java.util.List;
 @Entity(name = TestEntity.TABLE)
 public class TestEntity extends AbstractPersistable<Integer> implements OptimisticLock {
     public static final String TABLE = "t_user";
-    @Column
     private String username;
     private String password;
     private String mobile;

@@ -13,35 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package win.doyto.query.annotation;
 
-package win.doyto.query.test;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import win.doyto.query.annotation.Transient;
-import win.doyto.query.core.IdWrapper;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * DynamicIdWrapper
+ * Specifies the primary key of an entity.
  *
- * @author f0rb
+ * @see Column
+ * @see GeneratedValue
+ * @since Doyto Query API 2.0
  */
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class DynamicIdWrapper implements IdWrapper<Integer> {
-
-    private Integer id;
-
-    @Transient
-    private String user;
-
-    @Transient
-    private String project;
-
-    private String locale;
-
+@Target({METHOD, FIELD})
+@Retention(RUNTIME)
+public @interface Id {
 }

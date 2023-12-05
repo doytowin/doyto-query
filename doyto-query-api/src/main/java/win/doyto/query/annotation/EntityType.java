@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package jakarta.persistence;
+package win.doyto.query.annotation;
 
 /**
- * EntityType
+ * Specify the database used for entity persistence.
  *
  * @author f0rb on 2022-05-19
  */

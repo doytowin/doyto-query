@@ -20,8 +20,8 @@
 //import lombok.Setter;
 //import win.doyto.query.geo.Point;
 //
-//import jakarta.persistence.Entity;
-//import jakarta.persistence.EntityType;
+//import win.doyto.query.annotation.Entity;
+//import win.doyto.query.annotation.EntityType;
 //import win.doyto.query.mongodb.entity.MongoPersistable;
 //
 ///**

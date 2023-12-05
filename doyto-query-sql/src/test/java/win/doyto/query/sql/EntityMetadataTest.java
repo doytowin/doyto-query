@@ -16,10 +16,10 @@
 
 package win.doyto.query.sql;
 
-import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Test;
+import win.doyto.query.annotation.Entity;
 import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.config.GlobalConfiguration;
 

@@ -1,12 +1,12 @@
 package win.doyto.query.test.tpch.domain.partsupp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import win.doyto.query.annotation.ForeignKey;
+import win.doyto.query.annotation.Id;
 import win.doyto.query.core.CompositeId;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.test.tpch.domain.part.PartEntity;

@@ -13,35 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package win.doyto.query.test;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import win.doyto.query.annotation.Transient;
-import win.doyto.query.core.IdWrapper;
+package win.doyto.query.annotation;
 
 /**
- * DynamicIdWrapper
+ * Defines mapping for enumerated types.  The constants of this
+ * enumerated type specify how a persistent property or
+ * field of an enumerated type should be persisted.
  *
- * @author f0rb
+ * @since Doyto Query API 2.0
  */
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class DynamicIdWrapper implements IdWrapper<Integer> {
+public enum EnumType {
+    /** Persist enumerated type property or field as an integer. */
+    ORDINAL,
 
-    private Integer id;
-
-    @Transient
-    private String user;
-
-    @Transient
-    private String project;
-
-    private String locale;
-
+    /** Persist enumerated type property or field as a string. */
+    STRING
 }

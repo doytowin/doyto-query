@@ -16,11 +16,11 @@
 
 package win.doyto.query.sql.field;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import win.doyto.query.annotation.EnumType;
+import win.doyto.query.annotation.Enumerated;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.sql.BuildHelper;
 import win.doyto.query.util.ColumnUtil;

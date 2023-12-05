@@ -16,8 +16,8 @@
 
 package win.doyto.query.jdbc;
 
-import jakarta.persistence.EntityType;
 import org.springframework.beans.factory.BeanFactory;
+import win.doyto.query.annotation.EntityType;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.entity.Persistable;

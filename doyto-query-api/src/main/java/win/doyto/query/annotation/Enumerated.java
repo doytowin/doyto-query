@@ -13,35 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package win.doyto.query.annotation;
 
-package win.doyto.query.test;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import win.doyto.query.annotation.Transient;
-import win.doyto.query.core.IdWrapper;
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * DynamicIdWrapper
+ * Specifies that a entity field or enum type should be persisted
+ * as a enumerated type.
  *
- * @author f0rb
+ * @since Doyto Query API 2.0
  */
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class DynamicIdWrapper implements IdWrapper<Integer> {
+@Target({METHOD, FIELD, TYPE})
+@Retention(RUNTIME)
+public @interface Enumerated {
 
-    private Integer id;
-
-    @Transient
-    private String user;
-
-    @Transient
-    private String project;
-
-    private String locale;
-
+    /** (Optional) The type used in mapping an enum type. */
+    EnumType value() default EnumType.ORDINAL;
 }

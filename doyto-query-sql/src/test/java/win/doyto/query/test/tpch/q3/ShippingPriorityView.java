@@ -16,9 +16,9 @@
 
 package win.doyto.query.test.tpch.q3;
 
-import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.annotation.Column;
 import win.doyto.query.annotation.CompositeView;
 import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.test.tpch.domain.customer.CustomerEntity;

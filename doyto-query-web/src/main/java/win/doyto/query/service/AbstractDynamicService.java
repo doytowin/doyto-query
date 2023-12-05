@@ -17,8 +17,6 @@
 package win.doyto.query.service;
 
 import jakarta.annotation.Resource;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityType;
 import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.beans.BeansException;
@@ -32,6 +30,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.*;
+import win.doyto.query.annotation.Entity;
+import win.doyto.query.annotation.EntityType;
 import win.doyto.query.cache.CacheInvoker;
 import win.doyto.query.cache.CacheWrapper;
 import win.doyto.query.core.DataAccess;

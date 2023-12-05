@@ -13,40 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package jakarta.persistence;
+package win.doyto.query.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Entity
+ * Mark a field not used for statement mapping.
  *
- * @author f0rb on 2022-05-19
+ * @since Doyto Query API 2.0
  */
-@Target(TYPE)
+@Target({METHOD, FIELD})
 @Retention(RUNTIME)
-public @interface Entity {
-
-    EntityType type() default EntityType.RELATIONAL;
-
-    /**
-     * For relational database:
-     * <p>
-     * (Optional) The schema of the table.
-     * Defaults to the default schema for user.
-     * <p>
-     * For MongoDb:
-     * (Required) The database of the collection.
-     */
-    String database() default "";
-
-    /**
-     * Table name for relational database.
-     * Collection name for MongoDB.
-     */
-    String name();
+public @interface Transient {
 }

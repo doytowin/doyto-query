@@ -16,8 +16,8 @@
 
 package win.doyto.query.test;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import win.doyto.query.annotation.EnumType;
+import win.doyto.query.annotation.Enumerated;
 
 /**
  * TestStringEnum

@@ -16,8 +16,6 @@
 
 package win.doyto.query.util;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -25,6 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import win.doyto.query.annotation.EnumType;
+import win.doyto.query.annotation.Enumerated;
 import win.doyto.query.config.GlobalConfiguration;
 
 import java.lang.reflect.Field;

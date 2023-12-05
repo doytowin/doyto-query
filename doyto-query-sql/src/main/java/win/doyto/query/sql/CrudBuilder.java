@@ -16,10 +16,10 @@
 
 package win.doyto.query.sql;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
 import lombok.extern.slf4j.Slf4j;
 import win.doyto.query.annotation.Clause;
+import win.doyto.query.annotation.Column;
+import win.doyto.query.annotation.Id;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;

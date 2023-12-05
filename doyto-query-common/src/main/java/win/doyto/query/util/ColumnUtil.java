@@ -16,14 +16,10 @@
 
 package win.doyto.query.util;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Transient;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.annotation.*;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.AggregationPrefix;
 import win.doyto.query.core.Dialect;
