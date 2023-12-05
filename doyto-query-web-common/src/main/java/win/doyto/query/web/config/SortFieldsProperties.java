@@ -14,18 +14,27 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test;
+package win.doyto.query.web.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.HashMap;
+import java.util.Set;
 
 /**
- * TestChildQuery
+ * SortFieldsProperties
  *
- * @author f0rb on 2021-12-11
+ * @author f0rb on 2023/12/2
+ * @since 1.0.3
  */
 @Getter
 @Setter
-public class TestChildQuery extends TestQuery {
-    private String oneMoreField;
+@ConfigurationProperties(
+        prefix = "doyto.query.config"
+)
+public class SortFieldsProperties {
+    private String sortPrefix = "sort.";
+    private HashMap<Class<?>, Set<String>> sortFieldsMap = new HashMap<>();
 }

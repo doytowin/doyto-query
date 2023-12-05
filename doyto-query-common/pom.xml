@@ -57,12 +57,5 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-
-        <!-- TEST -->
-        <dependency>
-            <groupId>win.doyto</groupId>
-            <artifactId>doyto-query-test</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 </project>

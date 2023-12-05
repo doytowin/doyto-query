@@ -20,9 +20,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.core.IdWrapper;
-import win.doyto.query.test.DynamicEntity;
-import win.doyto.query.test.DynamicIdWrapper;
-import win.doyto.query.test.TestEntity;
 import win.doyto.query.util.menu.MenuEntity;
 import win.doyto.query.util.menu.MenuIdWrapper;
 import win.doyto.query.util.menu.MenuRequest;
@@ -103,23 +100,19 @@ class BeanUtilTest {
 
     @Test
     void convertTo() {
-        DynamicIdWrapper dynamicIdWrapper = new DynamicIdWrapper();
-        dynamicIdWrapper.setId(1);
-        dynamicIdWrapper.setUser("test");
-        dynamicIdWrapper.setProject("i18n");
+        MenuIdWrapper menuIdWrapper = new MenuIdWrapper();
+        menuIdWrapper.setPlatform("01");
 
-        DynamicEntity dynamicEntity = BeanUtil.convertTo(dynamicIdWrapper, new TypeReference<DynamicEntity>() {});
-        IdWrapper<Integer> clonedIdWrapper = dynamicEntity.toIdWrapper();
+        MenuEntity menuEntity = BeanUtil.convertTo(menuIdWrapper, new TypeReference<MenuEntity>() {});
+        IdWrapper<Integer> clonedIdWrapper = menuEntity.toIdWrapper();
 
         assertThat(clonedIdWrapper)
-                .hasFieldOrPropertyWithValue("id", 1)
-                .hasFieldOrPropertyWithValue("user", "test")
-                .hasFieldOrPropertyWithValue("project", "i18n")
-                .hasFieldOrPropertyWithValue("locale", null);
+                .hasFieldOrPropertyWithValue("platform", "01")
+                .hasFieldOrPropertyWithValue("id", null);
     }
 
     @Test
     void getIdClass() {
-        assertThat(BeanUtil.getIdClass(TestEntity.class)).isEqualTo(Integer.class);
+        assertThat(BeanUtil.getIdClass(MenuEntity.class)).isEqualTo(Integer.class);
     }
 }
