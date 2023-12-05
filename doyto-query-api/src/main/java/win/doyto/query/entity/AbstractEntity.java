@@ -19,6 +19,7 @@ package win.doyto.query.entity;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -33,6 +34,7 @@ import java.io.Serializable;
 public abstract class AbstractEntity<I extends Serializable, U extends Serializable, D extends Serializable>
         extends AbstractPersistable<I> implements Serializable, CreateUserAware<U>, UpdateUserAware<U> {
 
+    @Serial
     private static final long serialVersionUID = 1;
 
     /**

@@ -37,7 +37,6 @@ import java.util.regex.Pattern;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuppressWarnings("java:S3740")
 public class PageQuery implements DoytoQuery {
 
     @SuppressWarnings("java:S5843")

@@ -34,6 +34,7 @@ import java.util.Set;
  *
  * @author f0rb on 2021-12-31
  */
+@SuppressWarnings("java:S6813")
 public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2> {
 
     private static final GlobalConfiguration instance = GlobalConfiguration.instance();

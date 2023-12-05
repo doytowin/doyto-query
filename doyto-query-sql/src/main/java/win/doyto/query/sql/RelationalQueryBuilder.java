@@ -70,8 +70,8 @@ public class RelationalQueryBuilder {
                 sqlBuilder.append(buildCondition(AND, query, argList));
             }
             sqlBuilder.append(entityMetadata.getGroupBySql());
-            if (query instanceof AggregationQuery) {
-                sqlBuilder.append(buildHaving(((AggregationQuery) query).getHaving(), argList));
+            if (query instanceof AggregationQuery aggregationQuery) {
+                sqlBuilder.append(buildHaving(aggregationQuery.getHaving(), argList));
             }
             sqlBuilder.append(buildOrderBy(query));
             return buildPaging(sqlBuilder.toString(), query);

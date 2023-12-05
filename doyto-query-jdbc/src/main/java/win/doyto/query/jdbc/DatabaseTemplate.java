@@ -52,7 +52,7 @@ public class DatabaseTemplate implements DatabaseOperations {
         return jdbcOperations.update(sqlAndArgs.getSql(), sqlAndArgs.getArgs());
     }
 
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings("java:S1874")
     @Override
     public long count(SqlAndArgs sqlAndArgs) {
         return jdbcOperations.queryForObject(sqlAndArgs.getSql(), countRowMapper, sqlAndArgs.getArgs());

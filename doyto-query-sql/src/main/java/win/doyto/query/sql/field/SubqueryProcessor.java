@@ -108,8 +108,8 @@ public class SubqueryProcessor implements FieldProcessor {
             clause = BuildHelper.buildWhere((DoytoQuery) value, argList);
         }
         clause += groupBy;
-        if (value instanceof AggregationQuery) {
-            Having having = ((AggregationQuery) value).getHaving();
+        if (value instanceof AggregationQuery aggregationQuery) {
+            Having having = aggregationQuery.getHaving();
             if (having != null) {
                 clause += buildCondition(" HAVING ", having, argList);
             }

@@ -53,6 +53,7 @@ import java.util.List;
  *
  * @author f0rb on 2019-05-28
  */
+@SuppressWarnings("java:S6813")
 public abstract class AbstractDynamicService<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
         implements DynamicService<E, I, Q> {
 

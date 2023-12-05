@@ -131,11 +131,10 @@ public enum QuerySuffix {
         }
     }
 
-    @SuppressWarnings("java:S1214")
-    private interface Constants {
-        Predicate<Object> LIKE_PREDICATE = value -> {
-            if (value instanceof String) {
-                return !((String) value).trim().isEmpty();
+    private static class Constants {
+        static final Predicate<Object> LIKE_PREDICATE = value -> {
+            if (value instanceof String like) {
+                return !like.trim().isEmpty();
             }
             log.warn("Type of field which ends with Like should be String.");
             return false;

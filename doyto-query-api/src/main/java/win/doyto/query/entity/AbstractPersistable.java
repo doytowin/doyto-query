@@ -21,13 +21,15 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.validation.CreateGroup;
 import win.doyto.query.validation.PatchGroup;
 import win.doyto.query.validation.UpdateGroup;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -35,19 +37,17 @@ import java.io.Serializable;
  *
  * @author f0rb on 2021-06-27
  */
-@Data
+@Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class AbstractPersistable<I extends Serializable> implements Persistable<I>, Serializable {
-    private static final long serialVersionUID = -4538555675455803732L;
+    @Serial
+    private static final long serialVersionUID = 1;
     @Id
     @GeneratedValue
     @Null(groups = CreateGroup.class)
     @NotNull(groups = {UpdateGroup.class, PatchGroup.class})
     protected I id;
-
-    public void setId(I id) {
-        this.id = id;
-    }
 }

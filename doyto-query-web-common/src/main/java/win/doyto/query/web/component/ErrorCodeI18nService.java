@@ -38,8 +38,8 @@ public class ErrorCodeI18nService {
         Locale locale = LocaleContextHolder.getLocale();
         String message = messageSource.getMessage(errorCode.getMessage(), args, errorCode.getMessage(), locale);
         ErrorCode localeErrorCode = ErrorCode.build(errorCode.getCode(), message);
-        if (errorCode instanceof ErrorResponse) {
-            ((ErrorResponse) errorCode).setErrorCode(localeErrorCode);
+        if (errorCode instanceof ErrorResponse errorResponse) {
+            errorResponse.setErrorCode(localeErrorCode);
             localeErrorCode = errorCode;
         }
         return localeErrorCode;

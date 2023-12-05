@@ -19,6 +19,7 @@ package win.doyto.query.entity;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -34,6 +35,7 @@ import java.time.LocalDateTime;
 public abstract class AbstractCommonEntity<I extends Serializable, U extends Serializable>
         extends AbstractEntity<I, U, LocalDateTime> {
 
+    @Serial
     private static final long serialVersionUID = 1;
 
     @Override

@@ -16,8 +16,8 @@
 
 package win.doyto.query.sql;
 
-import jakarta.persistence.Id;
 import jakarta.persistence.Column;
+import jakarta.persistence.Id;
 import lombok.extern.slf4j.Slf4j;
 import win.doyto.query.annotation.Clause;
 import win.doyto.query.config.GlobalConfiguration;
@@ -149,8 +149,7 @@ public class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implemen
 
     private static void readValueToArgList(Object entity, List<Object> argList, StringJoiner setClauses) {
         List<Field> fieldsOfSubClass = Arrays.stream(entity.getClass().getDeclaredFields())
-                                             .filter(ColumnUtil::shouldRetain)
-                                             .collect(Collectors.toList());
+                                             .filter(ColumnUtil::shouldRetain).toList();
 
         for (Field field : fieldsOfSubClass) {
             Object value = readFieldGetter(field, entity);
@@ -199,9 +198,9 @@ public class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implemen
     }
 
     private String addVersion(E entity, String sql, List<Object> argList) {
-        if (entity instanceof OptimisticLock && ((OptimisticLock) entity).currentVersion() != null) {
+        if (entity instanceof OptimisticLock lock &&lock.currentVersion() != null) {
             sql += AND + versionColumn + EQUAL_HOLDER;
-            appendArgsForId(argList, ((OptimisticLock) entity).currentVersion());
+            appendArgsForId(argList, lock.currentVersion());
         }
         return sql;
     }
