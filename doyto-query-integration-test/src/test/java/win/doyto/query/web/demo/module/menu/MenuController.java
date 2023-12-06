@@ -33,7 +33,7 @@ import win.doyto.query.web.response.JsonBody;
 class MenuController extends AbstractDynamicController<MenuEntity, Integer, MenuQuery, MenuRequest, MenuResponse, MenuIdWrapper> {
 
     public MenuController(MenuService menuService) {
-        super(menuService, new TypeReference<MenuIdWrapper>() {});
+        super(menuService, new TypeReference<>() {});
     }
 
 }

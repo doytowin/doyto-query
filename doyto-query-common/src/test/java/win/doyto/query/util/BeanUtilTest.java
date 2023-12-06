@@ -85,7 +85,7 @@ class BeanUtilTest {
 
     @Test
     void parseSingleAsList() {
-        List<MenuEntity> menuEntities = BeanUtil.parse("{\"id\":\"1\"}", new TypeReference<List<MenuEntity>>() {});
+        List<MenuEntity> menuEntities = BeanUtil.parse("{\"id\":\"1\"}", new TypeReference<>() {});
         assertThat(menuEntities)
                 .hasSize(1)
                 .element(0)
@@ -103,7 +103,7 @@ class BeanUtilTest {
         MenuIdWrapper menuIdWrapper = new MenuIdWrapper();
         menuIdWrapper.setPlatform("01");
 
-        MenuEntity menuEntity = BeanUtil.convertTo(menuIdWrapper, new TypeReference<MenuEntity>() {});
+        MenuEntity menuEntity = BeanUtil.convertTo(menuIdWrapper, new TypeReference<>() {});
         IdWrapper<Integer> clonedIdWrapper = menuEntity.toIdWrapper();
 
         assertThat(clonedIdWrapper)

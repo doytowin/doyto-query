@@ -37,12 +37,12 @@ public class JdbcApplication {
 
     @Bean
     public AssociationService<Integer, Integer> roleAndPermissionAssociativeService() {
-        return new JdbcAssociationService<Integer, Integer>("role", "perm") {};
+        return new JdbcAssociationService<>("role", "perm") {};
     }
 
     @Bean
     public AssociationService<Long, Integer> userAndRoleAssociationService() {
-        return new JdbcAssociationService<Long, Integer>("user", "role", "create_user_id") {};
+        return new JdbcAssociationService<>("user", "role", "create_user_id") {};
     }
 
     @Bean

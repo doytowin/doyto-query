@@ -46,12 +46,12 @@ public abstract class AbstractRestController<E extends Persistable<I>, I extends
         implements RestApi<I, Q, R, S> {
 
     protected AbstractRestController(CrudService<E, I, Q> service) {
-        super(service, new TypeReference<IdWrapper.Simple<I>>() {});
+        super(service, new TypeReference<>() {});
     }
 
     protected AbstractRestController() {
         this(null);
-        service = new AbstractCrudService<E, I, Q>() {
+        service = new AbstractCrudService<>() {
             @Override
             protected Class<?> getConcreteClass() {
                 return AbstractRestController.this.getClass();
