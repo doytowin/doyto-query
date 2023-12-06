@@ -3,11 +3,19 @@ name: GitHub Package
 on:
   workflow_dispatch:
   push:
-    branches: [ package ]
+    branches:
+      - package
+      - package/v2
 
 jobs:
+  version:
+    name: Determine Java version
+    uses: ./.github/workflows/_version.yml
   package:
+    needs: version
+    name: Call Package Workflow
     uses: doytowin/doyto-devops/.github/workflows/package.yml@main
     secrets: inherit
     with:
+      java-version: ${{needs.version.outputs.java}}
       repo: ${{ github.repository }}

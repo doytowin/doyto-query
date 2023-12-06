@@ -4,9 +4,16 @@ on:
   push:
     branches:
       - release
+      - releases/v2
 
 jobs:
+  version:
+    name: Determine Java version
+    uses: ./.github/workflows/_version.yml
   release:
+    needs: version
     name: Call Release Workflow
     uses: doytowin/doyto-devops/.github/workflows/release.yml@main
     secrets: inherit
+    with:
+      java-version: ${{needs.version.outputs.java}}
