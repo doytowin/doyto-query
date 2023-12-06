@@ -9,7 +9,7 @@ on:
 jobs:
   version:
     name: Determine Java version
-    uses: ./.github/workflows/_version.yml
+    uses: doytowin/doyto-devops/.github/workflows/version.yml@main
   release:
     needs: version
     name: Call Release Workflow
