@@ -31,7 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static win.doyto.query.sql.Constant.*;
+import static win.doyto.query.sql.Constant.AND;
+import static win.doyto.query.sql.Constant.OR;
 
 /**
  * FieldMapper
@@ -52,24 +53,27 @@ public final class FieldMapper {
     public static void init(Field field) {
         if (FIELD_PROCESSOR_MAP.containsKey(field)) return;
         FieldProcessor processor;
-        if (Or.class.isAssignableFrom(field.getType())) {
-            processor = new ConnectableFieldProcessor(field.getType(), OR);
-        } else if (And.class.isAssignableFrom(field.getType())) {
-            processor = new ConnectableFieldProcessor(field.getType(), AND);
-        } else if (DoytoQuery.class.isAssignableFrom(field.getType())) {
+        Class<?> fieldType = field.getType();
+        if (Or.class.isAssignableFrom(fieldType)) {
+            processor = new ConnectableFieldProcessor(fieldType, OR);
+        } else if (And.class.isAssignableFrom(fieldType)) {
+            processor = new ConnectableFieldProcessor(fieldType, AND);
+        } else if (DoytoQuery.class.isAssignableFrom(fieldType)) {
             processor = initDoytoQueryField(field);
         } else if (field.isAnnotationPresent(QueryField.class)) {
             processor = new QueryFieldProcessor(field);
         } else if (Having.class.isAssignableFrom(field.getDeclaringClass())) {
             processor = initHavingField(field);
-        } else if (boolean.class.isAssignableFrom(field.getType())) {
+        } else if (boolean.class.isAssignableFrom(fieldType)) {
             processor = new PrimitiveBooleanProcessor(field.getName());
         } else if (OrCollectionProcessor.support(field)) {
             processor = new OrCollectionProcessor(field);
         } else if (field.isAnnotationPresent(Column.class)) {
             processor = new ColumnFieldProcessor(field);
+        } else if (OrFieldProcessor.support(field.getName())) {
+            processor = new OrFieldProcessor(field);
         } else {
-            processor = initCommonField(field.getName());
+            processor = new SuffixFieldProcessor(field);
         }
         FIELD_PROCESSOR_MAP.put(field, processor);
     }
@@ -88,7 +92,7 @@ public final class FieldMapper {
             processor = new SubqueryProcessor(field.getName());
         } else {
             processor = (alias, argList, value) -> {
-                log.warn("Field configuration is invalid: {}.{}", field.getDeclaringClass(), field.getName());
+                log.info("Query field is ignored: {}.{}", field.getDeclaringClass(), field.getName());
                 return null;
             };
         }
@@ -97,18 +101,11 @@ public final class FieldMapper {
 
     private static FieldProcessor initHavingField(Field field) {
         String fieldName = field.getName();
-        if (!field.isAnnotationPresent(GroupBy.class)) {
-             fieldName = HAVING_PREFIX + fieldName;
-        }
-        return initCommonField(fieldName);
-    }
-
-    private static FieldProcessor initCommonField(String fieldName) {
+        boolean isAggregateField = !field.isAnnotationPresent(GroupBy.class);
         if (OrFieldProcessor.support(fieldName)) {
-            return new OrFieldProcessor(fieldName);
+            return new OrFieldProcessor(field);
         } else {
-            return (alias, argList, value) ->
-                    SqlQuerySuffix.buildConditionForField(alias, fieldName, argList, value);
+            return new SuffixFieldProcessor(field, isAggregateField);
         }
     }
 

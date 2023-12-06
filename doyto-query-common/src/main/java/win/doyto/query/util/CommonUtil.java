@@ -150,6 +150,11 @@ public class CommonUtil {
         return GlobalConfiguration.instance().getWildcardPtn().matcher(like).replaceAll("\\\\$0");
     }
 
+    /**
+     * @deprecated use {@link StringUtils#uncapitalize(String)} instead.
+     */
+    @Deprecated
+    @SuppressWarnings("java:S1133")
     public static String camelize(String input) {
         char[] chars = input.toCharArray();
         chars[0] = Character.toLowerCase(chars[0]);
@@ -158,7 +163,7 @@ public class CommonUtil {
 
     public static String[] splitByOr(String columnName) {
         return Arrays.stream(PTN_SPLIT_OR.split(columnName, 0))
-                .map(CommonUtil::camelize).toArray(String[]::new);
+                     .map(StringUtils::uncapitalize).toArray(String[]::new);
     }
 
     public static boolean containsOr(String input) {

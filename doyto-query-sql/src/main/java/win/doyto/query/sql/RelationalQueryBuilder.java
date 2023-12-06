@@ -18,6 +18,7 @@ package win.doyto.query.sql;
 
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.Join;
@@ -70,7 +71,7 @@ public class RelationalQueryBuilder {
         With withAnno = entityClass.getAnnotation(With.class);
         Class<?> withClass = withAnno.value().getSuperclass();
         EntityMetadata withMeta = EntityMetadata.build(withClass);
-        String queryFieldName = CommonUtil.camelize(withClass.getSimpleName()).replace("View", "Query");
+        String queryFieldName = StringUtils.uncapitalize(withClass.getSimpleName()).replace("View", "Query");
         DoytoQuery withQuery = (DoytoQuery) CommonUtil.readField(query, queryFieldName);
         String alias = resolveTableName(withAnno.value());
         String withSQL = buildSqlForEntity(withMeta, withQuery, argList);

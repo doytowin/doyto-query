@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.sql.BuildHelper;
-import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
 import javax.persistence.EnumType;
@@ -115,20 +114,6 @@ public enum SqlQuerySuffix {
     static SqlQuerySuffix resolve(String fieldName) {
         Matcher matcher = SUFFIX_PTN.matcher(fieldName);
         return matcher.find() ? valueOf(matcher.group()) : NONE;
-    }
-
-    static String buildConditionForField(String alias, String fieldName, List<Object> argList, Object value) {
-        SqlQuerySuffix sqlQuerySuffix = resolve(fieldName);
-        value = sqlQuerySuffix.valueProcessor.escapeValue(value);
-        String columnName = sqlQuerySuffix.removeSuffix(fieldName);
-        if (columnName.startsWith(HAVING_PREFIX)) {
-            columnName = columnName.substring(HAVING_PREFIX.length());
-            columnName = ColumnUtil.resolveColumn(columnName);
-        } else {
-            columnName = ColumnUtil.convertColumn(columnName);
-            columnName = columnName.replace("$", ".");
-        }
-        return sqlQuerySuffix.buildColumnCondition(alias + columnName, argList, value);
     }
 
     public String removeSuffix(String fieldName) {
@@ -249,7 +234,7 @@ public enum SqlQuerySuffix {
             if (GlobalConfiguration.instance().getWildcardPtn().matcher(like).find()) {
                 return like;
             }
-            return CommonUtil.escapeLike(String.valueOf(value));
+            return CommonUtil.escapeLike(like);
         }
     }
 

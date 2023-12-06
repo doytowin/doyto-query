@@ -43,8 +43,7 @@ class OrFieldProcessorTest {
 
     @Test
     void buildConditionForFieldContainsOrAndAlias() {
-        String fieldName =  fieldInTestQuery("usernameOrUserCodeLike");
-        OrFieldProcessor orFieldProcessor = new OrFieldProcessor(fieldName);
+        OrFieldProcessor orFieldProcessor = new OrFieldProcessor(fieldInTestQuery("usernameOrUserCodeLike"));
         String condition = orFieldProcessor.process("u.", argList, "test");
         assertEquals("(u.username = ? OR u.user_code LIKE ?)", condition);
         assertThat(argList).containsExactly("test", "%test%");
