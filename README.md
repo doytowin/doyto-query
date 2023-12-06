@@ -8,21 +8,10 @@ DoytoQuery - The First Implementation of Object SQL Mapping for Java Application
 
 ## Introduction
 
-DoytoQuery is a powerful and easy-to-use Object SQL Mapping (OSM) framework for Java applications over relational databases. 
-Unlike object-relational mapping (ORM), which attempts to directly map the object model and the relational model,
-OSM introduces SQL as an intermediary between the object model and the relational model 
-and concludes a set of solutions to map objects to SQL statements.
-
-## The Mapping Solutions
-- [The Query Mapping Solution in DoytoQuery](https://blog.doyto.win/post/the-query-mapping-solution-in-doyto-query/)
-- [The Paging and Sorting Solution in DoytoQuery](https://blog.doyto.win/post/paging-and-sorting-en/)
-- The Improved CRUD Solution in DoytoQuery
-- [The Related Query Solution in DoytoQuery](https://blog.doyto.win/post/the-related-query-solution-in-doyto-query/)
-- The Conditional Related Query Solution in DoytoQuery
-- [The Aggregation Solution in DoytoQuery](https://blog.doyto.win/post/the-aggregation-query-solution-in-doyto-query/)
-- The Natural Joins Mapping Solution
-- The Associative Table Solution in DoytoQuery
-- The Sharding Solution in DoytoQuery
+DoytoQuery is a powerful and easy-to-use Object/Query-Language Mapping (OQM) framework for Java applications over relational databases. 
+Unlike object-relational mapping (ORM), which attempts to map the object model and the relational model directly,
+OQM introduces query languages as an intermediary between the object-oriented application systems and the database management system
+to map objects to query statements.
 
 ## Features
 
