@@ -9,18 +9,36 @@ on:
       - 'features/**'
       - 'issues/**'
       - 'refactor/**'
+      - 'springboot3/**'
   pull_request:
     types: [ opened, synchronize, reopened ]
 
 jobs:
+  version:
+    name: Determine Java version
+    runs-on: ubuntu-latest
+    env:
+      VERSION: 8
+    outputs:
+      java: ${{ steps.version.outputs.java }}
+    steps:
+      - name: Switch Java version
+        if: startsWith(github.ref, 'refs/heads/springboot3/')
+        run: echo "VERSION=17" >> $GITHUB_ENV
+      - id: version
+        name: Write Java version
+        run: echo "java=$VERSION" >> "$GITHUB_OUTPUT"
   build:
+    needs: version
     name: Call Build Workflow
     uses: doytowin/doyto-devops/.github/workflows/build.yml@main
     secrets: inherit
     with:
+      java-version: ${{needs.version.outputs.java}}
       sonar-project-name: 'doyto-query'
       sonar-project-key: 'win.doyto:doyto-query'
   test:
+    needs: version
     strategy:
       fail-fast: false
       matrix:
@@ -38,17 +56,24 @@ jobs:
     name: With ${{ matrix.image-name }}
     uses: ./.github/workflows/_integration-test.yml
     with:
+      java-version: ${{needs.version.outputs.java}}
       image-name: ${{ matrix.image-name }}
       docker-run: ${{ matrix.docker-run }}
   javadoc:
+    needs: version
     name: Call Javadoc Workflow
     uses: doytowin/doyto-devops/.github/workflows/javadoc.yml@main
+    with:
+      java-version: ${{needs.version.outputs.java}}
   deploy:
     name: Call Deploy Workflow
     needs:
+      - version
       - build
       - test
       - javadoc
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/springboot3/'))
     uses: doytowin/doyto-devops/.github/workflows/deploy.yml@main
     secrets: inherit
+    with:
+      java-version: ${{needs.version.outputs.java}}
