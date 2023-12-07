@@ -59,6 +59,7 @@ public class BeanPropertyRowMapper<E> implements RowMapper<E> {
               .forEach(pd -> {
                   this.fieldMap.put(pd.getName(), pd);
                   this.fieldMap.put(pd.getName().toUpperCase(), pd);
+                  this.fieldMap.put(pd.getName().toLowerCase(), pd);
                   String upperSnakeKey = ColumnUtil.camelCaseToUnderscore(pd.getName());
                   this.fieldMap.put(upperSnakeKey, pd);
                   this.fieldMap.put(upperSnakeKey.toUpperCase(), pd);
