@@ -28,7 +28,6 @@ import win.doyto.query.web.response.JsonBody;
 import win.doyto.query.web.response.JsonResponse;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -99,9 +98,9 @@ public class UserController
         return userService.queryColumns(q, String.class, column);
     }
 
-    @GetMapping("columns/{columns:[\\w,]+}")
-    public List<Map> listColumns(UserQuery q, @PathVariable String columns) {
-        return userService.queryColumns(q, Map.class, columns);
+    @GetMapping("columns/{columns:[\\w, ]+}")
+    public List<UserResponse> listColumns(UserQuery q, @PathVariable String columns) {
+        return userService.queryColumns(q, UserResponse.class, columns);
     }
 
     @Override

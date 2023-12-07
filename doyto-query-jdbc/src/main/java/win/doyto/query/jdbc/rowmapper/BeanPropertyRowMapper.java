@@ -21,12 +21,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.util.ColumnUtil;
+import win.doyto.query.util.CommonUtil;
 
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -62,16 +64,20 @@ public class BeanPropertyRowMapper<E> implements RowMapper<E> {
     public E map(ResultSet rs, int rn) throws SQLException {
         E entity = mappedClass.getDeclaredConstructor().newInstance();
 
-        Object value;
-        for (PropertyDescriptor pd : fieldMap.values()) {
-            try {
-                value = getColumnValue(rs, pd);
-            } catch (IllegalArgumentException | NoSuchElementException e) {
-                log.error("Fail to get value for [{}]: {}", pd.getName(), e.getMessage());
+        ResultSetMetaData rsmd = rs.getMetaData();
+        for (int i = 0; i++ < rsmd.getColumnCount();) {
+            String columnName = rsmd.getColumnName(i);
+            String fieldName = CommonUtil.toCamelCase(columnName.toLowerCase());
+            PropertyDescriptor pd = fieldMap.get(fieldName);
+            if (pd == null) {
+                log.warn("Column [{}:{}] not found in {}.", columnName, fieldName, fieldMap.keySet());
                 continue;
             }
             try {
+                Object value = getColumnValue(rs, pd);
                 pd.getWriteMethod().invoke(entity, value);
+            } catch (IllegalArgumentException | NoSuchElementException e) {
+                log.error("Fail to get value for [{}]: {}", pd.getName(), e.getMessage());
             } catch (IllegalAccessException | InvocationTargetException e) {
                 log.error("Fail to invoke write method: {}-{}", pd.getWriteMethod().getName(), e.getMessage());
             }
@@ -81,7 +87,11 @@ public class BeanPropertyRowMapper<E> implements RowMapper<E> {
 
     protected Object getColumnValue(ResultSet rs, PropertyDescriptor pd) throws SQLException {
         String columnLabel = pd.getName();
-        if (rs.getObject(columnLabel) == null) return null;
+        try {
+            if (rs.getObject(columnLabel) == null) return null;
+        } catch (SQLException e) {
+            throw new NoSuchElementException(e);
+        }
         Class<?> propertyType = pd.getPropertyType();
         if (propertyType.isEnum()) {
             String value = rs.getString(columnLabel);
