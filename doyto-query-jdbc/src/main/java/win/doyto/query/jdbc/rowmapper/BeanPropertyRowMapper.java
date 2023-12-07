@@ -20,8 +20,8 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import win.doyto.query.sql.RelationalQueryBuilder;
 import win.doyto.query.util.ColumnUtil;
-import win.doyto.query.util.CommonUtil;
 
 import java.beans.BeanInfo;
 import java.beans.Introspector;
@@ -56,7 +56,13 @@ public class BeanPropertyRowMapper<E> implements RowMapper<E> {
               .filter(pd -> pd.getWriteMethod() != null
                       && ColumnUtil.filterForJoinEntity(FieldUtils.getField(mappedClass, pd.getName(), true))
               )
-              .forEach(pd -> this.fieldMap.put(pd.getName(), pd));
+              .forEach(pd -> {
+                  this.fieldMap.put(pd.getName(), pd);
+                  this.fieldMap.put(pd.getName().toUpperCase(), pd);
+                  String upperSnakeKey = ColumnUtil.camelCaseToUnderscore(pd.getName());
+                  this.fieldMap.put(upperSnakeKey, pd);
+                  this.fieldMap.put(upperSnakeKey.toUpperCase(), pd);
+              });
     }
 
     @Override
@@ -67,10 +73,11 @@ public class BeanPropertyRowMapper<E> implements RowMapper<E> {
         ResultSetMetaData rsmd = rs.getMetaData();
         for (int i = 0; i++ < rsmd.getColumnCount();) {
             String columnName = rsmd.getColumnName(i);
-            String fieldName = CommonUtil.toCamelCase(columnName.toLowerCase());
-            PropertyDescriptor pd = fieldMap.get(fieldName);
+            PropertyDescriptor pd = fieldMap.get(columnName);
             if (pd == null) {
-                log.warn("Column [{}:{}] not found in {}.", columnName, fieldName, fieldMap.keySet());
+                if (!RelationalQueryBuilder.KEY_COLUMN.equals(columnName)) {
+                    log.warn("Column [{}] not found in {}.", columnName, fieldMap.keySet());
+                }
                 continue;
             }
             try {

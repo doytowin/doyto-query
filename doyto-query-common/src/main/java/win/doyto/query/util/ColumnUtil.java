@@ -114,7 +114,7 @@ public class ColumnUtil {
         return camelCaseToUnderscore(CommonUtil.camelize(domain));
     }
 
-    private static String camelCaseToUnderscore(String camel) {
+    public static String camelCaseToUnderscore(String camel) {
         return PTN_CAPITAL_CHAR.matcher(camel).replaceAll("_$1").toLowerCase();
     }
 

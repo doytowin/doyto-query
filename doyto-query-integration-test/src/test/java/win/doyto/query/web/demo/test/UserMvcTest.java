@@ -173,7 +173,7 @@ class UserMvcTest extends DemoApplicationTest {
 
     @Test
     void queryForSnakeCaseColumns() throws Exception {
-        performAndExpectSuccess(get("/user/columns/username,user_level"))
+        performAndExpectSuccess(get("/user/columns/username,userLevel"))
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data[1].username").value("user2"))
                 .andExpect(jsonPath("$.data[1].userLevel").value("普通"))

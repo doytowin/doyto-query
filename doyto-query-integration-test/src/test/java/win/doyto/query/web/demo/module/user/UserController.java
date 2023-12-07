@@ -19,14 +19,17 @@ package win.doyto.query.web.demo.module.user;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import win.doyto.query.core.DataQueryClient;
+import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.web.controller.AbstractRestController;
 import win.doyto.query.web.response.ErrorCode;
 import win.doyto.query.web.response.JsonBody;
 import win.doyto.query.web.response.JsonResponse;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -98,9 +101,11 @@ public class UserController
         return userService.queryColumns(q, String.class, column);
     }
 
-    @GetMapping("columns/{columns:[\\w, ]+}")
+    @GetMapping("columns/{columns:[\\w,]+}")
     public List<UserResponse> listColumns(UserQuery q, @PathVariable String columns) {
-        return userService.queryColumns(q, UserResponse.class, columns);
+        List<String> list = Arrays.stream(StringUtils.split(columns, ","))
+                                  .map(ColumnUtil::convertColumn).toList();
+        return userService.queryColumns(q, UserResponse.class, list.toArray(new String[0]));
     }
 
     @Override
