@@ -18,6 +18,7 @@ package win.doyto.query.util;
 
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.*;
 import win.doyto.query.config.GlobalConfiguration;
@@ -105,13 +106,14 @@ public class ColumnUtil {
     }
 
     public static String convertColumn(String columnName) {
-        columnName = CommonUtil.camelize(columnName);
+        columnName = StringUtils.uncapitalize(columnName);
         return GlobalConfiguration.instance().isMapCamelCaseToUnderscore() ?
-                camelCaseToUnderscore(columnName) : columnName;
+                camelCaseToUnderscore(columnName) :
+                CommonUtil.toCamelCase(columnName);
     }
 
     public static String convertTableName(String domain) {
-        return camelCaseToUnderscore(CommonUtil.camelize(domain));
+        return camelCaseToUnderscore(StringUtils.uncapitalize(domain));
     }
 
     public static String camelCaseToUnderscore(String camel) {

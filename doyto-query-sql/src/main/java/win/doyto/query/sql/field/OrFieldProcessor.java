@@ -18,6 +18,7 @@ package win.doyto.query.sql.field;
 
 import win.doyto.query.util.CommonUtil;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,11 +31,15 @@ import static win.doyto.query.sql.Constant.*;
  * @author f0rb on 2023/7/10
  * @since 1.0.2
  */
-public class OrFieldProcessor implements FieldProcessor {
-    private final String[] fieldNames;
+class OrFieldProcessor implements FieldProcessor {
+    private final List<FieldProcessor> fieldProcessors;
 
-    public OrFieldProcessor(String fieldName) {
-        this.fieldNames = CommonUtil.splitByOr(fieldName);
+    public OrFieldProcessor(Field field) {
+        String[] fieldNames = CommonUtil.splitByOr(field.getName());
+        this.fieldProcessors = Arrays.stream(fieldNames)
+                                     .map(name -> new SuffixFieldProcessor(name, true))
+                                     .collect(Collectors.toList());
+
     }
 
     static boolean support(String fieldName) {
@@ -43,8 +48,8 @@ public class OrFieldProcessor implements FieldProcessor {
 
     @Override
     public String process(String alias, List<Object> argList, Object value) {
-        return Arrays.stream(fieldNames)
-                     .map(fieldName -> SqlQuerySuffix.buildConditionForField(alias, fieldName, argList, value))
-                     .collect(Collectors.joining(OR, OP, CP));
+        return fieldProcessors.stream()
+                              .map(p -> p.process(alias, argList, value))
+                              .collect(Collectors.joining(OR, OP, CP));
     }
 }

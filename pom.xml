@@ -34,6 +34,8 @@
         <java.version>17</java.version>
         <spring-boot.version>3.2.0</spring-boot.version>
 
+        <jacoco.destFile>${user.dir}/target/jacoco.exec</jacoco.destFile>
+        <jacoco.dataFile>${user.dir}/target/jacoco.exec</jacoco.dataFile>
         <maven.deploy.skip>true</maven.deploy.skip>
 
         <sonar.exclusions>doyto-query-test/**,doyto-query-integration-test/**,**/pom.xml</sonar.exclusions>

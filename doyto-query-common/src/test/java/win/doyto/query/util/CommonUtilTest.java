@@ -20,8 +20,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Test;
+import win.doyto.query.config.GlobalConfiguration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static win.doyto.query.util.ColumnUtil.convertColumn;
 import static win.doyto.query.util.CommonUtil.*;
 
 /**
@@ -76,5 +79,22 @@ class CommonUtilTest {
     void fixNPEInReadField() {
         Object noop = readField(new PlaceHolderObject("test1"), "noop");
         assertNull(noop);
+    }
+
+    @Test
+    void supportMapFieldToUnderscoreOrCamelCaseByToggle() {
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
+
+        assertThat(convertColumn("userCode"))
+                .isEqualTo("userCode");
+        assertThat(convertColumn("user_code"))
+                .isEqualTo("userCode");
+
+        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
+
+        assertThat(convertColumn("userCode"))
+                .isEqualTo("user_code");
+        assertThat(convertColumn("user_code"))
+                .isEqualTo("user_code");
     }
 }

@@ -18,8 +18,8 @@ package win.doyto.query.sql.field;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.util.ColumnUtil;
-import win.doyto.query.util.CommonUtil;
 
 import java.util.Arrays;
 import java.util.regex.Matcher;
@@ -62,7 +62,7 @@ enum SqlComparator {
         }
         String c1 = ColumnUtil.convertColumn(matcher.group(1));
         String op = valueOf(matcher.group(2)).op;
-        String c2 = ColumnUtil.convertColumn(CommonUtil.camelize(matcher.group(3)));
+        String c2 = ColumnUtil.convertColumn(StringUtils.uncapitalize(matcher.group(3)));
         return (c1 + op + c2).replace('$', '.');
     }
 

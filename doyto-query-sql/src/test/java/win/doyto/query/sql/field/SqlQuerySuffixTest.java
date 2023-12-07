@@ -23,6 +23,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import win.doyto.query.test.TestEnum;
 import win.doyto.query.test.TestQuery;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +34,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static win.doyto.query.sql.Constant.EMPTY;
-import static win.doyto.query.sql.field.SqlQuerySuffix.buildConditionForField;
 
 /**
  * QuerySuffixTest
@@ -44,8 +44,12 @@ class SqlQuerySuffixTest {
     ArrayList<Object> argList = new ArrayList<>();
 
     @SneakyThrows
-    static String fieldInTestQuery(String fieldName) {
-        return TestQuery.class.getDeclaredField(fieldName).getName();
+    static Field fieldInTestQuery(String fieldName) {
+        return TestQuery.class.getDeclaredField(fieldName);
+    }
+
+    static String buildConditionForField(String alias, Field field, List<Object> argList, Object value) {
+        return new SuffixFieldProcessor(field, false).process(alias, argList, value);
     }
 
     @ParameterizedTest(name = "[{index}] {arguments}")
