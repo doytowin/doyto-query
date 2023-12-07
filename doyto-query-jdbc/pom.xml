@@ -25,8 +25,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>doyto-query-jdbc</artifactId>
-    <name>doyto-query-jdbc</name>
-    <description>The SQL executed layer based on Spring JDBC</description>
+    <name>DoytoQueryJDBC</name>
+    <description>The SQL executed layer</description>
 
     <properties>
         <maven.deploy.skip>false</maven.deploy.skip>
