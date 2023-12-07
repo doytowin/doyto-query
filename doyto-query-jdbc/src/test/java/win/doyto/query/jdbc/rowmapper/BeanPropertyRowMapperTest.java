@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import win.doyto.query.test.TestEntity;
 import win.doyto.query.test.TestEnum;
 import win.doyto.query.test.user.UserEntity;
-import win.doyto.query.test.user.UserLevel;
 
 import java.beans.PropertyDescriptor;
 import java.sql.ResultSet;
@@ -46,7 +45,7 @@ class BeanPropertyRowMapperTest {
         PropertyDescriptor pd = new PropertyDescriptor(
                 "userLevel", TestEntity.class, "getUserLevel", "setUserLevel");
 
-        Object columnValue = rowMapper.getColumnValue(rs, pd);
+        Object columnValue = rowMapper.getColumnValue(rs, pd, pd.getName());
         assertThat(columnValue).isEqualTo(TestEnum.NORMAL);
     }
 }

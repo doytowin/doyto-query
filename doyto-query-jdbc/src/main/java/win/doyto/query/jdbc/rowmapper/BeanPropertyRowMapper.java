@@ -74,7 +74,7 @@ public class BeanPropertyRowMapper<E> implements RowMapper<E> {
                 continue;
             }
             try {
-                Object value = getColumnValue(rs, pd);
+                Object value = getColumnValue(rs, pd, rsmd.getColumnLabel(i));
                 pd.getWriteMethod().invoke(entity, value);
             } catch (IllegalArgumentException | NoSuchElementException e) {
                 log.error("Fail to get value for [{}]: {}", pd.getName(), e.getMessage());
@@ -85,8 +85,7 @@ public class BeanPropertyRowMapper<E> implements RowMapper<E> {
         return entity;
     }
 
-    protected Object getColumnValue(ResultSet rs, PropertyDescriptor pd) throws SQLException {
-        String columnLabel = pd.getName();
+    protected Object getColumnValue(ResultSet rs, PropertyDescriptor pd, String columnLabel) throws SQLException {
         try {
             if (rs.getObject(columnLabel) == null) return null;
         } catch (SQLException e) {
