@@ -73,11 +73,11 @@ public class BeanPropertyRowMapper<E> implements RowMapper<E> {
 
         ResultSetMetaData rsmd = rs.getMetaData();
         for (int i = 0; i++ < rsmd.getColumnCount();) {
-            String columnName = rsmd.getColumnName(i);
-            PropertyDescriptor pd = fieldMap.get(columnName);
+            String columnLabel = rsmd.getColumnLabel(i);
+            PropertyDescriptor pd = fieldMap.get(columnLabel);
             if (pd == null) {
-                if (!RelationalQueryBuilder.KEY_COLUMN.equals(columnName)) {
-                    log.warn("Column [{}] not found in {}.", columnName, fieldMap.keySet());
+                if (!RelationalQueryBuilder.KEY_COLUMN.equals(columnLabel)) {
+                    log.warn("Column [{}] not found in {}.", columnLabel, fieldMap.keySet());
                 }
                 continue;
             }
