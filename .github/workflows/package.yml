@@ -10,7 +10,18 @@ on:
 jobs:
   version:
     name: Determine Java version
-    uses: doytowin/doyto-devops/.github/workflows/version.yml@main
+    runs-on: ubuntu-latest
+    env:
+      VERSION: 8
+    outputs:
+      java: ${{ steps.version.outputs.java }}
+    steps:
+      - name: Switch Java version
+        if: github.ref == 'refs/heads/package/v2'
+        run: echo "VERSION=17" >> $GITHUB_ENV
+      - id: version
+        name: Write Java version
+        run: echo "java=$VERSION" >> "$GITHUB_OUTPUT"
   package:
     needs: version
     name: Call Package Workflow
