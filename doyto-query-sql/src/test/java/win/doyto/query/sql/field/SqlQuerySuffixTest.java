@@ -62,7 +62,7 @@ class SqlQuerySuffixTest {
             "usernameNotLike, test, username NOT LIKE ?, %test%",
             "usernameLike, %test%admin%, username LIKE ?, %test%admin%",
             "usernameNotLike, %test%admin%, username NOT LIKE ?, %test%admin%",
-            "usernameContain, test%admin, username LIKE ?, %test\\%admin%",
+            "usernameContain, test%admin, username LIKE ? ESCAPE '\\', %test\\%admin%",
             "usernameNotContain, test, username NOT LIKE ?, %test%",
             "usernameStart, test, username LIKE ?, test%",
             "usernameNotStart, test, username NOT LIKE ?, test%",
