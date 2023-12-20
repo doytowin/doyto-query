@@ -64,8 +64,8 @@ public final class FieldMapper {
             processor = new QueryFieldProcessor(field);
         } else if (Having.class.isAssignableFrom(field.getDeclaringClass())) {
             processor = initHavingField(field);
-        } else if (boolean.class.isAssignableFrom(fieldType)) {
-            processor = new PrimitiveBooleanProcessor(field.getName());
+        } else if (ColumnComparisonProcessor.support(field)) {
+            processor = new ColumnComparisonProcessor(field.getName());
         } else if (OrCollectionProcessor.support(field)) {
             processor = new OrCollectionProcessor(field);
         } else if (field.isAnnotationPresent(Column.class)) {

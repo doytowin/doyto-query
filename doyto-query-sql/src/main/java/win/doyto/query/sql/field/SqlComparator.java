@@ -54,8 +54,12 @@ enum SqlComparator {
 
     private final String op;
 
+    static Matcher matches(String name) {
+        return CONDITION_PTN.matcher(name);
+    }
+
     static String buildClause(String fieldName) {
-        Matcher matcher = CONDITION_PTN.matcher(fieldName);
+        Matcher matcher = matches(fieldName);
         if (!matcher.find()) {
             log.warn("Invalid field name for primitive type: {}", fieldName);
             return null;
