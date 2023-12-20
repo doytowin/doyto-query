@@ -22,24 +22,25 @@ import java.util.List;
 
 /**
  * ColumnFieldProcessor
+ * fetch column name from {@link Column#name()}
+ * and resolve the suffix
  *
  * @author f0rb on 2023/7/13
  * @since 1.0.2
  */
 public class ColumnFieldProcessor implements FieldProcessor {
 
-    private String fieldName;
-    private String columnName;
+    private final String columnName;
+    private final SqlQuerySuffix sqlQuerySuffix;
 
     public ColumnFieldProcessor(Field field) {
         Column column = field.getAnnotation(Column.class);
         columnName = column.name();
-        fieldName = field.getName();
+        sqlQuerySuffix = SqlQuerySuffix.resolve(field.getName());
     }
 
     @Override
     public String process(String alias, List<Object> argList, Object value) {
-        SqlQuerySuffix sqlQuerySuffix = SqlQuerySuffix.resolve(fieldName);
         value = sqlQuerySuffix.getValueProcessor().escapeValue(value);
         return sqlQuerySuffix.buildColumnCondition(columnName, argList, value);
     }
