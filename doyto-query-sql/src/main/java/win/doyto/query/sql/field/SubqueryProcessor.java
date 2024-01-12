@@ -57,7 +57,11 @@ public class SubqueryProcessor implements FieldProcessor {
         List<String> relations = EntityMetadata.resolveEntityRelations(classes);
         joinConditions = String.join(AND, relations);
 
-        clauseFormat = buildClauseFormat(fieldName, subquery.select(), tableName);
+        String column = subquery.select();
+        if (!column.contains("(")) {
+            column = ColumnUtil.resolveColumn(column);
+        }
+        clauseFormat = buildClauseFormat(fieldName, column, tableName);
     }
 
     private static Class<?>[] combineArray(Class<?>[] host, Class<?>[] from) {
