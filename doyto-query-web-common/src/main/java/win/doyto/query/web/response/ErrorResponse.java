@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2023 Forb Yuan
+ * Copyright © 2019-2024 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,10 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
-import java.util.*;
-import java.util.stream.Collectors;
 import javax.validation.ConstraintViolation;
 import javax.validation.Path;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 返回给移动客户端的JSON对象的结构

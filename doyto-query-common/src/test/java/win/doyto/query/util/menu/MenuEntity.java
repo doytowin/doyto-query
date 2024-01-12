@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2023 Forb Yuan
+ * Copyright © 2019-2024 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.entity.AbstractPersistable;
 
-import java.util.Objects;
 import javax.persistence.Entity;
+import java.util.Objects;
 
 /**
  * MenuEntity
