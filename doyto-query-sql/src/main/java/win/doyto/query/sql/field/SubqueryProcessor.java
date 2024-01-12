@@ -98,11 +98,11 @@ public class SubqueryProcessor implements FieldProcessor {
             String columnName = querySuffix1.removeSuffix(tempName);
             columnName = ColumnUtil.convertColumn(columnName);
 
-            clause = columnName + SPACE + querySuffix1.getOp() + SPACE + querySuffix.getOp();
+            clause = columnName + querySuffix1.getOp() + querySuffix.getOp();
         } else {
             String columnName = querySuffix.removeSuffix(fieldName);
             columnName = ColumnUtil.convertColumn(columnName);
-            clause = columnName + SPACE + querySuffix.getOp() + SPACE;
+            clause = columnName + querySuffix.getOp();
         }
         return clause + OP + SELECT + column + FROM + table + "%s" + CP;
     }

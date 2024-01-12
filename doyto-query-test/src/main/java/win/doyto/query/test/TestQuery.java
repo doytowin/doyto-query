@@ -81,7 +81,7 @@ public class TestQuery extends PageQuery {
 
     private String usernameOrUserCodeLike;
 
-    private boolean memoNull;
+    private Boolean memoNull;
     private boolean memoNotNull;
 
     private TestEnum userLevel;

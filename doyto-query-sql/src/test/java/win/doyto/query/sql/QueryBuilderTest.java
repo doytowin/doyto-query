@@ -260,6 +260,16 @@ class QueryBuilderTest {
     }
 
     @Test
+    void supportIsNullWithValueFalse() {
+        TestQuery testQuery = TestQuery.builder().memoNull(false).build();
+
+        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
+
+        assertThat(sql).isEqualTo("SELECT * FROM t_user t WHERE memo IS NOT NULL");
+        assertThat(argList).isEmpty();
+    }
+
+    @Test
     void customPageDialect() {
         GlobalConfiguration globalConfiguration = GlobalConfiguration.instance();
         Dialect origin = globalConfiguration.getDialect();
