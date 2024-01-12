@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2023 Forb Yuan
+ * Copyright © 2019-2024 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,7 +191,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
         assertThat(menus).hasSize(1);
         MenuView menu = menus.get(0);
         assertThat(menu.getId()).isEqualTo(4);
-        assertThat(menu.getParent().getId()).isEqualTo(1L);
+        assertThat(menu.getParent().getId()).isEqualTo(1);
         assertThat(menu.getChildren()).hasSize(3);
     }
 }
