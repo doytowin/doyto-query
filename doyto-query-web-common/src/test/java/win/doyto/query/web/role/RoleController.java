@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2023 Forb Yuan
+ * Copyright © 2019-2024 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,10 @@ import win.doyto.query.web.response.JsonBody;
 import win.doyto.query.web.response.JsonResponse;
 import win.doyto.query.web.response.PresetErrorCode;
 
-import java.util.List;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 /**
  * UserController

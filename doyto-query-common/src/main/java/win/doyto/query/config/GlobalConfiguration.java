@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2023 Forb Yuan
+ * Copyright © 2019-2024 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ public class GlobalConfiguration {
     private String joinIdFormat = "%s_id";
     private String tableFormat;
     private Pattern tablePtn;
-    private Pattern wildcardPtn = Pattern.compile("[%|_]");
+    private Pattern wildcardPtn = Pattern.compile("[%_\\\\]");
     private String joinTableFormat = "a_%s_and_%s";
     private Dialect dialect = new SimpleDialect();
     private Function<Integer, Integer> startPageNumberAdjuster;

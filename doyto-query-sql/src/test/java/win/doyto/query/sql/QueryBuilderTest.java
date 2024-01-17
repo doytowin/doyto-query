@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2023 Forb Yuan
+ * Copyright © 2019-2024 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,7 +127,7 @@ class QueryBuilderTest {
     void supportContainSuffix() {
         TestQuery testQuery = TestQuery.builder().usernameContain("_test%f0rb").build();
 
-        assertEquals("SELECT * FROM t_user t WHERE username LIKE ?",
+        assertEquals("SELECT * FROM t_user t WHERE username LIKE ? ESCAPE '\\'",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("%\\_test\\%f0rb%");
     }

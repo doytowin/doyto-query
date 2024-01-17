@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2023 Forb Yuan
+ * Copyright © 2019-2024 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import win.doyto.query.config.GlobalConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,14 +40,22 @@ class CommonUtilTest {
     void testEscapeLike() {
         assertNull(escapeLike(null));
         assertEquals("", escapeLike(""));
+    }
 
-        assertEquals("%f0rb%", escapeLike("f0rb"));
-        assertNotEquals("%%%", escapeLike("%"));
-        assertEquals("%\\%%", escapeLike("%"));
-        assertEquals("%f0rb\\%%", escapeLike("f0rb%"));
-
-        assertNotEquals("%_%", escapeLike("_"));
-        assertEquals("%\\_%", escapeLike("_"));
+    @ParameterizedTest
+    @CsvSource({
+            "'', ''",
+            "admin, admin",
+            "a%min, a\\%min",
+            "a_min, a\\_min",
+            "%, \\%",
+            "ad%, ad\\%",
+            "_, \\_",
+            "\\, \\\\",
+            "a\\_min, a\\\\\\_min",
+    })
+    void testEscape(String input, String expect) {
+        assertEquals(expect, escape(input));
     }
 
     @Test

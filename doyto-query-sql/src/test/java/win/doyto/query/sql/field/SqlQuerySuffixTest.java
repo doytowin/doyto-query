@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2023 Forb Yuan
+ * Copyright © 2019-2024 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ class SqlQuerySuffixTest {
             "usernameNotLike, test, username NOT LIKE ?, %test%",
             "usernameLike, %test%admin%, username LIKE ?, %test%admin%",
             "usernameNotLike, %test%admin%, username NOT LIKE ?, %test%admin%",
-            "usernameContain, test%admin, username LIKE ?, %test\\%admin%",
+            "usernameContain, test%admin, username LIKE ? ESCAPE '\\', %test\\%admin%",
             "usernameNotContain, test, username NOT LIKE ?, %test%",
             "usernameStart, test, username LIKE ?, test%",
             "usernameNotStart, test, username NOT LIKE ?, test%",

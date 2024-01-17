@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2023 Forb Yuan
+ * Copyright © 2019-2024 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.BeanUtil;
 import win.doyto.query.util.ColumnUtil;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -37,8 +39,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 
 import static win.doyto.query.core.QuerySuffix.isValidValue;
 import static win.doyto.query.core.QuerySuffix.resolve;
