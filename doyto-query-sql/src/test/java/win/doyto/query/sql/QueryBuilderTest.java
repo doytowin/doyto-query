@@ -127,7 +127,7 @@ class QueryBuilderTest {
     void supportContainSuffix() {
         TestQuery testQuery = TestQuery.builder().usernameContain("_test%f0rb").build();
 
-        assertEquals("SELECT * FROM t_user t WHERE username LIKE ?",
+        assertEquals("SELECT * FROM t_user t WHERE username LIKE ? ESCAPE '\\'",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly("%\\_test\\%f0rb%");
     }
