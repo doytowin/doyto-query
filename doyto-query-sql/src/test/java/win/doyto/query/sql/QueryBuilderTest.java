@@ -260,6 +260,16 @@ class QueryBuilderTest {
     }
 
     @Test
+    void supportIsNullWithValueFalse() {
+        TestQuery testQuery = TestQuery.builder().memoNull(false).build();
+
+        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
+
+        assertThat(sql).isEqualTo("SELECT * FROM t_user t WHERE memo IS NOT NULL");
+        assertThat(argList).isEmpty();
+    }
+
+    @Test
     void customPageDialect() {
         GlobalConfiguration globalConfiguration = GlobalConfiguration.instance();
         Dialect origin = globalConfiguration.getDialect();
@@ -398,6 +408,15 @@ class QueryBuilderTest {
     void buildSubqueryWithComparisonOperators() {
         TestQuery queryByInvalid = TestQuery.builder().valid(false).build();
         TestQuery testQuery = TestQuery.builder().scoreGt1(queryByInvalid).build();
+        assertEquals("SELECT * FROM t_user t WHERE score > (SELECT avg(score) FROM t_user WHERE valid = ?)",
+                     testQueryBuilder.buildSelectAndArgs(testQuery, argList));
+        assertThat(argList).containsExactly(false);
+    }
+
+    @Test
+    void buildSubqueryWithComparisonOperatorsAndAggregateColumn() {
+        TestQuery queryByInvalid = TestQuery.builder().valid(false).build();
+        TestQuery testQuery = TestQuery.builder().scoreGt3(queryByInvalid).build();
         assertEquals("SELECT * FROM t_user t WHERE score > (SELECT avg(score) FROM t_user WHERE valid = ?)",
                      testQueryBuilder.buildSelectAndArgs(testQuery, argList));
         assertThat(argList).containsExactly(false);

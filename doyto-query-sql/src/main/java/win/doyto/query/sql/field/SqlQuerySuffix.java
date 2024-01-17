@@ -45,8 +45,8 @@ import static win.doyto.query.sql.Constant.*;
 @Getter
 @Slf4j
 public enum SqlQuerySuffix {
-    Not("!="),
-    Ne("<>"),
+    Not(" != "),
+    Ne(" <> "),
     NotLike(NOT_LIKE, ValueProcessor.LIKE_VALUE_PROCESSOR),
     Like(LIKE, ValueProcessor.LIKE_VALUE_PROCESSOR),
     NotContain(NOT_LIKE, ValueProcessor.CONTAIN_VALUE_PROCESSOR),
@@ -75,23 +75,23 @@ public enum SqlQuerySuffix {
             return CommonUtil.escapeEnd(String.valueOf(value));
         }
     }),
-    NotIn("NOT IN", new InValueProcessor() {
+    NotIn(" NOT IN ", new InValueProcessor() {
         @Override
         public boolean shouldIgnore(Object value) {
             return super.shouldIgnore(value) || ((Collection<?>) value).isEmpty();
         }
     }),
-    In("IN", new InValueProcessor()),
+    In(" IN ", new InValueProcessor()),
     NotNull("IS NOT NULL", ValueProcessor.EMPTY_PROCESSOR),
-    Null("IS NULL", ValueProcessor.EMPTY_PROCESSOR),
-    Gt(">"),
-    Ge(">="),
-    Lt("<"),
-    Le("<="),
-    Eq("="),
+    Null(" ", value -> Boolean.TRUE.equals(value) ? "IS NULL" : "IS NOT NULL"),
+    Gt(" > " ),
+    Ge(" >= "),
+    Lt(" < "),
+    Le(" <= "),
+    Eq(" = "),
     Any("ANY"),
     All("ALL"),
-    NONE("=");
+    NONE(" = ");
 
     private static final Pattern SUFFIX_PTN = Pattern.compile(
             Arrays.stream(values())
@@ -126,18 +126,11 @@ public enum SqlQuerySuffix {
         }
         String placeHolderEx = valueProcessor.getPlaceHolderEx(value);
         appendArg(argList, value, placeHolderEx);
-        return buildColumnClause(columnName, placeHolderEx);
+        return columnName + op + placeHolderEx;
     }
 
     public boolean shouldIgnore(Object value) {
         return valueProcessor.shouldIgnore(value);
-    }
-
-    private String buildColumnClause(String columnName, String placeHolderEx) {
-        if (!placeHolderEx.isEmpty()) {
-            placeHolderEx = SPACE + placeHolderEx;
-        }
-        return columnName + SPACE + getOp() + placeHolderEx;
     }
 
     private static void appendArg(List<Object> argList, Object value, String placeHolderEx) {

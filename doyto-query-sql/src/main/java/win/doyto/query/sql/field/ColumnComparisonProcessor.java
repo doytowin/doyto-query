@@ -17,29 +17,27 @@
 package win.doyto.query.sql.field;
 
 import org.apache.commons.lang3.StringUtils;
-import win.doyto.query.util.ColumnUtil;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 /**
- * PrimitiveBooleanProcessor
+ * ColumnComparisonProcessor
  *
  * @author f0rb on 2023/2/18
  * @since 1.0.1
  */
-public class PrimitiveBooleanProcessor implements FieldProcessor {
+public class ColumnComparisonProcessor implements FieldProcessor {
 
     private final String clause;
 
-    public PrimitiveBooleanProcessor(String fieldName) {
-        SqlQuerySuffix sqlQuerySuffix = SqlQuerySuffix.resolve(fieldName);
-        if (sqlQuerySuffix == SqlQuerySuffix.Null || sqlQuerySuffix == SqlQuerySuffix.NotNull) {
-            String columnName = sqlQuerySuffix.removeSuffix(fieldName);
-            columnName = ColumnUtil.convertColumn(columnName);
-            clause = columnName + " " + sqlQuerySuffix.getOp();
-        } else {
-            clause = SqlComparator.buildClause(fieldName);
-        }
+    static boolean support(Field field) {
+        return boolean.class.isAssignableFrom(field.getType())
+                && SqlComparator.matches(field.getName()).find();
+    }
+
+    public ColumnComparisonProcessor(String fieldName) {
+        clause = SqlComparator.buildClause(fieldName);
     }
 
     @Override

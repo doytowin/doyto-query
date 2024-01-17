@@ -81,7 +81,7 @@ public class TestQuery extends PageQuery {
 
     private String usernameOrUserCodeLike;
 
-    private boolean memoNull;
+    private Boolean memoNull;
     private boolean memoNotNull;
 
     private TestEnum userLevel;
@@ -107,6 +107,8 @@ public class TestQuery extends PageQuery {
 
     @Subquery(select = "avg(score)", from = UserEntity.class)
     private TestQuery scoreGt1;
+    @Subquery(select = "avgScore", from = UserEntity.class)
+    private TestQuery scoreGt3;
     private TestQuery scoreGt$avgScoreFromUser;
 
     private Double scoreGt;  // score > ?
