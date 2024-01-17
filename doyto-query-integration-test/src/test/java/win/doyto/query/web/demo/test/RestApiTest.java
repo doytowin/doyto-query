@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2023 Forb Yuan
+ * Copyright © 2019-2024 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import win.doyto.query.web.demo.module.user.UserQuery;
 import win.doyto.query.web.demo.module.user.UserRequest;
 import win.doyto.query.web.demo.module.user.UserResponse;
 
-import java.util.List;
 import javax.annotation.Resource;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

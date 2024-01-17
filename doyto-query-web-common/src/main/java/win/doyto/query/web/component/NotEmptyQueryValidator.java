@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2023 Forb Yuan
+ * Copyright © 2019-2024 Forb Yuan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package win.doyto.query.web.component;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.ColumnUtil;
 
-import java.lang.reflect.Field;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.lang.reflect.Field;
 
 import static win.doyto.query.core.QuerySuffix.isValidValue;
 import static win.doyto.query.util.CommonUtil.readFieldGetter;
