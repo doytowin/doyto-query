@@ -82,7 +82,9 @@ public class DomainPathDetail {
         String[] domainPath = prepareDomainPath(originDomainPath);
         String[] joinIds = prepareJoinIds(domainPath);
         if (domainPath.length == 1) {
-            joinIds[0] = foreignField.equals("id") ? localFieldColumn : foreignFieldColumn;
+            joinIds[0] = foreignField.equals("id")
+                    ? localFieldColumn      // many-to-one
+                    : foreignFieldColumn;   // one-to-many
         }
         String[] joinTables = prepareJoinTablesWithReverseSign(originDomainPath);
         String targetTable = prepareTargetTable(domainPath);

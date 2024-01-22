@@ -68,19 +68,19 @@ class RelationalQueryBuilderTest {
                 "WHERE id IN (\n" +
                 "  SELECT perm_id FROM a_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM a_user_and_role WHERE user_id = ?\n" +
-                " ))\n" +
+                "))\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, id, permName, valid FROM t_perm\n" +
                 "WHERE id IN (\n" +
                 "  SELECT perm_id FROM a_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM a_user_and_role WHERE user_id = ?\n" +
-                " ))\n" +
+                "))\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, id, permName, valid FROM t_perm\n" +
                 "WHERE id IN (\n" +
                 "  SELECT perm_id FROM a_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM a_user_and_role WHERE user_id = ?\n" +
-                " ))";
+                "))";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 2, 3, 3);
     }
@@ -97,14 +97,14 @@ class RelationalQueryBuilderTest {
                 "  SELECT menu_id FROM a_perm_and_menu WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM a_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM a_user_and_role WHERE user_id = ?\n" +
-                " )))\n" +
+                ")))\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, id, menuName, platform FROM t_menu\n" +
                 "WHERE id IN (\n" +
                 "  SELECT menu_id FROM a_perm_and_menu WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM a_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM a_user_and_role WHERE user_id = ?\n" +
-                " )))";
+                ")))";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
     }
@@ -119,12 +119,12 @@ class RelationalQueryBuilderTest {
         String expected = "\nSELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 "WHERE id IN (\n" +
                 "  SELECT user_id FROM a_user_and_role WHERE role_id = ?\n" +
-                " )\n" +
+                ")\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 "WHERE id IN (\n" +
                 "  SELECT user_id FROM a_user_and_role WHERE role_id = ?\n" +
-                " )";
+                ")";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
     }
@@ -141,13 +141,13 @@ class RelationalQueryBuilderTest {
                 "WHERE id IN (\n" +
                 "  SELECT user_id FROM a_user_and_role WHERE role_id IN (\n" +
                 "  SELECT role_id FROM a_role_and_perm WHERE perm_id = ?\n" +
-                " ))\n" +
+                "))\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 "WHERE id IN (\n" +
                 "  SELECT user_id FROM a_user_and_role WHERE role_id IN (\n" +
                 "  SELECT role_id FROM a_role_and_perm WHERE perm_id = ?\n" +
-                " ))";
+                "))";
         assertEquals(expected, sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
     }
@@ -165,21 +165,21 @@ class RelationalQueryBuilderTest {
                 "  SELECT user_id FROM a_user_and_role WHERE role_id IN (\n" +
                 "  SELECT role_id FROM a_role_and_perm WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM a_perm_and_menu WHERE menu_id = ?\n" +
-                " )))\n" +
+                ")))\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 "WHERE id IN (\n" +
                 "  SELECT user_id FROM a_user_and_role WHERE role_id IN (\n" +
                 "  SELECT role_id FROM a_role_and_perm WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM a_perm_and_menu WHERE menu_id = ?\n" +
-                " )))\n" +
+                ")))\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 "WHERE id IN (\n" +
                 "  SELECT user_id FROM a_user_and_role WHERE role_id IN (\n" +
                 "  SELECT role_id FROM a_role_and_perm WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM a_perm_and_menu WHERE menu_id = ?\n" +
-                " )))";
+                ")))";
         assertEquals(expected, sqlAndArgs.getSql());
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3, 4, 4);
     }
@@ -199,19 +199,19 @@ class RelationalQueryBuilderTest {
                 "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 "WHERE id IN (\n" +
                 "  SELECT user_id FROM a_user_and_role WHERE role_id = ?\n" +
-                " ) AND email LIKE ?\n" +
+                ") AND email LIKE ?\n" +
                 "ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 "WHERE id IN (\n" +
                 "  SELECT user_id FROM a_user_and_role WHERE role_id = ?\n" +
-                " ) AND email LIKE ?\n" +
+                ") AND email LIKE ?\n" +
                 "ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 "WHERE id IN (\n" +
                 "  SELECT user_id FROM a_user_and_role WHERE role_id = ?\n" +
-                " ) AND email LIKE ?\n" +
+                ") AND email LIKE ?\n" +
                 "ORDER BY id DESC LIMIT 10 OFFSET 0";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, "%@163%", 2, 2, "%@163%", 3, 3, "%@163%");
@@ -234,21 +234,21 @@ class RelationalQueryBuilderTest {
                 "WHERE id IN (\n" +
                 "  SELECT perm_id FROM a_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM a_user_and_role WHERE user_id = ?\n" +
-                " )) AND valid = ?\n" +
+                ")) AND valid = ?\n" +
                 "ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, id, permName, valid FROM t_perm\n" +
                 "WHERE id IN (\n" +
                 "  SELECT perm_id FROM a_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM a_user_and_role WHERE user_id = ?\n" +
-                " )) AND valid = ?\n" +
+                ")) AND valid = ?\n" +
                 "ORDER BY id DESC LIMIT 10 OFFSET 0\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, id, permName, valid FROM t_perm\n" +
                 "WHERE id IN (\n" +
                 "  SELECT perm_id FROM a_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM a_user_and_role WHERE user_id = ?\n" +
-                " )) AND valid = ?\n" +
+                ")) AND valid = ?\n" +
                 "ORDER BY id DESC LIMIT 10 OFFSET 0";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, true, 2, 2, true, 3, 3, true);
@@ -262,13 +262,13 @@ class RelationalQueryBuilderTest {
                 new UserQuery(), UserView.class, field, Arrays.asList(1, 3));
 
         String expected = "\nSELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
-                "WHERE id = (\n" +
-                "  SELECT create_user_id FROM t_role WHERE id = ?\n" +
+                "WHERE id IN (\n" +
+                "  SELECT createUserId FROM t_role WHERE id = ?\n" +
                 ")" +
                 "\nUNION ALL\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
-                "WHERE id = (\n" +
-                "  SELECT create_user_id FROM t_role WHERE id = ?\n" +
+                "WHERE id IN (\n" +
+                "  SELECT createUserId FROM t_role WHERE id = ?\n" +
                 ")";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
@@ -283,14 +283,14 @@ class RelationalQueryBuilderTest {
                 userQuery, UserView.class, field, Arrays.asList(1, 3));
 
         String expected = "\nSELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
-                "WHERE id = (\n" +
-                "  SELECT create_user_id FROM t_role WHERE id = ?\n" +
+                "WHERE id IN (\n" +
+                "  SELECT createUserId FROM t_role WHERE id = ?\n" +
                 ") AND memo IS NULL\n" +
                 "ORDER BY id desc LIMIT 5 OFFSET 0" +
                 "\nUNION ALL\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
-                "WHERE id = (\n" +
-                "  SELECT create_user_id FROM t_role WHERE id = ?\n" +
+                "WHERE id IN (\n" +
+                "  SELECT createUserId FROM t_role WHERE id = ?\n" +
                 ") AND memo IS NULL\n" +
                 "ORDER BY id desc LIMIT 5 OFFSET 0";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
@@ -306,10 +306,10 @@ class RelationalQueryBuilderTest {
 
         String expected = "\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, id, roleName, roleCode, valid FROM t_role\n" +
-                "WHERE create_user_id = ?" +
+                "WHERE createUserId = ?" +
                 "\nUNION ALL\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, id, roleName, roleCode, valid FROM t_role\n" +
-                "WHERE create_user_id = ?";
+                "WHERE createUserId = ?";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
     }
@@ -324,11 +324,11 @@ class RelationalQueryBuilderTest {
 
         String expected = "\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, id, roleName, roleCode, valid FROM t_role\n" +
-                "WHERE create_user_id = ? AND valid = ?\n" +
+                "WHERE createUserId = ? AND valid = ?\n" +
                 "ORDER BY id desc LIMIT 5 OFFSET 0" +
                 "\nUNION ALL\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, id, roleName, roleCode, valid FROM t_role\n" +
-                "WHERE create_user_id = ? AND valid = ?\n" +
+                "WHERE createUserId = ? AND valid = ?\n" +
                 "ORDER BY id desc LIMIT 5 OFFSET 0";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, true, 3, 3, true);
@@ -357,17 +357,17 @@ class RelationalQueryBuilderTest {
         String expected = "\nSELECT ? AS MAIN_ENTITY_ID, count(*) AS count FROM t_role\n" +
                 "WHERE id IN (\n" +
                 "  SELECT role_id FROM a_user_and_role WHERE user_id = ?\n" +
-                " )\n" +
+                ")\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, count(*) AS count FROM t_role\n" +
                 "WHERE id IN (\n" +
                 "  SELECT role_id FROM a_user_and_role WHERE user_id = ?\n" +
-                " )\n" +
+                ")\n" +
                 "UNION ALL\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, count(*) AS count FROM t_role\n" +
                 "WHERE id IN (\n" +
                 "  SELECT role_id FROM a_user_and_role WHERE user_id = ?\n" +
-                " )";
+                ")";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 2, 3, 3);
     }

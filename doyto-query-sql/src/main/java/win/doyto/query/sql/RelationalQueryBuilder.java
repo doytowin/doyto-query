@@ -20,26 +20,20 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.Join;
 import win.doyto.query.annotation.View;
 import win.doyto.query.annotation.With;
-import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Having;
 import win.doyto.query.core.PageQuery;
-import win.doyto.query.relation.DomainPathDetail;
-import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static win.doyto.query.sql.BuildHelper.*;
 import static win.doyto.query.sql.Constant.*;
@@ -155,24 +149,9 @@ public class RelationalQueryBuilder {
     public static <I extends Serializable, R> SqlAndArgs buildSqlAndArgsForSubDomain(
             DoytoQuery query, Class<R> joinEntityClass, Field joinField, List<I> mainIds
     ) {
-        DomainPath domainPath = joinField.getAnnotation(DomainPath.class);
-        String[] domains = domainPath.value();
-        String mainTableName = resolveTableName(joinField.getDeclaringClass());
-        String subTableName = GlobalConfiguration.formatTable(domains[0]);
-        String subColumns = buildSubDomainColumns(joinEntityClass);
         LinkedList<Object> queryArgs = new LinkedList<>();
-        StringBuilder sqlBuilder;
-        if (domains.length == 1) {
-            if (Collection.class.isAssignableFrom(joinField.getType())) {
-                sqlBuilder = buildQueryManyForEachMainDomain(domainPath.foreignField(), subTableName, subColumns);
-            } else {
-                sqlBuilder = buildQueryOneForEachMainDomain(mainTableName, domainPath.localField(), subTableName, subColumns);
-            }
-        } else {
-            DomainPathDetail domainPathDetail = DomainPathDetail.buildBy(domainPath);
-            sqlBuilder = buildQueryForEachMainDomain(subColumns, domainPathDetail);
-        }
-
+        RelatedDomainPath relatedDomainPath = new RelatedDomainPath(joinField, joinEntityClass);
+        StringBuilder sqlBuilder = relatedDomainPath.buildQueryForEachMainDomain();
         String condition = buildCondition(AND, query, queryArgs);
         if (!condition.isEmpty()) {
             sqlBuilder.append(condition);
@@ -195,60 +174,6 @@ public class RelationalQueryBuilder {
                     return clause;
                 }).collect(Collectors.joining(UNION_ALL, LF, EMPTY))
         );
-    }
-
-    private static StringBuilder buildQueryManyForEachMainDomain(
-            String mainFKColumn, String subTableName, String subColumns
-    ) {
-        return new StringBuilder()
-                .append(SELECT).append(PLACE_HOLDER).append(AS).append(KEY_COLUMN).append(SEPARATOR).append(subColumns)
-                .append(FROM).append(subTableName)
-                .append(WHERE_).append(mainFKColumn).append(EQUAL_HOLDER);
-
-    }
-
-    private static StringBuilder buildQueryOneForEachMainDomain(
-            String mainTableName, String mainFKColumn, String subTableName, String subColumns
-    ) {
-        return new StringBuilder()
-                .append(SELECT).append(PLACE_HOLDER).append(AS).append(KEY_COLUMN).append(SEPARATOR).append(subColumns)
-                .append(FROM).append(subTableName)
-                .append(WHERE_).append(ID).append(EQUAL).append(OP).append(LF).append(SPACE).append(SPACE)
-                .append(SELECT).append(mainFKColumn).append(FROM).append(mainTableName)
-                .append(WHERE).append(ID).append(EQUAL_HOLDER).append(LF).append(CP);
-    }
-
-    private static StringBuilder buildQueryForEachMainDomain(
-            String columns, DomainPathDetail domainPathDetail
-    ) {
-        String[] joinIds = domainPathDetail.getJoinIds();
-        String[] joinTables = domainPathDetail.getJoinTables();
-        String targetDomainTable = domainPathDetail.getTargetTable();
-        int n = joinIds.length - 1;
-
-        // select columns from target domain `joinTables[n]`
-        StringBuilder sqlBuilder = new StringBuilder();
-        sqlBuilder.append(SELECT).append(PLACE_HOLDER).append(AS).append(KEY_COLUMN)
-                  .append(SEPARATOR).append(columns)
-                  .append(FROM).append(targetDomainTable)
-                  .append(WHERE_).append(ID);
-        // nested query for medium domains
-        for (int i = n - 1; i >= 0; i--) {
-            sqlBuilder.append(IN).append(OP).append(LF).append(SPACE + SPACE)
-                      .append(SELECT).append(joinIds[i + 1]).append(FROM).append(joinTables[i])
-                      .append(WHERE).append(joinIds[i]);
-        }
-        sqlBuilder.append(EQUAL_HOLDER).append(LF).append(SPACE);
-        IntStream.range(0, n).mapToObj(i -> CP).forEach(sqlBuilder::append);
-
-        return sqlBuilder;
-    }
-
-    private static String buildSubDomainColumns(Class<?> joinEntityClass) {
-        return FieldUtils.getAllFieldsList(joinEntityClass).stream()
-                         .filter(ColumnUtil::filterForJoinEntity)
-                         .map(ColumnUtil::selectAs)
-                         .collect(Collectors.joining(SEPARATOR));
     }
 
 }
