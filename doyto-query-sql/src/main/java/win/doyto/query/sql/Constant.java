@@ -53,6 +53,6 @@ public interface Constant {
     String HAVING_PREFIX = "_having_";
     String WHERE_ = "\nWHERE ";
     String TABLE_ALIAS = "t";
-    String LIKE = "LIKE";
-    String NOT_LIKE = "NOT LIKE";
+    String LIKE = " LIKE ";
+    String NOT_LIKE = " NOT LIKE ";
 }
