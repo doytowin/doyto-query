@@ -146,7 +146,7 @@ public class CommonUtil {
         return StringUtils.isBlank(like) ? like : "%" + escape(like);
     }
 
-    private static String escape(String like) {
+    static String escape(String like) {
         return GlobalConfiguration.instance().getWildcardPtn().matcher(like).replaceAll("\\\\$0");
     }
 

@@ -216,6 +216,9 @@ public enum SqlQuerySuffix {
     private static class LikeValueProcessor implements ValueProcessor {
         @Override
         public String getPlaceHolderEx(Object value) {
+            if (StringUtils.contains(value.toString(), "\\")) {
+                return PLACE_HOLDER + " ESCAPE '\\'";
+            }
             return PLACE_HOLDER;
         }
 
