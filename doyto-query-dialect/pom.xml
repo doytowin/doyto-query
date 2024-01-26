@@ -20,7 +20,7 @@
     <parent>
         <groupId>win.doyto</groupId>
         <artifactId>doyto-query-parent</artifactId>
-        <version>1.0.3</version>
+        <version>1.0.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

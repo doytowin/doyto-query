@@ -27,7 +27,7 @@
     <artifactId>doyto-query-parent</artifactId>
     <name>DoytoQuery</name>
     <packaging>pom</packaging>
-    <version>1.0.3</version>
+    <version>1.0.4-SNAPSHOT</version>
     <url>https://query.doyto.win/</url>
 
     <properties>
@@ -183,7 +183,7 @@
         </plugins>
     </build>
     <scm>
-        <tag>v1.0.3</tag>
+        <tag>main</tag>
         <url>https://github.com/doytowin/doyto-query</url>
         <connection>scm:git:https://github.com/doytowin/doyto-query.git</connection>
         <developerConnection>scm:git:https://github.com/doytowin/doyto-query.git</developerConnection>
