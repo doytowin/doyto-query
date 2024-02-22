@@ -16,10 +16,25 @@
 
 package win.doyto.query.jdbc;
 
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
+import static win.doyto.query.sql.RelationalQueryBuilder.KEY_COLUMN;
+import static win.doyto.query.sql.RelationalQueryBuilder.buildCountAndArgs;
+import static win.doyto.query.sql.RelationalQueryBuilder.buildSelectAndArgs;
+import static win.doyto.query.sql.RelationalQueryBuilder.buildSqlAndArgsForSubDomain;
+
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DataQueryClient;
@@ -30,13 +45,6 @@ import win.doyto.query.jdbc.rowmapper.JoinRowMapperResultSetExtractor;
 import win.doyto.query.jdbc.rowmapper.RowMapper;
 import win.doyto.query.sql.SqlAndArgs;
 import win.doyto.query.util.CommonUtil;
-
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static win.doyto.query.sql.RelationalQueryBuilder.*;
 
 /**
  * JdbcDataQueryClient
@@ -81,7 +89,7 @@ public class JdbcDataQueryClient implements DataQueryClient {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <V, Q extends AggregationQuery> List<V> aggregate(Q query, Class<V> viewClass) {
+    public <V, Q extends DoytoQuery & AggregationQuery> List<V> aggregate(Q query, Class<V> viewClass) {
         RowMapper<V> rowMapper = (RowMapper<V>) holder.computeIfAbsent(viewClass, BeanPropertyRowMapper::new);
         SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, viewClass);
         return databaseOperations.query(sqlAndArgs, rowMapper);

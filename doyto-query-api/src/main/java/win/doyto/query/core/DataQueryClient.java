@@ -16,10 +16,10 @@
 
 package win.doyto.query.core;
 
-import win.doyto.query.entity.Persistable;
-
 import java.io.Serializable;
 import java.util.List;
+
+import win.doyto.query.entity.Persistable;
 
 /**
  * DataQueryClient
@@ -56,6 +56,6 @@ public interface DataQueryClient {
         return page(query, query.getDomainClass());
     }
 
-    <V, Q extends AggregationQuery>
+    <V, Q extends DoytoQuery & AggregationQuery>
     List<V> aggregate(Q query, Class<V> viewClass);
 }
