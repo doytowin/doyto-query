@@ -16,14 +16,14 @@
 
 package win.doyto.query.test.tpch.q19;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.And;
-
-import java.util.List;
+import win.doyto.query.core.Query;
 
 /**
  * LineitemFilter
@@ -36,7 +36,7 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LineitemFilter implements And {
+public class LineitemFilter implements Query {
     private String p_brand;
     private List<String> p_containerIn;
     private Integer l_quantityGe;

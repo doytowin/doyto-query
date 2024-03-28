@@ -14,24 +14,16 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test;
+package win.doyto.query.core;
 
-import lombok.*;
-import win.doyto.query.core.Or;
+import java.io.Serializable;
 
 /**
- * AccountOr
+ * Query
  *
- * @author f0rb on 2021-12-24
+ * @author f0rb on 2024/3/28
+ * @since 2.0.1
  */
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class AccountOr implements Or {
-    private String username;
-    private String email;
-    private String mobile;
-}
+public interface Query extends Serializable {
 
+}

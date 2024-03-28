@@ -16,23 +16,31 @@
 
 package win.doyto.query.sql;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.core.Dialect;
-import win.doyto.query.core.IdWrapper;
-import win.doyto.query.core.LockMode;
-import win.doyto.query.test.*;
-import win.doyto.query.test.tpch.domain.partsupp.PartsuppEntity;
-import win.doyto.query.test.tpch.domain.partsupp.PartsuppKey;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.core.Dialect;
+import win.doyto.query.core.IdWrapper;
+import win.doyto.query.core.LockMode;
+import win.doyto.query.test.Account;
+import win.doyto.query.test.DynamicEntity;
+import win.doyto.query.test.DynamicIdWrapper;
+import win.doyto.query.test.DynamicQuery;
+import win.doyto.query.test.TestEntity;
+import win.doyto.query.test.TestEnum;
+import win.doyto.query.test.TestQuery;
+import win.doyto.query.test.TestStringEnum;
+import win.doyto.query.test.tpch.domain.partsupp.PartsuppEntity;
+import win.doyto.query.test.tpch.domain.partsupp.PartsuppKey;
 
 /**
  * QueryBuilderTest
@@ -355,8 +363,8 @@ class QueryBuilderTest {
 
     @Test
     void buildOrClause() {
-        AccountOr accountOr = AccountOr.builder().username("f0rb").email("f0rb").mobile("f0rb").build();
-        TestQuery testQuery = TestQuery.builder().account2(accountOr).build();
+        Account accountOr = Account.builder().username("f0rb").email("f0rb").mobile("f0rb").build();
+        TestQuery testQuery = TestQuery.builder().accountOr(accountOr).build();
 
         String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
 
@@ -366,8 +374,8 @@ class QueryBuilderTest {
 
     @Test
     void buildOrClauseIgnoreNull() {
-        AccountOr accountOr = AccountOr.builder().username("f0rb").email("f0rb").build();
-        TestQuery testQuery = TestQuery.builder().account2(accountOr).build();
+        Account accountOr = Account.builder().username("f0rb").email("f0rb").build();
+        TestQuery testQuery = TestQuery.builder().accountOr(accountOr).build();
 
         String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
 
@@ -377,8 +385,8 @@ class QueryBuilderTest {
 
     @Test
     void shouldIgnoreOrFieldWhenAllValuesAreNull() {
-        AccountOr accountOr = AccountOr.builder().build();
-        TestQuery testQuery = TestQuery.builder().account2(accountOr).build();
+        Account accountOr = Account.builder().build();
+        TestQuery testQuery = TestQuery.builder().accountOr(accountOr).build();
 
         String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
 

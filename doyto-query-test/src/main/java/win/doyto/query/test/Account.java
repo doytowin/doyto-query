@@ -14,16 +14,28 @@
  * limitations under the License.
  */
 
-package win.doyto.query.core;
+package win.doyto.query.test;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import win.doyto.query.core.Query;
 
 /**
- * Or
+ * Account
  *
  * @author f0rb on 2021-12-24
- * @since 0.3.0
- * @deprecated use {@link Query} instead
  */
-@SuppressWarnings("java:S1133")
-@Deprecated(since = "2.0.1")
-public interface Or extends Query {
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class Account implements Query {
+    private String username;
+    private String email;
+    private String mobile;
 }
+

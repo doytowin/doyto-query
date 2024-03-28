@@ -16,19 +16,29 @@
 
 package win.doyto.query.sql.field;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import win.doyto.query.annotation.*;
-import win.doyto.query.core.*;
+import static win.doyto.query.sql.Constant.AND;
+import static win.doyto.query.sql.Constant.OR;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static win.doyto.query.sql.Constant.AND;
-import static win.doyto.query.sql.Constant.OR;
+import org.apache.commons.lang3.StringUtils;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import win.doyto.query.annotation.Column;
+import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.annotation.GroupBy;
+import win.doyto.query.annotation.QueryField;
+import win.doyto.query.annotation.Subquery;
+import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.core.Having;
+import win.doyto.query.core.Query;
+import win.doyto.query.core.QuerySuffix;
 
 /**
  * FieldMapper
@@ -50,9 +60,17 @@ public final class FieldMapper {
         if (FIELD_PROCESSOR_MAP.containsKey(field)) return;
         FieldProcessor processor;
         Class<?> fieldType = field.getType();
-        if (Or.class.isAssignableFrom(fieldType)) {
-            processor = new ConnectableFieldProcessor(fieldType, OR);
-        } else if (And.class.isAssignableFrom(fieldType)) {
+        if (field.getName().endsWith("Or")) {
+            if (Collection.class.isAssignableFrom(field.getType())) {
+                processor = new OrCollectionProcessor(field);
+            } else if (Query.class.isAssignableFrom(field.getType())) {
+                processor = new ConnectableFieldProcessor(fieldType, OR);
+            } else {
+                processor = new SuffixFieldProcessor(StringUtils.removeEnd(field.getName(), "Or"), false);
+            }
+        } else if (OrFieldProcessor.support(field.getName())) {
+            processor = new OrFieldProcessor(field);
+        } else if (Query.class.isAssignableFrom(fieldType)) {
             processor = new ConnectableFieldProcessor(fieldType, AND);
         } else if (DoytoQuery.class.isAssignableFrom(fieldType)) {
             processor = initDoytoQueryField(field);
@@ -62,12 +80,8 @@ public final class FieldMapper {
             processor = initHavingField(field);
         } else if (ColumnComparisonProcessor.support(field)) {
             processor = new ColumnComparisonProcessor(field.getName());
-        } else if (OrCollectionProcessor.support(field)) {
-            processor = new OrCollectionProcessor(field);
         } else if (field.isAnnotationPresent(Column.class)) {
             processor = new ColumnFieldProcessor(field);
-        } else if (OrFieldProcessor.support(field.getName())) {
-            processor = new OrFieldProcessor(field);
         } else {
             processor = new SuffixFieldProcessor(field);
         }

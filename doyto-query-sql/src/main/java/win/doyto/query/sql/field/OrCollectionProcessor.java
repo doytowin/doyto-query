@@ -16,14 +16,17 @@
 
 package win.doyto.query.sql.field;
 
-import win.doyto.query.util.CommonUtil;
+import static win.doyto.query.sql.Constant.AND;
+import static win.doyto.query.sql.Constant.CP;
+import static win.doyto.query.sql.Constant.OP;
+import static win.doyto.query.sql.Constant.OR;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static win.doyto.query.sql.Constant.*;
+import win.doyto.query.util.CommonUtil;
 
 /**
  * OrCollectionProcessor
@@ -41,10 +44,6 @@ class OrCollectionProcessor implements FieldProcessor {
     public OrCollectionProcessor(Field field) {
         Class<?> clazz = CommonUtil.resolveActualReturnClass(field);
         fieldProcessor = new ConnectableFieldProcessor(clazz, AND);
-    }
-
-    static boolean support(Field field) {
-        return Collection.class.isAssignableFrom(field.getType()) && field.getName().endsWith("Or");
     }
 
     @Override
