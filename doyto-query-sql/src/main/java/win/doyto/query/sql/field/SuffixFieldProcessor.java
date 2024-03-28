@@ -16,10 +16,10 @@
 
 package win.doyto.query.sql.field;
 
-import win.doyto.query.util.ColumnUtil;
-
 import java.lang.reflect.Field;
 import java.util.List;
+
+import win.doyto.query.util.ColumnUtil;
 
 /**
  * SuffixFieldProcessor
@@ -52,6 +52,9 @@ class SuffixFieldProcessor implements FieldProcessor {
 
     @Override
     public String process(String alias, List<Object> argList, Object value) {
+        if (sqlQuerySuffix.shouldIgnore(value)) {
+            return null;
+        }
         columnName = ColumnUtil.convertColumn(columnName);
         value = sqlQuerySuffix.getValueProcessor().escapeValue(value);
         return sqlQuerySuffix.buildColumnCondition(alias + columnName, argList, value);

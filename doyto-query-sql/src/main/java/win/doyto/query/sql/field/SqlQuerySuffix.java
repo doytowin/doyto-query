@@ -16,14 +16,12 @@
 
 package win.doyto.query.sql.field;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import win.doyto.query.annotation.EnumType;
-import win.doyto.query.annotation.Enumerated;
-import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.sql.BuildHelper;
-import win.doyto.query.util.CommonUtil;
+import static win.doyto.query.sql.Constant.CP;
+import static win.doyto.query.sql.Constant.EMPTY;
+import static win.doyto.query.sql.Constant.LIKE;
+import static win.doyto.query.sql.Constant.NOT_LIKE;
+import static win.doyto.query.sql.Constant.OP;
+import static win.doyto.query.sql.Constant.PLACE_HOLDER;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,7 +31,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static win.doyto.query.sql.Constant.*;
+import org.apache.commons.lang3.StringUtils;
+
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import win.doyto.query.annotation.EnumType;
+import win.doyto.query.annotation.Enumerated;
+import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.sql.BuildHelper;
+import win.doyto.query.util.CommonUtil;
 
 /**
  * SqlQuerySuffix
@@ -121,9 +127,6 @@ public enum SqlQuerySuffix {
     }
 
     public String buildColumnCondition(String columnName, List<Object> argList, Object value) {
-        if (shouldIgnore(value)) {
-            return null;
-        }
         String placeHolderEx = valueProcessor.getPlaceHolderEx(value);
         appendArg(argList, value, placeHolderEx);
         return columnName + op + placeHolderEx;
