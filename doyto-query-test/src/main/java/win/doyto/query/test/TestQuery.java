@@ -60,7 +60,7 @@ public class TestQuery extends PageQuery {
     @QueryField(and = "(username = ? OR email = ? OR mobile = ?)")
     private String account;
 
-    private AccountOr account2;
+    private Account accountOr;
 
     private String email;
 

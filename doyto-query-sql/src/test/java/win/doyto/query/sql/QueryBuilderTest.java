@@ -355,8 +355,8 @@ class QueryBuilderTest {
 
     @Test
     void buildOrClause() {
-        AccountOr accountOr = AccountOr.builder().username("f0rb").email("f0rb").mobile("f0rb").build();
-        TestQuery testQuery = TestQuery.builder().account2(accountOr).build();
+        Account accountOr = Account.builder().username("f0rb").email("f0rb").mobile("f0rb").build();
+        TestQuery testQuery = TestQuery.builder().accountOr(accountOr).build();
 
         String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
 
@@ -366,8 +366,8 @@ class QueryBuilderTest {
 
     @Test
     void buildOrClauseIgnoreNull() {
-        AccountOr accountOr = AccountOr.builder().username("f0rb").email("f0rb").build();
-        TestQuery testQuery = TestQuery.builder().account2(accountOr).build();
+        Account accountOr = Account.builder().username("f0rb").email("f0rb").build();
+        TestQuery testQuery = TestQuery.builder().accountOr(accountOr).build();
 
         String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
 
@@ -377,8 +377,8 @@ class QueryBuilderTest {
 
     @Test
     void shouldIgnoreOrFieldWhenAllValuesAreNull() {
-        AccountOr accountOr = AccountOr.builder().build();
-        TestQuery testQuery = TestQuery.builder().account2(accountOr).build();
+        Account accountOr = Account.builder().build();
+        TestQuery testQuery = TestQuery.builder().accountOr(accountOr).build();
 
         String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
 

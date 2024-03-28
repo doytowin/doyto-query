@@ -19,11 +19,16 @@ package win.doyto.query.sql.field;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.*;
-import win.doyto.query.core.*;
+import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.core.Having;
+import win.doyto.query.core.Query;
+import win.doyto.query.core.QuerySuffix;
 
 import javax.persistence.Column;
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,9 +56,17 @@ public final class FieldMapper {
         if (FIELD_PROCESSOR_MAP.containsKey(field)) return;
         FieldProcessor processor;
         Class<?> fieldType = field.getType();
-        if (Or.class.isAssignableFrom(fieldType)) {
-            processor = new ConnectableFieldProcessor(fieldType, OR);
-        } else if (And.class.isAssignableFrom(fieldType)) {
+        if (field.getName().endsWith("Or")) {
+            if (Collection.class.isAssignableFrom(field.getType())) {
+                processor = new OrCollectionProcessor(field);
+            } else if (Query.class.isAssignableFrom(field.getType())) {
+                processor = new ConnectableFieldProcessor(fieldType, OR);
+            } else {
+                processor = new SuffixFieldProcessor(StringUtils.removeEnd(field.getName(), "Or"), false);
+            }
+        } else if (OrFieldProcessor.support(field.getName())) {
+            processor = new OrFieldProcessor(field);
+        } else if (Query.class.isAssignableFrom(fieldType)) {
             processor = new ConnectableFieldProcessor(fieldType, AND);
         } else if (DoytoQuery.class.isAssignableFrom(fieldType)) {
             processor = initDoytoQueryField(field);
@@ -63,12 +76,8 @@ public final class FieldMapper {
             processor = initHavingField(field);
         } else if (ColumnComparisonProcessor.support(field)) {
             processor = new ColumnComparisonProcessor(field.getName());
-        } else if (OrCollectionProcessor.support(field)) {
-            processor = new OrCollectionProcessor(field);
         } else if (field.isAnnotationPresent(Column.class)) {
             processor = new ColumnFieldProcessor(field);
-        } else if (OrFieldProcessor.support(field.getName())) {
-            processor = new OrFieldProcessor(field);
         } else {
             processor = new SuffixFieldProcessor(field);
         }

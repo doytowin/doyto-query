@@ -43,10 +43,6 @@ class OrCollectionProcessor implements FieldProcessor {
         fieldProcessor = new ConnectableFieldProcessor(clazz, AND);
     }
 
-    static boolean support(Field field) {
-        return Collection.class.isAssignableFrom(field.getType()) && field.getName().endsWith("Or");
-    }
-
     @Override
     public String process(String alias, List<Object> argList, Object collection) {
         return ((Collection<?>) collection).stream()

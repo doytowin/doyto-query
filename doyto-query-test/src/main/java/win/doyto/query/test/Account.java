@@ -17,10 +17,10 @@
 package win.doyto.query.test;
 
 import lombok.*;
-import win.doyto.query.core.Or;
+import win.doyto.query.core.Query;
 
 /**
- * AccountOr
+ * Account
  *
  * @author f0rb on 2021-12-24
  */
@@ -29,7 +29,7 @@ import win.doyto.query.core.Or;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AccountOr implements Or {
+public class Account implements Query {
     private String username;
     private String email;
     private String mobile;
