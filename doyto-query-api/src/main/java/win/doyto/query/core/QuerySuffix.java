@@ -96,10 +96,7 @@ public enum QuerySuffix {
     }
 
     public static boolean isValidValue(Object value, Field field) {
-        return !(value == null
-                || (value instanceof Boolean && field.getType().isPrimitive() && Boolean.FALSE.equals(value))
-                || (resolve(field.getName()).shouldIgnore(value))
-        );
+        return !(value == null || resolve(field.getName()).shouldIgnore(value));
     }
 
     public String resolveColumnName(String fieldName) {

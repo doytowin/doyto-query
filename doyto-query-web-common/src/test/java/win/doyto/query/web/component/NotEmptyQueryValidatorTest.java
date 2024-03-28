@@ -48,7 +48,7 @@ class NotEmptyQueryValidatorTest {
     @Test
     void shouldBeValidWhenQueryWithAnyParameters() {
         assertTrue(notEmptyQueryValidator.isValid(TestQuery.builder().id(10).build(), null));
-        assertTrue(notEmptyQueryValidator.isValid(TestQuery.builder().memoNotNull(true).build(), null));
+        assertTrue(notEmptyQueryValidator.isValid(TestQuery.builder().memoNull(false).build(), null));
 
         assertFalse(notEmptyQueryValidator.isValid(TestQuery.builder().idNotIn(Arrays.asList()).build(), null));
         assertTrue(notEmptyQueryValidator.isValid(TestQuery.builder().idNotIn(Arrays.asList(1, 2, 3)).build(), null));

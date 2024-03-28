@@ -119,7 +119,7 @@ class MemoryDataAccessTest {
 
     @Test
     void notNull() {
-        TestQuery byNoneNullMemo = TestQuery.builder().memoNotNull(true).build();
+        TestQuery byNoneNullMemo = TestQuery.builder().memoNull(false).build();
         assertEquals(1, testMemoryDataAccess.count(byNoneNullMemo));
     }
 
