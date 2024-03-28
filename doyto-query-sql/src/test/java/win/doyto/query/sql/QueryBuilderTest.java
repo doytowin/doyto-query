@@ -16,31 +16,23 @@
 
 package win.doyto.query.sql;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.core.Dialect;
+import win.doyto.query.core.IdWrapper;
+import win.doyto.query.core.LockMode;
+import win.doyto.query.test.*;
+import win.doyto.query.test.tpch.domain.partsupp.PartsuppEntity;
+import win.doyto.query.test.tpch.domain.partsupp.PartsuppKey;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.core.Dialect;
-import win.doyto.query.core.IdWrapper;
-import win.doyto.query.core.LockMode;
-import win.doyto.query.test.Account;
-import win.doyto.query.test.DynamicEntity;
-import win.doyto.query.test.DynamicIdWrapper;
-import win.doyto.query.test.DynamicQuery;
-import win.doyto.query.test.TestEntity;
-import win.doyto.query.test.TestEnum;
-import win.doyto.query.test.TestQuery;
-import win.doyto.query.test.TestStringEnum;
-import win.doyto.query.test.tpch.domain.partsupp.PartsuppEntity;
-import win.doyto.query.test.tpch.domain.partsupp.PartsuppKey;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * QueryBuilderTest
@@ -381,6 +373,26 @@ class QueryBuilderTest {
 
         assertThat(sql).isEqualTo("SELECT * FROM t_user t WHERE (username = ? OR email = ?)");
         assertThat(argList).containsExactly("f0rb", "f0rb");
+    }
+
+    @Test
+    void buildOrClauseForBasicTypeCollection() {
+        TestQuery testQuery = TestQuery.builder().usernameContainOr(Arrays.asList("test1", "test2", "test3")).build();
+
+        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
+
+        assertThat(sql).isEqualTo("SELECT * FROM t_user t WHERE (username LIKE ? OR username LIKE ? OR username LIKE ?)");
+        assertThat(argList).containsExactly("%test1%", "%test2%", "%test3%");
+    }
+
+    @Test
+    void buildOrClauseForBasicTypeCollectionWithZeroElems() {
+        TestQuery testQuery = TestQuery.builder().usernameContainOr(List.of()).build();
+
+        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
+
+        assertThat(sql).isEqualTo("SELECT * FROM t_user t");
+        assertThat(argList).isEmpty();
     }
 
     @Test

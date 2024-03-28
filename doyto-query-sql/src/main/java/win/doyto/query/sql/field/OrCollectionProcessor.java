@@ -16,17 +16,16 @@
 
 package win.doyto.query.sql.field;
 
-import static win.doyto.query.sql.Constant.AND;
-import static win.doyto.query.sql.Constant.CP;
-import static win.doyto.query.sql.Constant.OP;
-import static win.doyto.query.sql.Constant.OR;
+import org.apache.commons.lang3.StringUtils;
+import win.doyto.query.core.Query;
+import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import win.doyto.query.util.CommonUtil;
+import static win.doyto.query.sql.Constant.*;
 
 /**
  * OrCollectionProcessor
@@ -39,17 +38,24 @@ import win.doyto.query.util.CommonUtil;
  */
 class OrCollectionProcessor implements FieldProcessor {
 
-    private final ConnectableFieldProcessor fieldProcessor;
+    private final FieldProcessor fieldProcessor;
 
     public OrCollectionProcessor(Field field) {
         Class<?> clazz = CommonUtil.resolveActualReturnClass(field);
-        fieldProcessor = new ConnectableFieldProcessor(clazz, AND);
+        if (Query.class.isAssignableFrom(clazz)) {
+            fieldProcessor = new ConnectableFieldProcessor(clazz, AND);
+        } else {
+            String orFieldName = StringUtils.removeEnd(field.getName(), "Or");
+            fieldProcessor = new SuffixFieldProcessor(orFieldName, false);
+        }
     }
 
     @Override
     public String process(String alias, List<Object> argList, Object collection) {
-        return ((Collection<?>) collection).stream()
-                .map(value -> fieldProcessor.process(alias, argList, value))
-                .collect(Collectors.joining(OR, OP, CP));
+        if (!(collection instanceof Collection<?> values) || values.isEmpty()) {
+            return null;
+        }
+        return values.stream().map(value -> fieldProcessor.process(alias, argList, value))
+                     .collect(Collectors.joining(OR, OP, CP));
     }
 }

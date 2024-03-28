@@ -16,9 +16,6 @@
 
 package win.doyto.query.test;
 
-import java.util.Date;
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +27,9 @@ import win.doyto.query.annotation.Subquery;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.user.UserEntity;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * TestQuery
@@ -61,6 +61,7 @@ public class TestQuery extends PageQuery {
     private String account;
 
     private Account accountOr;
+    private List<String> usernameContainOr;
 
     private String email;
 
