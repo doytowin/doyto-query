@@ -16,6 +16,8 @@
 
 package win.doyto.query.sql.field;
 
+import org.apache.commons.lang3.StringUtils;
+import win.doyto.query.core.Query;
 import win.doyto.query.util.CommonUtil;
 
 import java.lang.reflect.Field;
@@ -36,15 +38,23 @@ import static win.doyto.query.sql.Constant.*;
  */
 class OrCollectionProcessor implements FieldProcessor {
 
-    private final ConnectableFieldProcessor fieldProcessor;
+    private final FieldProcessor fieldProcessor;
 
     public OrCollectionProcessor(Field field) {
         Class<?> clazz = CommonUtil.resolveActualReturnClass(field);
-        fieldProcessor = new ConnectableFieldProcessor(clazz, AND);
+        if (Query.class.isAssignableFrom(clazz)) {
+            fieldProcessor = new ConnectableFieldProcessor(clazz, AND);
+        } else {
+            String orFieldName = StringUtils.removeEnd(field.getName(), "Or");
+            fieldProcessor = new SuffixFieldProcessor(orFieldName, false);
+        }
     }
 
     @Override
     public String process(String alias, List<Object> argList, Object collection) {
+        if (!(collection instanceof Collection<?>) || ((Collection<?>) collection).isEmpty()) {
+            return null;
+        }
         return ((Collection<?>) collection).stream()
                 .map(value -> fieldProcessor.process(alias, argList, value))
                 .collect(Collectors.joining(OR, OP, CP));
