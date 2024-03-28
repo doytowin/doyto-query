@@ -107,7 +107,11 @@ class FilterExecutor {
     static class NullMatcher extends NotNullMatcher {
         @Override
         public boolean doMatch(Object qv, Object ev) {
-            return !super.doMatch(qv, ev);
+            if (Boolean.TRUE.equals(qv)) {
+                return ev == null;
+            } else {
+                return ev != null;
+            }
         }
     }
 

@@ -61,7 +61,7 @@ public class UserQuery extends PageQuery {
 
     private String emailLike;
 
-    private boolean memoNull;
+    private Boolean memoNull;
 
     private UserLevel userLevel;
 
