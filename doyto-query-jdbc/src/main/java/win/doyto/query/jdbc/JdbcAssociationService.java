@@ -18,7 +18,6 @@ package win.doyto.query.jdbc;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.AssociationService;
 import win.doyto.query.core.UniqueKey;
 import win.doyto.query.entity.UserIdProvider;
@@ -39,7 +38,6 @@ import java.util.Set;
 @SuppressWarnings({"unchecked", "java:S6813"})
 public abstract class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2> {
 
-    private static final GlobalConfiguration instance = GlobalConfiguration.instance();
     @Autowired
     private DatabaseOperations databaseOperations;
     private final AssociationSqlBuilder<K1, K2> sqlBuilder;
@@ -50,20 +48,13 @@ public abstract class JdbcAssociationService<K1, K2> implements AssociationServi
     private UserIdProvider<?> userIdProvider = () -> null;
 
     protected JdbcAssociationService(String domain1, String domain2) {
-        this.sqlBuilder = new AssociationSqlBuilder<>(
-                instance.formatJoinTable(domain1, domain2), instance.formatJoinId(domain1), instance.formatJoinId(domain2)
-        );
+        this.sqlBuilder = new AssociationSqlBuilder<>(domain1, domain2);
         setRequiredType();
     }
 
     protected JdbcAssociationService(String domain1, String domain2, String createUserColumn) {
-        this.sqlBuilder = new AssociationSqlBuilder<>(
-                instance.formatJoinTable(domain1, domain2),
-                instance.formatJoinId(domain1),
-                instance.formatJoinId(domain2),
-                createUserColumn
-        );
-        setRequiredType();
+        this(domain1,domain2);
+        this.sqlBuilder.withCreateUserColumn(createUserColumn);
     }
 
     private void setRequiredType() {
