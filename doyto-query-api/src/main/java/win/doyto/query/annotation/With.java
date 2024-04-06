@@ -27,7 +27,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * @author f0rb on 2023/7/12
  * @since 1.0.2
+ * @deprecated use {@link View#with()} instead
  */
+@SuppressWarnings("java:S1133")
+@Deprecated(since = "2.0.1")
 @Target(TYPE)
 @Retention(RUNTIME)
 public @interface With {

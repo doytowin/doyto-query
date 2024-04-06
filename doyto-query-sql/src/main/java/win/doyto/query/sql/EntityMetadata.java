@@ -44,6 +44,7 @@ public class EntityMetadata {
     private final String joinConditions;
     private final String groupByColumns;
     private final String groupBySql;
+    private final List<View> withViews;
     private EntityMetadata nested;
 
     public EntityMetadata(Class<?> entityClass) {
@@ -61,6 +62,15 @@ public class EntityMetadata {
         this.columnsForSelect = buildSelectColumns(entityClass);
         this.groupByColumns = resolveGroupByColumns(entityClass);
         this.groupBySql = buildGroupBySql(groupByColumns);
+        this.withViews = collectWithViews(entityClass);
+    }
+
+    private List<View> collectWithViews(Class<?> entityClass) {
+        ComplexView anno = entityClass.getAnnotation(ComplexView.class);
+        if (anno == null) {
+            return List.of();
+        }
+        return Arrays.stream(anno.value()).filter(view -> !view.with().isBlank()).toList();
     }
 
     public static List<String> resolveEntityRelations(Class<?>[] viewClasses) {

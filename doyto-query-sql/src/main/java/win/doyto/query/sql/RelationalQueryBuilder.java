@@ -22,7 +22,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.Join;
 import win.doyto.query.annotation.View;
-import win.doyto.query.annotation.With;
 import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Having;
@@ -33,6 +32,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import static win.doyto.query.sql.BuildHelper.*;
@@ -53,23 +53,24 @@ public class RelationalQueryBuilder {
             DoytoQuery query = SerializationUtils.clone(q);
             EntityMetadata entityMetadata = EntityMetadata.build(entityClass);
 
-            if (entityClass.isAnnotationPresent(With.class)) {
-                return buildWithSql(entityClass, argList, query)
+            if (!entityMetadata.getWithViews().isEmpty()) {
+                return buildWithSql(entityMetadata.getWithViews(), argList, query)
                         + buildSqlForEntity(entityMetadata, query, argList);
             }
             return buildSqlForEntity(entityMetadata, query, argList);
         });
     }
 
-    private static String buildWithSql(Class<?> entityClass, List<Object> argList, DoytoQuery query) {
-        With withAnno = entityClass.getAnnotation(With.class);
-        Class<?> withClass = withAnno.value().getSuperclass();
-        EntityMetadata withMeta = EntityMetadata.build(withClass);
-        String queryFieldName = StringUtils.uncapitalize(withClass.getSimpleName()).replace("View", "Query");
-        DoytoQuery withQuery = (DoytoQuery) CommonUtil.readField(query, queryFieldName);
-        String alias = resolveTableName(withAnno.value());
-        String withSQL = buildSqlForEntity(withMeta, withQuery, argList);
-        return "WITH " + alias + AS + OP + withSQL + CP + SPACE;
+    private static String buildWithSql(List<View> withViews, List<Object> argList, DoytoQuery query) {
+        StringJoiner withJoiner = new StringJoiner(SEPARATOR,"WITH " , SPACE);
+        for (View view : withViews) {
+            EntityMetadata withMeta = EntityMetadata.build(view.value());
+            String queryFieldName = StringUtils.uncapitalize(view.value().getSimpleName()).replace("View", "Query");
+            DoytoQuery withQuery = (DoytoQuery) CommonUtil.readField(query, queryFieldName);
+            String withSQL = buildSqlForEntity(withMeta, withQuery, argList);
+            withJoiner.add(view.with() + AS + OP + withSQL + CP);
+        }
+        return withJoiner.toString();
     }
 
     private static String buildSqlForEntity(EntityMetadata entityMetadata, DoytoQuery query, List<Object> argList) {
@@ -84,6 +85,10 @@ public class RelationalQueryBuilder {
         }
 
         sqlBuilder.append(entityMetadata.getTableName());
+        if (query == null) {
+            sqlBuilder.append(entityMetadata.getGroupBySql());
+            return sqlBuilder.toString();
+        }
         buildJoinClauses(sqlBuilder, query, argList);
         if (entityMetadata.getJoinConditions().isEmpty()) {
             sqlBuilder.append(buildWhere(query, argList));

@@ -36,7 +36,8 @@ public @interface View {
 
     Class<?> value();
 
-
     String alias() default "";
+
+    String with() default "";
 
 }
