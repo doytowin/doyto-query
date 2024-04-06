@@ -16,7 +16,6 @@
 
 package win.doyto.query.service;
 
-import lombok.Getter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.cache.CacheManager;
@@ -39,8 +38,7 @@ import java.util.List;
 public class CachedDataAccess<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
         implements DataAccess<E, I, Q> {
 
-    @Getter
-    private final DataAccess<E, I, Q> delegate;
+    protected final DataAccess<E, I, Q> delegate;
 
     protected final CacheWrapper<E> entityCacheWrapper = CacheWrapper.createInstance();
     protected final CacheWrapper<List<E>> queryCacheWrapper = CacheWrapper.createInstance();

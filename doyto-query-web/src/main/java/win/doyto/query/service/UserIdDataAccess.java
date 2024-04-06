@@ -16,9 +16,7 @@
 
 package win.doyto.query.service;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Delegate;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
@@ -35,7 +33,7 @@ import java.io.Serializable;
  */
 @AllArgsConstructor
 public class UserIdDataAccess<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery> implements DataAccess<E, I, Q> {
-    @Delegate(excludes = ExcludedDataAccess.class)
+    @Delegate
     private final DataAccess<E, I, Q> delegate;
     private final UserIdProvider<?> userIdProvider;
 
@@ -70,15 +68,5 @@ public class UserIdDataAccess<E extends Persistable<I>, I extends Serializable, 
     public int patch(E e, Q q) {
         userIdProvider.setupPatchUserId(e);
         return delegate.patch(e, q);
-    }
-
-    @SuppressWarnings({"unused", "java:S1610"})
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    private abstract class ExcludedDataAccess {
-        public abstract void create(E e);
-        public abstract int batchInsert(Iterable<E> entities, String... columns);
-        public abstract void update(E e);
-        public abstract void patch(E e);
-        public abstract void patch(E e, Q q);
     }
 }

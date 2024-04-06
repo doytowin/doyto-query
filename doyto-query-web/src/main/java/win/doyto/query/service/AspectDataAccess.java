@@ -16,9 +16,7 @@
 
 package win.doyto.query.service;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Delegate;
 import org.springframework.transaction.support.TransactionOperations;
 import win.doyto.query.core.DataAccess;
@@ -41,7 +39,7 @@ import java.util.List;
 public class AspectDataAccess<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
         implements DataAccess<E, I, Q> {
 
-    @Delegate(excludes = ExcludedDataAccess.class)
+    @Delegate
     private final DataAccess<E, I, Q> delegate;
     private final List<EntityAspect<E>> entityAspects;
     private final TransactionOperations transactionOperations;
@@ -94,19 +92,6 @@ public class AspectDataAccess<E extends Persistable<I>, I extends Serializable, 
             entityAspects.forEach(entityAspect -> entityAspect.afterDelete(e));
             return deleted;
         });
-    }
-
-
-    @SuppressWarnings({"unused", "java:S1610"})
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    private abstract class ExcludedDataAccess {
-        public abstract void create(E e);
-
-        public abstract void update(E e);
-
-        public abstract void patch(E e);
-
-        public abstract int delete(IdWrapper<I> w);
     }
 
 }
