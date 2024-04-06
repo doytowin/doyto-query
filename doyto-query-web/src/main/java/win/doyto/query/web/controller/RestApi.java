@@ -46,7 +46,7 @@ public interface RestApi<I, Q extends DoytoQuery, R, S> {
     S get(I id);
 
     @DeleteMapping("{id}")
-    S delete(I id);
+    S remove(I id);
 
     @DeleteMapping("/")
     int delete(@NotEmptyQuery Q query);

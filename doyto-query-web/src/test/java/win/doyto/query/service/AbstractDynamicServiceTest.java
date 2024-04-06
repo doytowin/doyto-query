@@ -98,7 +98,7 @@ class AbstractDynamicServiceTest {
         testService.update(u);
         verify(entityAspect, times(1)).afterUpdate(any(), any());
 
-        testService.delete(e.getId());
+        testService.remove(e.getId());
         verify(entityAspect, times(1)).afterDelete(any(TestEntity.class));
     }
 

@@ -118,6 +118,6 @@ public interface DynamicService<E extends Persistable<I>, I extends Serializable
      * @param w an entity just contains id and information of sharding table
      * @return origin entity
      */
-    E delete(IdWrapper<I> w);
+    E remove(IdWrapper<I> w);
 
 }

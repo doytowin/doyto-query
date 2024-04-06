@@ -48,8 +48,8 @@ public abstract class AbstractDynamicController
     }
 
     @Override
-    public S delete(W w) {
-        E e = service.delete(w);
+    public S remove(W w) {
+        E e = service.remove(w);
         checkResult(e);
         return buildResponse(e);
     }
