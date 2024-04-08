@@ -59,13 +59,10 @@ public class SortArgumentResolver extends ServletModelAttributeMethodProcessor {
         while (it.hasNext()) {
             String key = it.next();
             int dotIdx = key.indexOf(sortPrefix);
-            if (dotIdx == -1) {
+            if (dotIdx == -1 || !columns.contains(key.substring(dotIdx + sortPrefixLen))) {
                 continue;
             }
             String column = key.substring(dotIdx + sortPrefixLen);
-            if (!columns.isEmpty() && !columns.contains(key.substring(dotIdx + sortPrefixLen))) {
-                continue;
-            }
             String value = request.getParameter(key);
             if (StringUtils.isBlank(value)) {
                 sj.add(column + ",asc");
