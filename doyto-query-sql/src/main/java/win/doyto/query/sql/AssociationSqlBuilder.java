@@ -49,6 +49,13 @@ public class AssociationSqlBuilder<K1, K2> {
     private String placeHolderFormat;
     private String deleteIn;
     private String countIn;
+    private static final GlobalConfiguration instance = GlobalConfiguration.instance();
+
+    public AssociationSqlBuilder(String domain1, String domain2) {
+        this(
+                instance.formatJoinTable(domain1, domain2), instance.formatJoinId(domain1), instance.formatJoinId(domain2)
+        );
+    }
 
     public AssociationSqlBuilder(String tableName, String k1Column, String k2Column) {
         this.tableName = tableName;
@@ -64,7 +71,7 @@ public class AssociationSqlBuilder<K1, K2> {
         placeHolders = "(?, ?)";
         placeHolderFormat = "(?, ?)";
         deleteIn = DELETE_FROM + tableName + WHERE + OP + k1Column + SEPARATOR + k2Column + CP + IN;
-        countIn = SELECT + COUNT + Constant.FROM + tableName + WHERE + OP + k1Column + SEPARATOR + k2Column + CP + IN;
+        countIn = SELECT + COUNT + FROM + tableName + WHERE + OP + k1Column + SEPARATOR + k2Column + CP + IN;
     }
 
     public AssociationSqlBuilder(String tableName, String k1Column, String k2Column, String createUserColumn) {

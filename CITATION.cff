@@ -1,0 +1,33 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: DoytoQuery
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Zhen
+    family-names: Yuan
+    email: yuanzhen@doyto.win
+    orcid: 'https://orcid.org/0000-0002-2577-7102'
+    affiliation: 'DOYToWin, Inc.'
+identifiers:
+  - type: url
+    value: >-
+      https://github.com/doytowin/doyto-query/releases/tag/v2.0.0
+repository-code: 'https://github.com/doytowin/doyto-query'
+url: 'https://www.doyto.win'
+abstract: >-
+  DoytoQuery is a powerful and easy-to-use
+  Object/Query-Language Mapping (OQM) framework for Java
+  applications over relational databases.
+keywords:
+  - DoytoQuery
+  - Java
+  - OQM
+license: Apache-2.0
+commit: a0e84f6293d541c1555b61662d9115e244934da5
+version: 2.0.0
+date-released: '2024-01-28'
