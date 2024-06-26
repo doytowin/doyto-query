@@ -88,9 +88,19 @@ public class SubqueryProcessor implements FieldProcessor {
     }
 
     static String buildClauseFormat(String fieldName, String column, String table) {
-        SqlQuerySuffix querySuffix = SqlQuerySuffix.resolve(fieldName);
+        String cond = resolveCond(fieldName);
+        return cond + OP + SELECT + column + FROM + table + "%s" + CP;
+    }
 
-        String clause;
+    /**
+     * Cond contains the first two parts of the condition.
+     *
+     * @param fieldName name of the annotated field
+     * @return column + operator
+     */
+    static String resolveCond(String fieldName) {
+        String cond;
+        SqlQuerySuffix querySuffix = SqlQuerySuffix.resolve(fieldName);
         if (querySuffix == SqlQuerySuffix.Any || querySuffix == SqlQuerySuffix.All) {
             String tempName = querySuffix.removeSuffix(fieldName);
 
@@ -98,13 +108,13 @@ public class SubqueryProcessor implements FieldProcessor {
             String columnName = querySuffix1.removeSuffix(tempName);
             columnName = ColumnUtil.convertColumn(columnName);
 
-            clause = columnName + querySuffix1.getOp() + querySuffix.getOp();
+            cond = columnName + querySuffix1.getOp() + querySuffix.getOp();
         } else {
             String columnName = querySuffix.removeSuffix(fieldName);
             columnName = ColumnUtil.convertColumn(columnName);
-            clause = columnName + querySuffix.getOp();
+            cond = columnName + querySuffix.getOp();
         }
-        return clause + OP + SELECT + column + FROM + table + "%s" + CP;
+        return cond;
     }
 
     @Override

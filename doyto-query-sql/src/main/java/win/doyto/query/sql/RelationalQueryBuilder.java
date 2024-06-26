@@ -55,16 +55,17 @@ public class RelationalQueryBuilder {
     public static final String KEY_COLUMN = "MAIN_ENTITY_ID";
 
     public static SqlAndArgs buildSelectAndArgs(DoytoQuery q, Class<?> entityClass) {
-        return SqlAndArgs.buildSqlWithArgs(argList -> {
-            DoytoQuery query = SerializationUtils.clone(q);
-            EntityMetadata entityMetadata = EntityMetadata.build(entityClass);
+        return SqlAndArgs.buildSqlWithArgs(argList -> buildSelect(SerializationUtils.clone(q), entityClass, argList));
+    }
 
-            if (entityClass.isAnnotationPresent(With.class)) {
-                return buildWithSql(entityClass, argList, query)
-                        + buildSqlForEntity(entityMetadata, query, argList);
-            }
-            return buildSqlForEntity(entityMetadata, query, argList);
-        });
+    public static String buildSelect(DoytoQuery query, Class<?> entityClass, List<Object> argList) {
+        EntityMetadata entityMetadata = EntityMetadata.build(entityClass);
+
+        if (entityClass.isAnnotationPresent(With.class)) {
+            return buildWithSql(entityClass, argList, query)
+                    + buildSqlForEntity(entityMetadata, query, argList);
+        }
+        return buildSqlForEntity(entityMetadata, query, argList);
     }
 
     private static String buildWithSql(Class<?> entityClass, List<Object> argList, DoytoQuery query) {
