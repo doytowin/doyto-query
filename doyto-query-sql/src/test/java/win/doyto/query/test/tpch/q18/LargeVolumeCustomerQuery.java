@@ -21,7 +21,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.Subquery;
+import win.doyto.query.annotation.GroupBy;
+import win.doyto.query.annotation.SubqueryV2;
+import win.doyto.query.annotation.View;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
 
@@ -37,6 +39,13 @@ import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LargeVolumeCustomerQuery extends PageQuery {
-    @Subquery(select = "l_orderkey", distinct = true, from = LineitemEntity.class)
+    @SubqueryV2(value = OrderKeyView.class)
     private LineitemQuantityQuery o_orderkeyIn;
+
+    @SuppressWarnings("unused")
+    @View(LineitemEntity.class)
+    private static class OrderKeyView {
+        @GroupBy
+        private Integer l_orderkey;
+    }
 }

@@ -97,6 +97,8 @@ public final class FieldMapper {
             } else {
                 processor = new DomainPathProcessor(field);
             }
+        } else if (field.isAnnotationPresent(SubqueryV2.class)) {
+            processor = new SubqueryV2Processor(field);
         } else if (field.isAnnotationPresent(Subquery.class)) {
             processor = new SubqueryProcessor(field);
         } else if (SubqueryProcessor.matches(field.getName()) != null) {
