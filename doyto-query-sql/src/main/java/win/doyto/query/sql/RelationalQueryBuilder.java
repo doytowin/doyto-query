@@ -17,7 +17,6 @@
 package win.doyto.query.sql;
 
 import lombok.experimental.UtilityClass;
-import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.DomainPath;
@@ -55,7 +54,7 @@ public class RelationalQueryBuilder {
     public static final String KEY_COLUMN = "MAIN_ENTITY_ID";
 
     public static SqlAndArgs buildSelectAndArgs(DoytoQuery q, Class<?> entityClass) {
-        return SqlAndArgs.buildSqlWithArgs(argList -> buildSelect(SerializationUtils.clone(q), entityClass, argList));
+        return SqlAndArgs.buildSqlWithArgs(argList -> buildSelect(q, entityClass, argList));
     }
 
     public static String buildSelect(DoytoQuery query, Class<?> entityClass, List<Object> argList) {
@@ -134,9 +133,8 @@ public class RelationalQueryBuilder {
         return buildCondition(HAVING, having, argList);
     }
 
-    public static SqlAndArgs buildCountAndArgs(DoytoQuery q, Class<?> entityClass) {
+    public static SqlAndArgs buildCountAndArgs(DoytoQuery query, Class<?> entityClass) {
         return SqlAndArgs.buildSqlWithArgs((argList -> {
-            DoytoQuery query = SerializationUtils.clone(q);
             EntityMetadata entityMetadata = EntityMetadata.build(entityClass);
             String count = COUNT;
             String groupByColumns = entityMetadata.getGroupByColumns();
