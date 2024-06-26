@@ -78,6 +78,7 @@ public class BuildHelper {
 
     public static String resolveTableName(View... views) {
         return Arrays.stream(views)
+                     .filter(view -> !view.context())
                      .map(view -> {
                          String tableName = !view.with().isBlank() ? view.with() :
                                  BuildHelper.resolveTableName(view.value());

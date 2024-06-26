@@ -21,7 +21,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.Subquery;
+import win.doyto.query.annotation.NoLabel;
+import win.doyto.query.annotation.SubqueryV2;
+import win.doyto.query.annotation.View;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.tpch.domain.nation.NationEntity;
 import win.doyto.query.test.tpch.domain.part.PartEntity;
@@ -44,8 +46,16 @@ public class MinimumCostSupplierQuery extends PageQuery {
     private Integer p_size;
     private String p_typeEnd;
     private String r_name;
-    @Subquery(select = "MIN(ps_supplycost)",
-            host = {PartEntity.class},
-            from = {PartsuppEntity.class, SupplierEntity.class, NationEntity.class, RegionEntity.class})
+    @SubqueryV2(MinSupplyCostView.class)
     private SupplyCostQuery psSupplycost;
+
+    @View(value = PartEntity.class, context = true)
+    @View(PartsuppEntity.class)
+    @View(SupplierEntity.class)
+    @View(NationEntity.class)
+    @View(RegionEntity.class)
+    private static class MinSupplyCostView {
+        @NoLabel
+        private Integer minPs_supplycost;
+    }
 }

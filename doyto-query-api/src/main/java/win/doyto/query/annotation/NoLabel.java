@@ -16,34 +16,19 @@
 
 package win.doyto.query.annotation;
 
-import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * View
+ * NoLabel
  *
- * @author f0rb on 2023/6/11
- * @since 1.0.2
+ * @author f0rb on 2024/6/26
+ * @since 1.0.4
  */
-@Target(TYPE)
+@Target(FIELD)
 @Retention(RUNTIME)
-@Repeatable(ComplexView.class)
-public @interface View {
-
-    Class<?> value();
-
-    String alias() default "";
-
-    String with() default "";
-
-    /**
-     * Set context to true to prevent the table name
-     * from appearing in the FROM clause in a subquery.
-     */
-    boolean context() default false;
-
+public @interface NoLabel {
 }

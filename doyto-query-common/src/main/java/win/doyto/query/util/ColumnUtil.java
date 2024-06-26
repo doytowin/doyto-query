@@ -143,7 +143,8 @@ public class ColumnUtil {
         String columnName = resolveColumn(field);
         Dialect dialect = GlobalConfiguration.dialect();
         String fieldName = dialect.wrapLabel(field.getName());
-        return columnName.equalsIgnoreCase(fieldName) ? columnName : columnName + " AS " + fieldName;
+        return columnName.equalsIgnoreCase(fieldName) || field.isAnnotationPresent(NoLabel.class)
+                ? columnName : columnName + " AS " + fieldName;
     }
 
     public static String[] resolveSelectColumns(Class<?> entityClass) {
