@@ -18,7 +18,6 @@ package win.doyto.query.test.tpch.domain.partsupp;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.Entity;
 
 import java.math.BigDecimal;
 
@@ -29,7 +28,6 @@ import java.math.BigDecimal;
  */
 @Getter
 @Setter
-@Entity(name = "partsupp")
 public class PartsuppEntity extends PartsuppKey {
     private Integer ps_availqty;
     private BigDecimal ps_supplycost;

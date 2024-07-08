@@ -19,8 +19,9 @@ package win.doyto.query.test.tpch.q4;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.Column;
-import win.doyto.query.annotation.Entity;
 import win.doyto.query.annotation.GroupBy;
+import win.doyto.query.annotation.View;
+import win.doyto.query.test.tpch.domain.orders.OrdersEntity;
 
 /**
  * OrderPriorityCheckingView
@@ -30,7 +31,7 @@ import win.doyto.query.annotation.GroupBy;
  */
 @Getter
 @Setter
-@Entity(name = "orders t")
+@View(value = OrdersEntity.class, alias = "t")
 public class OrderPriorityCheckingView {
     @GroupBy
     private Integer o_orderpriority;
