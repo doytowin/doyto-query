@@ -75,7 +75,9 @@ public class SortArgumentResolver extends ServletModelAttributeMethodProcessor {
                 sj.add(column + "," + value);
             }
         }
-        query.setSort(sj.toString());
+        if (sj.length() > 0) {
+            query.setSort(sj.toString());
+        }
         if (StringUtils.isBlank(query.getSort())) {
            query.setSort(null);
         }
