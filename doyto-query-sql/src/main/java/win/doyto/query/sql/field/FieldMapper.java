@@ -16,8 +16,15 @@
 
 package win.doyto.query.sql.field;
 
-import static win.doyto.query.sql.Constant.AND;
-import static win.doyto.query.sql.Constant.OR;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import win.doyto.query.annotation.*;
+import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.core.Having;
+import win.doyto.query.core.Query;
+import win.doyto.query.core.QuerySuffix;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -25,20 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang3.StringUtils;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import win.doyto.query.annotation.Column;
-import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.annotation.QueryField;
-import win.doyto.query.annotation.Subquery;
-import win.doyto.query.core.DoytoQuery;
-import win.doyto.query.core.Having;
-import win.doyto.query.core.Query;
-import win.doyto.query.core.QuerySuffix;
+import static win.doyto.query.sql.Constant.AND;
+import static win.doyto.query.sql.Constant.OR;
 
 /**
  * FieldMapper
@@ -58,6 +53,8 @@ public final class FieldMapper {
 
     public static void init(Field field) {
         if (FIELD_PROCESSOR_MAP.containsKey(field)) return;
+        FIELD_PROCESSOR_MAP.put(field, new LogProcessor(field)); //To avoid recursive init
+
         FieldProcessor processor;
         Class<?> fieldType = field.getType();
         if (field.getName().endsWith("Or")) {
@@ -101,10 +98,7 @@ public final class FieldMapper {
         } else if (SubqueryProcessor.matches(field.getName()) != null) {
             processor = new SubqueryProcessor(field.getName());
         } else {
-            processor = (alias, argList, value) -> {
-                log.info("Query field is ignored: {}.{}", field.getDeclaringClass(), field.getName());
-                return null;
-            };
+            processor = new LogProcessor(field);
         }
         return processor;
     }
