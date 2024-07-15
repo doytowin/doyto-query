@@ -55,6 +55,12 @@ public final class FieldMapper {
         if (FIELD_PROCESSOR_MAP.containsKey(field)) return;
         FIELD_PROCESSOR_MAP.put(field, new LogProcessor(field)); //To avoid recursive init
 
+        boolean isAggregateField = false;
+        if (Having.class.isAssignableFrom(field.getDeclaringClass())) {
+            // process aggregate prefix for the field
+            isAggregateField = !field.isAnnotationPresent(GroupBy.class);
+        }
+
         FieldProcessor processor;
         Class<?> fieldType = field.getType();
         if (field.getName().endsWith("Or")) {
@@ -73,14 +79,12 @@ public final class FieldMapper {
             processor = initDoytoQueryField(field);
         } else if (field.isAnnotationPresent(QueryField.class)) {
             processor = new QueryFieldProcessor(field);
-        } else if (Having.class.isAssignableFrom(field.getDeclaringClass())) {
-            processor = initHavingField(field);
         } else if (ColumnComparisonProcessor.support(field)) {
             processor = new ColumnComparisonProcessor(field.getName());
         } else if (field.isAnnotationPresent(Column.class)) {
             processor = new ColumnFieldProcessor(field);
         } else {
-            processor = new SuffixFieldProcessor(field);
+            processor = new SuffixFieldProcessor(field, isAggregateField);
         }
         FIELD_PROCESSOR_MAP.put(field, processor);
     }
@@ -103,14 +107,5 @@ public final class FieldMapper {
         return processor;
     }
 
-    private static FieldProcessor initHavingField(Field field) {
-        String fieldName = field.getName();
-        boolean isAggregateField = !field.isAnnotationPresent(GroupBy.class);
-        if (OrFieldProcessor.support(fieldName)) {
-            return new OrFieldProcessor(field);
-        } else {
-            return new SuffixFieldProcessor(field, isAggregateField);
-        }
-    }
 
 }
