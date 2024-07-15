@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test;
+package win.doyto.query.sql.field;
 
-import lombok.*;
-import win.doyto.query.core.Query;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import java.lang.reflect.Field;
+import java.util.List;
 
 /**
- * Account
+ * LogProcessor
  *
- * @author f0rb on 2021-12-24
+ * @author f0rb on 2024/7/15
+ * @since 1.0.4
  */
-@Getter
-@Setter
+@Slf4j
 @AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class Account implements Query {
-    private String username;
-    private String email;
-    private String mobile;
-    private Account accountAnd;
-    private Account accountOr;
-}
+public class LogProcessor implements FieldProcessor{
+    private final Field field;
 
+    @Override
+    public String process(String alias, List<Object> argList, Object value) {
+        log.info("Query field is ignored: {}.{}", field.getDeclaringClass(), field.getName());
+        return null;
+    }
+}

@@ -54,6 +54,8 @@ public final class FieldMapper {
 
     public static void init(Field field) {
         if (FIELD_PROCESSOR_MAP.containsKey(field)) return;
+        FIELD_PROCESSOR_MAP.put(field, new LogProcessor(field)); //To avoid recursive init
+
         FieldProcessor processor;
         Class<?> fieldType = field.getType();
         if (field.getName().endsWith("Or")) {
@@ -99,10 +101,7 @@ public final class FieldMapper {
         } else if (SubqueryProcessor.matches(field.getName()) != null) {
             processor = new SubqueryProcessor(field.getName());
         } else {
-            processor = (alias, argList, value) -> {
-                log.info("Query field is ignored: {}.{}", field.getDeclaringClass(), field.getName());
-                return null;
-            };
+            processor = new LogProcessor(field);
         }
         return processor;
     }
