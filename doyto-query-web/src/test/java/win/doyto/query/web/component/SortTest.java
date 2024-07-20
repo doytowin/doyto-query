@@ -102,4 +102,11 @@ class SortTest {
                .andExpect(jsonPath("$.data").doesNotExist());
     }
 
+    @Test
+    void shouldKeepArgSort() throws Exception {
+        mockMvc.perform(get("/sort?sort=id,desc"))
+               .andExpect(jsonPath("$.success").value(true))
+               .andExpect(jsonPath("$.data").value("id,desc"));
+    }
+
 }
