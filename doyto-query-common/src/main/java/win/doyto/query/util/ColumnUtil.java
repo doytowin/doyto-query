@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.Join;
+import win.doyto.query.annotation.NoLabel;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.AggregationPrefix;
 import win.doyto.query.core.Dialect;
@@ -150,7 +151,8 @@ public class ColumnUtil {
         String columnName = resolveColumn(field);
         Dialect dialect = GlobalConfiguration.dialect();
         String fieldName = dialect.wrapLabel(field.getName());
-        return columnName.equalsIgnoreCase(fieldName) ? columnName : columnName + " AS " + fieldName;
+        return columnName.equalsIgnoreCase(fieldName) || field.isAnnotationPresent(NoLabel.class)
+                ? columnName : columnName + " AS " + fieldName;
     }
 
     public static String[] resolveSelectColumns(Class<?> entityClass) {

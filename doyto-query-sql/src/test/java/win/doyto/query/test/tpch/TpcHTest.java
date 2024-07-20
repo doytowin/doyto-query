@@ -156,7 +156,7 @@ class TpcHTest {
                 " AND p_type LIKE ?" +
                 " AND r_name = ?" +
                 " AND ps_supplycost = (" +
-                "SELECT MIN(ps_supplycost)" +
+                "SELECT min(ps_supplycost)" +
                 " FROM partsupp, supplier, nation, region" +
                 " WHERE ps_partkey = p_partkey" +
                 " AND ps_suppkey = s_suppkey" +

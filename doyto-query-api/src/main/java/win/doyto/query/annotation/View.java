@@ -36,7 +36,12 @@ public @interface View {
 
     Class<?> value();
 
-
     String alias() default "";
+
+    /**
+     * Set context to true to prevent the table name
+     * from appearing in the FROM clause in a subquery.
+     */
+    boolean context() default false;
 
 }

@@ -19,10 +19,7 @@ package win.doyto.query.sql.field;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.annotation.QueryField;
-import win.doyto.query.annotation.Subquery;
+import win.doyto.query.annotation.*;
 import win.doyto.query.core.*;
 
 import javax.persistence.Column;
@@ -86,6 +83,8 @@ public final class FieldMapper {
             } else {
                 processor = new DomainPathProcessor(field);
             }
+        } else if (field.isAnnotationPresent(SubqueryV2.class)) {
+            processor = new SubqueryV2Processor(field);
         } else if (field.isAnnotationPresent(Subquery.class)) {
             processor = new SubqueryProcessor(field);
         } else if (SubqueryProcessor.matches(field.getName()) != null) {

@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.domain.partsupp;
+package win.doyto.query.annotation;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import java.math.BigDecimal;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * PartsuppEntity
+ * NoLabel
  *
- * @author f0rb on 2023/2/17
+ * @author f0rb on 2024/6/26
+ * @since 1.0.4
  */
-@Getter
-@Setter
-public class PartsuppEntity extends PartsuppKey {
-    private Integer ps_availqty;
-    private BigDecimal ps_supplycost;
-    private String ps_comment;
+@Target(FIELD)
+@Retention(RUNTIME)
+public @interface NoLabel {
 }
