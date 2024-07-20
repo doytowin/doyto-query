@@ -56,6 +56,7 @@ public class TestQuery extends PageQuery {
     private Integer idLe;
     private String username;
     private String usernameEq;
+    private String usernameRx;
 
     @QueryField(and = "(username = ? OR email = ? OR mobile = ?)")
     private String account;
