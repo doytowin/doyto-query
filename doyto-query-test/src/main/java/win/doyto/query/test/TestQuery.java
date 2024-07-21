@@ -61,7 +61,9 @@ public class TestQuery extends PageQuery {
     @QueryField(and = "(username = ? OR email = ? OR mobile = ?)")
     private String account;
 
-    private AccountOr account2;
+    private Account accountOr;
+    private List<String> usernameContainOr;
+    private List<Account> accountsOr;
 
     private String email;
 

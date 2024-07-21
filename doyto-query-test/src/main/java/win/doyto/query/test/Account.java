@@ -14,34 +14,26 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q19;
+package win.doyto.query.test;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import lombok.*;
 import win.doyto.query.core.Query;
 
-import java.util.List;
-
 /**
- * LineitemFilter
+ * Account
  *
- * @author f0rb on 2023/2/19
- * @since 1.0.1
+ * @author f0rb on 2021-12-24
  */
 @Getter
 @Setter
-@SuperBuilder
-@NoArgsConstructor
 @AllArgsConstructor
-public class LineitemFilter implements Query {
-    private String p_brand;
-    private List<String> p_containerIn;
-    private Integer l_quantityGe;
-    private Integer l_quantityLe;
-    private Integer p_sizeGe;
-    private Integer p_sizeLe;
-    private List<String> l_shipmodeIn;
+@NoArgsConstructor
+@Builder
+public class Account implements Query {
+    private String username;
+    private String email;
+    private String mobile;
+    private Account accountAnd;
+    private Account accountOr;
 }
+

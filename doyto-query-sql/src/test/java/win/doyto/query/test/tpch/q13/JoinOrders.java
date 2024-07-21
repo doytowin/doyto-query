@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.And;
+import win.doyto.query.core.Query;
 
 /**
  * OrdersQuery
@@ -34,6 +34,6 @@ import win.doyto.query.core.And;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class JoinOrders implements And {
+public class JoinOrders implements Query {
     private String oCommentNotLike;
 }
