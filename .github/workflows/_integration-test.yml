@@ -36,6 +36,8 @@ jobs:
         run: echo "IMAGE=ghcr.io/doytowin/doyto-query-image-${{ inputs.image-name }}:1" >> $GITHUB_ENV
       - name: Start Container
         run: ${{ inputs.docker-run }} -d ${{ env.IMAGE }}
+      - name: Wait Container
+        run: sleep 5
       - name: Run Test
         run: mvn -B clean test -P docker,${{ inputs.image-name }}
       - name: Check log
