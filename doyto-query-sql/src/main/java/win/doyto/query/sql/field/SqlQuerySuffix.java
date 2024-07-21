@@ -89,6 +89,7 @@ public enum SqlQuerySuffix {
     Lt(" < "),
     Le(" <= "),
     Eq(" = "),
+    Rx(" REGEXP "),
     Any("ANY"),
     All("ALL"),
     NONE(" = ");

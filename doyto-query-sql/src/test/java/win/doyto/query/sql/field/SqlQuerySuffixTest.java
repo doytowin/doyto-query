@@ -68,6 +68,7 @@ class SqlQuerySuffixTest {
             "usernameNotStart, test, username NOT LIKE ?, test%",
             "usernameEnd, test, username LIKE ?, %test",
             "usernameNotEnd, test, username NOT LIKE ?, %test",
+            "usernameRx, test\\d, username REGEXP ?, test\\d",
     })
     void testClauseAndValueGeneration(String fieldName, String value, String expectedSql, String expectedValue) {
         String andSql = buildConditionForField(EMPTY, fieldInTestQuery(fieldName), argList, value);

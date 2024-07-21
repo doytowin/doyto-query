@@ -59,6 +59,7 @@ public enum QuerySuffix {
     Lt,
     Le,
     Eq,
+    Rx,
     Any,
     All,
 
