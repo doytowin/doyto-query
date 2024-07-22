@@ -27,11 +27,13 @@ import java.util.List;
  * @author f0rb
  * @since 0.0.1
  */
-public interface DataAccess<E extends Persistable<I>, I extends Serializable, Q> {
+public interface DataAccess<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery> {
 
     List<E> query(Q query);
 
     long count(Q query);
+
+    PageList<E> page(Q query);
 
     <V> List<V> queryColumns(Q q, Class<V> clazz, String... columns);
 

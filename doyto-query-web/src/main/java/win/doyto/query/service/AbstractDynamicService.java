@@ -58,7 +58,7 @@ import java.util.List;
 public abstract class AbstractDynamicService<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
         implements DynamicService<E, I, Q>, InitializingBean {
 
-    @Delegate
+    @Delegate(excludes = ExcludedDataAccess.class)
     protected DataAccess<E, I, Q> dataAccess;
 
     protected final Class<E> entityClass;
@@ -164,5 +164,11 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
         public <T> T execute(TransactionCallback<T> transactionCallback) {
             return transactionCallback.doInTransaction(TRANSACTION_STATUS);
         }
+    }
+
+    @SuppressWarnings({"unused", "java:S1610"})
+    abstract class ExcludedDataAccess {
+        public abstract void get(I id);
+        public abstract void delete(I id);
     }
 }

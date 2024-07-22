@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import win.doyto.query.core.PageList;
 import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.role.RoleEntity;
 import win.doyto.query.test.role.RoleQuery;
@@ -45,6 +46,13 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
     public JdbcDataAccessTest(@Autowired DatabaseOperations databaseOperations) {
         this.jdbcDataAccess = new JdbcDataAccess<>(databaseOperations, RoleEntity.class);
         this.userDataAccess = new JdbcDataAccess<>(databaseOperations, UserEntity.class);
+    }
+
+    @Test
+    void page() {
+        PageList<UserEntity> pageList = userDataAccess.page(UserQuery.builder().pageSize(2).build());
+        assertThat(pageList.getTotal()).isEqualTo(4);
+        assertThat(pageList.getList()).hasSize(2);
     }
 
     @Test

@@ -23,6 +23,7 @@ import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
+import win.doyto.query.core.PageList;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.jdbc.rowmapper.BeanPropertyRowMapper;
 import win.doyto.query.jdbc.rowmapper.ColumnMapRowMapper;
@@ -84,6 +85,12 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     @Override
     public List<E> query(Q q) {
         return queryColumns(q, rowMapper, columnsForSelect);
+    }
+
+    @Override
+    public PageList<E> page(Q query) {
+        query.forcePaging();
+        return new PageList<>(query(query), count(query));
     }
 
     @Override

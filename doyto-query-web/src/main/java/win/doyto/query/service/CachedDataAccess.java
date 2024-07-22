@@ -16,6 +16,7 @@
 
 package win.doyto.query.service;
 
+import lombok.experimental.Delegate;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.cache.CacheManager;
@@ -38,8 +39,8 @@ import java.util.List;
 public class CachedDataAccess<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
         implements DataAccess<E, I, Q> {
 
+    @Delegate
     protected final DataAccess<E, I, Q> delegate;
-
     protected final CacheWrapper<E> entityCacheWrapper = CacheWrapper.createInstance();
     protected final CacheWrapper<List<E>> queryCacheWrapper = CacheWrapper.createInstance();
 
@@ -81,11 +82,6 @@ public class CachedDataAccess<E extends Persistable<I>, I extends Serializable, 
         }
     }
 
-    @Override
-    public List<I> queryIds(Q query) {
-        return delegate.queryIds(query);
-    }
-
     protected String generateCacheKey(Q query) {
         if (TransactionSynchronizationManager.isActualTransactionActive()) {
             return null;
@@ -97,16 +93,6 @@ public class CachedDataAccess<E extends Persistable<I>, I extends Serializable, 
     public List<E> query(Q query) {
         String key = generateCacheKey(query);
         return queryCacheWrapper.execute(key, () -> delegate.query(query));
-    }
-
-    @Override
-    public long count(Q query) {
-        return delegate.count(query);
-    }
-
-    @Override
-    public <V> List<V> queryColumns(Q q, Class<V> clazz, String... columns) {
-        return delegate.queryColumns(q, clazz, columns);
     }
 
     @Override

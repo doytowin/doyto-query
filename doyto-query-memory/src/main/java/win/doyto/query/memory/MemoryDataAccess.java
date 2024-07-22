@@ -23,10 +23,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.GeneratedValue;
 import win.doyto.query.annotation.Id;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.core.DataAccess;
-import win.doyto.query.core.DoytoQuery;
-import win.doyto.query.core.IdWrapper;
-import win.doyto.query.core.QuerySuffix;
+import win.doyto.query.core.*;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.BeanUtil;
 import win.doyto.query.util.ColumnUtil;
@@ -255,6 +252,12 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     @Override
     public long count(Q query) {
         return entitiesMap.values().stream().filter(item -> filterByQuery(query, item)).count();
+    }
+
+    @Override
+    public PageList<E> page(Q query) {
+        query.forcePaging();
+        return new PageList<>(query(query), count(query));
     }
 
 }
