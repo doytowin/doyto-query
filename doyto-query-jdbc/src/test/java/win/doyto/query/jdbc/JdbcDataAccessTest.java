@@ -56,6 +56,12 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
     }
 
     @Test
+    void count() {
+        long validRoleCount = jdbcDataAccess.count(RoleQuery.builder().valid(true).build());
+        assertThat(validRoleCount).isEqualTo(4);
+    }
+
+    @Test
     void deleteByPage() {
         jdbcDataAccess.delete(RoleQuery.builder().pageNumber(2).pageSize(2).build());
         List<RoleEntity> roleEntities = jdbcDataAccess.query(RoleQuery.builder().build());
