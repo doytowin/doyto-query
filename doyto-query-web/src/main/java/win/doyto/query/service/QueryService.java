@@ -34,6 +34,8 @@ public interface QueryService<E, Q extends DoytoQuery> {
 
     long count(Q query);
 
+    PageList<E> page(Q query);
+
     default boolean exists(Q query) {
         return count(query) > 0;
     }
@@ -56,14 +58,10 @@ public interface QueryService<E, Q extends DoytoQuery> {
         return query(query).stream().map(transfer).collect(Collectors.toList());
     }
 
-    default PageList<E> page(Q query) {
-        query.forcePaging();
-        return new PageList<>(query(query), count(query));
-    }
-
     default <V> PageList<V> page(Q query, Function<E, V> transfer) {
-        query.forcePaging();
-        return new PageList<>(query(query, transfer), count(query));
+        PageList<E> page = page(query);
+        List<V> list = page.getList().stream().map(transfer).collect(Collectors.toList());
+        return new PageList<>(list, page.getTotal());
     }
 
 }
