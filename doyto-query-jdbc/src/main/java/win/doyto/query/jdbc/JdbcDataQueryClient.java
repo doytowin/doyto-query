@@ -32,7 +32,10 @@ import win.doyto.query.util.CommonUtil;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -103,11 +106,11 @@ public class JdbcDataQueryClient implements DataQueryClient {
                       String queryFieldName = buildQueryFieldName(joinField);
                       Object subQuery = CommonUtil.readField(query, queryFieldName);
                       if (subQuery instanceof DoytoQuery) {
-                          if (Collection.class.isAssignableFrom(joinField.getType())) {
-                              queryEntitiesForJoinField(joinField, mainEntities, mainIds, (DoytoQuery) subQuery, mainIdClass);
-                          } else {
-                              queryEntityForJoinField(joinField, mainEntities, mainIds, (DoytoQuery) subQuery, mainIdClass);
-                          }
+                          boolean isList = Collection.class.isAssignableFrom(joinField.getType());
+                          Class<Object> joinEntityClass = resolveSubEntityClass(joinField, isList);
+                          SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain((DoytoQuery) subQuery, joinEntityClass, joinField, mainIds);
+                          Map<I, List<Object>> subDomainMap = queryIntoMainEntity(mainIdClass, joinEntityClass, sqlAndArgs);
+                          mainEntities.forEach(e -> writeResultToMainDomain(e, joinField, isList, subDomainMap));
                       }
                   });
     }
@@ -121,12 +124,9 @@ public class JdbcDataQueryClient implements DataQueryClient {
         return (Class<I>) e.getId().getClass();
     }
 
-    private <E extends Persistable<I>, I extends Serializable, R>
-    void queryEntitiesForJoinField(Field joinField, List<E> mainEntities, List<I> mainIds, DoytoQuery query, Class<I> keyClass) {
-        Class<R> joinEntityClass = CommonUtil.resolveActualReturnClass(joinField);
-        SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(query, joinEntityClass, joinField, mainIds);
-        Map<I, List<R>> subDomainMap = queryIntoMainEntity(keyClass, joinEntityClass, sqlAndArgs);
-        mainEntities.forEach(e -> writeResultToMainDomain(joinField, subDomainMap, e));
+    @SuppressWarnings("unchecked")
+    private static <R> Class<R> resolveSubEntityClass(Field joinField, boolean isList) {
+        return isList ? CommonUtil.resolveActualReturnClass(joinField) : (Class<R>) joinField.getType();
     }
 
     @SuppressWarnings("unchecked")
@@ -138,24 +138,11 @@ public class JdbcDataQueryClient implements DataQueryClient {
     }
 
     private <E extends Persistable<I>, I extends Serializable, R>
-    void writeResultToMainDomain(Field joinField, Map<I, List<R>> map, E e) {
+    void writeResultToMainDomain(E e, Field joinField, boolean isList, Map<I, List<R>> map) {
         List<R> list = map.getOrDefault(e.getId(), new ArrayList<>());
-        CommonUtil.writeField(joinField, e, list);
-    }
-
-    @SuppressWarnings("unchecked")
-    private <E extends Persistable<I>, I extends Serializable, R>
-    void queryEntityForJoinField(Field joinField, List<E> mainEntities, List<I> mainIds, DoytoQuery query, Class<I> keyClass) {
-        Class<R> joinEntityClass = (Class<R>) joinField.getType();
-        SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(query, joinEntityClass, joinField, mainIds);
-        Map<I, List<R>> subDomainMap = queryIntoMainEntity(keyClass, joinEntityClass, sqlAndArgs);
-        mainEntities.forEach(e -> writeSingleResultToMainDomain(joinField, subDomainMap, e));
-    }
-
-    private <E extends Persistable<I>, I extends Serializable, R>
-    void writeSingleResultToMainDomain(Field joinField, Map<I, List<R>> map, E e) {
-        List<R> list = map.getOrDefault(e.getId(), Collections.emptyList());
-        if (!list.isEmpty()) {
+        if (isList) {
+            CommonUtil.writeField(joinField, e, list);
+        } else if (!list.isEmpty()) {
             CommonUtil.writeField(joinField, e, list.get(0));
         }
     }

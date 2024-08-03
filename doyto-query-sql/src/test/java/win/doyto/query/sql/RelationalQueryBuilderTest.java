@@ -29,8 +29,10 @@ import win.doyto.query.test.role.RoleStatView;
 import win.doyto.query.test.role.RoleView;
 import win.doyto.query.test.user.*;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,6 +43,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author f0rb on 2021-12-11
  */
 class RelationalQueryBuilderTest {
+    static <I extends Serializable, R> SqlAndArgs buildSqlAndArgsForSubDomain(Field joinField, List<I> mainIds, Class<R> joinEntityClass) {
+        return RelationalQueryBuilder.buildSqlAndArgsForSubDomain(new PageQuery(), joinEntityClass, joinField, mainIds);
+    }
+
     @BeforeEach
     void setUp() {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
@@ -58,11 +64,10 @@ class RelationalQueryBuilderTest {
     }
 
     @Test
-    void buildSqlAndArgsForSubDomain() throws NoSuchFieldException {
+    void buildSqlAndArgsForSubDomain_ThreeLevels() throws NoSuchFieldException {
         Field field = UserView.class.getDeclaredField("perms");
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
-                field, Arrays.asList(1, 2, 3), PermView.class);
+        SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 2, 3), PermView.class);
 
         String expected = "\nSELECT ? AS MAIN_ENTITY_ID, id, permName, valid FROM t_perm\n" +
                 "WHERE id IN (\n" +
@@ -86,11 +91,10 @@ class RelationalQueryBuilderTest {
     }
 
     @Test
-    void buildSqlAndArgsForSubDomain_FourDomains() throws NoSuchFieldException {
+    void buildSqlAndArgsForSubDomain_FourLevels() throws NoSuchFieldException {
         Field field = UserView.class.getDeclaredField("menus");
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
-                field, Arrays.asList(1, 3), MenuView.class);
+        SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 3), MenuView.class);
 
         String expected = "\nSELECT ? AS MAIN_ENTITY_ID, id, menuName, platform FROM t_menu\n" +
                 "WHERE id IN (\n" +
@@ -110,11 +114,10 @@ class RelationalQueryBuilderTest {
     }
 
     @Test
-    void buildJoinSqlForReversePath_TwoDomains() throws NoSuchFieldException {
+    void buildJoinSqlForReversePath_TwoLevels() throws NoSuchFieldException {
         Field field = RoleView.class.getDeclaredField("users");
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
-                field, Arrays.asList(1, 3), UserView.class);
+        SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 3), UserView.class);
 
         String expected = "\nSELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
                 "WHERE id IN (\n" +
@@ -130,11 +133,10 @@ class RelationalQueryBuilderTest {
     }
 
     @Test
-    void buildJoinSqlForReversePath_ThreeDomains() throws NoSuchFieldException {
+    void buildJoinSqlForReversePath_ThreeLevels() throws NoSuchFieldException {
         Field field = PermView.class.getDeclaredField("users");
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
-                field, Arrays.asList(1, 3), UserView.class);
+        SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 3), UserView.class);
 
         String expected = "\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
@@ -153,11 +155,10 @@ class RelationalQueryBuilderTest {
     }
 
     @Test
-    void buildJoinSqlForReversePath_FourDomains() throws NoSuchFieldException {
+    void buildJoinSqlForReversePath_FourLevels() throws NoSuchFieldException {
         Field field = MenuView.class.getDeclaredField("users");
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
-                field, Arrays.asList(1, 3, 4), UserView.class);
+        SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 3, 4), UserView.class);
 
         String expected = "\n" +
                 "SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user\n" +
@@ -351,8 +352,7 @@ class RelationalQueryBuilderTest {
     void buildSqlAndArgsForManyToManyAggregation() throws NoSuchFieldException {
         Field field = UserView.class.getDeclaredField("roleStat");
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
-                field, Arrays.asList(1, 2, 3), RoleStatView.class);
+        SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 2, 3), RoleStatView.class);
 
         String expected = "\nSELECT ? AS MAIN_ENTITY_ID, count(*) AS count FROM t_role\n" +
                 "WHERE id IN (\n" +

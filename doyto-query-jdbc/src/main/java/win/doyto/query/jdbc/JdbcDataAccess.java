@@ -27,6 +27,7 @@ import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.PageList;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.sql.EntityMetadata;
 import win.doyto.query.sql.SqlAndArgs;
 import win.doyto.query.sql.SqlBuilder;
 import win.doyto.query.sql.SqlBuilderFactory;
@@ -73,7 +74,7 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
         this.databaseOperations = databaseOperations;
         this.rowMapper = rowMapper;
         this.sqlBuilder = SqlBuilderFactory.create(entityClass);
-        this.columnsForSelect = ColumnUtil.resolveSelectColumns(entityClass);
+        this.columnsForSelect = EntityMetadata.buildViewColumns(entityClass).split(", ");
 
         Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
         this.isGeneratedId = idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class);
