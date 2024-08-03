@@ -19,6 +19,7 @@ package win.doyto.query.sql;
 import lombok.extern.slf4j.Slf4j;
 import win.doyto.query.annotation.Clause;
 import win.doyto.query.annotation.Column;
+import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.Id;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
@@ -93,6 +94,7 @@ public class CrudBuilder<E extends Persistable<?>> extends QueryBuilder implemen
     private static List<Field> buildUpdateFields(Class<?> entityClass, String versionColumn) {
         return filterFields(entityClass, field -> ColumnUtil.shouldRetain(field)
                 && !field.isAnnotationPresent(Id.class)
+                && !field.isAnnotationPresent(DomainPath.class)
                 && !ColumnUtil.convertColumn(field.getName()).equals(versionColumn)
         ).toList();
     }

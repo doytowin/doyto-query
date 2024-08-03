@@ -18,13 +18,10 @@ package win.doyto.query.sql;
 
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.relation.DomainPathDetail;
-import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
-import java.util.stream.Collectors;
 
 import static win.doyto.query.sql.BuildHelper.resolveTableName;
 import static win.doyto.query.sql.Constant.*;
@@ -45,14 +42,7 @@ public class RelatedDomainPath {
     public RelatedDomainPath(Field joinField, Class<?> joinEntityClass) {
         this.domainPathDetail = DomainPathDetail.buildBy(joinField.getAnnotation(DomainPath.class));
         this.mainTableName = resolveTableName(joinField.getDeclaringClass());
-        this.targetColumns = buildSubDomainColumns(joinEntityClass);
-    }
-
-    private static String buildSubDomainColumns(Class<?> joinEntityClass) {
-        return FieldUtils.getAllFieldsList(joinEntityClass).stream()
-                         .filter(ColumnUtil::filterForJoinEntity)
-                         .map(ColumnUtil::selectAs)
-                         .collect(Collectors.joining(SEPARATOR));
+        this.targetColumns = EntityMetadata.buildViewColumns(joinEntityClass);
     }
 
 

@@ -24,7 +24,6 @@ import win.doyto.query.annotation.View;
 import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Having;
-import win.doyto.query.core.PageQuery;
 import win.doyto.query.util.CommonUtil;
 
 import java.io.Serializable;
@@ -47,12 +46,12 @@ public class RelationalQueryBuilder {
 
     public static final String KEY_COLUMN = "MAIN_ENTITY_ID";
 
-    public static SqlAndArgs buildSelectAndArgs(DoytoQuery q, Class<?> entityClass) {
-        return SqlAndArgs.buildSqlWithArgs(argList -> buildSelect(q, entityClass, argList));
+    public static SqlAndArgs buildSelectAndArgs(DoytoQuery query, Class<?> viewClass) {
+        return SqlAndArgs.buildSqlWithArgs(argList -> buildSelect(query, viewClass, argList));
     }
 
-    public static String buildSelect(DoytoQuery query, Class<?> entityClass, List<Object> argList) {
-        EntityMetadata entityMetadata = EntityMetadata.build(entityClass);
+    public static String buildSelect(DoytoQuery query, Class<?> viewClass, List<Object> argList) {
+        EntityMetadata entityMetadata = EntityMetadata.build(viewClass);
 
         if (!entityMetadata.getWithViews().isEmpty()) {
             return buildWithSql(entityMetadata.getWithViews(), argList, query)
@@ -147,15 +146,11 @@ public class RelationalQueryBuilder {
         }));
     }
 
-    static <I extends Serializable, R> SqlAndArgs buildSqlAndArgsForSubDomain(Field joinField, List<I> mainIds, Class<R> joinEntityClass) {
-        return buildSqlAndArgsForSubDomain(new PageQuery(), joinEntityClass, joinField, mainIds);
-    }
-
     public static <I extends Serializable, R> SqlAndArgs buildSqlAndArgsForSubDomain(
-            DoytoQuery query, Class<R> joinEntityClass, Field joinField, List<I> mainIds
+            DoytoQuery query, Class<R> joinViewClass, Field joinField, List<I> mainIds
     ) {
         LinkedList<Object> queryArgs = new LinkedList<>();
-        RelatedDomainPath relatedDomainPath = new RelatedDomainPath(joinField, joinEntityClass);
+        RelatedDomainPath relatedDomainPath = new RelatedDomainPath(joinField, joinViewClass);
         StringBuilder sqlBuilder = relatedDomainPath.buildQueryForEachMainDomain();
         String condition = buildCondition(AND, query, queryArgs);
         if (!condition.isEmpty()) {

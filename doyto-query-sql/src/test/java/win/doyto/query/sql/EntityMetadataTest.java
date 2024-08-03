@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import win.doyto.query.annotation.Entity;
 import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.test.menu.MenuView;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -58,5 +59,43 @@ class EntityMetadataTest {
         assertEquals(" GROUP BY studentId", entityMetadata.getGroupBySql());
 
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
+    }
+
+    @Test
+    void resolveSelectColumns() {
+        String columns = EntityMetadata.buildViewColumns(MenuView.class);
+        assertEquals("id, menu_name AS menuName, platform", columns);
+    }
+
+    /**
+     * Aggregate function list
+     * <p>
+     * sum
+     * max
+     * min
+     * avg
+     * first
+     * last
+     * stdDev("stddev")
+     * stdDevPop("stddev_pop")
+     * stdDevSamp("stddev_samp")
+     * addToSet
+     * push
+     */
+    @Test
+    void supportAggregateColumnResolving() {
+        assertEquals("max(id)", EntityMetadata.resolveColumn("maxId"));
+        assertEquals("min(id)", EntityMetadata.resolveColumn("minId"));
+        assertEquals("sum(qty)", EntityMetadata.resolveColumn("sumQty"));
+        assertEquals("avg(qty)", EntityMetadata.resolveColumn("avgQty"));
+        assertEquals("first(id)", EntityMetadata.resolveColumn("firstId"));
+        assertEquals("last(id)", EntityMetadata.resolveColumn("lastId"));
+        assertEquals("stddev(sales_amount)", EntityMetadata.resolveColumn("stdDevSalesAmount"));
+        assertEquals("stddev_pop(sales_amount)", EntityMetadata.resolveColumn("stdDevPopSalesAmount"));
+        assertEquals("stddev_samp(sales_amount)", EntityMetadata.resolveColumn("stdDevSampSalesAmount"));
+        assertEquals("addToSet(sales_amount)", EntityMetadata.resolveColumn("addToSetSalesAmount"));
+        assertEquals("push(sales_amount)", EntityMetadata.resolveColumn("pushSalesAmount"));
+        assertEquals("count(*)", EntityMetadata.resolveColumn("count"));
+        assertEquals("count(id)", EntityMetadata.resolveColumn("countId"));
     }
 }

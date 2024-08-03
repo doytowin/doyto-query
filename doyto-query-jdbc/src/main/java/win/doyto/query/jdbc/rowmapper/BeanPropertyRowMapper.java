@@ -54,7 +54,7 @@ public class BeanPropertyRowMapper<E> implements RowMapper<E> {
         PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
         Arrays.stream(propertyDescriptors)
               .filter(pd -> pd.getWriteMethod() != null
-                      && ColumnUtil.filterForJoinEntity(FieldUtils.getField(mappedClass, pd.getName(), true))
+                      && ColumnUtil.filterForView(FieldUtils.getField(mappedClass, pd.getName(), true))
               )
               .forEach(pd -> {
                   this.fieldMap.put(pd.getName(), pd);

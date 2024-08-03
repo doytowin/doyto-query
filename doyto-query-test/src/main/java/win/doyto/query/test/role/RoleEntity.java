@@ -19,8 +19,13 @@ package win.doyto.query.test.role;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.entity.AbstractCommonEntity;
+import win.doyto.query.test.perm.PermView;
+import win.doyto.query.test.user.UserView;
 import win.doyto.query.validation.CreateGroup;
+
+import java.util.List;
 
 /**
  * UserEntity
@@ -38,4 +43,16 @@ public class RoleEntity extends AbstractCommonEntity<Integer, Long> {
     private String roleCode;
 
     private Boolean valid;
+
+    // many-to-many
+    @DomainPath({"role", "~", "user"})
+    private List<UserView> users;
+
+    // many-to-many
+    @DomainPath({"role", "perm"})
+    private List<PermView> perms;
+
+    // many-to-one
+    @DomainPath(value = "user", localField = "create_user_id")
+    private UserView createUser;
 }

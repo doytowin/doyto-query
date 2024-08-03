@@ -18,8 +18,12 @@ package win.doyto.query.sql;
 
 import lombok.Getter;
 import win.doyto.query.annotation.*;
+import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.core.AggregationPrefix;
+import win.doyto.query.core.Dialect;
 import win.doyto.query.util.ColumnUtil;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,22 +51,22 @@ public class EntityMetadata {
     private final List<View> withViews;
     private EntityMetadata nested;
 
-    public EntityMetadata(Class<?> entityClass) {
-        if (entityClass.isAnnotationPresent(NestedView.class)) {
-            NestedView anno = entityClass.getAnnotation(NestedView.class);
+    public EntityMetadata(Class<?> viewClass) {
+        if (viewClass.isAnnotationPresent(NestedView.class)) {
+            NestedView anno = viewClass.getAnnotation(NestedView.class);
             Class<?> clazz = anno.value();
             // We don't need to cache the nested EntityMetadata,
             // since the host EntityMetadata is already cached.
             this.nested = new EntityMetadata(clazz);
             this.tableName = BuildHelper.defaultTableName(clazz);
         } else {
-            this.tableName = BuildHelper.resolveTableName(entityClass);
+            this.tableName = BuildHelper.resolveTableName(viewClass);
         }
-        this.joinConditions = resolveJoinConditions(entityClass);
-        this.columnsForSelect = buildSelectColumns(entityClass);
-        this.groupByColumns = resolveGroupByColumns(entityClass);
+        this.joinConditions = resolveJoinConditions(viewClass);
+        this.columnsForSelect = buildViewColumns(viewClass);
+        this.groupByColumns = resolveGroupByColumns(viewClass);
         this.groupBySql = buildGroupBySql(groupByColumns);
-        this.withViews = collectWithViews(entityClass);
+        this.withViews = collectWithViews(viewClass);
     }
 
     private List<View> collectWithViews(Class<?> entityClass) {
@@ -121,18 +125,45 @@ public class EntityMetadata {
         return conditions.isEmpty() ? EMPTY : WHERE + String.join(AND, conditions);
     }
 
-    static EntityMetadata build(Class<?> entityClass) {
-        return holder.computeIfAbsent(entityClass, EntityMetadata::new);
+    static EntityMetadata build(Class<?> viewClass) {
+        return holder.computeIfAbsent(viewClass, EntityMetadata::new);
     }
 
-    static String buildSelectColumns(Class<?> entityClass) {
-        return ColumnUtil.filterFields(entityClass)
-                         .map(ColumnUtil::selectAs)
+    public static String buildViewColumns(Class<?> viewClass) {
+        return ColumnUtil.filterFields(viewClass, ColumnUtil::filterForView)
+                         .map(EntityMetadata::selectAs)
                          .collect(Collectors.joining(SEPARATOR));
     }
 
-    static String resolveGroupByColumns(Class<?> entityClass) {
-        return ColumnUtil.filterFields(entityClass, field -> field.isAnnotationPresent(GroupBy.class))
+    public static String selectAs(Field field) {
+        String columnName = resolveColumn(field);
+        Dialect dialect = GlobalConfiguration.dialect();
+        String fieldName = dialect.wrapLabel(field.getName());
+        return columnName.equalsIgnoreCase(fieldName) || field.isAnnotationPresent(NoLabel.class)
+                ? columnName : columnName + " AS " + fieldName;
+    }
+
+    public static String resolveColumn(Field field) {
+        Column column = field.getAnnotation(Column.class);
+        if (column != null && !column.name().isEmpty()) {
+            return column.name();
+        }
+        return resolveColumn(field.getName());
+    }
+
+    public static String resolveColumn(String fieldName) {
+        AggregationPrefix aggregationPrefix = AggregationPrefix.resolveField(fieldName);
+        String columnName = aggregationPrefix.resolveColumnName(fieldName);
+        columnName = ColumnUtil.convertColumn(columnName);
+        columnName = GlobalConfiguration.dialect().wrapLabel(columnName);
+        if (aggregationPrefix != AggregationPrefix.NONE) {
+            columnName = aggregationPrefix.getName() + "(" + columnName + ")";
+        }
+        return columnName;
+    }
+
+    static String resolveGroupByColumns(Class<?> viewClass) {
+        return ColumnUtil.filterFields(viewClass, field -> field.isAnnotationPresent(GroupBy.class))
                          .map(field -> {
                              if (field.isAnnotationPresent(Column.class)) {
                                  return field.getAnnotation(Column.class).name();

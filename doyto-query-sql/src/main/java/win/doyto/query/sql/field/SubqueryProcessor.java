@@ -59,7 +59,7 @@ public class SubqueryProcessor implements FieldProcessor {
 
         String column = subquery.select();
         if (!column.contains("(")) {
-            column = ColumnUtil.resolveColumn(column);
+            column = EntityMetadata.resolveColumn(column);
         }
         clauseFormat = buildClauseFormat(fieldName, column, tableName);
     }
@@ -75,7 +75,7 @@ public class SubqueryProcessor implements FieldProcessor {
         Matcher matcher = SubqueryProcessor.matches(originFieldName);
         assert matcher != null;
         String fieldName = matcher.group(1);
-        String column = ColumnUtil.resolveColumn(matcher.group(2));
+        String column = EntityMetadata.resolveColumn(matcher.group(2));
         String domain = ColumnUtil.convertColumn(matcher.group(3));
         String table = GlobalConfiguration.formatTable(domain);
 

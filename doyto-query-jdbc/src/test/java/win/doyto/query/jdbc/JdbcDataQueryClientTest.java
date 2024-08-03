@@ -25,6 +25,7 @@ import win.doyto.query.test.menu.MenuQuery;
 import win.doyto.query.test.menu.MenuView;
 import win.doyto.query.test.menu.MenuViewQuery;
 import win.doyto.query.test.perm.PermissionQuery;
+import win.doyto.query.test.role.RoleEntity;
 import win.doyto.query.test.role.RoleQuery;
 import win.doyto.query.test.role.RoleView;
 import win.doyto.query.test.role.RoleViewQuery;
@@ -112,7 +113,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
                                                .withPerms(new PermissionQuery())
                                                .build();
 
-        List<RoleView> roles = jdbcDataQueryClient.query(roleQuery);
+        List<RoleEntity> roles = jdbcDataQueryClient.query(roleQuery, RoleEntity.class);
 
         assertThat(roles)
                 .extracting("perms")
