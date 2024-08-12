@@ -93,8 +93,6 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Arrays;
 
-import static java.time.temporal.ChronoUnit.MONTHS;
-import static java.time.temporal.ChronoUnit.YEARS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -223,7 +221,7 @@ class TpcHTest {
 
         LocalDate date = LocalDate.of(1993, 7, 1);
         Date orderDateGe = Date.valueOf(date);
-        Date orderDateLt = Date.valueOf(date.plus(3, MONTHS));
+        Date orderDateLt = Date.valueOf(date.plusMonths(3));
         OrderPriorityCheckingQuery query = OrderPriorityCheckingQuery
                 .builder()
                 .o_orderdateGe(orderDateGe)
@@ -254,7 +252,7 @@ class TpcHTest {
 
         LocalDate date = LocalDate.of(1994, 1, 1);
         Date orderDateGe = Date.valueOf(date);
-        Date orderDateLt = Date.valueOf(date.plus(1, YEARS));
+        Date orderDateLt = Date.valueOf(date.plusYears(1));
         LocalSupplierVolumeQuery query = LocalSupplierVolumeQuery
                 .builder()
                 .rName("ASIA")
@@ -287,7 +285,7 @@ class TpcHTest {
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(
-                Date.valueOf(date), Date.valueOf(date.plus(1, YEARS)),
+                Date.valueOf(date), Date.valueOf(date.plusYears(1)),
                 BigDecimal.valueOf(0.05), BigDecimal.valueOf(0.07), 24);
     }
 
@@ -300,8 +298,7 @@ class TpcHTest {
                 " FROM (SELECT n1.n_name AS supp_nation," +
                 " n2.n_name AS cust_nation," +
                 " YEAR(l_shipdate) AS l_year," +
-                " l_extendedprice * (1 - l_discount" +
-                ") AS volume" +
+                " l_extendedprice * (1 - l_discount) AS volume" +
                 " FROM supplier, lineitem, orders, customer, nation n1, nation n2" +
                 " WHERE s_nationkey = n1.n_nationkey" +
                 " AND l_orderkey = o_orderkey" +
@@ -453,7 +450,7 @@ class TpcHTest {
         ReturnedItemReportingQuery query = ReturnedItemReportingQuery
                 .builder()
                 .o_orderdateGe(Date.valueOf(date))
-                .o_orderdateLt(Date.valueOf(date.plus(3, MONTHS)))
+                .o_orderdateLt(Date.valueOf(date.plusMonths(3)))
                 .l_returnflag("R")
                 .sort("revenue,DESC")
                 .build();
@@ -462,7 +459,7 @@ class TpcHTest {
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(
-                Date.valueOf(date), Date.valueOf(date.plus(3, MONTHS)), "R");
+                Date.valueOf(date), Date.valueOf(date.plusMonths(3)), "R");
     }
 
     @Test
@@ -522,7 +519,7 @@ class TpcHTest {
                 .o_orderpriority2("2-HIGH")
                 .l_shipmodeIn(Arrays.asList("MAIL", "SHIP"))
                 .l_receiptdateGe(Date.valueOf(date))
-                .l_receiptdateLt(Date.valueOf(date.plus(1, YEARS)))
+                .l_receiptdateLt(Date.valueOf(date.plusYears(1)))
                 .sort("l_shipmode")
                 .build();
 
@@ -533,7 +530,7 @@ class TpcHTest {
                 "1-URGENT", "2-HIGH",
                 "1-URGENT", "2-HIGH",
                 "MAIL", "SHIP",
-                Date.valueOf(date), Date.valueOf(date.plus(1, YEARS))
+                Date.valueOf(date), Date.valueOf(date.plusYears(1))
         );
     }
 
@@ -809,7 +806,7 @@ class TpcHTest {
         AvailableQtyQuery availableQtyQuery = AvailableQtyQuery
                 .builder()
                 .l_shipdateGe(Date.valueOf(date))
-                .l_shipdateLt(Date.valueOf(date.plus(1, YEARS)))
+                .l_shipdateLt(Date.valueOf(date.plusYears(1)))
                 .build();
 
         SuppkeyQuery suppkeyQuery = SuppkeyQuery
@@ -829,7 +826,7 @@ class TpcHTest {
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(
                 "forest%", Date.valueOf(date),
-                Date.valueOf(date.plus(1, YEARS)), "CANADA");
+                Date.valueOf(date.plusYears(1)), "CANADA");
     }
 
     @Test
