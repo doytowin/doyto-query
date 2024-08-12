@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q15;
+package win.doyto.query.sql.q15;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,23 +22,22 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.Subquery;
-import win.doyto.query.core.AggregationQuery;
+import win.doyto.query.core.AggregatedQuery;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
 
 /**
- * RevenueQuery
+ * LineitemRevenueQuery
  *
- * @author f0rb on 2023/6/13
- * @since 1.0.2
+ * @author f0rb on 2024/8/12
  */
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TopSupplierQuery extends PageQuery implements AggregationQuery {
-    private LineitemQuery lineitemRevenueQuery;
+public class LineitemRevenueQuery extends AggregatedQuery {
+    private LineitemQuery entityQuery;
     @Subquery(select = "MAX(total_revenue)", from = RevenueView.class)
     private PageQuery total_revenue;
 }

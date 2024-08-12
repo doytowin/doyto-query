@@ -104,7 +104,7 @@ public class RelationalQueryBuilder {
         return buildPaging(sqlBuilder.toString(), query);
     }
 
-    private static void buildJoinClauses(StringBuilder sqlBuilder, DoytoQuery query, List<Object> argList) {
+    static void buildJoinClauses(StringBuilder sqlBuilder, DoytoQuery query, List<Object> argList) {
         Field[] joinFields = FieldUtils.getFieldsWithAnnotation(query.getClass(), Join.class);
         for (Field field : joinFields) {
             Object joinObject = CommonUtil.readField(field, query);
@@ -125,7 +125,7 @@ public class RelationalQueryBuilder {
                   .append(andConditions);
     }
 
-    private static String buildHaving(Having having, List<Object> argList) {
+    static String buildHaving(Having having, List<Object> argList) {
         if (having == null) {
             return EMPTY;
         }

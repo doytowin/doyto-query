@@ -14,31 +14,29 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q15;
+package win.doyto.query.sql.q15;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.Subquery;
-import win.doyto.query.core.AggregationQuery;
-import win.doyto.query.core.PageQuery;
-import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
+import win.doyto.query.annotation.View;
+import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
+
+import java.math.BigDecimal;
 
 /**
- * RevenueQuery
+ * TopSupplierView
  *
  * @author f0rb on 2023/6/13
  * @since 1.0.2
  */
 @Getter
 @Setter
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class TopSupplierQuery extends PageQuery implements AggregationQuery {
-    private LineitemQuery lineitemRevenueQuery;
-    @Subquery(select = "MAX(total_revenue)", from = RevenueView.class)
-    private PageQuery total_revenue;
+@View(SupplierEntity.class)
+@View(value = LineitemRevenueView.class, with = "revenue")
+public class TopSupplierView {
+    private Integer s_suppkey;
+    private String s_name;
+    private String s_address;
+    private String s_phone;
+    private BigDecimal total_revenue;
 }

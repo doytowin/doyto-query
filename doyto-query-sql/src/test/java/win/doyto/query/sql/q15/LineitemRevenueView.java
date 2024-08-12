@@ -14,31 +14,34 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q15;
+package win.doyto.query.sql.q15;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.Subquery;
-import win.doyto.query.core.AggregationQuery;
-import win.doyto.query.core.PageQuery;
-import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
+import win.doyto.query.annotation.Column;
+import win.doyto.query.annotation.ForeignKey;
+import win.doyto.query.annotation.GroupBy;
+import win.doyto.query.annotation.View;
+import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
+import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
+
+import java.math.BigDecimal;
 
 /**
- * RevenueQuery
+ * LineitemView
  *
  * @author f0rb on 2023/6/13
  * @since 1.0.2
  */
 @Getter
 @Setter
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class TopSupplierQuery extends PageQuery implements AggregationQuery {
-    private LineitemQuery lineitemRevenueQuery;
-    @Subquery(select = "MAX(total_revenue)", from = RevenueView.class)
-    private PageQuery total_revenue;
+@View(LineitemEntity.class)
+public class LineitemRevenueView {
+    @ForeignKey(entity = SupplierEntity.class, field = "s_suppkey")
+    @GroupBy
+    @Column(name = "l_suppkey")
+    private Integer supplier_no;
+    @Column(name = "SUM(l_extendedprice * (1 - l_discount))")
+    private BigDecimal total_revenue;
 }
+
