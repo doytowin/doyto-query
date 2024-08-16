@@ -39,7 +39,7 @@ INSERT INTO t_menu (id, platform, parent_id, menu_name, memo, valid) VALUES (12,
 INSERT INTO t_role (role_name, role_code, create_user_id) VALUES ('admin', 'ADMIN', 1);
 INSERT INTO t_role (role_name, role_code, create_user_id) VALUES ('vip', 'VIP', 2);
 INSERT INTO t_role (role_name, role_code, create_user_id) VALUES ('vip2', 'VIP2', 2);
-INSERT INTO t_role (role_name, role_code, valid, create_user_id) VALUES ('vip3', 'VIP3', false, 0);
+INSERT INTO t_role (role_name, role_code, create_user_id) VALUES ('vip3', 'VIP3', 0);
 INSERT INTO t_role (role_name, role_code) VALUES ('vip4', 'VIP4');
 
 INSERT INTO a_user_and_role (user_id, role_id) VALUES (1, 1);

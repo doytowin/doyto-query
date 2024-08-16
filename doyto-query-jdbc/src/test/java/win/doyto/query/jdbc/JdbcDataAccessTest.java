@@ -40,11 +40,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class JdbcDataAccessTest extends JdbcApplicationTest {
 
-    private JdbcDataAccess<RoleEntity, Integer, RoleQuery> jdbcDataAccess;
-    private JdbcDataAccess<UserEntity, Long, UserQuery> userDataAccess;
+    private final JdbcDataAccess<RoleEntity, Integer, RoleQuery> roleDataAccess;
+    private final JdbcDataAccess<UserEntity, Long, UserQuery> userDataAccess;
 
     public JdbcDataAccessTest(@Autowired DatabaseOperations databaseOperations) {
-        this.jdbcDataAccess = new JdbcDataAccess<>(databaseOperations, RoleEntity.class);
+        this.roleDataAccess = new JdbcDataAccess<>(databaseOperations, RoleEntity.class);
         this.userDataAccess = new JdbcDataAccess<>(databaseOperations, UserEntity.class);
     }
 
@@ -57,14 +57,14 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
 
     @Test
     void count() {
-        long validRoleCount = jdbcDataAccess.count(RoleQuery.builder().valid(true).build());
-        assertThat(validRoleCount).isEqualTo(4);
+        long validRoleCount = userDataAccess.count(UserQuery.builder().valid(true).build());
+        assertThat(validRoleCount).isEqualTo(3);
     }
 
     @Test
     void deleteByPage() {
-        jdbcDataAccess.delete(RoleQuery.builder().pageNumber(2).pageSize(2).build());
-        List<RoleEntity> roleEntities = jdbcDataAccess.query(RoleQuery.builder().build());
+        roleDataAccess.delete(RoleQuery.builder().pageNumber(2).pageSize(2).build());
+        List<RoleEntity> roleEntities = roleDataAccess.query(RoleQuery.builder().build());
         assertThat(roleEntities)
                 .extracting("id")
                 .containsExactly(1, 2, 5);
@@ -72,7 +72,7 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
 
     @Test
     void shouldNotDeleteWhenNothingFound() {
-        int ret = jdbcDataAccess.delete(RoleQuery.builder().roleNameLike("noop").build());
+        int ret = roleDataAccess.delete(RoleQuery.builder().roleNameLike("noop").build());
         assertThat(ret).isZero();
     }
 
@@ -81,9 +81,9 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
         RoleEntity patch = new RoleEntity();
         patch.setValid(false);
         RoleQuery roleQuery = RoleQuery.builder().pageNumber(2).pageSize(2).build();
-        jdbcDataAccess.patch(patch, roleQuery);
+        roleDataAccess.patch(patch, roleQuery);
 
-        List<RoleEntity> roleEntities = jdbcDataAccess.query(RoleQuery.builder().sort("id").build());
+        List<RoleEntity> roleEntities = roleDataAccess.query(RoleQuery.builder().sort("id").build());
         assertThat(roleEntities)
                 .extracting("valid")
                 .containsExactly(true, true, false, false, true);
@@ -94,7 +94,7 @@ class JdbcDataAccessTest extends JdbcApplicationTest {
         RoleEntity patch = new RoleEntity();
         patch.setValid(false);
 
-        int ret = jdbcDataAccess.patch(patch, RoleQuery.builder().roleNameLike("noop").build());
+        int ret = roleDataAccess.patch(patch, RoleQuery.builder().roleNameLike("noop").build());
         assertThat(ret).isZero();
     }
 

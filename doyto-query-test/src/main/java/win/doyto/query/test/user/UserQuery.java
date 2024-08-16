@@ -66,6 +66,8 @@ public class UserQuery extends PageQuery {
 
     private UserLevel userLevel;
 
+    private Boolean valid;
+
     private RoleQuery withRoles;
     private PermissionQuery withPerms;
     private MenuQuery withMenus;
