@@ -16,7 +16,7 @@ on:
 jobs:
   version:
     name: Determine Java version
-    uses: doytowin/doyto-devops/.github/workflows/version.yml@main
+    uses: doytowin/doyto-devops/.github/workflows/version_java17.yml@main
   build:
     needs: version
     name: Call Build Workflow
