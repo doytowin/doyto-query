@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.web.controller.AbstractRestController;
 import win.doyto.query.web.response.ErrorCode;
@@ -51,13 +50,10 @@ public class UserController
 
     UserDetailService userDetailService;
 
-    DataQueryClient jdbcDataQueryClient;
-
-    public UserController(UserService userService, UserDetailService userDetailService, DataQueryClient jdbcDataQueryClient) {
+    public UserController(UserService userService, UserDetailService userDetailService) {
         super(userService);
         this.userService = userService;
         this.userDetailService = userDetailService;
-        this.jdbcDataQueryClient = jdbcDataQueryClient;
     }
 
     @GetMapping("/username")
@@ -93,7 +89,7 @@ public class UserController
 
     @Override
     public List<UserResponse> query(UserQuery q) {
-        return jdbcDataQueryClient.query(q, UserResponse.class);
+        return userService.queryColumns(q, UserResponse.class);
     }
 
     @GetMapping("column/{column:\\w+}")

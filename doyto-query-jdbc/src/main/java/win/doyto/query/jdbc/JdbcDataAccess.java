@@ -95,11 +95,15 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     }
 
     @Override
-    public <V> List<V> queryColumns(Q q, Class<V> clazz, String... columns) {
+    public <V> List<V> queryColumns(Q query, Class<V> clazz, String... columns) {
+        if (columns.length == 0) {
+            columns = columnsForSelect;
+        }
+        boolean isSingle = ColumnUtil.isSingleColumn(columns);
         @SuppressWarnings("unchecked")
         RowMapper<V> localRowMapper = (RowMapper<V>) classRowMapperMap.computeIfAbsent(
-                clazz, c -> ColumnUtil.isSingleColumn(columns) ? new SingleColumnRowMapper<>(clazz) : new BeanPropertyRowMapper<>(clazz));
-        return queryColumns(q, localRowMapper, columns);
+                clazz, c -> isSingle ? new SingleColumnRowMapper<>(clazz) : new BeanPropertyRowMapper<>(clazz));
+        return queryColumns(query, localRowMapper, columns);
     }
 
     private <V> List<V> queryColumns(Q q, RowMapper<V> rowMapper, String... columns) {

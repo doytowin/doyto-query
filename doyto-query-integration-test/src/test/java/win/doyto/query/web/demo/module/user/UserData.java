@@ -28,7 +28,7 @@ public class UserData {
     public static final int INIT_SIZE = 5;
 
     public static UserController getUserController() {
-        UserController userController = new UserController(new UserService(), new UserDetailService(), null);
+        UserController userController = new UserController(new UserService(), new UserDetailService());
         userController.create(getUserRequests());
         return userController;
     }
