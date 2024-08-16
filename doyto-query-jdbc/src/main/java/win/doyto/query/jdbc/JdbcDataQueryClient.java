@@ -19,8 +19,6 @@ package win.doyto.query.jdbc;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.core.DoytoQuery;
@@ -29,6 +27,7 @@ import win.doyto.query.jdbc.rowmapper.BeanPropertyRowMapper;
 import win.doyto.query.jdbc.rowmapper.JoinRowMapperResultSetExtractor;
 import win.doyto.query.jdbc.rowmapper.RowMapper;
 import win.doyto.query.sql.SqlAndArgs;
+import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
 import java.io.Serializable;
@@ -71,7 +70,7 @@ public class JdbcDataQueryClient implements DataQueryClient {
         RowMapper<V> rowMapper = (RowMapper<V>) holder.computeIfAbsent(viewClass, BeanPropertyRowMapper::new);
         SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, viewClass);
         List<V> mainEntities = databaseOperations.query(sqlAndArgs, rowMapper);
-        querySubEntities(viewClass, mainEntities, query);
+        querySubEntities(mainEntities, query, ColumnUtil.resolveDomainPathFields(viewClass));
         return mainEntities;
     }
 
@@ -90,8 +89,8 @@ public class JdbcDataQueryClient implements DataQueryClient {
         return databaseOperations.query(sqlAndArgs, rowMapper);
     }
 
-    private <V extends Persistable<I>, I extends Serializable, Q>
-    void querySubEntities(Class<V> viewClass, List<V> mainEntities, Q query) {
+    <V extends Persistable<I>, I extends Serializable, Q>
+    void querySubEntities(List<V> mainEntities, Q query, List<Field> dpFields) {
         if (mainEntities.isEmpty()) {
             return;
         }
@@ -99,20 +98,18 @@ public class JdbcDataQueryClient implements DataQueryClient {
         Class<I> mainIdClass = resolveKeyClass(mainEntities.get(0));
         List<I> mainIds = mainEntities.stream().map(Persistable::getId).toList();
 
-        FieldUtils.getAllFieldsList(viewClass).stream()
-                  .filter(joinField -> joinField.isAnnotationPresent(DomainPath.class))
-                  .forEach(joinField -> {
-                      // The name of query field for subdomain should follow this format `with<JoinFieldName>`
-                      String queryFieldName = buildQueryFieldName(joinField);
-                      Object subQuery = CommonUtil.readField(query, queryFieldName);
-                      if (subQuery instanceof DoytoQuery) {
-                          boolean isList = Collection.class.isAssignableFrom(joinField.getType());
-                          Class<Object> joinEntityClass = resolveSubEntityClass(joinField, isList);
-                          SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain((DoytoQuery) subQuery, joinEntityClass, joinField, mainIds);
-                          Map<I, List<Object>> subDomainMap = queryIntoMainEntity(mainIdClass, joinEntityClass, sqlAndArgs);
-                          mainEntities.forEach(e -> writeResultToMainDomain(e, joinField, isList, subDomainMap));
-                      }
-                  });
+        dpFields.forEach(joinField -> {
+            // The name of query field for subdomain should follow this format `with<JoinFieldName>`
+            String queryFieldName = buildQueryFieldName(joinField);
+            Object subQuery = CommonUtil.readField(query, queryFieldName);
+            if (subQuery instanceof DoytoQuery) {
+                boolean isList = Collection.class.isAssignableFrom(joinField.getType());
+                Class<Object> joinEntityClass = resolveSubEntityClass(joinField, isList);
+                SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain((DoytoQuery) subQuery, joinEntityClass, joinField, mainIds);
+                Map<I, List<Object>> subDomainMap = queryIntoMainEntity(mainIdClass, joinEntityClass, sqlAndArgs);
+                mainEntities.forEach(e -> writeResultToMainDomain(e, joinField, isList, subDomainMap));
+            }
+        });
     }
 
     protected String buildQueryFieldName(Field joinField) {

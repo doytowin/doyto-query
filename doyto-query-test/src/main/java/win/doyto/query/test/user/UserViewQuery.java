@@ -16,15 +16,10 @@
 
 package win.doyto.query.test.user;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.core.RelationalQuery;
-import win.doyto.query.test.menu.MenuQuery;
-import win.doyto.query.test.perm.PermissionQuery;
-import win.doyto.query.test.role.RoleQuery;
 
 /**
  * UserViewQuery
@@ -34,18 +29,9 @@ import win.doyto.query.test.role.RoleQuery;
 @Getter
 @Setter
 @SuperBuilder
-@AllArgsConstructor
-@NoArgsConstructor
-public class UserViewQuery extends UserQuery implements RelationalQuery<UserView, Long> {
-
-    private RoleQuery withRoles;
-    private PermissionQuery withPerms;
-    private MenuQuery withMenus;
-    private UserQuery withCreateUser;
-    private RoleQuery withCreateRoles;
-
+public class UserViewQuery extends UserQuery implements RelationalQuery<UserEntity, Long> {
     @Override
-    public Class<UserView> getDomainClass() {
-        return UserView.class;
+    public Class<UserEntity> getDomainClass() {
+        return UserEntity.class;
     }
 }

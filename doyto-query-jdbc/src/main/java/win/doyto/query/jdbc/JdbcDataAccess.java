@@ -64,6 +64,8 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     private final SingleColumnRowMapper<I> idRowMapper;
     private final Class<I> idClass;
     private final String idColumn;
+    private final List<Field> domainPathFields;
+    private final JdbcDataQueryClient jdbcDataQueryClient;
 
     public JdbcDataAccess(DatabaseOperations databaseOperations, Class<E> entityClass) {
         this(databaseOperations, entityClass, new BeanPropertyRowMapper<>(entityClass));
@@ -81,11 +83,16 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
         this.idColumn = idFields[0].getName();
         this.idClass = BeanUtil.getIdClass(entityClass, idColumn);
         this.idRowMapper = new SingleColumnRowMapper<>(idClass);
+        this.domainPathFields = ColumnUtil.resolveDomainPathFields(entityClass);
+        this.jdbcDataQueryClient = new JdbcDataQueryClient(databaseOperations);
     }
 
     @Override
-    public List<E> query(Q q) {
-        return queryColumns(q, rowMapper, columnsForSelect);
+    public List<E> query(Q query) {
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildSelectColumnsAndArgs(query, columnsForSelect);
+        List<E> mainEntities = databaseOperations.query(sqlAndArgs, rowMapper);
+        jdbcDataQueryClient.querySubEntities(mainEntities, query, domainPathFields);
+        return mainEntities;
     }
 
     @Override

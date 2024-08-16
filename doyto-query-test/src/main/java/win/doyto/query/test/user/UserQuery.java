@@ -23,6 +23,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.test.menu.MenuQuery;
 import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.role.RoleQuery;
 
@@ -65,6 +66,11 @@ public class UserQuery extends PageQuery {
 
     private UserLevel userLevel;
 
+    private RoleQuery withRoles;
+    private PermissionQuery withPerms;
+    private MenuQuery withMenus;
+    private UserQuery withCreateUser;
+    private RoleQuery withCreateRoles;
 
     public void setAccount(String account) {
         this.usernameOrEmailOrMobile = account;

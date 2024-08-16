@@ -152,6 +152,11 @@ public class ColumnUtil {
                 ;
     }
 
+    public static List<Field> resolveDomainPathFields(Class<?> entityClass) {
+        return FieldUtils.getAllFieldsList(entityClass).stream()
+                         .filter(joinField -> joinField.isAnnotationPresent(DomainPath.class)).toList();
+    }
+
     public static boolean isSingleColumn(String... columns) {
         return columns.length == 1 && !columns[0].contains(",");
     }

@@ -65,7 +65,7 @@ class RelationalQueryBuilderTest {
 
     @Test
     void buildSqlAndArgsForSubDomain_ThreeLevels() throws NoSuchFieldException {
-        Field field = UserView.class.getDeclaredField("perms");
+        Field field = UserEntity.class.getDeclaredField("perms");
 
         SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 2, 3), PermView.class);
 
@@ -94,7 +94,7 @@ class RelationalQueryBuilderTest {
 
     @Test
     void buildSqlAndArgsForSubDomain_FourLevels() throws NoSuchFieldException {
-        Field field = UserView.class.getDeclaredField("menus");
+        Field field = UserEntity.class.getDeclaredField("menus");
 
         SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 3), MenuView.class);
 
@@ -121,7 +121,7 @@ class RelationalQueryBuilderTest {
     void buildJoinSqlForReversePath_TwoLevels() throws NoSuchFieldException {
         Field field = RoleView.class.getDeclaredField("users");
 
-        SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 3), UserView.class);
+        SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 3), UserEntity.class);
 
         String expected = """
 
@@ -142,7 +142,7 @@ class RelationalQueryBuilderTest {
     void buildJoinSqlForReversePath_ThreeLevels() throws NoSuchFieldException {
         Field field = PermView.class.getDeclaredField("users");
 
-        SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 3), UserView.class);
+        SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 3), UserEntity.class);
 
         String expected = """
 
@@ -165,7 +165,7 @@ class RelationalQueryBuilderTest {
     void buildJoinSqlForReversePath_FourLevels() throws NoSuchFieldException {
         Field field = MenuView.class.getDeclaredField("users");
 
-        SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 3, 4), UserView.class);
+        SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 3, 4), UserEntity.class);
 
         String expected = """
 
@@ -201,7 +201,7 @@ class RelationalQueryBuilderTest {
                 UserQuery.builder().emailLike("@163")
                          .pageSize(10).sort("id,DESC")
                          .build(),
-                UserView.class, field, Arrays.asList(1, 2, 3)
+                UserEntity.class, field, Arrays.asList(1, 2, 3)
         );
 
         String expected = """
@@ -233,7 +233,7 @@ class RelationalQueryBuilderTest {
      */
     @Test
     void buildSqlAndArgsForSubDomainWithQuery() throws NoSuchFieldException {
-        Field field = UserView.class.getDeclaredField("perms");
+        Field field = UserEntity.class.getDeclaredField("perms");
 
         PermissionQuery permissionQuery = PermissionQuery.builder().valid(true)
                                                          .pageSize(10).sort("id,DESC").build();
@@ -271,7 +271,7 @@ class RelationalQueryBuilderTest {
         Field field = RoleView.class.getDeclaredField("createUser");
 
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
-                new UserQuery(), UserView.class, field, Arrays.asList(1, 3));
+                new UserQuery(), UserEntity.class, field, Arrays.asList(1, 3));
 
         String expected = """
 
@@ -294,7 +294,7 @@ class RelationalQueryBuilderTest {
 
         UserQuery userQuery = UserQuery.builder().memoNull(true).sort("id,desc").pageSize(5).build();
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
-                userQuery, UserView.class, field, Arrays.asList(1, 3));
+                userQuery, UserEntity.class, field, Arrays.asList(1, 3));
 
         String expected = """
 
@@ -315,7 +315,7 @@ class RelationalQueryBuilderTest {
 
     @Test
     void buildSqlAndArgsForOneToMany() throws NoSuchFieldException {
-        Field field = UserView.class.getDeclaredField("createRoles");
+        Field field = UserEntity.class.getDeclaredField("createRoles");
 
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 new UserQuery(), RoleView.class, field, Arrays.asList(1, 3));
@@ -333,7 +333,7 @@ class RelationalQueryBuilderTest {
 
     @Test
     void buildSqlAndArgsForOneToManyWithConditionsAndOrderByAndPaging() throws NoSuchFieldException {
-        Field field = UserView.class.getDeclaredField("createRoles");
+        Field field = UserEntity.class.getDeclaredField("createRoles");
 
         RoleQuery roleQuery = RoleQuery.builder().valid(true).sort("id,desc").pageSize(5).build();
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
@@ -367,7 +367,7 @@ class RelationalQueryBuilderTest {
 
     @Test
     void buildSqlAndArgsForManyToManyAggregation() throws NoSuchFieldException {
-        Field field = UserView.class.getDeclaredField("roleStat");
+        Field field = UserEntity.class.getDeclaredField("roleStat");
 
         SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 2, 3), RoleStatView.class);
 
