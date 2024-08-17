@@ -158,7 +158,9 @@ public class RelationalQueryBuilder {
         }
         sqlBuilder.append(buildOrderBy(query, "\nORDER BY "));
         String clause = buildPaging(sqlBuilder.toString(), query);
-
+        if (query.needPaging()) {
+            clause = OP + clause + CP;
+        }
         return buildSqlAndArgsForJoin(clause, mainIds, queryArgs);
     }
 
