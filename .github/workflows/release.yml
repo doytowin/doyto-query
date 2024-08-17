@@ -4,12 +4,12 @@ on:
   push:
     branches:
       - release
-      - releases/v2
+      - v1/release
 
 jobs:
   version:
     name: Determine Java version
-    uses: doytowin/doyto-devops/.github/workflows/version.yml@main
+    uses: doytowin/doyto-devops/.github/workflows/version_java17.yml@main
   release:
     needs: version
     name: Call Release Workflow
