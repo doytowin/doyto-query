@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.memory;
+package win.doyto.query.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

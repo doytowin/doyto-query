@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.memory;
+package win.doyto.query.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
@@ -48,11 +48,11 @@ import static win.doyto.query.util.CommonUtil.*;
  */
 @Slf4j
 @SuppressWarnings({"unchecked", "java:S3740"})
-public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery> implements DataAccess<E, I, Q> {
+class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery> implements DataAccess<E, I, Q> {
     protected static final Map<Class<?>, Map<?, ?>> tableMap = new ConcurrentHashMap<>();
 
     protected final Map<I, E> entitiesMap = new ConcurrentHashMap<>();
-    private final AtomicLong idGenerator = new AtomicLong(0);
+    private final AtomicLong idGenerator = new AtomicLong();
     private final List<Field> fields;
     private final Field idField;
     private final Class<I> idClass;

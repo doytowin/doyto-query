@@ -23,5 +23,6 @@ package win.doyto.query.annotation;
  */
 public enum EntityType {
     RELATIONAL,
-    MONGO_DB
+    MONGO_DB,
+    MEMORY,
 }
