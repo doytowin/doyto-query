@@ -26,6 +26,7 @@ import win.doyto.query.entity.Persistable;
 import win.doyto.query.jdbc.rowmapper.BeanPropertyRowMapper;
 import win.doyto.query.jdbc.rowmapper.JoinRowMapperResultSetExtractor;
 import win.doyto.query.jdbc.rowmapper.RowMapper;
+import win.doyto.query.sql.EntityMetadata;
 import win.doyto.query.sql.SqlAndArgs;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
@@ -68,9 +69,10 @@ public class JdbcDataQueryClient implements DataQueryClient {
     public <V extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
     List<V> query(Q query, @NonNull Class<V> viewClass) {
         RowMapper<V> rowMapper = (RowMapper<V>) holder.computeIfAbsent(viewClass, BeanPropertyRowMapper::new);
-        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, viewClass);
+        EntityMetadata entityMetadata = EntityMetadata.build(viewClass);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, entityMetadata);
         List<V> mainEntities = databaseOperations.query(sqlAndArgs, rowMapper);
-        querySubEntities(mainEntities, query, ColumnUtil.resolveDomainPathFields(viewClass));
+        querySubEntities(mainEntities, query, ColumnUtil.resolveDomainPathFields(viewClass), EntityMetadata.build(viewClass));
         return mainEntities;
     }
 
@@ -90,7 +92,7 @@ public class JdbcDataQueryClient implements DataQueryClient {
     }
 
     <V extends Persistable<I>, I extends Serializable, Q>
-    void querySubEntities(List<V> mainEntities, Q query, List<Field> dpFields) {
+    void querySubEntities(List<V> mainEntities, Q query, List<Field> dpFields, EntityMetadata entityMetadata) {
         if (mainEntities.isEmpty()) {
             return;
         }
@@ -98,7 +100,7 @@ public class JdbcDataQueryClient implements DataQueryClient {
         Class<I> mainIdClass = resolveKeyClass(mainEntities.get(0));
         List<I> mainIds = mainEntities.stream().map(Persistable::getId).toList();
 
-        dpFields.forEach(joinField -> {
+        entityMetadata.getDomainPathFields().forEach(joinField -> {
             // The name of query field for subdomain should follow this format `with<JoinFieldName>`
             String queryFieldName = buildQueryFieldName(joinField);
             Object subQuery = CommonUtil.readField(query, queryFieldName);

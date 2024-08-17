@@ -47,18 +47,20 @@ public class RelationalQueryBuilder {
     public static final String KEY_COLUMN = "MAIN_ENTITY_ID";
 
     public static SqlAndArgs buildSelectAndArgs(DoytoQuery query, Class<?> viewClass) {
-        return SqlAndArgs.buildSqlWithArgs(argList -> buildSelect(query, viewClass, argList));
+        EntityMetadata entityMetadata = EntityMetadata.build(viewClass);
+        return SqlAndArgs.buildSqlWithArgs(argList -> buildSelect(query, entityMetadata, argList));
     }
 
-    public static String buildSelect(DoytoQuery query, Class<?> viewClass, List<Object> argList) {
-        EntityMetadata entityMetadata = EntityMetadata.build(viewClass);
+    public static SqlAndArgs buildSelectAndArgs(DoytoQuery query, EntityMetadata entityMetadata) {
+        return SqlAndArgs.buildSqlWithArgs(argList -> buildSelect(query, entityMetadata, argList));
+    }
 
+    public static String buildSelect(DoytoQuery query, EntityMetadata entityMetadata, List<Object> argList) {
+        String sql = "";
         if (!entityMetadata.getWithViews().isEmpty()) {
-            return buildWithSql(entityMetadata.getWithViews(), argList, query)
-                    + buildSqlForEntity(entityMetadata, query, argList);
+            sql = buildWithSql(entityMetadata.getWithViews(), argList, query);
         }
-        return buildSqlForEntity(entityMetadata, query, argList);
-
+        return sql + buildSqlForEntity(entityMetadata, query, argList);
     }
 
     private static String buildWithSql(List<View> withViews, List<Object> argList, DoytoQuery query) {

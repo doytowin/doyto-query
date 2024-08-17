@@ -49,6 +49,7 @@ public class EntityMetadata {
     private final String groupByColumns;
     private final String groupBySql;
     private final List<View> withViews;
+    private final List<Field> domainPathFields;
     private EntityMetadata nested;
 
     public EntityMetadata(Class<?> viewClass) {
@@ -67,6 +68,7 @@ public class EntityMetadata {
         this.groupByColumns = resolveGroupByColumns(viewClass);
         this.groupBySql = buildGroupBySql(groupByColumns);
         this.withViews = collectWithViews(viewClass);
+        this.domainPathFields = ColumnUtil.resolveDomainPathFields(viewClass);
     }
 
     private List<View> collectWithViews(Class<?> entityClass) {
@@ -125,7 +127,7 @@ public class EntityMetadata {
         return conditions.isEmpty() ? EMPTY : WHERE + String.join(AND, conditions);
     }
 
-    static EntityMetadata build(Class<?> viewClass) {
+    public static EntityMetadata build(Class<?> viewClass) {
         return holder.computeIfAbsent(viewClass, EntityMetadata::new);
     }
 

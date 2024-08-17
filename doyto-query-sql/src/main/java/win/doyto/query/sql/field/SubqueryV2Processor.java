@@ -18,6 +18,7 @@ package win.doyto.query.sql.field;
 
 import win.doyto.query.annotation.SubqueryV2;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.sql.EntityMetadata;
 import win.doyto.query.sql.RelationalQueryBuilder;
 
 import java.lang.reflect.Field;
@@ -34,17 +35,18 @@ import static win.doyto.query.sql.Constant.OP;
  */
 public class SubqueryV2Processor implements FieldProcessor {
 
-    private final Class<?> viewClass;
     private final String cond;
+    private final EntityMetadata entityMetadata;
 
     public SubqueryV2Processor(Field field) {
-        viewClass = field.getAnnotation(SubqueryV2.class).value();
+        Class<?> viewClass = field.getAnnotation(SubqueryV2.class).value();
+        entityMetadata = EntityMetadata.build(viewClass);
         cond = SubqueryProcessor.resolveCond(field.getName());
     }
 
     @Override
     public String process(String alias, List<Object> argList, Object value) {
-        String sql = RelationalQueryBuilder.buildSelect((DoytoQuery) value, viewClass, argList);
+        String sql = RelationalQueryBuilder.buildSelect((DoytoQuery) value, entityMetadata, argList);
         return cond + OP + sql + CP;
     }
 }
