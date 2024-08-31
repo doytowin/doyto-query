@@ -16,74 +16,60 @@
 
 package win.doyto.query.web.demo.mongodb;
 
-//import com.mongodb.client.MongoClient;
-//import de.flapdoodle.embed.mongo.config.*;
-//import de.flapdoodle.embed.mongo.distribution.Version;
-//import de.flapdoodle.embed.process.runtime.Network;
-//import lombok.AllArgsConstructor;
-//import lombok.extern.slf4j.Slf4j;
-//import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-//import org.springframework.boot.autoconfigure.mongo.MongoProperties;
-//import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
-//import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoProperties;
-//import org.springframework.boot.context.properties.EnableConfigurationProperties;
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
-//import win.doyto.query.mongodb.session.MongoSessionSupplier;
-//import win.doyto.query.mongodb.session.MongoSessionThreadLocalSupplier;
-//
-//import java.io.IOException;
-//import java.net.InetAddress;
-//import java.net.UnknownHostException;
-//
-///**
-// * EmbeddedMongoConfig
-// *
-// * @author f0rb on 2023/2/25
-// * @since 1.0.1
-// */
-//@Slf4j
-//@AllArgsConstructor
-//@Configuration
-//@AutoConfigureBefore(EmbeddedMongoAutoConfiguration.class)
-//@EnableConfigurationProperties({MongoProperties.class, EmbeddedMongoProperties.class})
-//public class EmbeddedMongoConfig {
-//
-//    private static final byte[] IP4_LOOPBACK_ADDRESS = new byte[]{127, 0, 0, 1};
-//    private static final byte[] IP6_LOOPBACK_ADDRESS = new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
-//    private MongoProperties properties;
-//
-//    private static InetAddress getHost(String host) throws UnknownHostException {
-//        return host == null
-//                ? InetAddress.getByAddress(Network.localhostIsIPv6() ? IP6_LOOPBACK_ADDRESS : IP4_LOOPBACK_ADDRESS)
-//                : InetAddress.getByName(host);
-//    }
-//
-//    @Bean
-//    public MongodConfig embeddedMongoConfiguration(EmbeddedMongoProperties embeddedProperties) throws IOException {
-//        ImmutableMongodConfig.Builder builder = MongodConfig.builder().version(Version.V6_0_2);
-//        EmbeddedMongoProperties.Storage storage = embeddedProperties.getStorage();
-//        String databaseDir = storage.getDatabaseDir();
-//        String replSetName = storage.getReplSetName();
-//        int oplogSize = (storage.getOplogSize() != null) ? (int) storage.getOplogSize().toMegabytes() : 0;
-//        builder.replication(new Storage(databaseDir, replSetName, oplogSize));
-//
-//        // This line enables the required journaling. This line is missing from actual spring boot's implementation.
-//        builder.cmdOptions(MongoCmdOptions.builder().useNoJournal(false).build());
-//
-//        InetAddress host = getHost(this.properties.getHost());
-//        Integer configuredPort = this.properties.getPort();
-//        if (configuredPort != null && configuredPort > 0) {
-//            builder.net(new Net(host.getHostAddress(), configuredPort, Network.localhostIsIPv6()));
-//        } else {
-//            builder.net(new Net(host.getHostAddress(), Network.freeServerPort(host), Network.localhostIsIPv6()));
-//        }
-//
-//        return builder.build();
-//    }
-//
-//    @Bean
-//    public MongoSessionSupplier mongoSessionSupplier(MongoClient mongoClient) {
-//        return MongoSessionThreadLocalSupplier.create(mongoClient);
-//    }
-//}
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import de.flapdoodle.embed.mongo.client.ClientActions;
+import de.flapdoodle.embed.mongo.client.SyncClientAdapter;
+import de.flapdoodle.embed.mongo.commands.MongodArguments;
+import de.flapdoodle.embed.mongo.commands.ServerAddress;
+import de.flapdoodle.embed.mongo.config.Storage;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.mongo.transitions.Mongod;
+import de.flapdoodle.embed.mongo.transitions.RunningMongodProcess;
+import de.flapdoodle.reverse.Listener;
+import de.flapdoodle.reverse.Transition;
+import de.flapdoodle.reverse.TransitionWalker;
+import de.flapdoodle.reverse.transitions.Start;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import win.doyto.query.mongodb.session.MongoSessionSupplier;
+import win.doyto.query.mongodb.session.MongoSessionThreadLocalSupplier;
+
+/**
+ * EmbeddedMongoConfig
+ *
+ * @author f0rb on 2023/2/25
+ * @since 1.0.1
+ */
+@Configuration
+public class EmbeddedMongoConfig {
+
+    @Bean
+    public MongoSessionSupplier mongoSessionSupplier(MongoClient mongoClient) {
+        return MongoSessionThreadLocalSupplier.create(mongoClient);
+    }
+
+    @Bean
+    public TransitionWalker.ReachedState<RunningMongodProcess> runningMongodProcessReachedState() {
+        Version version = Version.V7_0_12;
+        Storage storage = Storage.of("testRepSet", 5000);
+        Listener withRunningMongod = ClientActions.initReplicaSet(new SyncClientAdapter(), version, storage);
+
+        Mongod mongod = new Mongod() {
+            @Override
+            public Transition<MongodArguments> mongodArguments() {
+                MongodArguments arguments = MongodArguments.defaults().withIsConfigServer(true).withReplication(storage);
+                return Start.to(MongodArguments.class).initializedWith(arguments);
+            }
+        };
+
+        return mongod.start(version, withRunningMongod);
+    }
+
+    @Bean
+    public MongoClient mongoClient() {
+        TransitionWalker.ReachedState<RunningMongodProcess> runningMongod = runningMongodProcessReachedState();
+        ServerAddress serverAddress = runningMongod.current().getServerAddress();
+        return MongoClients.create("mongodb://" + serverAddress);
+    }
+}

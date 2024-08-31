@@ -16,37 +16,37 @@
 
 package win.doyto.query.web.demo.test;
 
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//
-//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-//
-///**
-// * BuildingMvcTest
-// *
-// * @author f0rb on 2021-12-08
-// */
-//class BuildingMvcTest extends DemoApplicationTest {
-//
-//    @BeforeEach
-//    void setUp() throws Exception {
-//        String data = "[{\"name\": \"Times Building\", \"loc\": [1, 2]}, {\"name\": \"Times Station\", \"loc\": [3, 2]}]";
-//        performAndExpectSuccess(buildJson(post("/building/"), data));
-//    }
-//
-//    @Test
-//    void getBuilding() throws Exception {
-//        performAndExpectSuccess(get("/building/"))
-//                .andExpect(jsonPath("$.data.total").value(2))
-//                .andExpect(jsonPath("$.data.list[0].id").exists())
-//                .andExpect(jsonPath("$.data.list[0].name").value("Times Building"))
-//        ;
-//
-//        String json = "{\"coordinates\":[[1,2],[2,2]],\"type\":\"line\"}";
-//        performAndExpectSuccess(get("/building/").param("locIntX",json))
-//                .andExpect(jsonPath("$.data.total").value(1))
-//        ;
-//    }
-//}
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+
+/**
+ * BuildingMvcTest
+ *
+ * @author f0rb on 2021-12-08
+ */
+class BuildingMvcTest extends DemoApplicationTest {
+
+    @BeforeEach
+    void setUp() throws Exception {
+        String data = "[{\"name\": \"Times Building\", \"loc\": [1, 2]}, {\"name\": \"Times Station\", \"loc\": [3, 2]}]";
+        performAndExpectSuccess(buildJson(post("/building/"), data));
+    }
+
+    @Test
+    void getBuilding() throws Exception {
+        performAndExpectSuccess(get("/building/"))
+                .andExpect(jsonPath("$.data.total").value(2))
+                .andExpect(jsonPath("$.data.list[0].id").exists())
+                .andExpect(jsonPath("$.data.list[0].name").value("Times Building"))
+        ;
+
+        String json = "{\"coordinates\":[[1,2],[2,2]],\"type\":\"line\"}";
+        performAndExpectSuccess(get("/building/").param("locIntX",json))
+                .andExpect(jsonPath("$.data.total").value(1))
+        ;
+    }
+}
