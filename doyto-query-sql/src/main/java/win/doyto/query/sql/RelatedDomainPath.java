@@ -81,15 +81,4 @@ public class RelatedDomainPath {
         return sqlBuilder.toString();
     }
 
-    public static String build(String[] joinIds, String[] joinTables) {
-        StringBuilder sqlBuilder = new StringBuilder();
-        int n = joinIds.length - 1;
-        for (int i = n - 1; i >= 0; i--) {
-            sqlBuilder.append(IN).append(OP)
-                      .append(SELECT).append(joinIds[i + 1]).append(FROM).append(joinTables[i])
-                      .append(WHERE).append(joinIds[i]);
-        }
-        return sqlBuilder.toString();
-    }
-
 }

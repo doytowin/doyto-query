@@ -61,13 +61,6 @@ public interface Dialect {
         return " FOR UPDATE";
     }
 
-    default <I> I resolveKey(Number key, Class<I> idClass) {
-        if (idClass.isAssignableFrom(Long.class)) {
-            return idClass.cast(key.longValue());
-        }
-        return idClass.cast(key.intValue());
-    }
-
     default String wrapSelectForUpdate(String sql, String column) {
         return sql;
     }

@@ -25,7 +25,7 @@ import org.springframework.cache.Cache;
  */
 public interface CacheWrapper<T> {
 
-    static <V> DefaultCacheWrapper<V> createInstance() {
+    static <V> CacheWrapper<V> createInstance() {
         return new DefaultCacheWrapper<>();
     }
 

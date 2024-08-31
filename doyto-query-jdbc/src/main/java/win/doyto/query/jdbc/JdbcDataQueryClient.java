@@ -28,7 +28,6 @@ import win.doyto.query.jdbc.rowmapper.JoinRowMapperResultSetExtractor;
 import win.doyto.query.jdbc.rowmapper.RowMapper;
 import win.doyto.query.sql.EntityMetadata;
 import win.doyto.query.sql.SqlAndArgs;
-import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
 
 import java.io.Serializable;
@@ -72,7 +71,7 @@ public class JdbcDataQueryClient implements DataQueryClient {
         EntityMetadata entityMetadata = EntityMetadata.build(viewClass);
         SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, entityMetadata);
         List<V> mainEntities = databaseOperations.query(sqlAndArgs, rowMapper);
-        querySubEntities(mainEntities, query, ColumnUtil.resolveDomainPathFields(viewClass), EntityMetadata.build(viewClass));
+        querySubEntities(mainEntities, query, EntityMetadata.build(viewClass));
         return mainEntities;
     }
 
@@ -92,7 +91,7 @@ public class JdbcDataQueryClient implements DataQueryClient {
     }
 
     <V extends Persistable<I>, I extends Serializable, Q>
-    void querySubEntities(List<V> mainEntities, Q query, List<Field> dpFields, EntityMetadata entityMetadata) {
+    void querySubEntities(List<V> mainEntities, Q query, EntityMetadata entityMetadata) {
         if (mainEntities.isEmpty()) {
             return;
         }
@@ -103,11 +102,10 @@ public class JdbcDataQueryClient implements DataQueryClient {
         entityMetadata.getDomainPathFields().forEach(joinField -> {
             // The name of query field for subdomain should follow this format `with<JoinFieldName>`
             String queryFieldName = buildQueryFieldName(joinField);
-            Object subQuery = CommonUtil.readField(query, queryFieldName);
-            if (subQuery instanceof DoytoQuery) {
+            if (CommonUtil.readField(query, queryFieldName) instanceof DoytoQuery subQuery) {
                 boolean isList = Collection.class.isAssignableFrom(joinField.getType());
                 Class<Object> joinEntityClass = resolveSubEntityClass(joinField, isList);
-                SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain((DoytoQuery) subQuery, joinEntityClass, joinField, mainIds);
+                SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(subQuery, joinEntityClass, joinField, mainIds);
                 Map<I, List<Object>> subDomainMap = queryIntoMainEntity(mainIdClass, joinEntityClass, sqlAndArgs);
                 mainEntities.forEach(e -> writeResultToMainDomain(e, joinField, isList, subDomainMap));
             }
