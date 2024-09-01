@@ -27,7 +27,7 @@
     <artifactId>doyto-query-parent</artifactId>
     <name>DoytoQuery</name>
     <packaging>pom</packaging>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.4</version>
     <url>https://query.doyto.win/</url>
 
     <properties>
@@ -177,10 +177,8 @@
         </plugins>
     </build>
 
-    <scm child.scm.connection.inherit.append.path="false"
-         child.scm.developerConnection.inherit.append.path="false"
-         child.scm.url.inherit.append.path="false">
-        <tag>main</tag>
+    <scm child.scm.connection.inherit.append.path="false" child.scm.developerConnection.inherit.append.path="false" child.scm.url.inherit.append.path="false">
+        <tag>v1.0.4</tag>
         <url>https://github.com/doytowin/doyto-query</url>
         <connection>scm:git:https://github.com/doytowin/doyto-query.git</connection>
         <developerConnection>scm:git:https://github.com/doytowin/doyto-query.git</developerConnection>
