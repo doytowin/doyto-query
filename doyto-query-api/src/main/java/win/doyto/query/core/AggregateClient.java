@@ -16,6 +16,8 @@
 
 package win.doyto.query.core;
 
+import java.util.List;
+
 /**
  * AggregateClient
  *
@@ -23,4 +25,16 @@ package win.doyto.query.core;
  */
 public interface AggregateClient {
     <V> AggregateChain<V> aggregate(Class<V> viewClass);
+
+    default <V> List<V> query(Class<V> viewClass, AggregateQuery aggregateQuery) {
+        return aggregate(viewClass).aggregateQuery(aggregateQuery).query();
+    }
+
+    default <V> long count(Class<V> viewClass, AggregateQuery aggregateQuery) {
+        return aggregate(viewClass).aggregateQuery(aggregateQuery).count();
+    }
+
+    default <V> PageList<V> page(Class<V> viewClass, AggregateQuery aggregateQuery) {
+        return aggregate(viewClass).aggregateQuery(aggregateQuery).page();
+    }
 }

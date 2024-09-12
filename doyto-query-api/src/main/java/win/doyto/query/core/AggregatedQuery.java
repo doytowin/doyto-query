@@ -44,11 +44,12 @@ public class AggregatedQuery extends PageQuery implements AggregateQuery {
         this.setPageQuery(query);
     }
 
-    public void setPageQuery(PageQuery pageQuery) {
+    public void setPageQuery(DoytoQuery pageQuery) {
         if (pageQuery.needPaging()) {
             super.setPageNumber(pageQuery.getPageNumber());
             super.setPageSize(pageQuery.getPageSize());
         }
         super.setSort(pageQuery.getSort());
+        super.setLockMode(pageQuery.getLockMode());
     }
 }

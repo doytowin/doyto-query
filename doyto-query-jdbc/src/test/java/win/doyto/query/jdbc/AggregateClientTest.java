@@ -19,10 +19,7 @@ package win.doyto.query.jdbc;
 import jakarta.annotation.Resource;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
-import win.doyto.query.core.AggregateChain;
-import win.doyto.query.core.AggregateClient;
-import win.doyto.query.core.PageList;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.*;
 import win.doyto.query.jdbc.rowmapper.RowMapper;
 import win.doyto.query.test.user.UserLevel;
 import win.doyto.query.test.user.UserLevelCountView;
@@ -57,6 +54,25 @@ class AggregateClientTest extends JdbcApplicationTest {
         chain.print();
         PageList<UserLevelCountView> userLevelCountViews = chain.page();
         assertThat(userLevelCountViews.getTotal()).isEqualTo(1);
+        assertThat(userLevelCountViews.getList())
+                .hasSize(1)
+                .extracting("userLevel", "valid", "count")
+                .containsExactlyInAnyOrder(
+                        new Tuple(UserLevel.普通, true, 2L)
+                );
+    }
+
+    @Test
+    void testPage() {
+        AggregatedQuery aggregatedQuery = AggregatedQuery
+                .builder().query(new UserLevelQuery(true))
+                .having(UserLevelHaving.builder().countGt(1).countLt(10).build())
+                .pageSize(10).build();
+
+        assertThat(aggregateClient.count(UserLevelCountView.class, aggregatedQuery))
+                .isEqualTo(1);
+
+        PageList<UserLevelCountView> userLevelCountViews = aggregateClient.page(UserLevelCountView.class, aggregatedQuery);
         assertThat(userLevelCountViews.getList())
                 .hasSize(1)
                 .extracting("userLevel", "valid", "count")

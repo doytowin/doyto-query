@@ -49,7 +49,14 @@ public class JdbcAggregateChain<V> implements AggregateChain<V> {
     }
 
     @Override
-    public AggregateChain<V> paging(PageQuery pageQuery) {
+    public AggregateChain<V> aggregateQuery(AggregateQuery aggregateQuery) {
+        return this.where(aggregateQuery.getQuery())
+                   .having(aggregateQuery.getHaving())
+                   .paging(aggregateQuery);
+    }
+
+    @Override
+    public AggregateChain<V> paging(DoytoQuery pageQuery) {
         this.aggregatedQuery.setPageQuery(pageQuery);
         return this;
     }

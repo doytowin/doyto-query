@@ -29,7 +29,9 @@ public interface AggregateChain<V> {
 
     AggregateChain<V> having(Having having);
 
-    AggregateChain<V> paging(PageQuery pageQuery);
+    AggregateChain<V> paging(DoytoQuery pageQuery);
+
+    AggregateChain<V> aggregateQuery(AggregateQuery aggregateQuery);
 
     /**
      * Set custom mapper for view
