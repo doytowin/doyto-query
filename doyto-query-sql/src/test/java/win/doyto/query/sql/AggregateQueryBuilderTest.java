@@ -18,17 +18,22 @@ package win.doyto.query.sql;
 
 import org.junit.jupiter.api.Test;
 import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.core.AggregatedQuery;
 import win.doyto.query.core.PageQuery;
-import win.doyto.query.sql.q15.LineitemRevenueQuery;
+import win.doyto.query.sql.q15.LineitemRevenueView;
 import win.doyto.query.sql.q15.TopSupplierQuery;
 import win.doyto.query.sql.q15.TopSupplierView;
+import win.doyto.query.sql.q9.ProductTypeProfitMeasureView;
+import win.doyto.query.sql.q9.ProfitQuery;
+import win.doyto.query.sql.q9.ProfitView;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
-import win.doyto.query.test.user.UserLevelAggrQuery;
 import win.doyto.query.test.user.UserLevelCountView;
+import win.doyto.query.test.user.UserLevelHaving;
 import win.doyto.query.test.user.UserLevelQuery;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,18 +48,56 @@ class AggregateQueryBuilderTest {
     void buildSelectAndArgs() {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
 
-        UserLevelQuery userLevelQuery = UserLevelQuery.builder().valid(true).build();
-        UserLevelAggrQuery aggrQuery = UserLevelAggrQuery.builder().entityQuery(userLevelQuery)
-                                                         .countGt(1).countLt(10).build();
-        SqlAndArgs sqlAndArgs = AggregateQueryBuilder.buildSelectAndArgs(UserLevelCountView.class, aggrQuery);
+        try {
+            AggregatedQuery aggregatedQuery = new AggregatedQuery();
+            aggregatedQuery.setQuery(new UserLevelQuery(true));
+            aggregatedQuery.setHaving(UserLevelHaving.builder().countGt(1).countLt(10).build());
+            SqlAndArgs sqlAndArgs = AggregateQueryBuilder.buildSelectAndArgs(EntityMetadata.build(UserLevelCountView.class), aggregatedQuery);
 
-        String expected = "SELECT userLevel, valid, count(*) AS count FROM t_user WHERE valid = ? " +
-                "GROUP BY userLevel, valid HAVING count(*) > ? AND count(*) < ?";
+            String expected = "SELECT userLevel, valid, count(*) AS count FROM t_user WHERE valid = ? " +
+                    "GROUP BY userLevel, valid HAVING count(*) > ? AND count(*) < ?";
 
-        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
-        assertThat(sqlAndArgs.getArgs()).containsExactly(true, 1, 10);
+            assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+            assertThat(sqlAndArgs.getArgs()).containsExactly(true, 1, 10);
+        } finally {
+            GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
+        }
+    }
 
-        GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
+    @Test
+    void q9ProductTypeProfitMeasureQuery() {
+        GlobalConfiguration.instance().setTableFormat("%s");
+
+        try {
+            String expected = "SELECT nation, o_year, SUM(amount) AS sum_profit" +
+                    " FROM " +
+                    "(SELECT n_name AS nation, YEAR(o_orderdate) AS o_year," +
+                    " l_extendedprice * (1 - l_discount) - ps_supplycost * l_quantity AS amount" +
+                    " FROM part, supplier, lineitem, partsupp, orders, nation" +
+                    " WHERE s_nationkey = n_nationkey" +
+                    " AND l_orderkey = o_orderkey" +
+                    " AND l_suppkey = s_suppkey" +
+                    " AND l_partkey = p_partkey" +
+                    " AND ps_suppkey = l_suppkey" +
+                    " AND ps_partkey = l_partkey" +
+                    " AND p_name LIKE ?" +
+                    ") AS profit" +
+                    " GROUP BY nation, o_year" +
+                    " ORDER BY nation, o_year DESC";
+
+            AggregatedQuery aggregatedQuery = new AggregatedQuery();
+            ProfitQuery profitQuery = ProfitQuery.builder().pNameLike("green").build();
+            aggregatedQuery.getWithMap().put(ProfitView.class, new AggregatedQuery(profitQuery));
+            aggregatedQuery.setSort("nation;o_year,DESC");
+
+            EntityMetadata entityMetadata = EntityMetadata.build(ProductTypeProfitMeasureView.class);
+            SqlAndArgs sqlAndArgs = AggregateQueryBuilder.buildSelectAndArgs(entityMetadata, aggregatedQuery);
+
+            assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
+            assertThat(sqlAndArgs.getArgs()).containsExactly("%green%");
+        } finally {
+            GlobalConfiguration.instance().setTableFormat("t_%s");
+        }
     }
 
     @Test
@@ -79,14 +122,15 @@ class AggregateQueryBuilderTest {
                 .l_shipdateGe(startShipdate)
                 .l_shipdateLt(endShipdate)
                 .build();
-        TopSupplierQuery query = TopSupplierQuery
+
+        AggregatedQuery aggregatedQuery = AggregatedQuery
                 .builder()
-                .entityQuery(LineitemRevenueQuery.builder().total_revenue(new PageQuery()).build())
-                .lineitemRevenueQuery(LineitemRevenueQuery.builder().entityQuery(lineitemQuery).build())
+                .withMap(Map.of(LineitemRevenueView.class, new AggregatedQuery(lineitemQuery)))
+                .query(TopSupplierQuery.builder().total_revenue(new PageQuery()).build())
                 .sort("s_suppkey")
                 .build();
 
-        SqlAndArgs sqlAndArgs = AggregateQueryBuilder.buildSelectAndArgs(TopSupplierView.class, query);
+        SqlAndArgs sqlAndArgs = AggregateQueryBuilder.buildSelectAndArgs(EntityMetadata.build(TopSupplierView.class), aggregatedQuery);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(startShipdate, endShipdate);

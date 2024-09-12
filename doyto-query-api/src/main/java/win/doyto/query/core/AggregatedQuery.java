@@ -16,11 +16,13 @@
 
 package win.doyto.query.core;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * AggregatedQuery
@@ -31,7 +33,22 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
-public class AggregatedQuery extends PageQuery implements Having {
-    private DoytoQuery entityQuery;
+public class AggregatedQuery extends PageQuery implements AggregateQuery {
+    private Query query;
+    private Having having;
+    // AggregateQuery for classes mapping with clause
+    private Map<Class<?>, AggregateQuery> withMap = new HashMap<>();
+
+    public AggregatedQuery(PageQuery query) {
+        this.query = query;
+        this.setPageQuery(query);
+    }
+
+    public void setPageQuery(PageQuery pageQuery) {
+        if (pageQuery.needPaging()) {
+            super.setPageNumber(pageQuery.getPageNumber());
+            super.setPageSize(pageQuery.getPageSize());
+        }
+        super.setSort(pageQuery.getSort());
+    }
 }

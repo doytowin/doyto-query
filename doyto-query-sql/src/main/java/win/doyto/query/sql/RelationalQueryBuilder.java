@@ -24,6 +24,7 @@ import win.doyto.query.annotation.View;
 import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Having;
+import win.doyto.query.core.Query;
 import win.doyto.query.util.CommonUtil;
 
 import java.io.Serializable;
@@ -106,7 +107,7 @@ public class RelationalQueryBuilder {
         return buildPaging(sqlBuilder.toString(), query);
     }
 
-    static void buildJoinClauses(StringBuilder sqlBuilder, DoytoQuery query, List<Object> argList) {
+    static void buildJoinClauses(StringBuilder sqlBuilder, Query query, List<Object> argList) {
         Field[] joinFields = FieldUtils.getFieldsWithAnnotation(query.getClass(), Join.class);
         for (Field field : joinFields) {
             Object joinObject = CommonUtil.readField(field, query);

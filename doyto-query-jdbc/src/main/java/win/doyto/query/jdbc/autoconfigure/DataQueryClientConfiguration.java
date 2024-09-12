@@ -20,10 +20,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import win.doyto.query.core.AggregateClient;
 import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.jdbc.DatabaseOperations;
-import win.doyto.query.jdbc.JdbcAggregateClient;
 import win.doyto.query.jdbc.JdbcDataQueryClient;
 
 /**
@@ -39,12 +37,5 @@ class DataQueryClientConfiguration {
     @ConditionalOnMissingBean(DataQueryClient.class)
     public DataQueryClient jdbcDataQueryClient(DatabaseOperations databaseOperations) {
         return new JdbcDataQueryClient(databaseOperations);
-    }
-
-    @Bean
-    @Primary
-    @ConditionalOnMissingBean(AggregateClient.class)
-    public AggregateClient aggregateQueryClient(DatabaseOperations databaseOperations) {
-        return new JdbcAggregateClient(databaseOperations);
     }
 }

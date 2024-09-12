@@ -167,7 +167,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
 
     @Test
     void supportAggregateQuery() {
-        UserLevelQuery query = new UserLevelQuery();
+        UserLevelAggrQuery query = new UserLevelAggrQuery();
         List<UserLevelCountView> userLevelCountViews = jdbcDataQueryClient.aggregate(query, UserLevelCountView.class);
         assertThat(userLevelCountViews)
                 .hasSize(3)

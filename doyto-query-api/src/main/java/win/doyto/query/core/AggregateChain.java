@@ -13,36 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package win.doyto.query.core;
 
+import java.util.List;
+
 /**
- * DoytoQuery
+ * AggregateChain
  *
- * @author f0rb on 2021-12-02
- * @since 0.3.0
+ * @author f0rb on 2024/9/12
  */
-public interface DoytoQuery extends Query {
+public interface AggregateChain<V> {
 
-    void forcePaging();
+    AggregateChain<V> where(Query query);
 
-    boolean needPaging();
+    AggregateChain<V> having(Having having);
 
-    void setPageSize(Integer size);
+    AggregateChain<V> paging(PageQuery pageQuery);
 
-    int getPageSize();
+    /**
+     * Set custom mapper for view
+     *
+     * @param mapper custom mapper depending on the implementation
+     * @return {@link AggregateChain}
+     */
+    AggregateChain<V> mapper(Object mapper);
 
-    void setPageNumber(Integer page);
+    List<V> query();
 
-    int getPageNumber();
+    long count();
 
-    void setSort(String sort);
-
-    String getSort();
-
-    LockMode getLockMode();
-
-    @SuppressWarnings("java:S3740")
-    default IdWrapper toIdWrapper() {
-        return IdWrapper.build(null);
+    default PageList<V> page() {
+        return new PageList<>(this.query(), this.count());
     }
+
+    void print();
+
 }

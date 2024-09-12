@@ -16,28 +16,12 @@
 
 package win.doyto.query.test.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.AggregationQuery;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.Query;
 
 /**
  * UserLevelQuery
  *
  * @author f0rb on 2022-03-26
  */
-@Getter
-@Setter
-@SuperBuilder
-@AllArgsConstructor
-@NoArgsConstructor
-public class UserLevelQuery extends PageQuery implements AggregationQuery {
-
-    private UserLevelHaving having;
-
-    private Boolean valid;
-
+public record UserLevelQuery(Boolean valid) implements Query {
 }

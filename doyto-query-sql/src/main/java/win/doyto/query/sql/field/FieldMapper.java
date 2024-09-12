@@ -73,10 +73,10 @@ public final class FieldMapper {
             }
         } else if (OrFieldProcessor.support(field.getName())) {
             processor = new OrFieldProcessor(field);
-        } else if (Query.class.isAssignableFrom(fieldType)) {
-            processor = new ConnectableFieldProcessor(fieldType, AND);
         } else if (DoytoQuery.class.isAssignableFrom(fieldType)) {
             processor = initDoytoQueryField(field);
+        } else if (Query.class.isAssignableFrom(fieldType)) {
+            processor = new ConnectableFieldProcessor(fieldType, AND);
         } else if (field.isAnnotationPresent(QueryField.class)) {
             processor = new QueryFieldProcessor(field);
         } else if (ColumnComparisonProcessor.support(field)) {

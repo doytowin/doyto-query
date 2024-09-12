@@ -18,6 +18,8 @@ package win.doyto.query.jdbc;
 
 import lombok.AllArgsConstructor;
 import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.core.AggregateChain;
+import win.doyto.query.core.AggregateClient;
 import win.doyto.query.jdbc.rowmapper.ResultSetExtractor;
 import win.doyto.query.jdbc.rowmapper.RowMapper;
 import win.doyto.query.sql.SqlAndArgs;
@@ -37,7 +39,7 @@ import java.util.List;
  * @since 1.1.0
  */
 @AllArgsConstructor
-public class JdbcDatabaseOperations implements DatabaseOperations {
+public class JdbcDatabaseOperations implements DatabaseOperations, AggregateClient {
 
     private final TransactionExecutor transactionExecutor;
 
@@ -46,6 +48,11 @@ public class JdbcDatabaseOperations implements DatabaseOperations {
         for (int i = 0; i < args.length; i++) {
             ps.setObject(i + 1, args[i]);
         }
+    }
+
+    @Override
+    public <V> AggregateChain<V> aggregate(Class<V> viewClass) {
+        return new JdbcAggregateChain<>(this, viewClass);
     }
 
     @Override

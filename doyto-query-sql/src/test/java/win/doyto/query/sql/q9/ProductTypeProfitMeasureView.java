@@ -14,29 +14,34 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql.q15;
+package win.doyto.query.sql.q9;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.Subquery;
-import win.doyto.query.core.PageQuery;
-import win.doyto.query.core.Query;
+import win.doyto.query.annotation.Column;
+import win.doyto.query.annotation.GroupBy;
+import win.doyto.query.annotation.NestedView;
+
+import java.math.BigDecimal;
 
 /**
- * RevenueQuery
+ * ProductTypeProfitMeasureView
  *
- * @author f0rb on 2023/6/13
- * @since 1.0.2
+ * @author f0rb on 2023/2/18
+ * @since 1.0.1
  */
 @Getter
 @Setter
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class TopSupplierQuery implements Query {
-    @Subquery(select = "MAX(total_revenue)", from = RevenueView.class)
-    private PageQuery total_revenue;
+@NestedView(ProfitView.class)
+public class ProductTypeProfitMeasureView {
+
+    @GroupBy
+    private String nation;
+
+    @GroupBy
+    private Integer o_year;
+
+    @Column(name = "SUM(amount)")
+    private BigDecimal sum_profit;
+
 }

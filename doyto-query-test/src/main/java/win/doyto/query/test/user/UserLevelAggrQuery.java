@@ -21,7 +21,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.AggregatedQuery;
+import win.doyto.query.core.AggregationQuery;
+import win.doyto.query.core.PageQuery;
 
 /**
  * UserLevelAggrQuery
@@ -33,9 +34,7 @@ import win.doyto.query.core.AggregatedQuery;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserLevelAggrQuery extends AggregatedQuery {
-    private Integer countGt;
-    private Integer countLt;
-
-    private UserLevelQuery entityQuery;
+public class UserLevelAggrQuery extends PageQuery implements AggregationQuery {
+    private UserLevelHaving having;
+    private Boolean valid;
 }

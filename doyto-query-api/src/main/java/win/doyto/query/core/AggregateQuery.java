@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql.q15;
+package win.doyto.query.core;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.Subquery;
-import win.doyto.query.core.PageQuery;
-import win.doyto.query.core.Query;
+import java.util.Map;
 
 /**
- * RevenueQuery
+ * AggregateQuery
  *
- * @author f0rb on 2023/6/13
- * @since 1.0.2
+ * @author f0rb on 2024/9/12
  */
-@Getter
-@Setter
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class TopSupplierQuery implements Query {
-    @Subquery(select = "MAX(total_revenue)", from = RevenueView.class)
-    private PageQuery total_revenue;
+public interface AggregateQuery extends DoytoQuery {
+
+    Query getQuery();
+
+    Having getHaving();
+
+    default Map<Class<?>, AggregateQuery> getWithMap() {
+        return Map.of();
+    }
 }

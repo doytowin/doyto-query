@@ -16,13 +16,11 @@
 
 package win.doyto.query.core;
 
-import java.util.List;
-
 /**
  * AggregateClient
  *
  * @author f0rb on 2024/8/12
  */
 public interface AggregateClient {
-    <V, A extends AggregatedQuery> List<V> aggregate(Class<V> viewClass, A aggregatedQuery);
+    <V> AggregateChain<V> aggregate(Class<V> viewClass);
 }

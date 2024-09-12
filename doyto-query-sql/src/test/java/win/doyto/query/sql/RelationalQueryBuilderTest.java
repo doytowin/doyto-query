@@ -356,7 +356,7 @@ class RelationalQueryBuilderTest {
     void supportHaving() {
         UserLevelHaving having = UserLevelHaving.builder().countGt(1).countLt(10).build();
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(
-                UserLevelQuery.builder().having(having).valid(true).build(), UserLevelCountView.class);
+                UserLevelAggrQuery.builder().having(having).valid(true).build(), UserLevelCountView.class);
 
         String expected = "SELECT userLevel, valid, count(*) AS count FROM t_user WHERE valid = ? " +
                 "GROUP BY userLevel, valid HAVING count(*) > ? AND count(*) < ?";

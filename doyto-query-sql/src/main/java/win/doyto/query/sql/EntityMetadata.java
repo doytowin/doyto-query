@@ -43,6 +43,7 @@ import static win.doyto.query.sql.Constant.*;
 public class EntityMetadata {
     private static final Map<Class<?>, EntityMetadata> holder = new ConcurrentHashMap<>();
 
+    private final Class<?> viewClass;
     private final String columnsForSelect;
     private final String tableName;
     private final String joinConditions;
@@ -53,6 +54,7 @@ public class EntityMetadata {
     private EntityMetadata nested;
 
     public EntityMetadata(Class<?> viewClass) {
+        this.viewClass = viewClass;
         if (viewClass.isAnnotationPresent(NestedView.class)) {
             NestedView anno = viewClass.getAnnotation(NestedView.class);
             Class<?> clazz = anno.value();

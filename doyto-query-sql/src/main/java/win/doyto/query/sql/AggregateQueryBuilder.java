@@ -17,15 +17,13 @@
 package win.doyto.query.sql;
 
 import lombok.experimental.UtilityClass;
-import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.View;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.core.AggregatedQuery;
-import win.doyto.query.core.DoytoQuery;
-import win.doyto.query.core.PageQuery;
-import win.doyto.query.util.CommonUtil;
+import win.doyto.query.core.AggregateQuery;
+import win.doyto.query.core.Query;
 
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 
 import static win.doyto.query.sql.BuildHelper.*;
@@ -40,64 +38,73 @@ import static win.doyto.query.sql.RelationalQueryBuilder.buildJoinClauses;
 @UtilityClass
 public class AggregateQueryBuilder {
 
-    public static SqlAndArgs buildSelectAndArgs(Class<?> viewClass, AggregatedQuery having) {
+    public static SqlAndArgs buildSelectAndArgs(EntityMetadata entityMetadata, AggregateQuery aggregateQuery) {
         return SqlAndArgs.buildSqlWithArgs(argList -> {
-            EntityMetadata entityMetadata = EntityMetadata.build(viewClass);
-
-            String sql = "";
-            if (!entityMetadata.getWithViews().isEmpty()) {
-                sql = buildWithSql(entityMetadata.getWithViews(), argList, having);
-            }
-            return sql + buildSqlForEntity(entityMetadata, having, argList);
+            StringBuilder sqlBuilder = buildSelect(entityMetadata, aggregateQuery, argList);
+            sqlBuilder.append(buildOrderBy(aggregateQuery));
+            return buildPaging(sqlBuilder.toString(), aggregateQuery);
         });
     }
 
-    private static String buildWithSql(List<View> withViews, List<Object> argList, DoytoQuery query) {
+    private static StringBuilder
+    buildSelect(EntityMetadata entityMetadata, AggregateQuery aggregateQuery, List<Object> argList) {
+        StringBuilder sqlBuilder = new StringBuilder();
+        if (!entityMetadata.getWithViews().isEmpty()) {
+            sqlBuilder.append(buildWithSql(entityMetadata.getWithViews(), argList, aggregateQuery.getWithMap()));
+        }
+        sqlBuilder.append(buildSqlForEntity(entityMetadata, aggregateQuery, argList));
+        return sqlBuilder;
+    }
+
+    public static SqlAndArgs buildCountAndArgs(EntityMetadata entityMetadata, AggregateQuery aggregateQuery) {
+        return SqlAndArgs.buildSqlWithArgs((argList -> SELECT + COUNT + FROM +
+                OP + buildSelect(entityMetadata, aggregateQuery, argList) + CP));
+    }
+
+    private static String
+    buildWithSql(List<View> withViews, List<Object> argList, Map<Class<?>, AggregateQuery> withMap) {
         StringJoiner withJoiner = new StringJoiner(SEPARATOR, "WITH ", SPACE);
         for (View view : withViews) {
             EntityMetadata withMeta = EntityMetadata.build(view.value());
-            String queryFieldName = StringUtils.uncapitalize(view.value().getSimpleName()).replace("View", "Query");
-            AggregatedQuery withQuery = (AggregatedQuery) CommonUtil.readField(query, queryFieldName);
-            String withSQL = buildSqlForEntity(withMeta, withQuery, argList);
-            String withName = GlobalConfiguration.formatTable(view.with());
-            withJoiner.add(withName + AS + OP + withSQL + CP);
+            AggregateQuery aggregateQuery = withMap.get(view.value());
+            if (aggregateQuery != null) {
+                String withSQL = buildSqlForEntity(withMeta, aggregateQuery, argList).toString();
+                String withName = GlobalConfiguration.formatTable(view.with());
+                withJoiner.add(withName + AS + OP + withSQL + CP);
+            }
         }
         return withJoiner.toString();
     }
 
-    private static String buildSqlForEntity(EntityMetadata entityMetadata, AggregatedQuery aggrQuery, List<Object> argList) {
-        DoytoQuery entityQuery;
-        entityQuery = aggrQuery == null ? new PageQuery() : aggrQuery.getEntityQuery();
+    private static StringBuilder
+    buildSqlForEntity(EntityMetadata entityMetadata, AggregateQuery aggregateQuery, List<Object> argList) {
+        Query entityQuery = aggregateQuery.getQuery();
         String columns = BuildHelper.replaceExpressionInString(entityMetadata.getColumnsForSelect(), entityQuery, argList);
         StringBuilder sqlBuilder = new StringBuilder(SELECT).append(columns).append(FROM);
 
         if (entityMetadata.getNested() != null) {
-            String queryFieldName = CommonUtil.toCamelCase(entityMetadata.getTableName()) + "Query";
-            AggregatedQuery nestedQuery = (AggregatedQuery) CommonUtil.readField(entityQuery, queryFieldName);
-            String nestedSQL = buildSqlForEntity(entityMetadata.getNested(), nestedQuery, argList);
-            sqlBuilder.append(OP).append(nestedSQL).append(CP).append(AS);
+            AggregateQuery nestedQuery = aggregateQuery.getWithMap().get(entityMetadata.getNested().getViewClass());
+            if (nestedQuery != null) {
+                String nestedSQL = buildSqlForEntity(entityMetadata.getNested(), nestedQuery, argList).toString();
+                sqlBuilder.append(OP).append(nestedSQL).append(CP).append(AS);
+            }
         }
 
         sqlBuilder.append(entityMetadata.getTableName());
-        if (entityQuery == null) {
-            sqlBuilder.append(entityMetadata.getGroupBySql());
-            return sqlBuilder.toString();
+        if (entityQuery != null) {
+            buildJoinClauses(sqlBuilder, entityQuery, argList);
+            if (entityMetadata.getJoinConditions().isEmpty()) {
+                sqlBuilder.append(buildWhere(entityQuery, argList));
+            } else {
+                sqlBuilder.append(entityMetadata.getJoinConditions());
+                sqlBuilder.append(buildCondition(AND, entityQuery, argList));
+            }
         }
-        buildJoinClauses(sqlBuilder, entityQuery, argList);
-        if (entityMetadata.getJoinConditions().isEmpty()) {
-            sqlBuilder.append(buildWhere(entityQuery, argList));
-        } else {
-            sqlBuilder.append(entityMetadata.getJoinConditions());
-            sqlBuilder.append(buildCondition(AND, entityQuery, argList));
+        sqlBuilder.append(entityMetadata.getGroupBySql());
+        if (aggregateQuery.getHaving() != null) {
+            sqlBuilder.append(buildCondition(HAVING, aggregateQuery.getHaving(), argList));
         }
-        if (aggrQuery != null) {
-            sqlBuilder.append(entityMetadata.getGroupBySql());
-            sqlBuilder.append(buildCondition(HAVING, aggrQuery, argList));
-            sqlBuilder.append(buildOrderBy(aggrQuery));
-            return buildPaging(sqlBuilder.toString(), aggrQuery);
-        } else {
-            return sqlBuilder.toString();
-        }
+        return sqlBuilder;
     }
 
 }

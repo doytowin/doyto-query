@@ -14,30 +14,27 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql.q15;
+package win.doyto.query.sql.q9;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.Subquery;
-import win.doyto.query.core.AggregatedQuery;
 import win.doyto.query.core.PageQuery;
-import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
 
 /**
- * LineitemRevenueQuery
+ * ProfitQuery
  *
- * @author f0rb on 2024/8/12
+ * @author f0rb on 2023/2/18
+ * @since 1.0.1
  */
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LineitemRevenueQuery extends AggregatedQuery {
-    private LineitemQuery entityQuery;
-    @Subquery(select = "MAX(total_revenue)", from = RevenueView.class)
-    private PageQuery total_revenue;
+public class ProfitQuery extends PageQuery {
+    @Builder.Default
+    private boolean psSuppkeyEqLSuppkey = true;
+    @Builder.Default
+    private boolean psPartkeyEqLPartkey = true;
+    private String pNameLike;
 }
