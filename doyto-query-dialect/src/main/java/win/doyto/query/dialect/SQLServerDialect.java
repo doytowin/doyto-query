@@ -31,7 +31,7 @@ import java.util.stream.IntStream;
  */
 public class SQLServerDialect implements Dialect {
     private static final String ORDER_BY = " ORDER BY ";
-    private final Pattern groupPtn = Pattern.compile("GROUP BY (\\w+(,\\s+\\w+)*)", Pattern.CASE_INSENSITIVE);
+    private final Pattern groupPtn = Pattern.compile("GROUP BY (\\w+(,\\s*\\w+)++)", Pattern.CASE_INSENSITIVE);
 
     @Override
     public String buildPageSql(String sql, int limit, long offset) {
