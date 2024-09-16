@@ -129,8 +129,7 @@ public abstract class WebMvcConfigurerAdapter implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        argumentResolvers.add(new SortArgumentResolver(
-                sortFieldsProperties.getSortPrefix(), sortFieldsProperties.getSortFieldsMap()));
+        argumentResolvers.add(new SortArgumentResolver(sortFieldsProperties));
     }
 
 }

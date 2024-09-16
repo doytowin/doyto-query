@@ -21,6 +21,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ServletModelAttributeMethodProcessor;
 import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.web.config.SortFieldsProperties;
 
 import java.util.*;
 
@@ -32,30 +33,27 @@ import java.util.*;
  */
 public class SortArgumentResolver extends ServletModelAttributeMethodProcessor {
 
-    public final String sortPrefix;
-    public final int sortPrefixLen;
-
+    private final String sortPrefix;
     private final Map<Class<?>, Set<String>> queryColumnsMap;
 
-    public SortArgumentResolver(String sortPrefix, Map<Class<?>, Set<String>> queryColumnsMap) {
+    public SortArgumentResolver(SortFieldsProperties sortFieldsProperties) {
         super(true);
-        this.sortPrefix = sortPrefix;
-        this.sortPrefixLen = sortPrefix.length();
-        this.queryColumnsMap = queryColumnsMap;
+        this.sortPrefix = sortFieldsProperties.getSortPrefix();
+        this.queryColumnsMap = sortFieldsProperties.getSortFieldsMap();
     }
 
     @SuppressWarnings("java:S135")
     @Override
     protected void bindRequestParameters(WebDataBinder binder, NativeWebRequest request) {
         super.bindRequestParameters(binder, request);
-        Object target = binder.getTarget();
-        if (!(target instanceof DoytoQuery)) {
+        if (!(binder.getTarget() instanceof DoytoQuery query)) {
             return;
         }
-        DoytoQuery query = (DoytoQuery) target;
-        Collection<String> columns = queryColumnsMap.getOrDefault(query.getClass(), new HashSet<>());
+
+        Collection<String> columns = queryColumnsMap.getOrDefault(query.getClass(), Set.of());
         Iterator<String> it = request.getParameterNames();
         StringJoiner sj = new StringJoiner(";");
+        int sortPrefixLen = sortPrefix.length();
         while (it.hasNext()) {
             String key = it.next();
             int dotIdx = key.indexOf(sortPrefix);
@@ -72,12 +70,10 @@ public class SortArgumentResolver extends ServletModelAttributeMethodProcessor {
                 sj.add(column + "," + value);
             }
         }
-        if (sj.length() > 0) {
+        if (!columns.isEmpty() || sj.length() > 0) {
             query.setSort(sj.toString());
         }
-        if (StringUtils.isBlank(query.getSort())) {
-           query.setSort(null);
-        }
+        query.setSort(StringUtils.trimToNull(query.getSort()));
     }
 
 }

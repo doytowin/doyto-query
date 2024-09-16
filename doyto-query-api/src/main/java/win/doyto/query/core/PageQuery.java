@@ -53,7 +53,7 @@ public class PageQuery implements DoytoQuery {
      * Sorting field, format: field1,desc;field2,asc;field(col,'v1','v2')
      */
     @Transient
-    @jakarta.validation.constraints.Pattern(regexp = SORT_RX, message = "Sorting field format error", groups = PageGroup.class)
+    @jakarta.validation.constraints.Pattern(regexp = SORT_RX, groups = PageGroup.class)
     private String sort;
 
     @Transient
