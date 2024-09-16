@@ -50,7 +50,7 @@ public class MySQLDialect implements Dialect {
         String fromTable = fromMatcher.group();
         int fromIndex = fromMatcher.start();
 
-        StringBuffer buffer = new StringBuffer(sql.length() * 3);
+        StringBuilder buffer = new StringBuilder(sql.length() * 3);
         Matcher aliasMatcher = alias.matcher(sql.substring(0, fromIndex));
         while (aliasMatcher.find()) {
             aliasMatcher.appendReplacement(buffer, "$1 a.$2");

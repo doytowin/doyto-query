@@ -175,7 +175,7 @@ public class BuildHelper {
             return input;
         }
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         do {
             String fieldName = matcher.group(1);
             Object value = readFieldGetter(target, fieldName);
