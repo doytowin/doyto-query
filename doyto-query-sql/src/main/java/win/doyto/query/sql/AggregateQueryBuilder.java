@@ -58,7 +58,7 @@ public class AggregateQueryBuilder {
 
     public static SqlAndArgs buildCountAndArgs(EntityMetadata entityMetadata, AggregateQuery aggregateQuery) {
         return SqlAndArgs.buildSqlWithArgs((argList -> SELECT + COUNT + FROM +
-                OP + buildSelect(entityMetadata, aggregateQuery, argList) + CP));
+                OP + buildSelect(entityMetadata, aggregateQuery, argList) + CP + " t"));
     }
 
     private static String
