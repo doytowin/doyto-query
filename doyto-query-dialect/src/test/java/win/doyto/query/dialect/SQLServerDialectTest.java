@@ -43,6 +43,15 @@ class SQLServerDialectTest {
     }
 
     @Test
+    void buildPageSqlForSelectWithGroupBy() {
+        String pageSql = dialect.buildPageSql("SELECT user_level AS userLevel, valid, count(*) AS count FROM t_user " +
+                "WHERE valid = ? GROUP BY user_level, valid HAVING count(*) > ? AND count(*) < ?", 10, 20);
+        assertEquals("SELECT user_level AS userLevel, valid, count(*) AS count FROM t_user " +
+                "WHERE valid = ? GROUP BY user_level, valid HAVING count(*) > ? AND count(*) < ? " +
+                "offset 20 row fetch next 10 row only", pageSql);
+    }
+
+    @Test
     void resolveKeyColumn() {
         assertEquals("GENERATED_KEYS", dialect.resolveKeyColumn("id"));
     }
