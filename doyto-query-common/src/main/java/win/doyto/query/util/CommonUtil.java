@@ -81,7 +81,7 @@ public class CommonUtil {
         try {
             value = MethodUtils.invokeMethod(target, true, "get" + StringUtils.capitalize(fieldName));
         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            log.warn("is/get调用异常 : {}-{}", e.getClass().getName(), e.getMessage());
+            log.debug("Call is/get failed for: {}-{}", e.getClass().getName(), e.getMessage());
             value = readField(target, fieldName);
         }
         return value;
@@ -94,7 +94,7 @@ public class CommonUtil {
             String prefix = field.getType().isAssignableFrom(boolean.class) ? "is" : "get";
             value = MethodUtils.invokeMethod(target, true, prefix + StringUtils.capitalize(fieldName));
         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            log.warn("is/get调用异常 : {}-{}", e.getClass().getName(), e.getMessage());
+            log.debug("Call is/get failed for : {}-{}", e.getClass().getName(), e.getMessage());
             value = readField(field, target);
         }
         if (value instanceof Enum<?>) {
