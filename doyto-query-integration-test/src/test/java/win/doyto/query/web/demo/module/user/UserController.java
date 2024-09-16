@@ -17,9 +17,10 @@
 package win.doyto.query.web.demo.module.user;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import win.doyto.query.core.DataQueryClient;
+import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.web.controller.AbstractRestController;
 import win.doyto.query.web.response.ErrorCode;
 import win.doyto.query.web.response.JsonBody;
@@ -27,8 +28,8 @@ import win.doyto.query.web.response.JsonResponse;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -49,13 +50,10 @@ public class UserController
 
     UserDetailService userDetailService;
 
-    DataQueryClient jdbcDataQueryClient;
-
-    public UserController(UserService userService, UserDetailService userDetailService, DataQueryClient jdbcDataQueryClient) {
+    public UserController(UserService userService, UserDetailService userDetailService) {
         super(userService);
         this.userService = userService;
         this.userDetailService = userDetailService;
-        this.jdbcDataQueryClient = jdbcDataQueryClient;
     }
 
     @GetMapping("/username")
@@ -91,7 +89,7 @@ public class UserController
 
     @Override
     public List<UserResponse> query(UserQuery q) {
-        return jdbcDataQueryClient.query(q, UserResponse.class);
+        return userService.queryColumns(q, UserResponse.class);
     }
 
     @GetMapping("column/{column:\\w+}")
@@ -100,8 +98,10 @@ public class UserController
     }
 
     @GetMapping("columns/{columns:[\\w,]+}")
-    public List<Map> listColumns(UserQuery q, @PathVariable String columns) {
-        return userService.queryColumns(q, Map.class, columns);
+    public List<UserResponse> listColumns(UserQuery q, @PathVariable String columns) {
+        String[] cols = Arrays.stream(StringUtils.split(columns, ","))
+                              .map(ColumnUtil::convertColumn).toArray(String[]::new);
+        return userService.queryColumns(q, UserResponse.class, cols);
     }
 
     @Override

@@ -24,12 +24,13 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.core.AggregateChain;
+import win.doyto.query.core.AggregateClient;
 import win.doyto.query.sql.SqlAndArgs;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -38,9 +39,14 @@ import java.util.stream.Collectors;
  * @author f0rb on 2021-08-30
  */
 @RequiredArgsConstructor
-public class DatabaseTemplate implements DatabaseOperations {
+public class DatabaseTemplate implements DatabaseOperations, AggregateClient {
 
     private final JdbcOperations jdbcOperations;
+
+    @Override
+    public <V> AggregateChain<V> aggregate(Class<V> viewClass) {
+        return new JdbcAggregateChain<>(this, viewClass);
+    }
 
     @Override
     public <V> List<V> query(SqlAndArgs sqlAndArgs, RowMapper<V> rowMapper) {
@@ -48,7 +54,7 @@ public class DatabaseTemplate implements DatabaseOperations {
     }
 
     @Override
-    public <I, R> Map<I, List<R>> query(SqlAndArgs sqlAndArgs, ResultSetExtractor<Map<I, List<R>>> resultSetExtractor) {
+    public <R> R query(SqlAndArgs sqlAndArgs, ResultSetExtractor<R> resultSetExtractor) {
         return jdbcOperations.query(sqlAndArgs.getSql(), resultSetExtractor, sqlAndArgs.getArgs());
     }
 

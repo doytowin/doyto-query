@@ -29,9 +29,9 @@ import java.util.regex.Pattern;
 public class MySQLDialect implements Dialect {
     private static final String LIMIT = " LIMIT ";
     private static final String OFFSET = " OFFSET ";
-    private Pattern fromPtn = Pattern.compile("FROM \\w+", Pattern.CASE_INSENSITIVE);
-    private Pattern joinPtn = Pattern.compile("JOIN", Pattern.CASE_INSENSITIVE);
-    private Pattern alias = Pattern.compile("(,|SELECT)\\s*([\\w*]+)");
+    private final Pattern fromPtn = Pattern.compile("FROM \\w+", Pattern.CASE_INSENSITIVE);
+    private final Pattern joinPtn = Pattern.compile("(JOIN|GROUP)", Pattern.CASE_INSENSITIVE);
+    private final Pattern alias = Pattern.compile("(,|SELECT)\\s*([\\w*]+)");
 
     @Override
     public String buildPageSql(String sql, int limit, long offset) {

@@ -14,24 +14,29 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test;
+package win.doyto.query.sql.q15;
 
-import lombok.*;
-import win.doyto.query.core.Or;
+import lombok.Getter;
+import lombok.Setter;
+import win.doyto.query.annotation.View;
+import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
+
+import java.math.BigDecimal;
 
 /**
- * AccountOr
+ * TopSupplierView
  *
- * @author f0rb on 2021-12-24
+ * @author f0rb on 2023/6/13
+ * @since 1.0.2
  */
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class AccountOr implements Or {
-    private String username;
-    private String email;
-    private String mobile;
+@View(SupplierEntity.class)
+@View(value = LineitemRevenueView.class, with = "revenue")
+public class TopSupplierView {
+    private Integer s_suppkey;
+    private String s_name;
+    private String s_address;
+    private String s_phone;
+    private BigDecimal total_revenue;
 }
-

@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package win.doyto.query.memory;
+package win.doyto.query.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.core.DataAccess;
-import win.doyto.query.core.DoytoQuery;
-import win.doyto.query.core.IdWrapper;
-import win.doyto.query.core.QuerySuffix;
+import win.doyto.query.core.*;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.util.BeanUtil;
 import win.doyto.query.util.ColumnUtil;
@@ -51,11 +48,11 @@ import static win.doyto.query.util.CommonUtil.*;
  */
 @Slf4j
 @SuppressWarnings({"unchecked", "java:S3740"})
-public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery> implements DataAccess<E, I, Q> {
+class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery> implements DataAccess<E, I, Q> {
     protected static final Map<Class<?>, Map<?, ?>> tableMap = new ConcurrentHashMap<>();
 
     protected final Map<I, E> entitiesMap = new ConcurrentHashMap<>();
-    private final AtomicLong idGenerator = new AtomicLong(0);
+    private final AtomicLong idGenerator = new AtomicLong();
     private final List<Field> fields;
     private final Field idField;
     private final Class<I> idClass;
@@ -198,6 +195,7 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
 
     @Override
     public List<E> query(Q query) {
+        @SuppressWarnings("java:S6204")
         List<E> queryList = entitiesMap
                 .values().stream()
                 .filter(item -> filterByQuery(query, item))
@@ -254,6 +252,12 @@ public class MemoryDataAccess<E extends Persistable<I>, I extends Serializable, 
     @Override
     public long count(Q query) {
         return entitiesMap.values().stream().filter(item -> filterByQuery(query, item)).count();
+    }
+
+    @Override
+    public PageList<E> page(Q query) {
+        query.forcePaging();
+        return new PageList<>(query(query), count(query));
     }
 
 }

@@ -37,14 +37,21 @@ public class JoinRowMapperResultSetExtractor<I, R> implements ResultSetExtractor
     private final String keyColumn;
     private final Class<I> keyClass;
     private final RowMapper<R> rowMapper;
+    private final Map<Object, R> rightMap = new HashMap<>();
 
+    @Override
     public Map<I, List<R>> extractData(ResultSet rs) throws SQLException {
         Map<I, List<R>> results = new HashMap<>();
         int rowNum = 0;
 
         while (rs.next()) {
             I key = rs.getObject(keyColumn, keyClass);
-            R row = this.rowMapper.mapRow(rs, rowNum++);
+            Object rKey = rs.getObject(2); // related entity id column
+            R row = rightMap.get(rKey);
+            if (row == null) {
+                row = this.rowMapper.mapRow(rs, rowNum++);
+                rightMap.put(rKey, row);
+            }
             List<R> rows = results.computeIfAbsent(key, i -> new ArrayList<>());
             rows.add(row);
         }

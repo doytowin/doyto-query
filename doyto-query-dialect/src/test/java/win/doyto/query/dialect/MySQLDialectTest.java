@@ -58,4 +58,12 @@ class MySQLDialectTest {
         String pageSql = mysqlDialect.buildPageSql("SELECT * FROM user WHERE valid = true", 10, 50000);
         assertEquals("SELECT a.* FROM user a JOIN (SELECT id FROM user WHERE valid = true LIMIT 10 OFFSET 50000) b ON a.id = b.id", pageSql);
     }
+
+    @Test
+    void groupBy() {
+        String pageSql = mysqlDialect.buildPageSql("SELECT user_level AS userLevel, valid, count(*) AS count FROM t_user " +
+                "WHERE valid = ? GROUP BY user_level, valid HAVING count(*) > ? AND count(*) < ?", 10, 20);
+        assertEquals("SELECT user_level AS userLevel, valid, count(*) AS count FROM t_user " +
+                "WHERE valid = ? GROUP BY user_level, valid HAVING count(*) > ? AND count(*) < ? LIMIT 10 OFFSET 20", pageSql);
+    }
 }

@@ -15,15 +15,13 @@
  */
 package win.doyto.query.core;
 
-import java.io.Serializable;
-
 /**
  * DoytoQuery
  *
  * @author f0rb on 2021-12-02
  * @since 0.3.0
  */
-public interface DoytoQuery extends Serializable {
+public interface DoytoQuery extends Query {
 
     void forcePaging();
 
@@ -48,4 +46,3 @@ public interface DoytoQuery extends Serializable {
         return IdWrapper.build(null);
     }
 }
-

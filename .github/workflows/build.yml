@@ -5,18 +5,19 @@ on:
   push:
     branches:
       - main
-      - 'modules/**'
       - 'features/**'
       - 'issues/**'
       - 'refactor/**'
-      - 'springboot3/**'
+      - 'v1/issues/**'
+      - 'v1/features/**'
+      - 'v1/refactor/**'
   pull_request:
     types: [ opened, synchronize, reopened ]
 
 jobs:
   version:
     name: Determine Java version
-    uses: doytowin/doyto-devops/.github/workflows/version.yml@main
+    uses: doytowin/doyto-devops/.github/workflows/version_java17.yml@main
   build:
     needs: version
     name: Call Build Workflow

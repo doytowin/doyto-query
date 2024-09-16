@@ -34,7 +34,7 @@ import win.doyto.query.core.RelationalQuery;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MenuViewQuery extends MenuQuery implements RelationalQuery<MenuView, Long> {
+public class MenuViewQuery extends MenuQuery implements RelationalQuery<MenuView, Integer> {
 
     private MenuQuery withParent;
 

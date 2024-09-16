@@ -16,13 +16,13 @@
 
 package win.doyto.query.test.menu;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.entity.Persistable;
+import win.doyto.query.entity.AbstractPersistable;
 import win.doyto.query.test.user.UserView;
 
-import javax.persistence.Id;
 import java.util.List;
 
 /**
@@ -32,10 +32,9 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class MenuView implements Persistable<Long> {
+@EqualsAndHashCode(callSuper = true)
+public class MenuView extends AbstractPersistable<Integer> {
 
-    @Id
-    private Long id;
     private String menuName;
     private String platform;
 

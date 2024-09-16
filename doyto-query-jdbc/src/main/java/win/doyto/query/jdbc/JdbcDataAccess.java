@@ -25,7 +25,9 @@ import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
+import win.doyto.query.core.PageList;
 import win.doyto.query.entity.Persistable;
+import win.doyto.query.sql.EntityMetadata;
 import win.doyto.query.sql.SqlAndArgs;
 import win.doyto.query.sql.SqlBuilder;
 import win.doyto.query.sql.SqlBuilderFactory;
@@ -62,6 +64,8 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     private final SingleColumnRowMapper<I> idRowMapper;
     private final Class<I> idClass;
     private final String idColumn;
+    private final JdbcDataQueryClient jdbcDataQueryClient;
+    private final EntityMetadata entityMetadata;
 
     public JdbcDataAccess(DatabaseOperations databaseOperations, Class<E> entityClass) {
         this(databaseOperations, entityClass, new BeanPropertyRowMapper<>(entityClass));
@@ -72,26 +76,41 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
         this.databaseOperations = databaseOperations;
         this.rowMapper = rowMapper;
         this.sqlBuilder = SqlBuilderFactory.create(entityClass);
-        this.columnsForSelect = ColumnUtil.resolveSelectColumns(entityClass);
+        this.columnsForSelect = EntityMetadata.buildViewColumns(entityClass).split(", ");
 
         Field[] idFields = FieldUtils.getFieldsWithAnnotation(entityClass, Id.class);
         this.isGeneratedId = idFields.length == 1 && idFields[0].isAnnotationPresent(GeneratedValue.class);
         this.idColumn = idFields[0].getName();
         this.idClass = BeanUtil.getIdClass(entityClass, idColumn);
         this.idRowMapper = new SingleColumnRowMapper<>(idClass);
+        this.jdbcDataQueryClient = new JdbcDataQueryClient(databaseOperations);
+        this.entityMetadata = EntityMetadata.build(entityClass);
     }
 
     @Override
-    public List<E> query(Q q) {
-        return queryColumns(q, rowMapper, columnsForSelect);
+    public List<E> query(Q query) {
+        SqlAndArgs sqlAndArgs = sqlBuilder.buildSelectColumnsAndArgs(query, columnsForSelect);
+        List<E> mainEntities = databaseOperations.query(sqlAndArgs, rowMapper);
+        jdbcDataQueryClient.querySubEntities(mainEntities, query, entityMetadata);
+        return mainEntities;
     }
 
     @Override
-    public <V> List<V> queryColumns(Q q, Class<V> clazz, String... columns) {
+    public PageList<E> page(Q query) {
+        query.forcePaging();
+        return new PageList<>(query(query), count(query));
+    }
+
+    @Override
+    public <V> List<V> queryColumns(Q query, Class<V> clazz, String... columns) {
+        if (columns.length == 0) {
+            columns = columnsForSelect;
+        }
+        boolean isSingle = ColumnUtil.isSingleColumn(columns);
         @SuppressWarnings("unchecked")
         RowMapper<V> localRowMapper = (RowMapper<V>) classRowMapperMap.computeIfAbsent(
-                clazz, c -> ColumnUtil.isSingleColumn(columns) ? new SingleColumnRowMapper<>(clazz) : new BeanPropertyRowMapper<>(clazz));
-        return queryColumns(q, localRowMapper, columns);
+                clazz, c -> isSingle ? new SingleColumnRowMapper<>(clazz) : new BeanPropertyRowMapper<>(clazz));
+        return queryColumns(query, localRowMapper, columns);
     }
 
     private <V> List<V> queryColumns(Q q, RowMapper<V> rowMapper, String... columns) {

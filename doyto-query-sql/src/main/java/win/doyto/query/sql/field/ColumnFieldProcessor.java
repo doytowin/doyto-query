@@ -20,6 +20,7 @@ import javax.persistence.Column;
 import java.lang.reflect.Field;
 import java.util.List;
 
+
 /**
  * ColumnFieldProcessor
  * fetch column name from {@link Column#name()}
@@ -41,6 +42,9 @@ public class ColumnFieldProcessor implements FieldProcessor {
 
     @Override
     public String process(String alias, List<Object> argList, Object value) {
+        if (sqlQuerySuffix.shouldIgnore(value)) {
+            return null;
+        }
         value = sqlQuerySuffix.getValueProcessor().escapeValue(value);
         return sqlQuerySuffix.buildColumnCondition(columnName, argList, value);
     }

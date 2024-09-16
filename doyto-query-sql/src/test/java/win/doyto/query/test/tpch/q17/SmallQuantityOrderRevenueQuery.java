@@ -21,11 +21,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.Subquery;
+import win.doyto.query.annotation.NoLabel;
+import win.doyto.query.annotation.SubqueryV2;
+import win.doyto.query.annotation.View;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
 import win.doyto.query.test.tpch.domain.part.PartEntity;
+
+import javax.persistence.Column;
 
 /**
  * SmallQuantityOrderRevenueQuery
@@ -41,8 +45,14 @@ import win.doyto.query.test.tpch.domain.part.PartEntity;
 public class SmallQuantityOrderRevenueQuery extends PageQuery {
     private String p_brand;
     private String p_container;
-    @Subquery(select = "2e-1 * AVG(l_quantity)",
-            host = PartEntity.class,
-            from = LineitemEntity.class)
+    @SubqueryV2(QuantityView.class)
     private LineitemQuery l_quantityLt;
+
+    @View(value = PartEntity.class, context = true)
+    @View(LineitemEntity.class)
+    private static class QuantityView {
+        @NoLabel
+        @Column(name = "2e-1 * AVG(l_quantity)")
+        private Object quantity;
+    }
 }

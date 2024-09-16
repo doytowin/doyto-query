@@ -15,7 +15,9 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         child.project.url.inherit.append.path="false">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -31,8 +33,6 @@
     <url>https://query.doyto.win/</url>
 
     <properties>
-        <revision>1.0.2-SNAPSHOT</revision>
-
         <spring-boot.version>2.7.12</spring-boot.version>
         <snakeyaml.version>2.0</snakeyaml.version>
 
@@ -48,7 +48,6 @@
         <module>doyto-query-geo</module>
         <module>doyto-query-api</module>
         <module>doyto-query-common</module>
-        <module>doyto-query-memory</module>
         <module>doyto-query-sql</module>
         <module>doyto-query-web-common</module>
         <module>doyto-query-web</module>
@@ -86,6 +85,11 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -147,21 +151,31 @@
             </testResource>
         </testResources>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <testSource>${java.version}</testSource>
+                    <testTarget>${java.version}</testTarget>
+                    <fork>true</fork>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                        <arg>-Xlint:unchecked</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
             <!-- 更新pom版本号-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
-                <version>1.5.0</version>
+                <version>1.6.0</version>
                 <configuration>
                     <updatePomFile>true</updatePomFile>
-                    <flattenMode>bom</flattenMode>
+                    <flattenMode>ossrh</flattenMode>
                     <flattenedPomFilename>target/${project.artifactId}.pom.xml</flattenedPomFilename>
-                    <pomElements>
-                        <version>resolve</version>
-                        <properties>resolve</properties>
-                        <dependencies>resolve</dependencies>
-                        <pluginManagement>resolve</pluginManagement>
-                    </pomElements>
                 </configuration>
                 <executions>
                     <execution>
@@ -182,7 +196,10 @@
             </plugin>
         </plugins>
     </build>
-    <scm>
+
+    <scm child.scm.connection.inherit.append.path="false"
+         child.scm.developerConnection.inherit.append.path="false"
+         child.scm.url.inherit.append.path="false">
         <tag>main</tag>
         <url>https://github.com/doytowin/doyto-query</url>
         <connection>scm:git:https://github.com/doytowin/doyto-query.git</connection>

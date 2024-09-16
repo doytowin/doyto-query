@@ -26,10 +26,7 @@ import win.doyto.query.test.*;
 import win.doyto.query.test.tpch.domain.partsupp.PartsuppEntity;
 import win.doyto.query.test.tpch.domain.partsupp.PartsuppKey;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -355,8 +352,8 @@ class QueryBuilderTest {
 
     @Test
     void buildOrClause() {
-        AccountOr accountOr = AccountOr.builder().username("f0rb").email("f0rb").mobile("f0rb").build();
-        TestQuery testQuery = TestQuery.builder().account2(accountOr).build();
+        Account accountOr = Account.builder().username("f0rb").email("f0rb").mobile("f0rb").build();
+        TestQuery testQuery = TestQuery.builder().accountOr(accountOr).build();
 
         String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
 
@@ -366,8 +363,8 @@ class QueryBuilderTest {
 
     @Test
     void buildOrClauseIgnoreNull() {
-        AccountOr accountOr = AccountOr.builder().username("f0rb").email("f0rb").build();
-        TestQuery testQuery = TestQuery.builder().account2(accountOr).build();
+        Account accountOr = Account.builder().username("f0rb").email("f0rb").build();
+        TestQuery testQuery = TestQuery.builder().accountOr(accountOr).build();
 
         String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
 
@@ -376,9 +373,29 @@ class QueryBuilderTest {
     }
 
     @Test
+    void buildOrClauseForBasicTypeCollection() {
+        TestQuery testQuery = TestQuery.builder().usernameContainOr(Arrays.asList("test1", "test2", "test3")).build();
+
+        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
+
+        assertThat(sql).isEqualTo("SELECT * FROM t_user t WHERE (username LIKE ? OR username LIKE ? OR username LIKE ?)");
+        assertThat(argList).containsExactly("%test1%", "%test2%", "%test3%");
+    }
+
+    @Test
+    void buildOrClauseForBasicTypeCollectionWithZeroElems() {
+        TestQuery testQuery = TestQuery.builder().usernameContainOr(Collections.emptyList()).build();
+
+        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
+
+        assertThat(sql).isEqualTo("SELECT * FROM t_user t");
+        assertThat(argList).isEmpty();
+    }
+
+    @Test
     void shouldIgnoreOrFieldWhenAllValuesAreNull() {
-        AccountOr accountOr = AccountOr.builder().build();
-        TestQuery testQuery = TestQuery.builder().account2(accountOr).build();
+        Account accountOr = Account.builder().build();
+        TestQuery testQuery = TestQuery.builder().accountOr(accountOr).build();
 
         String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
 

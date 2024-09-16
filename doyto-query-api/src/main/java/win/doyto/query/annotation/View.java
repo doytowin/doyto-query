@@ -36,7 +36,21 @@ public @interface View {
 
     Class<?> value();
 
-
     String alias() default "";
+
+    /**
+     * Map the current view using `with`.
+     *
+     * @since 1.0.2
+     */
+    String with() default "";
+
+    /**
+     * Set context to true to prevent the table name
+     * from appearing in the FROM clause in a subquery.
+     *
+     * @since 1.0.2
+     */
+    boolean context() default false;
 
 }

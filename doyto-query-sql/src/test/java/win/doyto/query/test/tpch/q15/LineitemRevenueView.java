@@ -44,4 +44,3 @@ public class LineitemRevenueView {
     @Column(name = "SUM(l_extendedprice * (1 - l_discount))")
     private BigDecimal total_revenue;
 }
-

@@ -19,7 +19,6 @@ package win.doyto.query.jdbc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.transaction.annotation.Transactional;
-import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.AssociationService;
 import win.doyto.query.core.UniqueKey;
 import win.doyto.query.entity.UserIdProvider;
@@ -36,42 +35,35 @@ import java.util.Set;
  *
  * @author f0rb on 2021-12-31
  */
-@SuppressWarnings("unchecked")
-public class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2> {
+@SuppressWarnings({"unchecked", "java:S6813"})
+public abstract class JdbcAssociationService<K1, K2> implements AssociationService<K1, K2> {
 
-    private static final GlobalConfiguration instance = GlobalConfiguration.instance();
     @Autowired
     private DatabaseOperations databaseOperations;
     private final AssociationSqlBuilder<K1, K2> sqlBuilder;
-    private final SingleColumnRowMapper<K1> k1RowMapper = new SingleColumnRowMapper<>();
-    private final SingleColumnRowMapper<K2> k2RowMapper = new SingleColumnRowMapper<>();
+    private SingleColumnRowMapper<K1> k1RowMapper;
+    private SingleColumnRowMapper<K2> k2RowMapper;
 
     @Autowired(required = false)
     private UserIdProvider<?> userIdProvider = () -> null;
 
-    public JdbcAssociationService(String domain1, String domain2) {
-        this.sqlBuilder = new AssociationSqlBuilder<>(
-                instance.formatJoinTable(domain1, domain2), instance.formatJoinId(domain1), instance.formatJoinId(domain2)
-        );
+    protected JdbcAssociationService(String domain1, String domain2) {
+        this.sqlBuilder = new AssociationSqlBuilder<>(domain1, domain2);
         setRequiredType();
     }
 
-    public JdbcAssociationService(String domain1, String domain2, String createUserColumn) {
-        this.sqlBuilder = new AssociationSqlBuilder<>(
-                instance.formatJoinTable(domain1, domain2),
-                instance.formatJoinId(domain1),
-                instance.formatJoinId(domain2),
-                createUserColumn
-        );
-        setRequiredType();
+    protected JdbcAssociationService(String domain1, String domain2, String createUserColumn) {
+        this(domain1, domain2);
+        this.sqlBuilder.withCreateUserColumn(createUserColumn);
     }
 
     private void setRequiredType() {
         Type[] actualTypes = BeanUtil.getActualTypeArguments(getClass());
-        if (actualTypes.length == 2) {
-            k1RowMapper.setRequiredType((Class<K1>) actualTypes[0]);
-            k2RowMapper.setRequiredType((Class<K2>) actualTypes[1]);
+        if (actualTypes.length != 2) {
+            throw new IllegalArgumentException("The number of generic parameters should be 2.");
         }
+        k1RowMapper = new SingleColumnRowMapper<>((Class<K1>) actualTypes[0]);
+        k2RowMapper = new SingleColumnRowMapper<>((Class<K2>) actualTypes[1]);
     }
 
 

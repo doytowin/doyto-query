@@ -127,7 +127,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.8.1</version>
+                        <version>3.11.0</version>
                         <configuration>
                             <testExcludes>
                                 <exclude>win/doyto/query/web/demo/mongodb/*</exclude>
@@ -148,7 +148,7 @@
                 <dependency>
                     <groupId>de.flapdoodle.embed</groupId>
                     <artifactId>de.flapdoodle.embed.mongo</artifactId>
-                    <version>3.5.4</version>
+                    <version>4.16.2</version>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
@@ -213,6 +213,7 @@
                 <dependency>
                     <groupId>org.xerial</groupId>
                     <artifactId>sqlite-jdbc</artifactId>
+                    <version>3.46.0.1</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>

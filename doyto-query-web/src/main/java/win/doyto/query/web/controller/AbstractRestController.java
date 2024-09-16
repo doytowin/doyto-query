@@ -67,8 +67,8 @@ public abstract class AbstractRestController<E extends Persistable<I>, I extends
     }
 
     @Override
-    public S delete(@PathVariable I id) {
-        E e = service.delete(id);
+    public S remove(@PathVariable I id) {
+        E e = service.remove(id);
         checkResult(e);
         return buildResponse(e);
     }

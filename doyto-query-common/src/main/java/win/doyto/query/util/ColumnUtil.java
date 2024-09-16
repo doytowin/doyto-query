@@ -17,14 +17,11 @@
 package win.doyto.query.util;
 
 import lombok.experimental.UtilityClass;
-import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.Join;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.core.AggregationPrefix;
-import win.doyto.query.core.Dialect;
 import win.doyto.query.core.Having;
 
 import javax.persistence.Column;
@@ -34,7 +31,7 @@ import javax.persistence.Transient;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -65,7 +62,7 @@ public class ColumnUtil {
     public static Field[] queryFields(Class<?> queryClass) {
         Field[] fields = classFieldsMap.get(queryClass);
         if (fields == null) {
-            fields = filterFields(queryClass, ColumnUtil::shouldRetain).toArray(Field[]::new);
+            fields = filterFields(queryClass);
         }
         return fields;
     }
@@ -76,7 +73,7 @@ public class ColumnUtil {
             synchronized (classFieldsMap) {
                 fields = classFieldsMap.get(queryClass);
                 if (fields == null) {
-                    fields = filterFields(queryClass, ColumnUtil::shouldRetain).toArray(Field[]::new);
+                    fields = filterFields(queryClass);
                     if (fieldConsumer != null) {
                         Arrays.stream(fields).forEach(fieldConsumer);
                     }
@@ -87,18 +84,25 @@ public class ColumnUtil {
         return fields;
     }
 
-    public static Stream<Field> filterFields(Class<?> entityClass) {
-        return filterFields(entityClass, ColumnUtil::filterForEntity);
+    private static Field[] filterFields(Class<?> queryClass) {
+        return filterFields(queryClass, ColumnUtil::shouldRetain).toArray(Field[]::new);
     }
 
     public static Stream<Field> filterFields(Class<?> clazz, Predicate<Field> fieldFilter) {
-        List<Class<?>> allClasses = ClassUtils.getAllSuperclasses(clazz);
-        allClasses.remove(allClasses.size() - 1); // remove Object.class
-        Collections.reverse(allClasses);
-        allClasses.add(clazz); // add target class to the tail
-        return allClasses.stream()
-                         .flatMap(c -> Arrays.stream(c.getDeclaredFields()))
-                         .filter(fieldFilter);
+        return withSuperclasses(clazz)
+                .stream()
+                .flatMap(c -> Arrays.stream(c.getDeclaredFields()))
+                .filter(fieldFilter);
+    }
+
+    public static List<Class<?>> withSuperclasses(Class<?> clazz) {
+        LinkedList<Class<?>> classes = new LinkedList<>();
+        Class<?> superclass = clazz;
+        do {
+            classes.addFirst(superclass);
+            superclass = superclass.getSuperclass();
+        } while (superclass != Object.class);
+        return classes;
     }
 
     /**
@@ -108,8 +112,7 @@ public class ColumnUtil {
      * @return unmodifiable fields without id and @Transient field
      */
     public static List<Field> getColumnFieldsFrom(Class<?> entityClass) {
-        List<Field> fields = filterFields(entityClass).collect(Collectors.toList());
-        return Collections.unmodifiableList(fields);
+        return filterFields(entityClass, ColumnUtil::filterForEntity).collect(Collectors.toList());
     }
 
     public static String convertColumn(String columnName) {
@@ -123,7 +126,7 @@ public class ColumnUtil {
         return camelCaseToUnderscore(StringUtils.uncapitalize(domain));
     }
 
-    private static String camelCaseToUnderscore(String camel) {
+    public static String camelCaseToUnderscore(String camel) {
         return PTN_CAPITAL_CHAR.matcher(camel).replaceAll("_$1").toLowerCase();
     }
 
@@ -132,35 +135,8 @@ public class ColumnUtil {
         if (column != null && !column.name().isEmpty()) {
             return column.name();
         }
-        return resolveColumn(field.getName());
-    }
-
-    public static String resolveColumn(String fieldName) {
-        AggregationPrefix aggregationPrefix = AggregationPrefix.resolveField(fieldName);
-        String columnName = aggregationPrefix.resolveColumnName(fieldName);
-        columnName = convertColumn(columnName);
-        columnName = GlobalConfiguration.dialect().wrapLabel(columnName);
-        if (aggregationPrefix != AggregationPrefix.NONE) {
-            columnName = aggregationPrefix.getName() + "(" + columnName + ")";
-        }
-        return columnName;
-    }
-
-    public static String selectAs(Field field) {
-        String columnName = resolveColumn(field);
-        Dialect dialect = GlobalConfiguration.dialect();
-        String fieldName = dialect.wrapLabel(field.getName());
-        return columnName.equalsIgnoreCase(fieldName) ? columnName : columnName + " AS " + fieldName;
-    }
-
-    public static String[] resolveSelectColumns(Class<?> entityClass) {
-        return resolveSelectColumnStream(entityClass).toArray(String[]::new);
-    }
-
-    public static Stream<String> resolveSelectColumnStream(Class<?> entityClass) {
-        return FieldUtils.getAllFieldsList(entityClass).stream()
-                         .filter(ColumnUtil::shouldRetain)
-                         .map(ColumnUtil::selectAs);
+        String columnName = ColumnUtil.convertColumn(field.getName());
+        return GlobalConfiguration.dialect().wrapLabel(columnName);
     }
 
     public static boolean filterForEntity(Field field) {
@@ -168,6 +144,11 @@ public class ColumnUtil {
                 && !field.isAnnotationPresent(GeneratedValue.class) // ignore id
                 && !field.isAnnotationPresent(DomainPath.class)     // ignore subdomains
                 ;
+    }
+
+    public static boolean filterForView(Field field) {
+        return !field.isAnnotationPresent(DomainPath.class)      // ignore subdomains
+                && shouldRetain(field);
     }
 
     public static boolean shouldRetain(Field field) {
@@ -179,6 +160,12 @@ public class ColumnUtil {
                 // Having field, will be used in having condition only
                 && !Having.class.isAssignableFrom(field.getType())
                 ;
+    }
+
+    public static List<Field> resolveDomainPathFields(Class<?> entityClass) {
+        return FieldUtils.getAllFieldsList(entityClass).stream()
+                         .filter(joinField -> joinField.isAnnotationPresent(DomainPath.class))
+                         .collect(Collectors.toList());
     }
 
     public static boolean isSingleColumn(String... columns) {

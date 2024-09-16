@@ -56,7 +56,7 @@ public class UserQueryBuilder extends CrudBuilder<UserEntity> {
             whereJoiner.add("mobile = ?");
             argList.add(userQuery.getMobile());
         }
-        if (userQuery.isMemoNull()) {
+        if (userQuery.getMemoNull()) {
             whereJoiner.add("memo IS NULL");
         }
         return whereJoiner.length() == 0 ? EMPTY : WHERE + whereJoiner;

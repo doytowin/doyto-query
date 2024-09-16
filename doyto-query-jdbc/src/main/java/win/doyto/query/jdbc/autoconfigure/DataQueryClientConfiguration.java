@@ -31,10 +31,10 @@ import win.doyto.query.jdbc.JdbcDataQueryClient;
  * @since 1.0.1
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnMissingBean(DataQueryClient.class)
 class DataQueryClientConfiguration {
     @Bean
     @Primary
+    @ConditionalOnMissingBean(DataQueryClient.class)
     public DataQueryClient jdbcDataQueryClient(DatabaseOperations databaseOperations) {
         return new JdbcDataQueryClient(databaseOperations);
     }

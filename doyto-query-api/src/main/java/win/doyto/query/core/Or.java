@@ -16,13 +16,14 @@
 
 package win.doyto.query.core;
 
-import java.io.Serializable;
-
 /**
  * Or
  *
  * @author f0rb on 2021-12-24
  * @since 0.3.0
+ * @deprecated since 1.1.0, use {@link Query} instead
  */
-public interface Or extends Serializable {
+@SuppressWarnings("java:S1133")
+@Deprecated
+public interface Or extends Query {
 }

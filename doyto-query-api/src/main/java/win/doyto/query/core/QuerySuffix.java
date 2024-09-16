@@ -59,6 +59,7 @@ public enum QuerySuffix {
     Lt,
     Le,
     Eq,
+    Rx,
     Any,
     All,
 
@@ -95,10 +96,7 @@ public enum QuerySuffix {
     }
 
     public static boolean isValidValue(Object value, Field field) {
-        return !(value == null
-                || (value instanceof Boolean && field.getType().isPrimitive() && Boolean.FALSE.equals(value))
-                || (resolve(field.getName()).shouldIgnore(value))
-        );
+        return !(value == null || resolve(field.getName()).shouldIgnore(value));
     }
 
     public String resolveColumnName(String fieldName) {
@@ -131,9 +129,8 @@ public enum QuerySuffix {
         }
     }
 
-    @SuppressWarnings("java:S1214")
-    private interface Constants {
-        Predicate<Object> LIKE_PREDICATE = value -> {
+    private static class Constants {
+        static final Predicate<Object> LIKE_PREDICATE = value -> {
             if (value instanceof String) {
                 return !((String) value).trim().isEmpty();
             }

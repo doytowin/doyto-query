@@ -44,7 +44,6 @@ import java.util.List;
 @Entity(name = TestEntity.TABLE)
 public class TestEntity extends AbstractPersistable<Integer> implements OptimisticLock {
     public static final String TABLE = "t_user";
-    @Column
     private String username;
     private String password;
     private String mobile;

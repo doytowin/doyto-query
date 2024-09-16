@@ -24,6 +24,7 @@ import win.doyto.query.test.menu.MenuQuery;
 import win.doyto.query.test.menu.MenuView;
 import win.doyto.query.test.menu.MenuViewQuery;
 import win.doyto.query.test.perm.PermissionQuery;
+import win.doyto.query.test.role.RoleEntity;
 import win.doyto.query.test.role.RoleQuery;
 import win.doyto.query.test.role.RoleView;
 import win.doyto.query.test.role.RoleViewQuery;
@@ -65,9 +66,9 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
         RoleQuery roleQuery = RoleQuery.builder().roleName("vip").build();
         RoleQuery rolesQuery = RoleQuery.builder().roleNameLike("vip").build();
         UserViewQuery userViewQuery = UserViewQuery.builder().role(roleQuery).withRoles(rolesQuery).build();
-        PageList<UserView> page = jdbcDataQueryClient.page(userViewQuery);
+        PageList<UserEntity> page = jdbcDataQueryClient.page(userViewQuery);
         assertThat(page.getTotal()).isEqualTo(2);
-        assertThat(page.getList()).extracting(UserView::getUsername).containsExactly("f0rb", "user4");
+        assertThat(page.getList()).extracting(UserEntity::getUsername).containsExactly("f0rb", "user4");
         assertThat(page.getList()).extracting(it -> it.getRoles().size()).containsExactly(1, 1);
     }
 
@@ -83,7 +84,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
         UserViewQuery userViewQuery = UserViewQuery
                 .builder().withRoles(new RoleQuery()).withPerms(new PermissionQuery()).build();
 
-        List<UserView> users = jdbcDataQueryClient.query(userViewQuery);
+        List<UserEntity> users = jdbcDataQueryClient.query(userViewQuery);
 
         assertThat(users).extracting("roles")
                          .extractingResultOf("size", Integer.class)
@@ -99,7 +100,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
 
     @Test
     void shouldNotQuerySubDomainWhenItsQueryFieldIsNull() {
-        List<UserView> users = jdbcDataQueryClient.query(UserViewQuery.builder().build());
+        List<UserEntity> users = jdbcDataQueryClient.query(UserViewQuery.builder().build());
         assertThat(users).hasSize(4);
         assertThat(users).extracting("roles").containsOnlyNulls();
         assertThat(users).extracting("perms").containsOnlyNulls();
@@ -112,7 +113,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
                                                .withPerms(new PermissionQuery())
                                                .build();
 
-        List<RoleView> roles = jdbcDataQueryClient.query(roleQuery);
+        List<RoleEntity> roles = jdbcDataQueryClient.query(roleQuery, RoleEntity.class);
 
         assertThat(roles)
                 .extracting("perms")
@@ -138,9 +139,9 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
     /**
      * A full testcase for subdomains query
      * <p>
-     * {@link UserView#getMenus()} for <b>many-to-many</b><br>
-     * {@link UserView#getCreateUser()} for <b>many-to-one</b><br>
-     * {@link UserView#getCreateRoles()} ()} for <b>one-to-many</b>
+     * {@link UserEntity#getMenus()} for <b>many-to-many</b><br>
+     * {@link UserEntity#getCreateUser()} for <b>many-to-one</b><br>
+     * {@link UserEntity#getCreateRoles()} ()} for <b>one-to-many</b>
      */
     @Test
     void queryUserWithGrantedMenusAndCreatedRolesAndCreateUser() {
@@ -151,12 +152,12 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
                 .withCreateRoles(new RoleQuery())
                 .build();
 
-        List<UserView> users = jdbcDataQueryClient.query(userViewQuery);
+        List<UserEntity> users = jdbcDataQueryClient.query(userViewQuery);
 
         assertThat(users).extracting("menus")
                          .extractingResultOf("size", Integer.class)
                          .containsExactly(7, 0, 3, 7);
-        assertThat(users).map(UserView::getCreateUser)
+        assertThat(users).map(UserEntity::getCreateUser)
                          .extracting(userView -> userView == null ? null : userView.getId())
                          .containsExactly(1L, 1L, 2L, 2L);
         assertThat(users).extracting("createRoles")
@@ -166,7 +167,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
 
     @Test
     void supportAggregateQuery() {
-        UserLevelQuery query = new UserLevelQuery();
+        UserLevelAggrQuery query = new UserLevelAggrQuery();
         List<UserLevelCountView> userLevelCountViews = jdbcDataQueryClient.aggregate(query, UserLevelCountView.class);
         assertThat(userLevelCountViews)
                 .hasSize(3)
@@ -191,7 +192,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
         assertThat(menus).hasSize(1);
         MenuView menu = menus.get(0);
         assertThat(menu.getId()).isEqualTo(4);
-        assertThat(menu.getParent().getId()).isEqualTo(1L);
+        assertThat(menu.getParent().getId()).isEqualTo(1);
         assertThat(menu.getChildren()).hasSize(3);
     }
 }

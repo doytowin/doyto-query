@@ -105,7 +105,6 @@ Please refer to the [demo](https://github.com/doytowin/doyto-query-demo) for mor
 | doyto-query-api        | [![api-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-api/)               | [![api-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-api/)               |
 | doyto-query-geo        | [![geo-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-geo/)               | [![geo-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-geo/)               |
 | doyto-query-common     | [![common-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-common/)         | [![common-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-common/)         |
-| doyto-query-memory     | [![memory-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-memory/)         | [![memory-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-memory/)         |
 | doyto-query-sql        | [![sql-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-sql/)               | [![sql-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-sql/)               |
 | doyto-query-jdbc       | [![jdbc-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-jdbc/)             | [![jdbc-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-jdbc/)             |
 | doyto-query-web-common | [![web-common-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-web-common/) | [![web-common-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-web-common/) |
@@ -119,7 +118,6 @@ Please refer to the [demo](https://github.com/doytowin/doyto-query-demo) for mor
     - [doyto-query-reactive](https://github.com/doytowin/doyto-query-reactive)
     - [doyto-query-mongodb](https://github.com/doytowin/doyto-query-mongodb)
     - [doyto-query-language](https://github.com/doytowin/doyto-query-language)
-    - [doyto-query-memorydb](https://github.com/doytowin/doyto-query-memorydb)
 
 - DevOps
     - [OSS](https://github.com/doytowin/doyto-oss-parent)
@@ -146,8 +144,6 @@ This project is under the [Apache Licence v2](https://www.apache.org/licenses/LI
 [api-release-img]: https://img.shields.io/maven-central/v/win.doyto/doyto-query-api?color=brightgreen
 [common-snapshots-img]: https://img.shields.io/nexus/s/win.doyto/doyto-query-common?color=blue&server=https%3A%2F%2Foss.sonatype.org
 [common-release-img]: https://img.shields.io/maven-central/v/win.doyto/doyto-query-common?color=brightgreen
-[memory-snapshots-img]: https://img.shields.io/nexus/s/win.doyto/doyto-query-memory?color=blue&server=https%3A%2F%2Foss.sonatype.org
-[memory-release-img]: https://img.shields.io/maven-central/v/win.doyto/doyto-query-memory?color=brightgreen
 [sql-snapshots-img]: https://img.shields.io/nexus/s/win.doyto/doyto-query-sql?color=blue&server=https%3A%2F%2Foss.sonatype.org
 [sql-release-img]: https://img.shields.io/maven-central/v/win.doyto/doyto-query-sql?color=brightgreen
 [jdbc-snapshots-img]: https://img.shields.io/nexus/s/win.doyto/doyto-query-jdbc?color=blue&server=https%3A%2F%2Foss.sonatype.org

@@ -50,11 +50,11 @@ public class RoleController {
     private ListValidator listValidator;
 
     @GetMapping("/roleName")
-    public JsonResponse<RoleEntity> getByUsername(@Size(min = 4, max = 20) @NotNull String roleName) {
+    public JsonResponse<RoleEntity> getByRoleName(@Size(min = 4, max = 20) @NotNull String roleName) {
         return ErrorCode.build((RoleEntity) null);
     }
 
-    @PostMapping
+    @PostMapping("/")
     public void create(@RequestBody List<RoleEntity> requests) {
         listValidator.validateList(requests);
         throw new DuplicateKeyException("");
@@ -74,7 +74,7 @@ public class RoleController {
     void patch(@RequestBody @Validated(PatchGroup.class) RoleEntity request) {
     }
 
-    @DeleteMapping
+    @DeleteMapping("/")
     void delete(@NotEmptyQuery RoleQuery roleQuery) {
     }
 

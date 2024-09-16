@@ -18,15 +18,6 @@ package win.doyto.query.test.user;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.entity.Persistable;
-import win.doyto.query.test.menu.MenuView;
-import win.doyto.query.test.perm.PermView;
-import win.doyto.query.test.role.RoleStatView;
-import win.doyto.query.test.role.RoleView;
-
-import javax.persistence.Id;
-import java.util.List;
 
 /**
  * UserCountByRoleView
@@ -35,35 +26,6 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class UserView implements Persistable<Long> {
-
-    @Id
-    private Long id;
-    private String username;
-    private String email;
-
-    // many-to-many
-    @DomainPath({"user", "role"})
-    private List<RoleView> roles;
-
-    // many-to-many
-    @DomainPath({"user", "role", "perm"})
-    private List<PermView> perms;
-
-    // many-to-many
-    @DomainPath({"user", "role", "perm", "menu"})
-    private List<MenuView> menus;
-
-    // many-to-one
-    @DomainPath(value = "user", localField = "create_user_id")
-    private UserView createUser;
-
-    // one-to-many
-    @DomainPath(value = "role", foreignField = "create_user_id")
-    private List<RoleView> createRoles;
-
-    // many-to-many aggregation
-    @DomainPath({"user", "role"})
-    private RoleStatView roleStat;
+public class UserView extends UserEntity {
 
 }

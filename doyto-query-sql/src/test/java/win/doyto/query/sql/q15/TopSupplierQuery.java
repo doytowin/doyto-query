@@ -14,31 +14,29 @@
  * limitations under the License.
  */
 
-package win.doyto.query.memory;
+package win.doyto.query.sql.q15;
 
-import java.util.Collection;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import win.doyto.query.annotation.Subquery;
+import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.Query;
 
 /**
- * Matcher
+ * RevenueQuery
  *
- * @author f0rb on 2021-12-10
+ * @author f0rb on 2023/6/13
+ * @since 1.0.2
  */
-interface Matcher {
-
-    /**
-     * 实体对象筛选
-     *
-     * @param qv 查询对象字段值
-     * @param ev 实体对象字段值
-     * @return true 符合过滤条件
-     */
-    boolean doMatch(Object qv, Object ev);
-
-    default boolean match(Object qv, Object ev) {
-        return isComparable(qv, ev) && doMatch(qv, ev);
-    }
-
-    default boolean isComparable(Object qv, Object ev) {
-        return qv instanceof Collection || (qv instanceof Comparable && ev instanceof Comparable);
-    }
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public class TopSupplierQuery implements Query {
+    @Subquery(select = "MAX(total_revenue)", from = RevenueView.class)
+    private PageQuery total_revenue;
 }

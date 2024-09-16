@@ -19,7 +19,6 @@ package win.doyto.query.test.tpch.q15;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.View;
-import win.doyto.query.annotation.With;
 import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
 
 import java.math.BigDecimal;
@@ -33,8 +32,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @View(SupplierEntity.class)
-@View(RevenueView.class)
-@With(RevenueView.class)
+@View(value = LineitemRevenueView.class, with = "revenue")
 public class TopSupplierView {
     private Integer s_suppkey;
     private String s_name;

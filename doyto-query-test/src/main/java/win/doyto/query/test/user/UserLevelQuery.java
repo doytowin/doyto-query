@@ -36,8 +36,6 @@ import win.doyto.query.core.PageQuery;
 @NoArgsConstructor
 public class UserLevelQuery extends PageQuery implements AggregationQuery {
 
-    private UserLevelHaving having;
-
     private Boolean valid;
 
 }

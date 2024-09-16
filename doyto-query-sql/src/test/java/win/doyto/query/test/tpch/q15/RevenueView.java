@@ -24,4 +24,3 @@ package win.doyto.query.test.tpch.q15;
  */
 class RevenueView extends LineitemRevenueView {
 }
-

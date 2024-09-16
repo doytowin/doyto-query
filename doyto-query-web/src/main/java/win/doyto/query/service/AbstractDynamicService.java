@@ -17,6 +17,7 @@
 package win.doyto.query.service;
 
 import lombok.Setter;
+import lombok.experimental.Delegate;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
@@ -36,7 +37,6 @@ import win.doyto.query.core.IdWrapper;
 import win.doyto.query.entity.EntityAspect;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.entity.UserIdProvider;
-import win.doyto.query.memory.MemoryDataAccess;
 import win.doyto.query.util.BeanUtil;
 
 import javax.annotation.Resource;
@@ -54,9 +54,11 @@ import java.util.stream.Collectors;
  *
  * @author f0rb on 2019-05-28
  */
+@SuppressWarnings("java:S6813")
 public abstract class AbstractDynamicService<E extends Persistable<I>, I extends Serializable, Q extends DoytoQuery>
         implements DynamicService<E, I, Q>, InitializingBean {
 
+    @Delegate(excludes = ExcludedDataAccess.class)
     protected DataAccess<E, I, Q> dataAccess;
 
     protected final Class<E> entityClass;
@@ -133,62 +135,20 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
     }
 
     @Override
-    public List<E> query(Q query) {
-        return dataAccess.query(query);
-    }
-
-    public long count(Q query) {
-        return dataAccess.count(query);
-    }
-
-    public List<I> queryIds(Q query) {
-        return dataAccess.queryIds(query);
-    }
-
-    public <V> List<V> queryColumns(Q query, Class<V> clazz, String... columns) {
-        return dataAccess.queryColumns(query, clazz, columns);
-    }
-
-    public void create(E e) {
-        dataAccess.create(e);
-    }
-
-    public int update(E e) {
-        return dataAccess.update(e);
-    }
-
-    public int patch(E e) {
-        return dataAccess.patch(e);
-    }
-
-    @Override
     public int create(Collection<E> entities, String... columns) {
         return dataAccess.batchInsert(entities, columns);
-    }
-
-    public int patch(E e, Q q) {
-        return dataAccess.patch(e, q);
-    }
-
-    public int delete(Q query) {
-        return dataAccess.delete(query);
-    }
-
-    @Override
-    public E get(IdWrapper<I> w) {
-        return dataAccess.get(w);
     }
 
     @Override
     public E fetch(IdWrapper<I> w) {
         if (dataAccess instanceof CachedDataAccess) {
-            return ((CachedDataAccess<E, I, Q>) dataAccess).getDelegate().get(w);
+            return ((CachedDataAccess<E, I, Q>) dataAccess).delegate.get(w);
         }
         return dataAccess.get(w);
     }
 
     @Override
-    public E delete(IdWrapper<I> w) {
+    public E remove(IdWrapper<I> w) {
         E e = get(w);
         if (e != null) {
             dataAccess.delete(w);
@@ -204,5 +164,11 @@ public abstract class AbstractDynamicService<E extends Persistable<I>, I extends
         public <T> T execute(TransactionCallback<T> transactionCallback) {
             return transactionCallback.doInTransaction(TRANSACTION_STATUS);
         }
+    }
+
+    @SuppressWarnings({"unused", "java:S1610"})
+    abstract class ExcludedDataAccess {
+        public abstract void get(I id);
+        public abstract void delete(I id);
     }
 }

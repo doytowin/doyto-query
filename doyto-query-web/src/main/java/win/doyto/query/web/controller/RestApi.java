@@ -39,16 +39,16 @@ public interface RestApi<I, Q extends DoytoQuery, R, S> {
 
     long count(Q query);
 
-    @GetMapping
+    @GetMapping("/")
     PageList<S> page(@Validated(PageGroup.class) Q query);
 
     @GetMapping("{id}")
     S get(I id);
 
     @DeleteMapping("{id}")
-    S delete(I id);
+    S remove(I id);
 
-    @DeleteMapping
+    @DeleteMapping("/")
     int delete(@NotEmptyQuery Q query);
 
     @PutMapping("{id}")
@@ -57,14 +57,14 @@ public interface RestApi<I, Q extends DoytoQuery, R, S> {
     @PatchMapping("{id}")
     void patch(@RequestBody @Validated(PatchGroup.class) R request);
 
-    @PatchMapping
+    @PatchMapping("/")
     int patch(@RequestBody R request, @NotEmptyQuery Q query);
 
     default void create(R request) {
         create(Collections.singletonList(request));
     }
 
-    @PostMapping
+    @PostMapping("/")
     void create(@RequestBody List<R> requests);
 
 }

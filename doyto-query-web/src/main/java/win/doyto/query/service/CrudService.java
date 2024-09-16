@@ -44,8 +44,8 @@ public interface CrudService<E extends Persistable<I>, I extends Serializable, Q
         return fetch(IdWrapper.build(id));
     }
 
-    default E delete(I id) {
-        return delete(IdWrapper.build(id));
+    default E remove(I id) {
+        return remove(IdWrapper.build(id));
     }
 
 }

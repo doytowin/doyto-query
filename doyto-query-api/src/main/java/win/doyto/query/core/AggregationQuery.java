@@ -22,7 +22,7 @@ package win.doyto.query.core;
  * @author f0rb on 2022-05-17
  * @since 0.3.1
  */
-public interface AggregationQuery extends DoytoQuery {
+public interface AggregationQuery {
 
     default Having getHaving() {
         return null;

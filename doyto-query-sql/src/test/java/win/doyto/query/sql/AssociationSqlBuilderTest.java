@@ -38,33 +38,30 @@ class AssociationSqlBuilderTest {
 
     @BeforeEach
     void setUp() {
-        String tableName = "t_user_and_role";
-        String k1Column = "user_id";
-        String k2Column = "role_id";
-        associationSqlBuilder = new AssociationSqlBuilder<>(tableName, k1Column, k2Column);
+        associationSqlBuilder = new AssociationSqlBuilder<>("user", "role");
     }
 
     @Test
     void testSelectK1ColumnByK2Id() {
-        assertEquals("SELECT user_id FROM t_user_and_role WHERE role_id = ?",
+        assertEquals("SELECT user_id FROM a_user_and_role WHERE role_id = ?",
                      associationSqlBuilder.getSelectK1ColumnByK2Id());
     }
 
     @Test
     void testSelectK2ColumnByK1Id() {
-        assertEquals("SELECT role_id FROM t_user_and_role WHERE user_id = ?",
+        assertEquals("SELECT role_id FROM a_user_and_role WHERE user_id = ?",
                      associationSqlBuilder.getSelectK2ColumnByK1Id());
     }
 
     @Test
     void testDeleteByK1() {
-        assertEquals("DELETE FROM t_user_and_role WHERE user_id = ?",
+        assertEquals("DELETE FROM a_user_and_role WHERE user_id = ?",
                      associationSqlBuilder.getDeleteByK1());
     }
 
     @Test
     void testDeleteByK2() {
-        assertEquals("DELETE FROM t_user_and_role WHERE role_id = ?",
+        assertEquals("DELETE FROM a_user_and_role WHERE role_id = ?",
                      associationSqlBuilder.getDeleteByK2());
     }
 
@@ -76,7 +73,7 @@ class AssociationSqlBuilderTest {
     void testInsert() {
         SqlAndArgs sqlAndArgs = associationSqlBuilder.buildInsert(testKeys());
         assertThat(sqlAndArgs.getSql())
-                .isEqualTo("INSERT IGNORE INTO t_user_and_role (user_id, role_id) VALUES (?, ?), (?, ?)");
+                .isEqualTo("INSERT IGNORE INTO a_user_and_role (user_id, role_id) VALUES (?, ?), (?, ?)");
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 3);
     }
 
@@ -84,7 +81,7 @@ class AssociationSqlBuilderTest {
     void testDelete() {
         SqlAndArgs sqlAndArgs = associationSqlBuilder.buildDelete(testKeys());
         assertThat(sqlAndArgs.getSql())
-                .isEqualTo("DELETE FROM t_user_and_role WHERE (user_id, role_id) IN ((?, ?), (?, ?))");
+                .isEqualTo("DELETE FROM a_user_and_role WHERE (user_id, role_id) IN ((?, ?), (?, ?))");
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 3);
     }
 
@@ -92,20 +89,16 @@ class AssociationSqlBuilderTest {
     void testCount() {
         SqlAndArgs sqlAndArgs = associationSqlBuilder.buildCount(testKeys());
         assertThat(sqlAndArgs.getSql())
-                .isEqualTo("SELECT count(*) FROM t_user_and_role WHERE (user_id, role_id) IN ((?, ?), (?, ?))");
+                .isEqualTo("SELECT count(*) FROM a_user_and_role WHERE (user_id, role_id) IN ((?, ?), (?, ?))");
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 3);
     }
 
     @Test
     void testInsertWithUser() {
-        String tableName = "t_user_and_role";
-        String k1Column = "user_id";
-        String k2Column = "role_id";
-        String createUserColumn = "create_user_id";
-        associationSqlBuilder = new AssociationSqlBuilder<>(tableName, k1Column, k2Column, createUserColumn);
+        associationSqlBuilder.withCreateUserColumn("create_user_id");
         SqlAndArgs sqlAndArgs = associationSqlBuilder.buildInsert(testKeys(), 1);
         assertThat(sqlAndArgs.getSql())
-                .isEqualTo("INSERT IGNORE INTO t_user_and_role (user_id, role_id, create_user_id) VALUES (?, ?, 1), (?, ?, 1)");
+                .isEqualTo("INSERT IGNORE INTO a_user_and_role (user_id, role_id, create_user_id) VALUES (?, ?, 1), (?, ?, 1)");
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 2, 3);
     }
 }

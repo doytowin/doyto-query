@@ -25,6 +25,7 @@ import win.doyto.query.annotation.View;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.LockMode;
+import win.doyto.query.core.Query;
 import win.doyto.query.core.QuerySuffix;
 import win.doyto.query.sql.field.FieldMapper;
 import win.doyto.query.util.ColumnUtil;
@@ -78,8 +79,10 @@ public class BuildHelper {
 
     public static String resolveTableName(View... views) {
         return Arrays.stream(views)
+                     .filter(view -> !view.context())
                      .map(view -> {
-                         String tableName = BuildHelper.resolveTableName(view.value());
+                         String tableName = StringUtils.isNotBlank(view.with()) ? view.with() :
+                                 BuildHelper.resolveTableName(view.value());
                          String alias = view.alias();
                          return !alias.isEmpty() ? tableName + SPACE + alias : tableName;
                      }).collect(Collectors.joining(SEPARATOR));
@@ -102,7 +105,7 @@ public class BuildHelper {
         return SELECT + StringUtils.join(columns, SEPARATOR) + FROM + table + SPACE + TABLE_ALIAS;
     }
 
-    public static String buildWhere(DoytoQuery query, List<Object> argList) {
+    public static String buildWhere(Query query, List<Object> argList) {
         return buildCondition(WHERE, query, argList);
     }
 

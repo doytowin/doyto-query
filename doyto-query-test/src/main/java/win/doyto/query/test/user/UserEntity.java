@@ -18,7 +18,14 @@ package win.doyto.query.test.user;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.entity.AbstractCommonEntity;
+import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.entity.AbstractPersistable;
+import win.doyto.query.test.menu.MenuView;
+import win.doyto.query.test.perm.PermView;
+import win.doyto.query.test.role.RoleStatView;
+import win.doyto.query.test.role.RoleView;
+
+import java.util.List;
 
 /**
  * UserEntity
@@ -28,7 +35,31 @@ import win.doyto.query.entity.AbstractCommonEntity;
  */
 @Getter
 @Setter
-public class UserEntity extends AbstractCommonEntity<Long, Long> {
+public class UserEntity extends AbstractPersistable<Long> {
     private String username;
     private String email;
+
+    // many-to-many
+    @DomainPath({"user", "role"})
+    private List<RoleView> roles;
+
+    // many-to-many
+    @DomainPath({"user", "role", "perm"})
+    private List<PermView> perms;
+
+    // many-to-many
+    @DomainPath({"user", "role", "perm", "menu"})
+    private List<MenuView> menus;
+
+    // many-to-one
+    @DomainPath(value = "user", localField = "createUserId")
+    private UserEntity createUser;
+
+    // one-to-many
+    @DomainPath(value = "role", foreignField = "createUserId")
+    private List<RoleView> createRoles;
+
+    // many-to-many aggregation
+    @DomainPath({"user", "role"})
+    private RoleStatView roleStat;
 }

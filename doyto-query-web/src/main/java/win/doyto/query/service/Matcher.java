@@ -14,24 +14,31 @@
  * limitations under the License.
  */
 
-package win.doyto.query.annotation;
+package win.doyto.query.service;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.util.Collection;
 
 /**
- * With
+ * Matcher
  *
- * @author f0rb on 2023/7/12
- * @since 1.0.2
+ * @author f0rb on 2021-12-10
  */
-@Target(TYPE)
-@Retention(RUNTIME)
-public @interface With {
+interface Matcher {
 
-    Class<?> value();
+    /**
+     * 实体对象筛选
+     *
+     * @param qv 查询对象字段值
+     * @param ev 实体对象字段值
+     * @return true 符合过滤条件
+     */
+    boolean doMatch(Object qv, Object ev);
 
+    default boolean match(Object qv, Object ev) {
+        return isComparable(qv, ev) && doMatch(qv, ev);
+    }
+
+    default boolean isComparable(Object qv, Object ev) {
+        return qv instanceof Collection || (qv instanceof Comparable && ev instanceof Comparable);
+    }
 }

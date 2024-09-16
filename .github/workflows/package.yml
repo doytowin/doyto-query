@@ -5,12 +5,12 @@ on:
   push:
     branches:
       - package
-      - package/v2
+      - v1/package
 
 jobs:
   version:
     name: Determine Java version
-    uses: doytowin/doyto-devops/.github/workflows/version.yml@main
+    uses: doytowin/doyto-devops/.github/workflows/version_java17.yml@main
   package:
     needs: version
     name: Call Package Workflow

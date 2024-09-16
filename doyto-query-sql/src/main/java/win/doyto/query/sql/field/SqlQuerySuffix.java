@@ -89,6 +89,7 @@ public enum SqlQuerySuffix {
     Lt(" < "),
     Le(" <= "),
     Eq(" = "),
+    Rx(" REGEXP "),
     Any("ANY"),
     All("ALL"),
     NONE(" = ");
@@ -121,9 +122,6 @@ public enum SqlQuerySuffix {
     }
 
     public String buildColumnCondition(String columnName, List<Object> argList, Object value) {
-        if (shouldIgnore(value)) {
-            return null;
-        }
         String placeHolderEx = valueProcessor.getPlaceHolderEx(value);
         appendArg(argList, value, placeHolderEx);
         return columnName + op + placeHolderEx;

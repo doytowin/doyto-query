@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import win.doyto.query.web.controller.AbstractEIQController;
 
 /**
- * InventoryController
+ * BuildingController
  *
  * @author f0rb on 2021-12-06
  */

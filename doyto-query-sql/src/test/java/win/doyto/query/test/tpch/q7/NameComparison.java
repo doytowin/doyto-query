@@ -19,7 +19,7 @@ package win.doyto.query.test.tpch.q7;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.core.And;
+import win.doyto.query.core.Query;
 
 /**
  * NameCompare
@@ -30,7 +30,7 @@ import win.doyto.query.core.And;
 @Getter
 @Setter
 @AllArgsConstructor
-public class NameComparison implements And {
+public class NameComparison implements Query {
     private String n1$n_name;
     private String n2$n_name;
 }

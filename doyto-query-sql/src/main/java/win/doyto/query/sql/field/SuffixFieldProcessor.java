@@ -16,6 +16,7 @@
 
 package win.doyto.query.sql.field;
 
+import win.doyto.query.sql.EntityMetadata;
 import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
@@ -32,10 +33,6 @@ class SuffixFieldProcessor implements FieldProcessor {
     private String columnName;
     private final SqlQuerySuffix sqlQuerySuffix;
 
-    public SuffixFieldProcessor(Field field) {
-        this(field.getName(), false);
-    }
-
     public SuffixFieldProcessor(Field field, boolean isAggregateField) {
         this(field.getName(), isAggregateField);
     }
@@ -44,7 +41,7 @@ class SuffixFieldProcessor implements FieldProcessor {
         this.sqlQuerySuffix = SqlQuerySuffix.resolve(fieldName);
         this.columnName = this.sqlQuerySuffix.removeSuffix(fieldName);
         if (isAggregateField) {
-            columnName = ColumnUtil.resolveColumn(columnName);
+            columnName = EntityMetadata.resolveColumn(columnName);
         } else {
             columnName = columnName.replace("$", ".");
         }
@@ -52,6 +49,9 @@ class SuffixFieldProcessor implements FieldProcessor {
 
     @Override
     public String process(String alias, List<Object> argList, Object value) {
+        if (sqlQuerySuffix.shouldIgnore(value)) {
+            return null;
+        }
         columnName = ColumnUtil.convertColumn(columnName);
         value = sqlQuerySuffix.getValueProcessor().escapeValue(value);
         return sqlQuerySuffix.buildColumnCondition(alias + columnName, argList, value);

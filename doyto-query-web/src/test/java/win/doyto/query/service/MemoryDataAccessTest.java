@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.memory;
+package win.doyto.query.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -119,7 +119,7 @@ class MemoryDataAccessTest {
 
     @Test
     void notNull() {
-        TestQuery byNoneNullMemo = TestQuery.builder().memoNotNull(true).build();
+        TestQuery byNoneNullMemo = TestQuery.builder().memoNull(false).build();
         assertEquals(1, testMemoryDataAccess.count(byNoneNullMemo));
     }
 

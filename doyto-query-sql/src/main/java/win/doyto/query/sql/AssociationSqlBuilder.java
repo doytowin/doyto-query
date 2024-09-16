@@ -50,10 +50,11 @@ public class AssociationSqlBuilder<K1, K2> {
     private String deleteIn;
     private String countIn;
 
-    public AssociationSqlBuilder(String tableName, String k1Column, String k2Column) {
-        this.tableName = tableName;
-        this.k1Column = k1Column;
-        this.k2Column = k2Column;
+    public AssociationSqlBuilder(String domain1, String domain2) {
+        GlobalConfiguration instance = GlobalConfiguration.instance();
+        this.tableName = instance.formatJoinTable(domain1, domain2);
+        this.k1Column = instance.formatJoinId(domain1);
+        this.k2Column = instance.formatJoinId(domain2);
 
         selectK1ColumnByK2Id = SELECT + k1Column + FROM + tableName + WHERE + k2Column + EQUAL_HOLDER;
         selectK2ColumnByK1Id = SELECT + k2Column + FROM + tableName + WHERE + k1Column + EQUAL_HOLDER;
@@ -64,11 +65,10 @@ public class AssociationSqlBuilder<K1, K2> {
         placeHolders = "(?, ?)";
         placeHolderFormat = "(?, ?)";
         deleteIn = DELETE_FROM + tableName + WHERE + OP + k1Column + SEPARATOR + k2Column + CP + IN;
-        countIn = SELECT + COUNT + Constant.FROM + tableName + WHERE + OP + k1Column + SEPARATOR + k2Column + CP + IN;
+        countIn = SELECT + COUNT + FROM + tableName + WHERE + OP + k1Column + SEPARATOR + k2Column + CP + IN;
     }
 
-    public AssociationSqlBuilder(String tableName, String k1Column, String k2Column, String createUserColumn) {
-        this(tableName, k1Column, k2Column);
+    public void withCreateUserColumn(String createUserColumn) {
         insertSql = INSERT_INTO + tableName + SPACE + OP + k1Column + SEPARATOR + k2Column + SEPARATOR + createUserColumn + CP + VALUES;
         placeHolderFormat = "(?, ?, %s)";
     }

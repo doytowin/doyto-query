@@ -37,7 +37,6 @@ import java.util.regex.Pattern;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuppressWarnings("java:S3740")
 public class PageQuery implements DoytoQuery {
 
     @SuppressWarnings("java:S5843")
@@ -54,7 +53,7 @@ public class PageQuery implements DoytoQuery {
      * Sorting field, format: field1,desc;field2,asc;field(col,'v1','v2')
      */
     @Transient
-    @javax.validation.constraints.Pattern(regexp = SORT_RX, message = "Sorting field format error", groups = PageGroup.class)
+    @javax.validation.constraints.Pattern(regexp = SORT_RX, groups = PageGroup.class)
     private String sort;
 
     @Transient

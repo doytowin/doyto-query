@@ -87,19 +87,30 @@ class SortTest {
     }
 
     @Test
-    void shouldSupportAnyColumnsWhenNotConfigured() throws Exception {
+    void shouldSupportNoColumnsWhenNotConfigured() throws Exception {
         mockMvc.perform(get("/sort2?sort.username&sort.memo=desc"))
                .andDo(print())
                .andExpect(jsonPath("$.success").value(true))
-               .andExpect(jsonPath("$.data").value("username,asc;memo,desc"));
+               .andExpect(jsonPath("$.data").doesNotExist());
     }
 
     @Test
     void shouldBeNullWhenNoSortableColumns() throws Exception {
-        mockMvc.perform(get("/sort?sort.memo=desc&score"))
+        mockMvc.perform(get("/sort?sort.memo=desc"))
                .andDo(print())
                .andExpect(jsonPath("$.success").value(true))
                .andExpect(jsonPath("$.data").doesNotExist());
+    }
+
+    @Test
+    void shouldKeepArgSortWhenNotConfigured() throws Exception {
+        mockMvc.perform(get("/sort?sort=id,desc"))
+               .andExpect(jsonPath("$.success").value(true))
+               .andExpect(jsonPath("$.data").doesNotExist());
+
+        mockMvc.perform(get("/sort2?sort=id,desc"))
+               .andExpect(jsonPath("$.success").value(true))
+               .andExpect(jsonPath("$.data").value("id,desc"));
     }
 
 }

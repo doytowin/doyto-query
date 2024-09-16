@@ -160,4 +160,24 @@ class UserMvcTest extends DemoApplicationTest {
                 .andExpect(jsonPath("$.hints.query").value("不能为空"))
         ;
     }
+
+    @Test
+    void queryForColumns() throws Exception {
+        performAndExpectSuccess(get("/user/columns/username,email"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[1].username").value("user2"))
+                .andExpect(jsonPath("$.data[1].email").value("test2@qq.com"))
+                .andExpect(jsonPath("$.data[1].id").doesNotExist())
+                .andExpect(jsonPath("$.data[1].mobile").doesNotExist());
+    }
+
+    @Test
+    void queryForSnakeCaseColumns() throws Exception {
+        performAndExpectSuccess(get("/user/columns/username,userLevel"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[1].username").value("user2"))
+                .andExpect(jsonPath("$.data[1].userLevel").value("普通"))
+                .andExpect(jsonPath("$.data[1].id").doesNotExist())
+                .andExpect(jsonPath("$.data[1].mobile").doesNotExist());
+    }
 }

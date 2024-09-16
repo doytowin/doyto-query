@@ -17,11 +17,12 @@
 package javax.persistence;
 
 /**
- * EntityType
+ * Specify the database used for entity persistence.
  *
  * @author f0rb on 2022-05-19
  */
 public enum EntityType {
     RELATIONAL,
-    MONGO_DB
+    MONGO_DB,
+    MEMORY,
 }

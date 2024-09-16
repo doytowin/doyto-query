@@ -50,7 +50,6 @@ public interface Constant {
     String CP = ")";
     String INSERT_INTO = "INSERT INTO ";
     String VALUES = " VALUES ";
-    String HAVING_PREFIX = "_having_";
     String WHERE_ = "\nWHERE ";
     String TABLE_ALIAS = "t";
     String LIKE = " LIKE ";
