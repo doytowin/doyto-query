@@ -8,6 +8,7 @@ on:
       - 'features/**'
       - 'issues/**'
       - 'refactor/**'
+      - 'v1/main'
       - 'v1/issues/**'
       - 'v1/features/**'
       - 'v1/refactor/**'
