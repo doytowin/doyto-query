@@ -54,7 +54,11 @@ public class ColumnUtil {
     }
 
     public static Field[] queryFields(Class<?> queryClass) {
-        return classFieldsMap.computeIfAbsent(queryClass, ColumnUtil::filterFields);
+        Field[] fields = classFieldsMap.get(queryClass);
+        if (fields == null) {
+            fields = filterFields(queryClass);
+        }
+        return fields;
     }
 
     public static Field[] initFields(Class<?> queryClass, Consumer<Field> fieldConsumer) {
