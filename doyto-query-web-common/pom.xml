@@ -34,13 +34,6 @@
     </properties>
 
     <dependencies>
-
-        <dependency>
-            <groupId>win.doyto</groupId>
-            <artifactId>doyto-query-memory</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
