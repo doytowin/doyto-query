@@ -18,6 +18,8 @@ package win.doyto.query.dialect;
 
 import win.doyto.query.core.Dialect;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -29,12 +31,18 @@ import java.util.stream.IntStream;
  */
 public class SQLServerDialect implements Dialect {
     private static final String ORDER_BY = " ORDER BY ";
+    private final Pattern groupPtn = Pattern.compile("GROUP BY (\\w+(,\\s+\\w+)*)", Pattern.CASE_INSENSITIVE);
 
     @Override
     public String buildPageSql(String sql, int limit, long offset) {
         String orderById = "";
-        if (!sql.contains(ORDER_BY) && !sql.contains("GROUP BY")) {
-            orderById = ORDER_BY + "id";
+        if (!sql.contains(ORDER_BY)) {
+            Matcher matcher = groupPtn.matcher(sql);
+            if (matcher.find()) {
+                orderById = ORDER_BY + matcher.group(1);
+            } else {
+                orderById = ORDER_BY + "id";
+            }
         }
         return sql + orderById + " offset " + offset + " row fetch next " + limit + " row only";
     }
