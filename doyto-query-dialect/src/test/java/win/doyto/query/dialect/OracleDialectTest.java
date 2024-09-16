@@ -18,7 +18,7 @@ package win.doyto.query.dialect;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * OracleDialectTest
@@ -36,8 +36,21 @@ class OracleDialectTest {
                 "(SELECT ROWNUM rn, ora1.* FROM (" +
                 "SELECT * FROM user WHERE valid = true" +
                 ") ora1 WHERE ROWNUM <= 110 ) ora2 WHERE ora2.rn > 100";
-        assertEquals(expected, pageSql);
+        assertThat(pageSql).isEqualTo(expected);
     }
+
+    @Test
+    void buildPageSqlForAggregate() {
+        String pageSql = dialect.buildPageSql("SELECT user_level AS userLevel, valid, count(*) AS count FROM t_user " +
+                "WHERE valid = ? GROUP BY user_level, valid HAVING count(*) > ? AND count(*) < ?", 10, 20);
+        String expected = "SELECT * FROM " +
+                "(SELECT ROWNUM rn, ora1.* FROM (" +
+                "SELECT user_level AS userLevel, valid, count(*) AS count FROM t_user " +
+                "WHERE valid = ? GROUP BY user_level, valid HAVING count(*) > ? AND count(*) < ?" +
+                ") ora1 WHERE ROWNUM <= 30 ) ora2 WHERE ora2.rn > 20";
+        assertThat(pageSql).isEqualTo(expected);
+    }
+
 
     @Test
     void alterBatchInsert() {
@@ -48,7 +61,7 @@ class OracleDialectTest {
                 "SELECT ?, ?, ? FROM DUAL " +
                 "UNION ALL SELECT ?, ?, ? FROM DUAL " +
                 "UNION ALL SELECT ?, ?, ? FROM DUAL";
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -59,6 +72,6 @@ class OracleDialectTest {
         String expected = "INSERT /*+ IGNORE_ROW_ON_DUPKEY_INDEX(a_user_and_role(user_id,role_id)) */ " +
                 "INTO a_user_and_role (user_id, role_id, create_user_id)" +
                 " SELECT ?, ?, 0 FROM DUAL UNION ALL SELECT ?, ?, 0 FROM DUAL";
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 }

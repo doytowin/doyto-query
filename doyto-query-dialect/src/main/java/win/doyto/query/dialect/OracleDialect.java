@@ -27,6 +27,14 @@ import win.doyto.query.core.Dialect;
 public class OracleDialect implements Dialect {
     @Override
     public String buildPageSql(String sql, int limit, long offset) {
+        if (sql.contains("GROUP BY")) {
+            return  "SELECT * FROM " +
+                    "(SELECT ROWNUM rn, ora1.* FROM (" +
+                    sql +
+                    ") ora1 WHERE ROWNUM <= " +
+                    (offset + limit) +
+                    " ) ora2 WHERE ora2.rn > " + offset;
+        }
         int fromIndex = sql.indexOf("FROM");
         String select = sql.substring(0, fromIndex);
         sql = "SELECT * " + sql.substring(fromIndex);
