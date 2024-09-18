@@ -18,8 +18,7 @@ package win.doyto.query.sql;
 
 import org.junit.jupiter.api.Test;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.core.AggregatedQuery;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.*;
 import win.doyto.query.sql.q15.LineitemRevenueView;
 import win.doyto.query.sql.q15.TopSupplierQuery;
 import win.doyto.query.sql.q15.TopSupplierView;
@@ -33,7 +32,6 @@ import win.doyto.query.test.user.UserLevelQuery;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,10 +47,10 @@ class AggregateQueryBuilderTest {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(false);
 
         try {
-            AggregatedQuery aggregatedQuery = new AggregatedQuery();
-            aggregatedQuery.setQuery(new UserLevelQuery(true));
-            aggregatedQuery.setHaving(UserLevelHaving.builder().countGt(1).countLt(10).build());
-            SqlAndArgs sqlAndArgs = AggregateQueryBuilder.buildSelectAndArgs(EntityMetadata.build(UserLevelCountView.class), aggregatedQuery);
+            AggregatePageQuery<Query, Having> aggregateQuery = new AggregatePageQuery<>();
+            aggregateQuery.setQuery(new UserLevelQuery(true));
+            aggregateQuery.setHaving(UserLevelHaving.builder().countGt(1).countLt(10).build());
+            SqlAndArgs sqlAndArgs = AggregateQueryBuilder.buildSelectAndArgs(EntityMetadata.build(UserLevelCountView.class), aggregateQuery);
 
             String expected = "SELECT userLevel, valid, count(*) AS count FROM t_user WHERE valid = ? " +
                     "GROUP BY userLevel, valid HAVING count(*) > ? AND count(*) < ?";
@@ -85,13 +83,13 @@ class AggregateQueryBuilderTest {
                     " GROUP BY nation, o_year" +
                     " ORDER BY nation, o_year DESC";
 
-            AggregatedQuery aggregatedQuery = new AggregatedQuery();
+            AggregatePageQuery<Query, Having> aggregatePageQuery = new AggregatePageQuery<>();
             ProfitQuery profitQuery = ProfitQuery.builder().pNameLike("green").build();
-            aggregatedQuery.getWithMap().put(ProfitView.class, new AggregatedQuery(profitQuery));
-            aggregatedQuery.setSort("nation;o_year,DESC");
+            aggregatePageQuery.with(ProfitView.class, AggregatePageQuery.creator().query(profitQuery).build());
+            aggregatePageQuery.setSort("nation;o_year,DESC");
 
             EntityMetadata entityMetadata = EntityMetadata.build(ProductTypeProfitMeasureView.class);
-            SqlAndArgs sqlAndArgs = AggregateQueryBuilder.buildSelectAndArgs(entityMetadata, aggregatedQuery);
+            SqlAndArgs sqlAndArgs = AggregateQueryBuilder.buildSelectAndArgs(entityMetadata, aggregatePageQuery);
 
             assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
             assertThat(sqlAndArgs.getArgs()).containsExactly("%green%");
@@ -123,12 +121,12 @@ class AggregateQueryBuilderTest {
                 .l_shipdateLt(endShipdate)
                 .build();
 
-        AggregatedQuery aggregatedQuery = AggregatedQuery
-                .builder()
-                .withMap(Map.of(LineitemRevenueView.class, new AggregatedQuery(lineitemQuery)))
+        AggregateQuery aggregatedQuery = AggregatePageQuery
+                .creator()
                 .query(TopSupplierQuery.builder().total_revenue(new PageQuery()).build())
                 .sort("s_suppkey")
-                .build();
+                .build()
+                .with(LineitemRevenueView.class, AggregatePageQuery.creator().query(lineitemQuery).build());
 
         SqlAndArgs sqlAndArgs = AggregateQueryBuilder.buildSelectAndArgs(EntityMetadata.build(TopSupplierView.class), aggregatedQuery);
 

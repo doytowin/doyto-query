@@ -16,9 +16,7 @@
 
 package win.doyto.query.test.user;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import win.doyto.query.core.Having;
 
 /**
@@ -30,6 +28,8 @@ import win.doyto.query.core.Having;
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserLevelHaving implements Having {
     private Integer countGt;
     private Integer countLt;

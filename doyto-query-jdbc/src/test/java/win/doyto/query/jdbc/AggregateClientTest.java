@@ -64,15 +64,15 @@ class AggregateClientTest extends JdbcApplicationTest {
 
     @Test
     void testPage() {
-        AggregatedQuery aggregatedQuery = AggregatedQuery
-                .builder().query(new UserLevelQuery(true))
+        AggregateQuery aggregateQuery = AggregatePageQuery
+                .creator().query(new UserLevelQuery(true))
                 .having(UserLevelHaving.builder().countGt(1).countLt(10).build())
                 .pageSize(10).build();
 
-        assertThat(aggregateClient.count(UserLevelCountView.class, aggregatedQuery))
+        assertThat(aggregateClient.count(UserLevelCountView.class, aggregateQuery))
                 .isEqualTo(1);
 
-        PageList<UserLevelCountView> userLevelCountViews = aggregateClient.page(UserLevelCountView.class, aggregatedQuery);
+        PageList<UserLevelCountView> userLevelCountViews = aggregateClient.page(UserLevelCountView.class, aggregateQuery);
         assertThat(userLevelCountViews.getList())
                 .hasSize(1)
                 .extracting("userLevel", "valid", "count")

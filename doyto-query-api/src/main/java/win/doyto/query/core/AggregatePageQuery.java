@@ -16,33 +16,30 @@
 
 package win.doyto.query.core;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * AggregatedQuery
+ * AggregatePageQuery
  *
  * @author f0rb on 2024/8/12
  */
-@Getter
-@Setter
-@SuperBuilder
+@SuperBuilder(builderMethodName = "creator")
 @NoArgsConstructor
-public class AggregatedQuery extends PageQuery implements AggregateQuery {
-    private Query query;
-    private Having having;
+@AllArgsConstructor
+public class AggregatePageQuery<Q extends Query, H extends Having> extends PageQuery implements AggregateQuery {
+    @Getter
+    @Setter
+    private Q query;
+    @Getter
+    @Setter
+    private H having;
     // AggregateQuery for classes mapping with clause
+    @Builder.Default
     private Map<Class<?>, AggregateQuery> withMap = new HashMap<>();
-
-    public AggregatedQuery(PageQuery query) {
-        this.query = query;
-        this.setPageQuery(query);
-    }
 
     public void setPageQuery(DoytoQuery pageQuery) {
         if (pageQuery.needPaging()) {
@@ -51,5 +48,15 @@ public class AggregatedQuery extends PageQuery implements AggregateQuery {
         }
         super.setSort(pageQuery.getSort());
         super.setLockMode(pageQuery.getLockMode());
+    }
+
+    @Override
+    public AggregateQuery get(Class<?> clazz) {
+        return withMap.get(clazz);
+    }
+
+    public AggregateQuery with(Class<?> clazz, AggregateQuery aggregateQuery) {
+        withMap.put(clazz, aggregateQuery);
+        return this;
     }
 }

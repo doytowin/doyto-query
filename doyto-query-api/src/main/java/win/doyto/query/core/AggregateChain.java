@@ -31,6 +31,15 @@ public interface AggregateChain<V> {
 
     AggregateChain<V> paging(DoytoQuery pageQuery);
 
+    /**
+     * Set {@link AggregateQuery} for related with/nested view.
+     *
+     * @param clazz          with/nested view class.
+     * @param aggregateQuery dynamic mapping for with/nested view.
+     * @return itself
+     */
+    AggregateChain<V> with(Class<?> clazz, AggregateQuery aggregateQuery);
+
     AggregateChain<V> aggregateQuery(AggregateQuery aggregateQuery);
 
     /**

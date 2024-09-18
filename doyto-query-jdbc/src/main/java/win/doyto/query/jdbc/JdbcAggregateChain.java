@@ -25,6 +25,7 @@ import win.doyto.query.sql.SqlAndArgs;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -38,8 +39,9 @@ public class JdbcAggregateChain<V> implements AggregateChain<V> {
 
     private final DatabaseOperations databaseOperations;
     private RowMapper<V> rowMapper;
-    private final AggregatedQuery aggregatedQuery = new AggregatedQuery();
+    private final AggregatePageQuery<Query, Having> aggregatePageQuery = new AggregatePageQuery<>();
     private final EntityMetadata entityMetadata;
+    private AggregateQuery delegate;
 
     @SuppressWarnings("unchecked")
     public JdbcAggregateChain(DatabaseOperations databaseOperations, Class<V> viewClass) {
@@ -50,26 +52,31 @@ public class JdbcAggregateChain<V> implements AggregateChain<V> {
 
     @Override
     public AggregateChain<V> aggregateQuery(AggregateQuery aggregateQuery) {
-        return this.where(aggregateQuery.getQuery())
-                   .having(aggregateQuery.getHaving())
-                   .paging(aggregateQuery);
-    }
-
-    @Override
-    public AggregateChain<V> paging(DoytoQuery pageQuery) {
-        this.aggregatedQuery.setPageQuery(pageQuery);
+        this.delegate = aggregateQuery;
         return this;
     }
 
     @Override
     public AggregateChain<V> where(Query query) {
-        this.aggregatedQuery.setQuery(query);
+        this.aggregatePageQuery.setQuery(query);
         return this;
     }
 
     @Override
     public AggregateChain<V> having(Having having) {
-        this.aggregatedQuery.setHaving(having);
+        this.aggregatePageQuery.setHaving(having);
+        return this;
+    }
+
+    @Override
+    public AggregateChain<V> paging(DoytoQuery pageQuery) {
+        this.aggregatePageQuery.setPageQuery(pageQuery);
+        return this;
+    }
+
+    @Override
+    public AggregateChain<V> with(Class<?> clazz, AggregateQuery aggregateQuery) {
+        this.aggregatePageQuery.with(clazz, aggregateQuery);
         return this;
     }
 
@@ -88,20 +95,24 @@ public class JdbcAggregateChain<V> implements AggregateChain<V> {
 
     @Override
     public List<V> query() {
-        SqlAndArgs sqlAndArgs = AggregateQueryBuilder.buildSelectAndArgs(entityMetadata, aggregatedQuery);
+        SqlAndArgs sqlAndArgs = AggregateQueryBuilder.buildSelectAndArgs(entityMetadata, getAggregateQuery());
         return databaseOperations.query(sqlAndArgs, rowMapper);
     }
 
     @Override
     public long count() {
-        SqlAndArgs sqlAndArgs = AggregateQueryBuilder.buildCountAndArgs(entityMetadata, aggregatedQuery);
+        SqlAndArgs sqlAndArgs = AggregateQueryBuilder.buildCountAndArgs(entityMetadata, getAggregateQuery());
         return databaseOperations.count(sqlAndArgs);
     }
 
     @Override
     public void print() {
-        AggregateQueryBuilder.buildSelectAndArgs(entityMetadata, aggregatedQuery);
-        AggregateQueryBuilder.buildCountAndArgs(entityMetadata, aggregatedQuery);
+        AggregateQueryBuilder.buildSelectAndArgs(entityMetadata, getAggregateQuery());
+        AggregateQueryBuilder.buildCountAndArgs(entityMetadata, getAggregateQuery());
+    }
+
+    private AggregateQuery getAggregateQuery() {
+        return Objects.requireNonNullElse(delegate, aggregatePageQuery);
     }
 
 }

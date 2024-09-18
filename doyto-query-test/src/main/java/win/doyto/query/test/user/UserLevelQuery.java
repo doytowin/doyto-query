@@ -16,6 +16,7 @@
 
 package win.doyto.query.test.user;
 
+import lombok.*;
 import win.doyto.query.core.Query;
 
 /**
@@ -23,5 +24,11 @@ import win.doyto.query.core.Query;
  *
  * @author f0rb on 2022-03-26
  */
-public record UserLevelQuery(Boolean valid) implements Query {
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public final class UserLevelQuery implements Query {
+    private Boolean valid;
 }

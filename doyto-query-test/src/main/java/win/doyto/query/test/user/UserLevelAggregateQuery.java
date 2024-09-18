@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package win.doyto.query.core;
+package win.doyto.query.test.user;
+
+import lombok.Getter;
+import lombok.Setter;
+import win.doyto.query.core.AggregatePageQuery;
 
 /**
- * AggregateQuery
+ * UserLevelAggregateQuery
  *
- * @author f0rb on 2024/9/12
+ * @author f0rb on 2024/9/18
  */
-public interface AggregateQuery extends DoytoQuery {
-
-    Query getQuery();
-
-    Having getHaving();
-
-    /**
-     * Get {@link AggregateQuery} for with/nested view class.
-     *
-     * @param clazz with/nested view class.
-     * @return related {@link AggregateQuery}
-     */
-    AggregateQuery get(Class<?> clazz);
-
+@Getter
+@Setter
+public class UserLevelAggregateQuery extends AggregatePageQuery<UserLevelQuery, UserLevelHaving> {
 }

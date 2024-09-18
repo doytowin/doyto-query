@@ -82,12 +82,10 @@ public class JdbcDataQueryClient implements DataQueryClient {
         return databaseOperations.count(sqlAndArgs);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <V, Q extends DoytoQuery & AggregationQuery> List<V> aggregate(Q query, Class<V> viewClass) {
-        RowMapper<V> rowMapper = (RowMapper<V>) holder.computeIfAbsent(viewClass, BeanPropertyRowMapper::new);
-        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, viewClass);
-        return databaseOperations.query(sqlAndArgs, rowMapper);
+        return new JdbcAggregateChain<>(databaseOperations, viewClass)
+                .where(query).having(query.getHaving()).paging(query).query();
     }
 
     <V extends Persistable<I>, I extends Serializable, Q>

@@ -23,7 +23,6 @@ import win.doyto.query.core.AggregateQuery;
 import win.doyto.query.core.Query;
 
 import java.util.List;
-import java.util.Map;
 import java.util.StringJoiner;
 
 import static win.doyto.query.sql.BuildHelper.*;
@@ -50,7 +49,7 @@ public class AggregateQueryBuilder {
     buildSelect(EntityMetadata entityMetadata, AggregateQuery aggregateQuery, List<Object> argList) {
         StringBuilder sqlBuilder = new StringBuilder();
         if (!entityMetadata.getWithViews().isEmpty()) {
-            sqlBuilder.append(buildWithSql(entityMetadata.getWithViews(), argList, aggregateQuery.getWithMap()));
+            sqlBuilder.append(buildWithSql(entityMetadata.getWithViews(), argList, aggregateQuery));
         }
         sqlBuilder.append(buildSqlForEntity(entityMetadata, aggregateQuery, argList));
         return sqlBuilder;
@@ -62,11 +61,11 @@ public class AggregateQueryBuilder {
     }
 
     private static String
-    buildWithSql(List<View> withViews, List<Object> argList, Map<Class<?>, AggregateQuery> withMap) {
+    buildWithSql(List<View> withViews, List<Object> argList, AggregateQuery hostAggregateQuery) {
         StringJoiner withJoiner = new StringJoiner(SEPARATOR, "WITH ", SPACE);
         for (View view : withViews) {
             EntityMetadata withMeta = EntityMetadata.build(view.value());
-            AggregateQuery aggregateQuery = withMap.get(view.value());
+            AggregateQuery aggregateQuery = hostAggregateQuery.get(view.value());
             if (aggregateQuery != null) {
                 String withSQL = buildSqlForEntity(withMeta, aggregateQuery, argList).toString();
                 String withName = GlobalConfiguration.formatTable(view.with());
@@ -83,7 +82,7 @@ public class AggregateQueryBuilder {
         StringBuilder sqlBuilder = new StringBuilder(SELECT).append(columns).append(FROM);
 
         if (entityMetadata.getNested() != null) {
-            AggregateQuery nestedQuery = aggregateQuery.getWithMap().get(entityMetadata.getNested().getViewClass());
+            AggregateQuery nestedQuery = aggregateQuery.get(entityMetadata.getNested().getViewClass());
             if (nestedQuery != null) {
                 String nestedSQL = buildSqlForEntity(entityMetadata.getNested(), nestedQuery, argList).toString();
                 sqlBuilder.append(OP).append(nestedSQL).append(CP).append(AS);
