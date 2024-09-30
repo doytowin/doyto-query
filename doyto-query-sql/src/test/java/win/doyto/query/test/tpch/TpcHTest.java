@@ -608,7 +608,8 @@ class TpcHTest {
                 .build();
 
         TopSuppliedHaving having = TopSuppliedHaving
-                .builder().total_revenue(new PageQuery()).lineitemRevenueQuery(lineitemQuery)
+                .builder().total_revenue(new PageQuery())
+                .revenueQuery(lineitemQuery)
                 .sort("s_suppkey").build();
 
         SqlAndArgs sqlAndArgs = buildSelectAndArgs(having, TopSupplierView.class);

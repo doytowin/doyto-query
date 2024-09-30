@@ -35,5 +35,5 @@ import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TopSuppliedHaving extends TopSupplierQuery implements Having {
-    private LineitemQuery lineitemRevenueQuery;
+    private LineitemQuery revenueQuery;
 }

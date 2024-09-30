@@ -32,7 +32,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @View(SupplierEntity.class)
-@View(value = LineitemRevenueView.class, with = "revenue")
+@View(value = RevenueView.class, with = "revenue")
 public class TopSupplierView {
     private Integer s_suppkey;
     private String s_name;

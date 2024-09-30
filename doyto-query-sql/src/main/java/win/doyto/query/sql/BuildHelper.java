@@ -56,10 +56,7 @@ public class BuildHelper {
 
     static String resolveTableName(Class<?> entityClass) {
         String tableName;
-        if (entityClass.isAnnotationPresent(Entity.class)) {
-            Entity entityAnno = entityClass.getAnnotation(Entity.class);
-            tableName = GlobalConfiguration.formatTable(entityAnno.name());
-        } else if (entityClass.isAnnotationPresent(CompositeView.class)) {
+        if (entityClass.isAnnotationPresent(CompositeView.class)) {
             CompositeView compositeViewAnno = entityClass.getAnnotation(CompositeView.class);
             tableName = resolveTableName(compositeViewAnno.value());
         } else if (entityClass.isAnnotationPresent(ComplexView.class)) {
@@ -86,6 +83,10 @@ public class BuildHelper {
     }
 
     static String defaultTableName(Class<?> entityClass) {
+        if (entityClass.isAnnotationPresent(Entity.class)) {
+            Entity entityAnno = entityClass.getAnnotation(Entity.class);
+            return GlobalConfiguration.formatTable(entityAnno.name());
+        }
         String entityName = entityClass.getSimpleName();
         entityName = StringUtils.removeEnd(entityName, "Entity");
         entityName = StringUtils.removeEnd(entityName, "View");
@@ -94,7 +95,7 @@ public class BuildHelper {
 
     public static String resolveTableName(Class<?>[] value) {
         return Arrays.stream(value)
-                     .map(BuildHelper::resolveTableName)
+                     .map(BuildHelper::defaultTableName)
                      .collect(Collectors.joining(SEPARATOR));
     }
 
