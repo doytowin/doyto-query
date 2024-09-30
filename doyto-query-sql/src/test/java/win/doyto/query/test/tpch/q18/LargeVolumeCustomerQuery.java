@@ -40,7 +40,7 @@ import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
 @AllArgsConstructor
 public class LargeVolumeCustomerQuery extends PageQuery {
     @SubqueryV2(value = OrderKeyView.class)
-    private LineitemQuantityQuery o_orderkeyIn;
+    private LineitemQuantityHaving o_orderkeyIn;
 
     @SuppressWarnings("unused")
     @View(LineitemEntity.class)

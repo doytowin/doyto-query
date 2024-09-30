@@ -20,8 +20,10 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.PageQuery;
-import win.doyto.query.sql.RelationalQueryBuilder;
+import win.doyto.query.sql.AggregateQueryBuilder;
+import win.doyto.query.sql.EntityMetadata;
 import win.doyto.query.sql.SqlAndArgs;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
 import win.doyto.query.test.tpch.domain.part.PartQuery;
@@ -30,9 +32,8 @@ import win.doyto.query.test.tpch.q1.PricingSummaryQuery;
 import win.doyto.query.test.tpch.q1.PricingSummaryView;
 import win.doyto.query.test.tpch.q10.ReturnedItemReportingQuery;
 import win.doyto.query.test.tpch.q10.ReturnedItemReportingView;
-import win.doyto.query.test.tpch.q11.ImportantStockIdentificationQuery;
+import win.doyto.query.test.tpch.q11.ImportantStockIdentificationHaving;
 import win.doyto.query.test.tpch.q11.ImportantStockIdentificationView;
-import win.doyto.query.test.tpch.q11.ValueHaving;
 import win.doyto.query.test.tpch.q11.ValueQuery;
 import win.doyto.query.test.tpch.q12.ShippingModesAndOrderPriorityQuery;
 import win.doyto.query.test.tpch.q12.ShippingModesAndOrderPriorityView;
@@ -42,7 +43,7 @@ import win.doyto.query.test.tpch.q13.CustomerOrdersQuery;
 import win.doyto.query.test.tpch.q13.JoinOrders;
 import win.doyto.query.test.tpch.q14.PromotionEffectQuery;
 import win.doyto.query.test.tpch.q14.PromotionEffectView;
-import win.doyto.query.test.tpch.q15.TopSupplierQuery;
+import win.doyto.query.test.tpch.q15.TopSuppliedHaving;
 import win.doyto.query.test.tpch.q15.TopSupplierView;
 import win.doyto.query.test.tpch.q16.PartsSupplierRelationshipQuery;
 import win.doyto.query.test.tpch.q16.PartsSupplierRelationshipView;
@@ -51,7 +52,6 @@ import win.doyto.query.test.tpch.q17.SmallQuantityOrderRevenueView;
 import win.doyto.query.test.tpch.q18.LargeVolumeCustomerQuery;
 import win.doyto.query.test.tpch.q18.LargeVolumeCustomerView;
 import win.doyto.query.test.tpch.q18.LineitemQuantityHaving;
-import win.doyto.query.test.tpch.q18.LineitemQuantityQuery;
 import win.doyto.query.test.tpch.q19.DiscountedRevenueQuery;
 import win.doyto.query.test.tpch.q19.DiscountedRevenueView;
 import win.doyto.query.test.tpch.q19.LineitemFilter;
@@ -84,7 +84,7 @@ import win.doyto.query.test.tpch.q7.VolumeShippingView;
 import win.doyto.query.test.tpch.q8.AllNationsQuery;
 import win.doyto.query.test.tpch.q8.NationalMarketShareQuery;
 import win.doyto.query.test.tpch.q8.NationalMarketShareView;
-import win.doyto.query.test.tpch.q9.ProductTypeProfitMeasureQuery;
+import win.doyto.query.test.tpch.q9.ProductTypeProfitMeasureHaving;
 import win.doyto.query.test.tpch.q9.ProductTypeProfitMeasureView;
 import win.doyto.query.test.tpch.q9.ProfitQuery;
 
@@ -102,6 +102,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @since 1.0.1
  */
 class TpcHTest {
+    private SqlAndArgs buildSelectAndArgs(DoytoQuery query, Class<?> clazz) {
+        EntityMetadata em = EntityMetadata.build(clazz);
+        return AggregateQueryBuilder.buildSelectAndArgs(em, query);
+    }
 
     @BeforeAll
     static void beforeAll() {
@@ -138,7 +142,7 @@ class TpcHTest {
                 .sort("l_returnflag;l_linestatus")
                 .build();
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, PricingSummaryView.class);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, PricingSummaryView.class);
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
     }
 
@@ -173,7 +177,7 @@ class TpcHTest {
                 .sort("s_acctbal,DESC;n_name;s_name;p_partkey")
                 .build();
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, MinimumCostSupplierView.class);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, MinimumCostSupplierView.class);
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
     }
 
@@ -202,7 +206,7 @@ class TpcHTest {
                 .sort("revenue,DESC;o_orderdate")
                 .build();
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, ShippingPriorityView.class);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, ShippingPriorityView.class);
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
     }
 
@@ -230,7 +234,7 @@ class TpcHTest {
                 .sort("o_orderpriority")
                 .build();
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, OrderPriorityCheckingView.class);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, OrderPriorityCheckingView.class);
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
     }
 
@@ -261,7 +265,7 @@ class TpcHTest {
                 .sort("revenue,DESC")
                 .build();
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, LocalSupplierVolumeView.class);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, LocalSupplierVolumeView.class);
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
     }
 
@@ -281,7 +285,7 @@ class TpcHTest {
         query.setBaseDiscount(BigDecimal.valueOf(0.06));
         query.setL_quantityLt(24);
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, ForecastingRevenueChangeView.class);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, ForecastingRevenueChangeView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(
@@ -329,7 +333,7 @@ class TpcHTest {
                 .shippingQuery(shippingQuery)
                 .sort("supp_nation;cust_nation;l_year")
                 .build();
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, VolumeShippingView.class);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, VolumeShippingView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(
@@ -380,7 +384,7 @@ class TpcHTest {
                 .nationEq("BRAZIL")
                 .allNationsQuery(allNationsQuery).sort("o_year")
                 .build();
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, NationalMarketShareView.class);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, NationalMarketShareView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(
@@ -406,12 +410,10 @@ class TpcHTest {
                 " ORDER BY nation, o_year DESC";
 
         ProfitQuery profitQuery = ProfitQuery.builder().pNameLike("green").build();
-        ProductTypeProfitMeasureQuery query = ProductTypeProfitMeasureQuery
-                .builder()
-                .profitQuery(profitQuery)
-                .sort("nation;o_year,DESC")
-                .build();
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, ProductTypeProfitMeasureView.class);
+        ProductTypeProfitMeasureHaving having = ProductTypeProfitMeasureHaving
+                .builder().profitQuery(profitQuery).sort("nation;o_year,DESC").build();
+
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(having, ProductTypeProfitMeasureView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly("%green%");
@@ -455,7 +457,7 @@ class TpcHTest {
                 .sort("revenue,DESC")
                 .build();
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, ReturnedItemReportingView.class);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, ReturnedItemReportingView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(
@@ -480,18 +482,14 @@ class TpcHTest {
                 ")" +
                 " ORDER BY value DESC";
 
-        ValueHaving having = ValueHaving
-                .builder()
-                .valueGt(ValueQuery.builder().n_name("GERMANY").build())
-                .build();
-        ImportantStockIdentificationQuery query = ImportantStockIdentificationQuery
+        ImportantStockIdentificationHaving query = ImportantStockIdentificationHaving
                 .builder()
                 .n_name("GERMANY")
-                .having(having)
+                .valueGt(ValueQuery.builder().n_name("GERMANY").build())
                 .sort("value,DESC")
                 .build();
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, ImportantStockIdentificationView.class);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, ImportantStockIdentificationView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly("GERMANY", "GERMANY");
@@ -523,7 +521,7 @@ class TpcHTest {
                 .sort("l_shipmode")
                 .build();
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, ShippingModesAndOrderPriorityView.class);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, ShippingModesAndOrderPriorityView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(
@@ -555,7 +553,7 @@ class TpcHTest {
                 .customerOrdersQuery(customerOrdersQuery)
                 .sort("custdist,DESC;c_count,DESC")
                 .build();
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, CustomerDistributionView.class);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, CustomerDistributionView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly("%special%packages%");
@@ -580,7 +578,7 @@ class TpcHTest {
                 .l_shipdateLt(endShipdate)
                 .build();
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, PromotionEffectView.class);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, PromotionEffectView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly("PROMO%", startShipdate, endShipdate);
@@ -608,14 +606,12 @@ class TpcHTest {
                 .l_shipdateGe(startShipdate)
                 .l_shipdateLt(endShipdate)
                 .build();
-        TopSupplierQuery query = TopSupplierQuery
-                .builder()
-                .lineitemRevenueQuery(lineitemQuery)
-                .total_revenue(new PageQuery())
-                .sort("s_suppkey")
-                .build();
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, TopSupplierView.class);
+        TopSuppliedHaving having = TopSuppliedHaving
+                .builder().total_revenue(new PageQuery()).lineitemRevenueQuery(lineitemQuery)
+                .sort("s_suppkey").build();
+
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(having, TopSupplierView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(startShipdate, endShipdate);
@@ -644,7 +640,7 @@ class TpcHTest {
                 .sort("supplier_cnt,DESC;p_brand;p_type;p_size")
                 .build();
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, PartsSupplierRelationshipView.class);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, PartsSupplierRelationshipView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(
@@ -670,7 +666,7 @@ class TpcHTest {
                 .l_quantityLt(LineitemQuery.builder().build())
                 .build();
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, SmallQuantityOrderRevenueView.class);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, SmallQuantityOrderRevenueView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly("Brand#23", "MED BOX");
@@ -697,14 +693,13 @@ class TpcHTest {
                 " ORDER BY o_totalprice desc, o_orderdate";
 
         LineitemQuantityHaving lqHaving = LineitemQuantityHaving.builder().sumL_quantityGt(300).build();
-        LineitemQuantityQuery lqQuery = LineitemQuantityQuery.builder().having(lqHaving).build();
         LargeVolumeCustomerQuery query = LargeVolumeCustomerQuery
                 .builder()
-                .o_orderkeyIn(lqQuery)
+                .o_orderkeyIn(lqHaving)
                 .sort("o_totalprice,desc;o_orderdate")
                 .build();
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, LargeVolumeCustomerView.class);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, LargeVolumeCustomerView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(300);
@@ -776,7 +771,7 @@ class TpcHTest {
                 .l_shipinstruct("DELIVER IN PERSON")
                 .build();
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, DiscountedRevenueView.class);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, DiscountedRevenueView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
     }
@@ -821,7 +816,7 @@ class TpcHTest {
                 .sort("s_name")
                 .build();
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, PotentialPartPromotionView.class);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, PotentialPartPromotionView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(
@@ -861,7 +856,7 @@ class TpcHTest {
                 .sort("numwait,DESC;s_name")
                 .build();
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, SuppliersWhoKeptOrdersWaitingView.class);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, SuppliersWhoKeptOrdersWaitingView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly("CANADA", "F");
@@ -902,7 +897,7 @@ class TpcHTest {
                 .sort("cntrycode")
                 .build();
 
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(query, GlobalSalesOpportunityView.class);
+        SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, GlobalSalesOpportunityView.class);
 
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly("28", "30", 0, "28", "30");

@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.core.Having;
+import win.doyto.query.core.PageQuery;
 
 /**
  * LineitemQuantityHaving
@@ -34,6 +35,6 @@ import win.doyto.query.core.Having;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LineitemQuantityHaving implements Having {
+public class LineitemQuantityHaving extends PageQuery implements Having {
     private Integer sumL_quantityGt;
 }

@@ -14,28 +14,27 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql.q15;
+package win.doyto.query.test.tpch.q9;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.Subquery;
+import win.doyto.query.core.Having;
 import win.doyto.query.core.PageQuery;
 
 /**
- * RevenueQuery
+ * ProfitQuery
  *
- * @author f0rb on 2023/6/13
- * @since 1.0.2
+ * @author f0rb on 2023/2/18
+ * @since 1.0.1
  */
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TopSupplierQuery extends PageQuery {
-    @Subquery(select = "MAX(total_revenue)", from = RevenueView.class)
-    private PageQuery total_revenue;
+public class ProductTypeProfitMeasureHaving extends PageQuery implements Having {
+    private ProfitQuery profitQuery;
 }

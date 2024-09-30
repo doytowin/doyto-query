@@ -14,29 +14,26 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql.q15;
+package win.doyto.query.test.tpch.q15;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import win.doyto.query.annotation.View;
-import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
-
-import java.math.BigDecimal;
+import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.Having;
+import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
 
 /**
- * TopSupplierView
+ * TopSuppliedHaving
  *
- * @author f0rb on 2023/6/13
- * @since 1.0.2
+ * @author f0rb on 2024/9/25
  */
 @Getter
 @Setter
-@View(SupplierEntity.class)
-@View(value = LineitemRevenueView.class, with = "revenue")
-public class TopSupplierView {
-    private Integer s_suppkey;
-    private String s_name;
-    private String s_address;
-    private String s_phone;
-    private BigDecimal total_revenue;
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public class TopSuppliedHaving extends TopSupplierQuery implements Having {
+    private LineitemQuery lineitemRevenueQuery;
 }
