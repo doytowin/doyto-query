@@ -26,15 +26,15 @@ import java.util.List;
 public interface AggregateClient {
     <V> AggregateChain<V> aggregate(Class<V> viewClass);
 
-    default <V> List<V> query(Class<V> viewClass, AggregateQuery aggregateQuery) {
-        return aggregate(viewClass).aggregateQuery(aggregateQuery).query();
+    default <V> List<V> query(Class<V> viewClass, DoytoQuery query) {
+        return aggregate(viewClass).filter(query).query();
     }
 
-    default <V> long count(Class<V> viewClass, AggregateQuery aggregateQuery) {
-        return aggregate(viewClass).aggregateQuery(aggregateQuery).count();
+    default <V> long count(Class<V> viewClass, DoytoQuery query) {
+        return aggregate(viewClass).filter(query).count();
     }
 
-    default <V> PageList<V> page(Class<V> viewClass, AggregateQuery aggregateQuery) {
-        return aggregate(viewClass).aggregateQuery(aggregateQuery).page();
+    default <V> PageList<V> page(Class<V> viewClass, DoytoQuery query) {
+        return aggregate(viewClass).filter(query).page();
     }
 }

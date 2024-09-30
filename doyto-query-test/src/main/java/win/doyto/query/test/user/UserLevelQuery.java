@@ -16,8 +16,12 @@
 
 package win.doyto.query.test.user;
 
-import lombok.*;
-import win.doyto.query.core.Query;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.PageQuery;
 
 /**
  * UserLevelQuery
@@ -26,9 +30,9 @@ import win.doyto.query.core.Query;
  */
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public final class UserLevelQuery implements Query {
+public class UserLevelQuery extends PageQuery {
     private Boolean valid;
 }

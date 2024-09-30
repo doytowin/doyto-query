@@ -27,7 +27,9 @@ import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.role.RoleQuery;
 import win.doyto.query.test.role.RoleStatView;
 import win.doyto.query.test.role.RoleView;
-import win.doyto.query.test.user.*;
+import win.doyto.query.test.user.UserEntity;
+import win.doyto.query.test.user.UserLevelCountView;
+import win.doyto.query.test.user.UserQuery;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -55,12 +57,6 @@ class RelationalQueryBuilderTest {
     @AfterEach
     void tearDown() {
         GlobalConfiguration.instance().setMapCamelCaseToUnderscore(true);
-    }
-
-    @Test
-    void supportAggregateQuery() {
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(new PageQuery(), MaxIdView.class);
-        assertEquals("SELECT max(id) AS maxId, first(createUserId) AS firstCreateUserId FROM t_user", sqlAndArgs.getSql());
     }
 
     @Test
@@ -350,19 +346,6 @@ class RelationalQueryBuilderTest {
                 ORDER BY id desc LIMIT 5 OFFSET 0)""";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, true, 3, 3, true);
-    }
-
-    @Test
-    void supportHaving() {
-        UserLevelHaving having = UserLevelHaving.builder().countGt(1).countLt(10).build();
-        SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSelectAndArgs(
-                UserLevelAggrQuery.builder().having(having).valid(true).build(), UserLevelCountView.class);
-
-        String expected = "SELECT userLevel, valid, count(*) AS count FROM t_user WHERE valid = ? " +
-                "GROUP BY userLevel, valid HAVING count(*) > ? AND count(*) < ?";
-
-        assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
-        assertThat(sqlAndArgs.getArgs()).containsExactly(true, 1, 10);
     }
 
     @Test

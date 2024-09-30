@@ -20,8 +20,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import win.doyto.query.core.AggregateClient;
-import win.doyto.query.test.user.UserLevelAggregateQuery;
 import win.doyto.query.test.user.UserLevelCountView;
+import win.doyto.query.test.user.UserLevelHaving;
 import win.doyto.query.web.response.JsonBody;
 
 import java.util.List;
@@ -39,7 +39,7 @@ public class UserAggregateController {
     private AggregateClient aggregateClient;
 
     @GetMapping("user/queryCountOfEachLevel")
-    public List<UserLevelCountView> queryCountOfEachLevel(UserLevelAggregateQuery query) {
+    public List<UserLevelCountView> queryCountOfEachLevel(UserLevelHaving query) {
         return aggregateClient.query(UserLevelCountView.class, query);
     }
 

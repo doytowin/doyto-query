@@ -183,7 +183,7 @@ class UserMvcTest extends DemoApplicationTest {
 
     @Test
     void queryCountOfEachLevel() throws Exception {
-        performAndExpectSuccess(get("/user/queryCountOfEachLevel?query.valid=true&having.countGt=1"))
+        performAndExpectSuccess(get("/user/queryCountOfEachLevel?valid=true&countGt=1"))
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data.size()").value(1))
                 .andExpect(jsonPath("$.data[0].userLevel").value("普通"))

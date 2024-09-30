@@ -21,21 +21,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.annotation.Subquery;
-import win.doyto.query.core.PageQuery;
+import win.doyto.query.core.Having;
+import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
 
 /**
- * RevenueQuery
+ * TopSuppliedHaving
  *
- * @author f0rb on 2023/6/13
- * @since 1.0.2
+ * @author f0rb on 2024/9/30
  */
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TopSupplierQuery extends PageQuery {
-    @Subquery(select = "MAX(total_revenue)", from = RevenueView.class)
-    private PageQuery total_revenue;
+public class TopSuppliedHaving extends TopSupplierQuery implements Having {
+    private LineitemQuery lineitemRevenueQuery;
 }

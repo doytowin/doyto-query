@@ -84,8 +84,7 @@ public class JdbcDataQueryClient implements DataQueryClient {
 
     @Override
     public <V, Q extends DoytoQuery & AggregationQuery> List<V> aggregate(Q query, Class<V> viewClass) {
-        return new JdbcAggregateChain<>(databaseOperations, viewClass)
-                .where(query).having(query.getHaving()).paging(query).query();
+        return new JdbcAggregateChain<>(databaseOperations, viewClass).filter(query).query();
     }
 
     <V extends Persistable<I>, I extends Serializable, Q>
