@@ -39,17 +39,19 @@ public @interface View {
     String alias() default "";
 
     /**
-     * Map the current view using `with`.
+     * Map the current view depending on the type.
+     * {@link ViewType#TABLE_NAME} as table name.
+     * {@link ViewType#WITH} as `with` clause.
      *
-     * @since 1.0.2
+     * @since 1.1.0/2.1.0
      */
-    String with() default "";
+    ViewType type() default ViewType.TABLE_NAME;
 
     /**
      * Set context to true to prevent the table name
      * from appearing in the FROM clause in a subquery.
      *
-     * @since 1.0.2
+     * @since 1.1.0/2.1.0
      */
     boolean context() default false;
 

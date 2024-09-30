@@ -78,7 +78,7 @@ public class EntityMetadata {
         if (anno == null) {
             return List.of();
         }
-        return Arrays.stream(anno.value()).filter(view -> !view.with().isBlank()).toList();
+        return Arrays.stream(anno.value()).filter(view -> view.type() == ViewType.WITH).toList();
     }
 
     public static List<String> resolveEntityRelations(Class<?>[] viewClasses) {

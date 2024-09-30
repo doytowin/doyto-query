@@ -19,7 +19,6 @@ package win.doyto.query.sql;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.View;
-import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Having;
 import win.doyto.query.core.PageQuery;
@@ -75,7 +74,7 @@ public class AggregateQueryBuilder {
                 withQuery = new PageQuery();
             }
             String withSQL = buildSqlForEntity(withMeta, withQuery, argList).toString();
-            String withName = GlobalConfiguration.formatTable(view.with());
+            String withName = BuildHelper.defaultTableName(view.value());
             withJoiner.add(withName + AS + OP + withSQL + CP);
         }
         return withJoiner.toString();

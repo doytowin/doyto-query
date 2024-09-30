@@ -65,13 +65,14 @@ public class RelationalQueryBuilder {
     }
 
     private static String buildWithSql(List<View> withViews, List<Object> argList, DoytoQuery query) {
-        StringJoiner withJoiner = new StringJoiner(SEPARATOR,"WITH " , SPACE);
+        StringJoiner withJoiner = new StringJoiner(SEPARATOR, "WITH ", SPACE);
         for (View view : withViews) {
             EntityMetadata withMeta = EntityMetadata.build(view.value());
             String queryFieldName = StringUtils.uncapitalize(view.value().getSimpleName()).replace("View", "Query");
             DoytoQuery withQuery = (DoytoQuery) CommonUtil.readField(query, queryFieldName);
             String withSQL = buildSqlForEntity(withMeta, withQuery, argList);
-            withJoiner.add(view.with() + AS + OP + withSQL + CP);
+            String withName = BuildHelper.defaultTableName(view.value());
+            withJoiner.add(withName + AS + OP + withSQL + CP);
         }
         return withJoiner.toString();
     }

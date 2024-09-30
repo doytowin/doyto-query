@@ -75,8 +75,7 @@ public class BuildHelper {
         return Arrays.stream(views)
                      .filter(view -> !view.context())
                      .map(view -> {
-                         String tableName = !view.with().isBlank() ? view.with() :
-                                 BuildHelper.resolveTableName(view.value());
+                         String tableName = BuildHelper.defaultTableName(view.value());
                          String alias = view.alias();
                          return !alias.isEmpty() ? tableName + SPACE + alias : tableName;
                      }).collect(Collectors.joining(SEPARATOR));
