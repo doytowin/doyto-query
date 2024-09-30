@@ -19,7 +19,6 @@ package win.doyto.query.jdbc;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.entity.Persistable;
@@ -83,7 +82,7 @@ public class JdbcDataQueryClient implements DataQueryClient {
     }
 
     @Override
-    public <V, Q extends DoytoQuery & AggregationQuery> List<V> aggregate(Q query, Class<V> viewClass) {
+    public <V> List<V> aggregate(DoytoQuery query, Class<V> viewClass) {
         return new JdbcAggregateChain<>(databaseOperations, viewClass).filter(query).query();
     }
 
