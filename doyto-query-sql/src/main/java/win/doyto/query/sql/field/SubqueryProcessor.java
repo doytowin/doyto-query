@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static win.doyto.query.sql.BuildHelper.buildCondition;
+import static win.doyto.query.sql.BuildHelper.buildHaving;
 import static win.doyto.query.sql.Constant.*;
 
 /**
@@ -126,10 +126,12 @@ public class SubqueryProcessor implements FieldProcessor {
             clause = BuildHelper.buildWhere((DoytoQuery) value, argList);
         }
         clause += groupBy;
-        if (value instanceof AggregationQuery aggregationQuery) {
+        if (value instanceof Having having) {
+            clause += buildHaving(having, argList);
+        } else if (value instanceof AggregationQuery aggregationQuery) {
             Having having = aggregationQuery.getHaving();
             if (having != null) {
-                clause += buildCondition(HAVING, having, argList);
+                clause += buildHaving(having, argList);
             }
         }
         return String.format(clauseFormat, clause);

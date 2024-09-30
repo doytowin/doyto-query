@@ -48,7 +48,7 @@ public class AggregateQueryBuilder {
         });
     }
 
-    private static StringBuilder
+    public static StringBuilder
     buildSelect(EntityMetadata entityMetadata, DoytoQuery aggregateQuery, List<Object> argList) {
         StringBuilder sqlBuilder = new StringBuilder();
         if (!entityMetadata.getWithViews().isEmpty()) {

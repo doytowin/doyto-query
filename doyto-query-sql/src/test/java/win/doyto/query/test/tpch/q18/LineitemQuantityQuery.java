@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import win.doyto.query.annotation.Transient;
 import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.PageQuery;
 
@@ -36,5 +37,6 @@ import win.doyto.query.core.PageQuery;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LineitemQuantityQuery extends PageQuery implements AggregationQuery {
+    @Transient
     private LineitemQuantityHaving having;
 }
