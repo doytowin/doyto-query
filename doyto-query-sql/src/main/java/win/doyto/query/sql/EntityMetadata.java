@@ -23,6 +23,7 @@ import win.doyto.query.core.AggregationPrefix;
 import win.doyto.query.core.Dialect;
 import win.doyto.query.util.ColumnUtil;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,18 +51,17 @@ public class EntityMetadata {
     private final String groupByColumns;
     private final String groupBySql;
     private final List<View> withViews;
+    private final List<View> nestedViews;
     private final List<Field> domainPathFields;
     private EntityMetadata nested;
 
     public EntityMetadata(Class<?> viewClass) {
         this.viewClass = viewClass;
+        this.nestedViews = collectViews(viewClass, ViewType.NESTED);
         if (viewClass.isAnnotationPresent(NestedView.class)) {
             NestedView anno = viewClass.getAnnotation(NestedView.class);
-            Class<?> clazz = anno.value();
-            // We don't need to cache the nested EntityMetadata,
-            // since the host EntityMetadata is already cached.
-            this.nested = new EntityMetadata(clazz);
-            this.tableName = BuildHelper.defaultTableName(clazz);
+            this.nestedViews.add(transformNestedView(anno));
+            this.tableName = BuildHelper.defaultTableName(anno.value());
         } else {
             this.tableName = BuildHelper.resolveTableName(viewClass);
         }
@@ -69,16 +69,43 @@ public class EntityMetadata {
         this.columnsForSelect = buildViewColumns(viewClass);
         this.groupByColumns = resolveGroupByColumns(viewClass);
         this.groupBySql = buildGroupBySql(groupByColumns);
-        this.withViews = collectWithViews(viewClass);
+        this.withViews = collectViews(viewClass, ViewType.WITH);
         this.domainPathFields = ColumnUtil.resolveDomainPathFields(viewClass);
     }
 
-    private List<View> collectWithViews(Class<?> entityClass) {
-        ComplexView anno = entityClass.getAnnotation(ComplexView.class);
-        if (anno == null) {
-            return List.of();
-        }
-        return Arrays.stream(anno.value()).filter(view -> view.type() == ViewType.WITH).toList();
+    private static View transformNestedView(final NestedView anno) {
+        return new View() {
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return View.class;
+            }
+
+            @Override
+            public Class<?> value() {
+                return anno.value();
+            }
+
+            @Override
+            public String alias() {
+                return "";
+            }
+
+            @Override
+            public ViewType type() {
+                return ViewType.NESTED;
+            }
+
+            @Override
+            public boolean context() {
+                return false;
+            }
+        };
+    }
+
+    @SuppressWarnings("java:S6204")
+    private List<View> collectViews(Class<?> entityClass, ViewType viewType) {
+        View[] views = entityClass.getAnnotationsByType(View.class);
+        return Arrays.stream(views).filter(view -> view.type() == viewType).collect(Collectors.toList());
     }
 
     public static List<String> resolveEntityRelations(Class<?>[] viewClasses) {

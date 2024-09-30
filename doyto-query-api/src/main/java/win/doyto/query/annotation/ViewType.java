@@ -22,5 +22,5 @@ package win.doyto.query.annotation;
  * @author f0rb on 2024/9/18
  */
 public enum ViewType {
-    TABLE_NAME, WITH
+    TABLE_NAME, WITH, NESTED
 }
