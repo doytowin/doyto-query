@@ -25,13 +25,7 @@ import java.util.List;
  */
 public interface AggregateChain<V> {
 
-    AggregateChain<V> where(Query query);
-
-    AggregateChain<V> having(Having having);
-
-    AggregateChain<V> paging(DoytoQuery pageQuery);
-
-    AggregateChain<V> aggregateQuery(AggregateQuery aggregateQuery);
+    AggregateChain<V> filter(DoytoQuery query);
 
     /**
      * Set custom mapper for view

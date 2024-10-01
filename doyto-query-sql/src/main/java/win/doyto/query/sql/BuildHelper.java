@@ -23,10 +23,7 @@ import win.doyto.query.annotation.ComplexView;
 import win.doyto.query.annotation.CompositeView;
 import win.doyto.query.annotation.View;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.core.DoytoQuery;
-import win.doyto.query.core.LockMode;
-import win.doyto.query.core.Query;
-import win.doyto.query.core.QuerySuffix;
+import win.doyto.query.core.*;
 import win.doyto.query.sql.field.FieldMapper;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
@@ -59,10 +56,7 @@ public class BuildHelper {
 
     static String resolveTableName(Class<?> entityClass) {
         String tableName;
-        if (entityClass.isAnnotationPresent(Entity.class)) {
-            Entity entityAnno = entityClass.getAnnotation(Entity.class);
-            tableName = GlobalConfiguration.formatTable(entityAnno.name());
-        } else if (entityClass.isAnnotationPresent(CompositeView.class)) {
+        if (entityClass.isAnnotationPresent(CompositeView.class)) {
             CompositeView compositeViewAnno = entityClass.getAnnotation(CompositeView.class);
             tableName = resolveTableName(compositeViewAnno.value());
         } else if (entityClass.isAnnotationPresent(ComplexView.class)) {
@@ -81,14 +75,17 @@ public class BuildHelper {
         return Arrays.stream(views)
                      .filter(view -> !view.context())
                      .map(view -> {
-                         String tableName = StringUtils.isNotBlank(view.with()) ? view.with() :
-                                 BuildHelper.resolveTableName(view.value());
+                         String tableName = BuildHelper.defaultTableName(view.value());
                          String alias = view.alias();
                          return !alias.isEmpty() ? tableName + SPACE + alias : tableName;
                      }).collect(Collectors.joining(SEPARATOR));
     }
 
     static String defaultTableName(Class<?> entityClass) {
+        if (entityClass.isAnnotationPresent(Entity.class)) {
+            Entity entityAnno = entityClass.getAnnotation(Entity.class);
+            return GlobalConfiguration.formatTable(entityAnno.name());
+        }
         String entityName = entityClass.getSimpleName();
         entityName = StringUtils.removeEnd(entityName, "Entity");
         entityName = StringUtils.removeEnd(entityName, "View");
@@ -97,7 +94,7 @@ public class BuildHelper {
 
     public static String resolveTableName(Class<?>[] value) {
         return Arrays.stream(value)
-                     .map(BuildHelper::resolveTableName)
+                     .map(BuildHelper::defaultTableName)
                      .collect(Collectors.joining(SEPARATOR));
     }
 
@@ -109,13 +106,28 @@ public class BuildHelper {
         return buildCondition(WHERE, query, argList);
     }
 
+    public static String buildHaving(Having having, List<Object> argList) {
+        Class<?> havingClass = having.getClass();
+        Field[] fields = Arrays.stream(ColumnUtil.initFields(havingClass, FieldMapper::init))
+                               .filter(f -> f.getDeclaringClass() == havingClass).toArray(Field[]::new);
+        String clause = buildCondition(fields, having, argList, EMPTY, AND);
+        return clause.isEmpty() ? clause : HAVING + clause;
+    }
+
     public static String buildCondition(String prefix, Object query, List<Object> argList) {
+        if (HAVING.equals(prefix)) {
+            return buildHaving((Having) query, argList);
+        }
         return buildCondition(prefix, query, argList, EMPTY);
     }
 
     public static String buildCondition(String prefix, Object query, List<Object> argList, String alias) {
         alias = StringUtils.isBlank(alias) ? EMPTY : alias + ".";
-        Field[] fields = ColumnUtil.initFields(query.getClass(), FieldMapper::init);
+        Class<?> queryClass = query.getClass();
+        if (Arrays.asList(queryClass.getInterfaces()).contains(Having.class)) {
+            queryClass = queryClass.getSuperclass();
+        }
+        Field[] fields = ColumnUtil.initFields(queryClass, FieldMapper::init);
         String clause = buildCondition(fields, query, argList, alias, AND);
         return clause.isEmpty() ? clause : prefix + clause;
     }

@@ -23,6 +23,12 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.PageQuery;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.PageQuery;
 
 /**
  * UserLevelQuery
@@ -32,10 +38,8 @@ import win.doyto.query.core.PageQuery;
 @Getter
 @Setter
 @SuperBuilder
-@AllArgsConstructor
 @NoArgsConstructor
-public class UserLevelQuery extends PageQuery implements AggregationQuery {
-
+@AllArgsConstructor
+public class UserLevelQuery extends PageQuery {
     private Boolean valid;
-
 }

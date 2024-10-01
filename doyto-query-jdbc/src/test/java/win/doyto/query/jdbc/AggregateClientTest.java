@@ -40,18 +40,16 @@ class AggregateClientTest extends JdbcApplicationTest {
 
     @Test
     void supportAggregateQuery() {
+        UserLevelQuery query = UserLevelHaving.builder().countGt(1).countLt(10).valid(true).build();
         AggregateChain<UserLevelCountView> chain = aggregateClient
                 .aggregate(UserLevelCountView.class)
-                .where(new UserLevelQuery(true))
-                .having(UserLevelHaving.builder().countGt(1).countLt(10).build())
-                .paging(PageQuery.builder().pageSize(10).build())
                 .mapper((RowMapper<UserLevelCountView>) (rs, rn) -> {
                     UserLevelCountView view = new UserLevelCountView();
                     view.setUserLevel(UserLevel.valueOf(rs.getString("userLevel")));
                     view.setValid(rs.getBoolean("valid"));
                     view.setCount(rs.getLong("count"));
                     return view;
-                });
+                }).filter(query);
         chain.print();
         PageList<UserLevelCountView> userLevelCountViews = chain.page();
         assertThat(userLevelCountViews.getTotal()).isEqualTo(1);
@@ -65,15 +63,13 @@ class AggregateClientTest extends JdbcApplicationTest {
 
     @Test
     void testPage() {
-        AggregatedQuery aggregatedQuery = AggregatedQuery
-                .builder().query(new UserLevelQuery(true))
-                .having(UserLevelHaving.builder().countGt(1).countLt(10).build())
-                .pageSize(10).build();
+        DoytoQuery aggregateQuery = UserLevelHaving
+                .builder().countGt(1).countLt(10).valid(true).pageSize(10).build();
 
-        assertThat(aggregateClient.count(UserLevelCountView.class, aggregatedQuery))
-                .isEqualTo(1);
+        long count = aggregateClient.count(UserLevelCountView.class, aggregateQuery);
+        assertThat(count).isEqualTo(1);
 
-        PageList<UserLevelCountView> userLevelCountViews = aggregateClient.page(UserLevelCountView.class, aggregatedQuery);
+        PageList<UserLevelCountView> userLevelCountViews = aggregateClient.page(UserLevelCountView.class, aggregateQuery);
         assertThat(userLevelCountViews.getList())
                 .hasSize(1)
                 .extracting("userLevel", "valid", "count")

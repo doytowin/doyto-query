@@ -56,6 +56,5 @@ public interface DataQueryClient {
         return page(query, query.getDomainClass());
     }
 
-    <V, Q extends DoytoQuery & AggregationQuery>
-    List<V> aggregate(Q query, Class<V> viewClass);
+    <V> List<V> aggregate(DoytoQuery query, Class<V> viewClass);
 }

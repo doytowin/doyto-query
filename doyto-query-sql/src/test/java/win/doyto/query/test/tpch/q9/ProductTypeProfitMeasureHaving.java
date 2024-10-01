@@ -14,33 +14,32 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q15;
+package win.doyto.query.test.tpch.q9;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import win.doyto.query.annotation.ForeignKey;
 import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.annotation.View;
-import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
-import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
+import win.doyto.query.annotation.NestedView;
 
 import javax.persistence.Column;
 import java.math.BigDecimal;
+import lombok.experimental.SuperBuilder;
+import win.doyto.query.core.Having;
+import win.doyto.query.core.PageQuery;
 
 /**
- * LineitemView
+ * ProfitQuery
  *
- * @author f0rb on 2023/6/13
- * @since 1.0.2
+ * @author f0rb on 2023/2/18
+ * @since 1.0.1
  */
 @Getter
 @Setter
-@View(LineitemEntity.class)
-public class LineitemRevenueView {
-    @ForeignKey(entity = SupplierEntity.class, field = "s_suppkey")
-    @GroupBy
-    @Column(name = "l_suppkey")
-    private Integer supplier_no;
-    @Column(name = "SUM(l_extendedprice * (1 - l_discount))")
-    private BigDecimal total_revenue;
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProductTypeProfitMeasureHaving extends PageQuery implements Having {
+    private ProfitQuery profitQuery;
 }

@@ -180,4 +180,13 @@ class UserMvcTest extends DemoApplicationTest {
                 .andExpect(jsonPath("$.data[1].id").doesNotExist())
                 .andExpect(jsonPath("$.data[1].mobile").doesNotExist());
     }
+
+    @Test
+    void queryCountOfEachLevel() throws Exception {
+        performAndExpectSuccess(get("/user/queryCountOfEachLevel?valid=true&countGt=1"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.size()").value(1))
+                .andExpect(jsonPath("$.data[0].userLevel").value("普通"))
+                .andExpect(jsonPath("$.data[0].count").value(2));
+    }
 }

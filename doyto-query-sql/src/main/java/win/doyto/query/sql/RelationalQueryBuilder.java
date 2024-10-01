@@ -71,7 +71,8 @@ public class RelationalQueryBuilder {
             String queryFieldName = StringUtils.uncapitalize(view.value().getSimpleName()).replace("View", "Query");
             DoytoQuery withQuery = (DoytoQuery) CommonUtil.readField(query, queryFieldName);
             String withSQL = buildSqlForEntity(withMeta, withQuery, argList);
-            withJoiner.add(view.with() + AS + OP + withSQL + CP);
+            String withName = BuildHelper.defaultTableName(view.value());
+            withJoiner.add(withName + AS + OP + withSQL + CP);
         }
         return withJoiner.toString();
     }

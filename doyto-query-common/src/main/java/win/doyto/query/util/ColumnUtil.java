@@ -22,7 +22,6 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.annotation.Join;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.core.Having;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -157,8 +156,6 @@ public class ColumnUtil {
                 // Transient field, won't be used in where condition
                 && !field.isAnnotationPresent(Transient.class)
                 && !field.isAnnotationPresent(Join.class)
-                // Having field, will be used in having condition only
-                && !Having.class.isAssignableFrom(field.getType())
                 ;
     }
 

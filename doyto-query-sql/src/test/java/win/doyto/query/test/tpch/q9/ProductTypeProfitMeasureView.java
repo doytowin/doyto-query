@@ -19,7 +19,8 @@ package win.doyto.query.test.tpch.q9;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.annotation.NestedView;
+import win.doyto.query.annotation.View;
+import win.doyto.query.annotation.ViewType;
 
 import javax.persistence.Column;
 import java.math.BigDecimal;
@@ -32,7 +33,7 @@ import java.math.BigDecimal;
  */
 @Getter
 @Setter
-@NestedView(ProfitView.class)
+@View(value = ProfitView.class, type = ViewType.NESTED)
 public class ProductTypeProfitMeasureView {
 
     @GroupBy

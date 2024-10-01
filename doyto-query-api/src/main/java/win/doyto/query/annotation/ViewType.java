@@ -14,29 +14,13 @@
  * limitations under the License.
  */
 
-package win.doyto.query.sql.q15;
-
-import lombok.Getter;
-import lombok.Setter;
-import win.doyto.query.annotation.View;
-import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
-
-import java.math.BigDecimal;
+package win.doyto.query.annotation;
 
 /**
- * TopSupplierView
+ * ViewType
  *
- * @author f0rb on 2023/6/13
- * @since 1.0.2
+ * @author f0rb on 2024/9/18
  */
-@Getter
-@Setter
-@View(SupplierEntity.class)
-@View(value = LineitemRevenueView.class, with = "revenue")
-public class TopSupplierView {
-    private Integer s_suppkey;
-    private String s_name;
-    private String s_address;
-    private String s_phone;
-    private BigDecimal total_revenue;
+public enum ViewType {
+    TABLE_NAME, WITH, NESTED
 }
