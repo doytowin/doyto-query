@@ -102,9 +102,11 @@ public class AggregateQueryBuilder {
 
         if (!entityMetadata.getNestedViews().isEmpty()) {
             sqlBuilder.append(buildNestedSql(entityMetadata.getNestedViews(), argList, aggregateQuery));
-        } else {
-            sqlBuilder.append(entityMetadata.getTableName());
+            if (!entityMetadata.getTableName().isEmpty()) {
+                sqlBuilder.append(SEPARATOR);
+            }
         }
+        sqlBuilder.append(entityMetadata.getTableName());
 
         buildJoinClauses(sqlBuilder, aggregateQuery, argList);
         if (entityMetadata.getJoinConditions().isEmpty()) {
