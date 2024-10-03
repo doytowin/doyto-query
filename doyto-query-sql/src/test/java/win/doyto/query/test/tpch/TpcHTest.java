@@ -246,8 +246,8 @@ class TpcHTest {
                 " AND o_custkey = c_custkey" +
                 " AND l_orderkey = o_orderkey" +
                 " AND l_suppkey = s_suppkey" +
+                " AND s_nationkey = n_nationkey" +
                 " AND n_regionkey = r_regionkey" +
-                " AND c_nationkey = s_nationkey" +
                 " AND r_name = ?" +
                 " AND o_orderdate >= ?" +
                 " AND o_orderdate < ?" +
@@ -400,10 +400,10 @@ class TpcHTest {
                 " FROM part, supplier, lineitem, partsupp, orders, nation" +
                 " WHERE s_nationkey = n_nationkey" +
                 " AND l_orderkey = o_orderkey" +
-                " AND l_suppkey = s_suppkey" +
-                " AND l_partkey = p_partkey" +
-                " AND ps_suppkey = l_suppkey" +
-                " AND ps_partkey = l_partkey" +
+                " AND l_suppkey = ps_suppkey" +
+                " AND l_partkey = ps_partkey" +
+                " AND ps_partkey = p_partkey" +
+                " AND ps_suppkey = s_suppkey" +
                 " AND p_name LIKE ?" +
                 ") AS profit" +
                 " GROUP BY nation, o_year" +
@@ -789,8 +789,8 @@ class TpcHTest {
                 " WHERE p_name LIKE ?)" +
                 " AND ps_availqty > (SELECT 0.5 * SUM(l_quantity)" +
                 " FROM lineitem" +
-                " WHERE l_partkey = ps_partkey" +
-                " AND l_suppkey = ps_suppkey" +
+                " WHERE l_suppkey = ps_suppkey" +
+                " AND l_partkey = ps_partkey" +
                 " AND l_shipdate >= ?" +
                 " AND l_shipdate < ?))" +
                 " AND n_name = ?" +

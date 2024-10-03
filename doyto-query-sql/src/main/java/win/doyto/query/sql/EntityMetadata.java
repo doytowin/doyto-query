@@ -125,20 +125,26 @@ public class EntityMetadata {
     private static List<String> resolveEntityRelations(List<ViewIndex> viewIndices) {
         List<String> relations = new ArrayList<>();
         viewIndices.forEach(currentViewIndex -> {
+            if (!currentViewIndex.valid()) {
+                return;
+            }
             currentViewIndex.voteDown();
             // iterate the fields of current table to compare with the rest tables
             // to build connection conditions
             Arrays.stream(ColumnUtil.initFields(currentViewIndex.getEntity()))
-                  .filter(field -> field.isAnnotationPresent(ForeignKey.class))
+                  .filter(field -> field.getAnnotationsByType(ForeignKey.class).length > 0)
                   .forEach(field -> {
-                      ForeignKey fkAnno = field.getAnnotation(ForeignKey.class);
-                      ViewIndex viewIndex = ViewIndex.searchEntity(viewIndices, fkAnno.entity());
-                      if (viewIndex != null) {
-                          String c1 = ColumnUtil.convertColumn(field.getName());
-                          String c2 = ColumnUtil.convertColumn(fkAnno.field());
-                          String alias1 = currentViewIndex.getAlias();
-                          String alias2 = viewIndex.getAlias();
-                          relations.add(alias1 + c1 + EQUAL + alias2 + c2);
+                      ForeignKey[] fkAnnos = field.getAnnotationsByType(ForeignKey.class);
+                      for (ForeignKey fkAnno : fkAnnos) {
+                          ViewIndex viewIndex = ViewIndex.searchEntity(viewIndices, fkAnno.entity());
+                          if (viewIndex != null) {
+                              String c1 = ColumnUtil.convertColumn(field.getName());
+                              String c2 = ColumnUtil.convertColumn(fkAnno.field());
+                              String alias1 = currentViewIndex.getAlias();
+                              String alias2 = viewIndex.getAlias();
+                              relations.add(alias1 + c1 + EQUAL + alias2 + c2);
+                              break;
+                          }
                       }
                   });
             currentViewIndex.voteUp();
