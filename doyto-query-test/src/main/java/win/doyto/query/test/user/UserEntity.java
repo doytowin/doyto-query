@@ -20,10 +20,10 @@ import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.entity.AbstractPersistable;
-import win.doyto.query.test.menu.MenuView;
-import win.doyto.query.test.perm.PermView;
+import win.doyto.query.test.menu.MenuEntity;
+import win.doyto.query.test.perm.PermEntity;
+import win.doyto.query.test.role.RoleEntity;
 import win.doyto.query.test.role.RoleStatView;
-import win.doyto.query.test.role.RoleView;
 
 import java.util.List;
 
@@ -41,15 +41,15 @@ public class UserEntity extends AbstractPersistable<Long> {
 
     // many-to-many
     @DomainPath({"user", "role"})
-    private List<RoleView> roles;
+    private List<RoleEntity> roles;
 
     // many-to-many
     @DomainPath({"user", "role", "perm"})
-    private List<PermView> perms;
+    private List<PermEntity> perms;
 
     // many-to-many
     @DomainPath({"user", "role", "perm", "menu"})
-    private List<MenuView> menus;
+    private List<MenuEntity> menus;
 
     // many-to-one
     @DomainPath(value = "user", localField = "create_user_id")
@@ -57,7 +57,7 @@ public class UserEntity extends AbstractPersistable<Long> {
 
     // one-to-many
     @DomainPath(value = "role", foreignField = "create_user_id")
-    private List<RoleView> createRoles;
+    private List<RoleEntity> createRoles;
 
     // many-to-many aggregation
     @DomainPath({"user", "role"})

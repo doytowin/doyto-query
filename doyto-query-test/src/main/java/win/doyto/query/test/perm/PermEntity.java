@@ -14,34 +14,28 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.menu;
+package win.doyto.query.test.perm;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.RelationalQuery;
+import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.entity.AbstractPersistable;
+import win.doyto.query.test.user.UserEntity;
+
+import java.util.List;
 
 /**
- * MenuViewQuery
+ * PermEntity
  *
- * @author f0rb on 2022/11/23
- * @since 1.0.0
+ * @author f0rb on 2022-03-26
  */
 @Getter
 @Setter
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class MenuViewQuery extends MenuQuery implements RelationalQuery<MenuView, Integer> {
+public class PermEntity extends AbstractPersistable<Integer> {
+    private String permName;
+    private Boolean valid;
 
-    private MenuQuery withParent;
+    @DomainPath({"perm", "~", "role", "~", "user"})
+    private List<UserEntity> users;
 
-    private MenuQuery withChildren;
-
-    @Override
-    public Class<MenuView> getDomainClass() {
-        return MenuView.class;
-    }
 }

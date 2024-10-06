@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import win.doyto.query.annotation.Entity;
 import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.test.menu.MenuView;
+import win.doyto.query.test.menu.MenuEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -63,7 +63,7 @@ class EntityMetadataTest {
 
     @Test
     void resolveSelectColumns() {
-        String columns = EntityMetadata.buildViewColumns(MenuView.class);
+        String columns = EntityMetadata.buildViewColumns(MenuEntity.class);
         assertEquals("id, menu_name AS menuName, platform", columns);
     }
 
