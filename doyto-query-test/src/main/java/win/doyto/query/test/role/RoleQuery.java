@@ -42,7 +42,7 @@ public class RoleQuery extends PageQuery {
     private Integer id;
     private List<Integer> idIn;
 
-    @DomainPath({"role", "~", "user"})
+    @DomainPath({"role", "user"})
     private UserQuery user;
 
     private String roleName;

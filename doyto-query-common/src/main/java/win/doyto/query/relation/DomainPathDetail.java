@@ -33,10 +33,14 @@ import java.util.function.UnaryOperator;
  * Transform domain paths to join-tables
  * <p>
  * Examples:
+ * <pre>
+ * GlobalConfiguration.registerJoinTable("role", "user", "a_user_and_role");
+ * GlobalConfiguration.registerJoinTable("perm", "role", "a_role_and_perm");
+ * </pre>
  * <ul>
  *   <li>["role", "perm"] -&gt; ["role_id","perm_id"]/["a_role_and_perm"]</li>
- *   <li>["perm", "~", "role"] -&gt; ["perm_id","role_id"]/["a_role_and_perm"]</li>
- *   <li>["perm", "~", "role", "~", "user"] -&gt; [ "perm_id","role_id","user_id"]/["a_role_and_perm","a_user_and_role"]</li>
+ *   <li>["perm", "role"] -&gt; ["perm_id","role_id"]/["a_role_and_perm"]</li>
+ *   <li>["perm", "role", "user"] -&gt; [ "perm_id","role_id","user_id"]/["a_role_and_perm","a_user_and_role"]</li>
  * </ul>
  *
  * @author f0rb on 2022/11/19
@@ -109,7 +113,7 @@ public class DomainPathDetail {
     }
 
     private static String[] prepareJoinTablesWithReverseSign(String[] domainPath) {
-        String joinTableFormat = GlobalConfiguration.instance().getJoinTableFormat();
+        GlobalConfiguration config = GlobalConfiguration.instance();
         List<String> joinTableList = new ArrayList<>();
         int i = 0;
         while (i < domainPath.length - 1) {
@@ -120,7 +124,7 @@ public class DomainPathDetail {
                 domain = domainPath[i + 2];
                 i++;
             }
-            joinTableList.add(String.format(joinTableFormat, domain, nextDomain));
+            joinTableList.add(config.formatJoinTable(domain, nextDomain));
             i++;
         }
         return joinTableList.toArray(new String[0]);

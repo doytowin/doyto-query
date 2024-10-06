@@ -45,6 +45,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author f0rb on 2021-12-11
  */
 class RelationalQueryBuilderTest {
+    static {
+        GlobalConfiguration.registerJoinTable("role", "user", "a_user_and_role");
+        GlobalConfiguration.registerJoinTable("perm", "role", "a_role_and_perm");
+    }
+
     static <I extends Serializable, R> SqlAndArgs buildSqlAndArgsForSubDomain(Field joinField, List<I> mainIds, Class<R> joinEntityClass) {
         return RelationalQueryBuilder.buildSqlAndArgsForSubDomain(new PageQuery(), joinEntityClass, joinField, mainIds);
     }

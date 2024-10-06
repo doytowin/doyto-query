@@ -35,7 +35,7 @@ public class PermEntity extends AbstractPersistable<Integer> {
     private String permName;
     private Boolean valid;
 
-    @DomainPath({"perm", "~", "role", "~", "user"})
+    @DomainPath({"perm", "role", "user"})
     private List<UserEntity> users;
 
 }

@@ -45,7 +45,7 @@ public class RoleEntity extends AbstractPersistable<Integer> {
     private Boolean valid;
 
     // many-to-many
-    @DomainPath({"role", "~", "user"})
+    @DomainPath({"role", "user"})
     private List<UserEntity> users;
 
     // many-to-many

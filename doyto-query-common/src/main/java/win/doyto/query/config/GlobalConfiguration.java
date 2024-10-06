@@ -22,6 +22,8 @@ import win.doyto.query.core.Dialect;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.util.ColumnUtil;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
@@ -43,6 +45,7 @@ public class GlobalConfiguration {
     private String joinTableFormat = "a_%s_and_%s";
     private Dialect dialect = new SimpleDialect();
     private Function<Integer, Integer> startPageNumberAdjuster;
+    private Map<String, String> joinTableMap = new HashMap<>();
 
     private GlobalConfiguration() {
         this.setTableFormat("t_%s");
@@ -94,7 +97,15 @@ public class GlobalConfiguration {
     }
 
     public String formatJoinTable(String domain1, String domain2) {
+        String joinTable = joinTableMap.get(domain1 + "-" + domain2);
+        if (joinTable != null) {
+            return joinTable;
+        }
         return String.format(joinTableFormat, domain1, domain2);
+    }
+
+    public static void registerJoinTable(String domain1, String domain2, String joinTable) {
+        Singleton.instance.joinTableMap.put(domain1 + "-" + domain2, joinTable);
     }
 
     private static class Singleton {
