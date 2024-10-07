@@ -59,10 +59,6 @@ public class DomainPathDetail {
     private final String[] joinTables;
     private final String targetTable;
 
-    public int getLastDomainIndex() {
-        return domainPath.length - 1;
-    }
-
     public boolean onlyOneDomain() {
         return domainPath.length == 1;
     }
