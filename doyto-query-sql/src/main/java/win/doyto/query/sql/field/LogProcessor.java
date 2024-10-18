@@ -35,7 +35,7 @@ public class LogProcessor implements FieldProcessor{
 
     @Override
     public String process(String alias, List<Object> argList, Object value) {
-        log.warn("Query field is ignored: {}.{}", field.getDeclaringClass(), field.getName());
+        log.debug("Query field is ignored: {}.{}", field.getDeclaringClass(), field.getName());
         return null;
     }
 }
