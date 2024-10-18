@@ -14,34 +14,28 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.menu;
+package win.doyto.query.sql.q15;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.RelationalQuery;
+import win.doyto.query.annotation.Subquery;
+import win.doyto.query.core.PageQuery;
 
 /**
- * MenuViewQuery
+ * RevenueQuery
  *
- * @author f0rb on 2022/11/23
- * @since 1.0.0
+ * @author f0rb on 2023/6/13
+ * @since 1.0.2
  */
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MenuViewQuery extends MenuQuery implements RelationalQuery<MenuView, Integer> {
-
-    private MenuQuery withParent;
-
-    private MenuQuery withChildren;
-
-    @Override
-    public Class<MenuView> getDomainClass() {
-        return MenuView.class;
-    }
+public class TopSupplierQuery extends PageQuery {
+    @Subquery(select = "MAX(total_revenue)", from = RevenueView.class)
+    private PageQuery total_revenue;
 }

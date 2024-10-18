@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.ComplexView;
 import win.doyto.query.annotation.CompositeView;
 import win.doyto.query.annotation.View;
+import win.doyto.query.annotation.ViewType;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.*;
 import win.doyto.query.sql.field.FieldMapper;
@@ -73,7 +74,7 @@ public class BuildHelper {
 
     public static String resolveTableName(View... views) {
         return Arrays.stream(views)
-                     .filter(view -> !view.context())
+                     .filter(view -> view.type() != ViewType.NESTED && !view.context())
                      .map(view -> {
                          String tableName = BuildHelper.defaultTableName(view.value());
                          String alias = view.alias();

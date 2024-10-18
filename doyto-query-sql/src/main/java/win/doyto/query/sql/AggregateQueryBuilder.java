@@ -102,9 +102,11 @@ public class AggregateQueryBuilder {
 
         if (!entityMetadata.getNestedViews().isEmpty()) {
             sqlBuilder.append(buildNestedSql(entityMetadata.getNestedViews(), argList, aggregateQuery));
-        } else {
-            sqlBuilder.append(entityMetadata.getTableName());
+            if (!entityMetadata.getTableName().isEmpty()) {
+                sqlBuilder.append(SEPARATOR);
+            }
         }
+        sqlBuilder.append(entityMetadata.getTableName());
 
         buildJoinClauses(sqlBuilder, aggregateQuery, argList);
         if (entityMetadata.getJoinConditions().isEmpty()) {
@@ -114,8 +116,8 @@ public class AggregateQueryBuilder {
             sqlBuilder.append(buildCondition(AND, aggregateQuery, argList));
         }
         sqlBuilder.append(entityMetadata.getGroupBySql());
-        if (aggregateQuery instanceof Having having) {
-            sqlBuilder.append(buildHaving(having, argList));
+        if (aggregateQuery instanceof Having) {
+            sqlBuilder.append(buildHaving((Having) aggregateQuery, argList));
         }
         return sqlBuilder;
     }

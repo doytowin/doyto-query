@@ -18,6 +18,7 @@ package win.doyto.query.sql.field;
 
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.sql.Constant;
 import win.doyto.query.test.menu.MenuQuery;
 import win.doyto.query.test.perm.PermissionQuery;
@@ -38,6 +39,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author f0rb on 2022-04-23
  */
 class DomainPathProcessorTest {
+
+    static {
+        GlobalConfiguration.registerJoinTable("role", "user", "a_user_and_role");
+        GlobalConfiguration.registerJoinTable("perm", "role", "a_role_and_perm");
+    }
 
     List<Object> argList = new ArrayList<>();
 

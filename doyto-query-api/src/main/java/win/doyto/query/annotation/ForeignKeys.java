@@ -14,30 +14,21 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q8;
+package win.doyto.query.annotation;
 
-import lombok.*;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.PageQuery;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import java.util.Date;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * AllNationsQuery
+ * ForeignKeys
  *
- * @author f0rb on 2023/6/11
- * @since 1.0.2
+ * @author f0rb on 2024/10/3
  */
-@Getter
-@Setter
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class AllNationsQuery extends PageQuery {
-    @Builder.Default
-    private boolean n1$nRegionkeyEqRRegionkey = true;
-    private String r_name;
-    private Date o_orderdateGe;
-    private Date o_orderdateLe;
-    private String p_type;
+@Target(FIELD)
+@Retention(RUNTIME)
+public @interface ForeignKeys {
+    ForeignKey[] value();
 }

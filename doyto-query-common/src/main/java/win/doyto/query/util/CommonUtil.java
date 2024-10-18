@@ -124,7 +124,7 @@ public class CommonUtil {
     public static Field getField(Object target, String fieldName) {
         Field field = FieldUtils.getField(target.getClass(), fieldName, true);
         if (field == null) {
-            log.warn("Field [{}] not found", fieldName);
+            log.debug("Field [{}] not found", fieldName);
         }
         return field;
     }

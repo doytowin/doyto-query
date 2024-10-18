@@ -14,38 +14,26 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.role;
+package win.doyto.query.sql.q15;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.RelationalQuery;
-import win.doyto.query.test.perm.PermissionQuery;
-import win.doyto.query.test.user.UserQuery;
+import win.doyto.query.core.Having;
+import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
 
 /**
- * RoleViewQuery
+ * TopSuppliedHaving
  *
- * @author f0rb on 2022/11/22
- * @since 1.0.0
+ * @author f0rb on 2024/9/25
  */
 @Getter
 @Setter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-public class RoleViewQuery extends RoleQuery implements RelationalQuery<RoleView, Integer> {
-
-    private UserQuery withUsers;
-
-    private PermissionQuery withPerms;
-
-    private UserQuery withCreateUser;
-
-    @Override
-    public Class<RoleView> getDomainClass() {
-        return RoleView.class;
-    }
+public class TopSuppliedHaving extends TopSupplierQuery implements Having {
+    private LineitemQuery revenueQuery;
 }

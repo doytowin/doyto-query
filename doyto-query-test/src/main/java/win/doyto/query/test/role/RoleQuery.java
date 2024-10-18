@@ -23,6 +23,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.core.PageQuery;
+import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.user.UserQuery;
 
 import java.util.List;
@@ -41,10 +42,15 @@ public class RoleQuery extends PageQuery {
     private Integer id;
     private List<Integer> idIn;
 
-    @DomainPath({"role", "~", "user"})
+    @DomainPath({"role", "user"})
     private UserQuery user;
 
     private String roleName;
     private String roleNameLike;
     private Boolean valid;
+
+    private UserQuery withUsers;
+    private UserQuery withCreateUser;
+    private PermissionQuery withPerms;
+
 }

@@ -50,60 +50,30 @@ class DomainPathProcessor implements FieldProcessor {
     }
 
     private String buildClause(List<Object> argList, DoytoQuery query) {
-        StringBuilder subQueryBuilder = new StringBuilder(domainPathDetail.getLocalFieldColumn());
-        int lastDomainIndex = domainPathDetail.getLastDomainIndex();
-        if (lastDomainIndex > 0) {
-            String[] domainIds = domainPathDetail.getJoinIds();
-            String[] joinTables = domainPathDetail.getJoinTables();
-            int current = 0;
-            subQueryBuilder.append(IN).append(OP);
-            while (true) {
-                buildStartForCurrentDomain(subQueryBuilder, domainIds[current], joinTables[current]);
-                if (++current >= lastDomainIndex) {
-                    break;
-                }
-                buildWhereForCurrentDomain(subQueryBuilder, domainIds[current]);
-                buildQueryForCurrentDomain(subQueryBuilder, domainPathDetail.getDomainPath()[current], argList, query);
+        String[] joinIds = domainPathDetail.getJoinIds();
+        String[] joinTables = domainPathDetail.getJoinTables();
+        String[] domainPath = domainPathDetail.getDomainPath();
+
+        StringBuilder subQueryBuilder = new StringBuilder(domainPathDetail.getLocalFieldColumn()).append(IN).append(OP);
+        for (int i = 0; i < domainPath.length - 1; i++) {
+            String queryName = domainPath[i] + "Query";
+            Object domainQuery = CommonUtil.readField(query, queryName);
+            if (domainQuery instanceof DoytoQuery) {
+                String table = GlobalConfiguration.formatTable(domainPath[i]);
+                String where = buildWhere((DoytoQuery) domainQuery, argList);
+                subQueryBuilder.append(SELECT).append(ID).append(FROM).append(table)
+                               .append(where).append(INTERSECT);
             }
-            subQueryBuilder.append(WHERE).append(domainIds[lastDomainIndex]);
+            subQueryBuilder.append(SELECT).append(joinIds[i])
+                           .append(FROM).append(joinTables[i])
+                           .append(WHERE).append(joinIds[i + 1])
+                           .append(IN).append(OP);
         }
-        buildQueryForLastDomain(subQueryBuilder, BuildHelper.buildWhere(query, argList));
-        appendTailParenthesis(subQueryBuilder, lastDomainIndex);
-        return subQueryBuilder.toString();
-    }
 
-    private void buildWhereForCurrentDomain(StringBuilder subQueryBuilder, String domainId) {
-        subQueryBuilder.append(WHERE).append(domainId).append(IN).append(OP);
-    }
-
-    private void buildStartForCurrentDomain(StringBuilder subQueryBuilder, String domainId, String joinTable) {
-        subQueryBuilder.append(SELECT).append(domainId).append(FROM).append(joinTable);
-    }
-
-    private void buildQueryForCurrentDomain(
-            StringBuilder subQueryBuilder, String currentDomain,
-            List<Object> argList, DoytoQuery query
-    ) {
-        Object domainQuery = CommonUtil.readField(query, currentDomain + "Query");
-        if (!(domainQuery instanceof DoytoQuery)) {
-            return;
-        }
-        String where = buildWhere((DoytoQuery) domainQuery, argList);
-        String table = GlobalConfiguration.formatTable(currentDomain);
-        subQueryBuilder.append(SELECT).append(ID).append(FROM).append(table).append(where);
-        subQueryBuilder.append(INTERSECT);
-    }
-
-    private void buildQueryForLastDomain(
-            StringBuilder subQueryBuilder, String where
-    ) {
-        subQueryBuilder.append(IN).append(OP)
-                       .append(SELECT).append(domainPathDetail.getForeignFieldColumn())
+        String where = BuildHelper.buildWhere(query, argList);
+        subQueryBuilder.append(SELECT).append(domainPathDetail.getForeignFieldColumn())
                        .append(FROM).append(domainPathDetail.getTargetTable()).append(where)
-                       .append(CP);
-    }
-
-    private void appendTailParenthesis(StringBuilder subQueryBuilder, int count) {
-        subQueryBuilder.append(StringUtils.repeat(')', count));
+                       .append(StringUtils.repeat(')', domainPath.length));
+        return subQueryBuilder.toString();
     }
 }

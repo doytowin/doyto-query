@@ -14,38 +14,29 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.menu;
+package win.doyto.query.test.perm;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.entity.AbstractPersistable;
-import win.doyto.query.test.user.UserView;
+import win.doyto.query.test.user.UserEntity;
 
+import javax.persistence.Id;
 import java.util.List;
 
 /**
- * MenuView
+ * PermEntity
  *
- * @author f0rb on 2022-04-13
+ * @author f0rb on 2022-03-26
  */
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = true)
-public class MenuView extends AbstractPersistable<Integer> {
+public class PermEntity extends AbstractPersistable<Integer> {
+    private String permName;
+    private Boolean valid;
 
-    private String menuName;
-    private String platform;
+    @DomainPath({"perm", "role", "user"})
+    private List<UserEntity> users;
 
-    @DomainPath({"menu", "~", "perm",  "~", "role", "~", "user"})
-    private List<UserView> users;
-
-    // many-to-one
-    @DomainPath(value = "menu", localField = "parent_id")
-    private MenuView parent;
-
-    // one-to-many
-    @DomainPath(value = "menu", foreignField = "parent_id")
-    private List<MenuView> children;
 }

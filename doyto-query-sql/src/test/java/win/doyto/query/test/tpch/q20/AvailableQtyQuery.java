@@ -16,7 +16,10 @@
 
 package win.doyto.query.test.tpch.q20;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.core.PageQuery;
 
@@ -34,10 +37,6 @@ import java.sql.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AvailableQtyQuery extends PageQuery {
-    @Builder.Default
-    private boolean l_partkeyEqPs_partkey = true;
-    @Builder.Default
-    private boolean l_suppkeyEqPs_suppkey = true;
     private Date l_shipdateGe;
     private Date l_shipdateLt;
 }

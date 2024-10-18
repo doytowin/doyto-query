@@ -53,4 +53,8 @@ public class MenuQuery extends PageQuery {
     private String nameLike;
 
     private Boolean valid;
+
+    private MenuQuery withParent;
+
+    private MenuQuery withChildren;
 }
