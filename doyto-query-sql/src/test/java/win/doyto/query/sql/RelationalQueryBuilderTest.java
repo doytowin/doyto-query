@@ -126,12 +126,12 @@ class RelationalQueryBuilderTest {
 
         String expected = """
 
-                SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user
+                SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, username, email, mobile, password, nickname, valid, memo, userLevel FROM t_user
                 WHERE id IN (
                   SELECT user_id FROM a_user_and_role WHERE role_id = ?
                 )
                 UNION ALL
-                SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user
+                SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, username, email, mobile, password, nickname, valid, memo, userLevel FROM t_user
                 WHERE id IN (
                   SELECT user_id FROM a_user_and_role WHERE role_id = ?
                 )""";
@@ -147,13 +147,13 @@ class RelationalQueryBuilderTest {
 
         String expected = """
 
-                SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user
+                SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, username, email, mobile, password, nickname, valid, memo, userLevel FROM t_user
                 WHERE id IN (
                   SELECT user_id FROM a_user_and_role WHERE role_id IN (
                   SELECT role_id FROM a_role_and_perm WHERE perm_id = ?
                 ))
                 UNION ALL
-                SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user
+                SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, username, email, mobile, password, nickname, valid, memo, userLevel FROM t_user
                 WHERE id IN (
                   SELECT user_id FROM a_user_and_role WHERE role_id IN (
                   SELECT role_id FROM a_role_and_perm WHERE perm_id = ?
@@ -170,21 +170,21 @@ class RelationalQueryBuilderTest {
 
         String expected = """
 
-                SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user
+                SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, username, email, mobile, password, nickname, valid, memo, userLevel FROM t_user
                 WHERE id IN (
                   SELECT user_id FROM a_user_and_role WHERE role_id IN (
                   SELECT role_id FROM a_role_and_perm WHERE perm_id IN (
                   SELECT perm_id FROM a_perm_and_menu WHERE menu_id = ?
                 )))
                 UNION ALL
-                SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user
+                SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, username, email, mobile, password, nickname, valid, memo, userLevel FROM t_user
                 WHERE id IN (
                   SELECT user_id FROM a_user_and_role WHERE role_id IN (
                   SELECT role_id FROM a_role_and_perm WHERE perm_id IN (
                   SELECT perm_id FROM a_perm_and_menu WHERE menu_id = ?
                 )))
                 UNION ALL
-                SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user
+                SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, username, email, mobile, password, nickname, valid, memo, userLevel FROM t_user
                 WHERE id IN (
                   SELECT user_id FROM a_user_and_role WHERE role_id IN (
                   SELECT role_id FROM a_role_and_perm WHERE perm_id IN (
@@ -207,19 +207,19 @@ class RelationalQueryBuilderTest {
 
         String expected = """
 
-                (SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user
+                (SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, username, email, mobile, password, nickname, valid, memo, userLevel FROM t_user
                 WHERE id IN (
                   SELECT user_id FROM a_user_and_role WHERE role_id = ?
                 ) AND email LIKE ?
                 ORDER BY id DESC LIMIT 10 OFFSET 0)
                 UNION ALL
-                (SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user
+                (SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, username, email, mobile, password, nickname, valid, memo, userLevel FROM t_user
                 WHERE id IN (
                   SELECT user_id FROM a_user_and_role WHERE role_id = ?
                 ) AND email LIKE ?
                 ORDER BY id DESC LIMIT 10 OFFSET 0)
                 UNION ALL
-                (SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user
+                (SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, username, email, mobile, password, nickname, valid, memo, userLevel FROM t_user
                 WHERE id IN (
                   SELECT user_id FROM a_user_and_role WHERE role_id = ?
                 ) AND email LIKE ?
@@ -276,12 +276,12 @@ class RelationalQueryBuilderTest {
 
         String expected = """
 
-                SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user
+                SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, username, email, mobile, password, nickname, valid, memo, userLevel FROM t_user
                 WHERE id IN (
                   SELECT createUserId FROM t_role WHERE id = ?
                 )
                 UNION ALL
-                SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user
+                SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, username, email, mobile, password, nickname, valid, memo, userLevel FROM t_user
                 WHERE id IN (
                   SELECT createUserId FROM t_role WHERE id = ?
                 )""";
@@ -299,13 +299,13 @@ class RelationalQueryBuilderTest {
 
         String expected = """
 
-                (SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user
+                (SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, username, email, mobile, password, nickname, valid, memo, userLevel FROM t_user
                 WHERE id IN (
                   SELECT createUserId FROM t_role WHERE id = ?
                 ) AND memo IS NULL
                 ORDER BY id desc LIMIT 5 OFFSET 0)
                 UNION ALL
-                (SELECT ? AS MAIN_ENTITY_ID, id, username, email FROM t_user
+                (SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, username, email, mobile, password, nickname, valid, memo, userLevel FROM t_user
                 WHERE id IN (
                   SELECT createUserId FROM t_role WHERE id = ?
                 ) AND memo IS NULL
@@ -322,11 +322,11 @@ class RelationalQueryBuilderTest {
                 new UserQuery(), RoleEntity.class, field, Arrays.asList(1, 3));
 
         String expected = """
-
-                SELECT ? AS MAIN_ENTITY_ID, id, roleName, roleCode, valid FROM t_role
+                
+                SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, roleName, roleCode, valid FROM t_role
                 WHERE createUserId = ?
                 UNION ALL
-                SELECT ? AS MAIN_ENTITY_ID, id, roleName, roleCode, valid FROM t_role
+                SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, roleName, roleCode, valid FROM t_role
                 WHERE createUserId = ?""";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
@@ -341,12 +341,12 @@ class RelationalQueryBuilderTest {
                 roleQuery, RoleEntity.class, field, Arrays.asList(1, 3));
 
         String expected = """
-
-                (SELECT ? AS MAIN_ENTITY_ID, id, roleName, roleCode, valid FROM t_role
+                
+                (SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, roleName, roleCode, valid FROM t_role
                 WHERE createUserId = ? AND valid = ?
                 ORDER BY id desc LIMIT 5 OFFSET 0)
                 UNION ALL
-                (SELECT ? AS MAIN_ENTITY_ID, id, roleName, roleCode, valid FROM t_role
+                (SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, roleName, roleCode, valid FROM t_role
                 WHERE createUserId = ? AND valid = ?
                 ORDER BY id desc LIMIT 5 OFFSET 0)""";
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);

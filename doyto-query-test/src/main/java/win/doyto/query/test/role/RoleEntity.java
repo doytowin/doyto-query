@@ -20,7 +20,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.entity.AbstractPersistable;
+import win.doyto.query.entity.AbstractCommonEntity;
 import win.doyto.query.test.perm.PermEntity;
 import win.doyto.query.test.user.UserEntity;
 import win.doyto.query.validation.CreateGroup;
@@ -34,8 +34,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class RoleEntity extends AbstractPersistable<Integer> {
-
+public class RoleEntity extends AbstractCommonEntity<Integer, Long> {
     @NotNull(groups = CreateGroup.class)
     private String roleName;
 
@@ -53,6 +52,6 @@ public class RoleEntity extends AbstractPersistable<Integer> {
     private List<PermEntity> perms;
 
     // many-to-one
-    @DomainPath(value = "user", localField = "create_user_id")
+    @DomainPath(value = "user", localField = "createUserId")
     private UserEntity createUser;
 }

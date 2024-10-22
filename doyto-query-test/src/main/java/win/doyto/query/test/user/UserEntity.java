@@ -16,14 +16,18 @@
 
 package win.doyto.query.test.user;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.entity.AbstractPersistable;
+import win.doyto.query.annotation.EnumType;
+import win.doyto.query.annotation.Enumerated;
+import win.doyto.query.entity.AbstractCommonEntity;
 import win.doyto.query.test.menu.MenuEntity;
 import win.doyto.query.test.perm.PermEntity;
 import win.doyto.query.test.role.RoleEntity;
 import win.doyto.query.test.role.RoleStatView;
+import win.doyto.query.validation.CreateGroup;
 
 import java.util.List;
 
@@ -35,9 +39,19 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class UserEntity extends AbstractPersistable<Long> {
+public class UserEntity extends AbstractCommonEntity<Long, Long> {
+    @NotNull(groups = CreateGroup.class)
     private String username;
     private String email;
+    private String mobile;
+
+    @NotNull(groups = CreateGroup.class)
+    private String password;
+    private String nickname;
+    private Boolean valid;
+    private String memo;
+    @Enumerated(EnumType.STRING)
+    private UserLevel userLevel;
 
     // many-to-many
     @DomainPath({"user", "role"})
@@ -52,11 +66,14 @@ public class UserEntity extends AbstractPersistable<Long> {
     private List<MenuEntity> menus;
 
     // many-to-one
-    @DomainPath(value = "user", localField = "create_user_id")
+    @DomainPath(value = "user", localField = "createUserId")
     private UserEntity createUser;
 
+    @DomainPath(value = "user", foreignField = "createUserId")
+    private List<UserEntity> createdUsers;
+
     // one-to-many
-    @DomainPath(value = "role", foreignField = "create_user_id")
+    @DomainPath(value = "role", foreignField = "createUserId")
     private List<RoleEntity> createRoles;
 
     // many-to-many aggregation

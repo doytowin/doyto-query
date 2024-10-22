@@ -20,6 +20,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 /**
  * RoleRowMapper
@@ -36,6 +37,12 @@ public class RoleRowMapper implements RowMapper<RoleEntity> {
         roleEntity.setRoleName(rs.getString("roleName"));
         roleEntity.setRoleCode(rs.getString("roleCode"));
         roleEntity.setValid(rs.getBoolean("valid"));
+        Timestamp timestamp = rs.getTimestamp("createTime");
+        roleEntity.setCreateTime(timestamp == null ? null : timestamp.toLocalDateTime());
+        roleEntity.setCreateUserId(rs.getLong("createUserId"));
+        timestamp = rs.getTimestamp("updateTime");
+        roleEntity.setUpdateTime(timestamp == null ? null : timestamp.toLocalDateTime());
+        roleEntity.setUpdateUserId(rs.getLong("updateUserId"));
         return roleEntity;
     }
 }
