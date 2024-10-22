@@ -77,7 +77,7 @@ public class ColumnUtil {
         return fields;
     }
 
-    private static Field[] filterFields(Class<?> queryClass) {
+    public static Field[] filterFields(Class<?> queryClass) {
         return filterFields(queryClass, ColumnUtil::shouldRetain).toArray(Field[]::new);
     }
 
