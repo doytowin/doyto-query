@@ -3,71 +3,56 @@
 [![Code Lines](https://sonarcloud.io/api/project_badges/measure?project=win.doyto%3Adoyto-query&metric=ncloc)](https://sonarcloud.io/component_measures?id=win.doyto%3Adoyto-query&metric=ncloc)
 [![Coverage Status](https://sonarcloud.io/api/project_badges/measure?project=win.doyto%3Adoyto-query&metric=coverage)](https://sonarcloud.io/component_measures?id=win.doyto%3Adoyto-query&metric=coverage)
 
-DoytoQuery - The First Implementation of Object SQL Mapping for Java Applications Over Relational Databases
+DoytoQuery - A Dynamic Query Language Implemented in Java for CRUD
 ---
 
 ## Introduction
 
-DoytoQuery is a powerful and easy-to-use Object SQL Mapping (OSM) framework for Java applications over relational databases. 
-Unlike object-relational mapping (ORM), which attempts to directly map the object model and the relational model,
-OSM introduces SQL as an intermediary between the object model and the relational model 
-and concludes a set of solutions to map objects to SQL statements.
-
-## The Mapping Solutions
-- [The Query Mapping Solution in DoytoQuery](https://blog.doyto.win/post/the-query-mapping-solution-in-doyto-query/)
-- [The Paging and Sorting Solution in DoytoQuery](https://blog.doyto.win/post/paging-and-sorting-en/)
-- The Improved CRUD Solution in DoytoQuery
-- [The Related Query Solution in DoytoQuery](https://blog.doyto.win/post/the-related-query-solution-in-doyto-query/)
-- The Conditional Related Query Solution in DoytoQuery
-- [The Aggregation Solution in DoytoQuery](https://blog.doyto.win/post/the-aggregation-query-solution-in-doyto-query/)
-- The Natural Joins Mapping Solution
-- The Associative Table Solution in DoytoQuery
-- The Sharding Solution in DoytoQuery
-
-## Features
-
-- Data Access Layer
-  - CRUD operations for single/sharding table.
-  - CRD operations for associative table.
-  - Query with related entities and views.
-- Service Layer
-  - CRUD methods.
-  - Second-Level Cache.
-  - UserId Injection.
-  - EntityAspect Extensions.
-- Controller Layer
-  - Support RESTFul API.
-  - ErrorCode Pre-definition.
-  - Exception Assertion.
-  - Exception Handler.
-  - JsonResponse Wrapper.
-  - Request/Entity/Response Transition.
-  - Group Validation.
-- Seamless integration with Spring WebMvc.
-- Supported Databases
-    - MySQL
-    - Oracle
-    - SQL Server
-    - PostgreSQL
-    - SQLite
-    - HSQLDB
-    - MongoDB
+DoytoQuery implements a dynamic query language which generates query statements from objects.
+Entity/view objects are used to generate table names and columns, 
+while query/having objects are used to dynamically generate query conditions.
+Each field defined in the query object is used to represent a query condition. 
+When executing query, the query condition corresponding to the assigned field will be combined into the query clause, 
+thereby completing the dynamic construction of SQL statements with entity/view objects.
 
 ## Quick Usage
 
-For a `UserEntity` defined as follows:
+1. Initialize the project on Spring Initializer with the following 4 dependencies:
+* Lombok
+* Spring Web
+* Validation
+* \<A database driver>
+
+2. Add DoytoQuery dependencies in pom.xml:
+```xml
+<dependency>
+    <groupId>win.doyto</groupId>
+    <artifactId>doyto-query-jdbc</artifactId>
+    <version>2.1.0</version>
+</dependency>
+<dependency>
+    <groupId>win.doyto</groupId>
+    <artifactId>doyto-query-web</artifactId>
+    <version>2.1.0</version>
+</dependency>
+<dependency>
+    <groupId>win.doyto</groupId>
+    <artifactId>doyto-query-dialect</artifactId>
+    <version>2.1.0</version>
+</dependency>
+```
+
+3. Define entity and query objects for a table:
 ```java
 @Getter
 @Setter
 @Entity(name = "user")
 public class UserEntity extends AbstractPersistable<Long> {
     private String username;
-    private String email;
+    private Integer age;
     private Boolean valid;
 }
-```
-we can define a query object to query data from database as follows:
-```java
+
 @Getter
 @Setter
 @SuperBuilder
@@ -75,11 +60,13 @@ we can define a query object to query data from database as follows:
 @AllArgsConstructor
 public class UserQuery extends PageQuery {
     private String username;
-    private String emailLike;
+    private Integer ageGe;
+    private Integer ageLt;
     private Boolean valid;
 }
 ```
-and invoke the [`DataAccess#query(Q)`](https://github.com/doytowin/doyto-query/blob/main/doyto-query-api/src/main/java/win/doyto/query/core/DataAccess.java) method like this:
+
+Invoke the [`DataAccess#query(Q)`](https://github.com/doytowin/doyto-query/blob/main/doyto-query-api/src/main/java/win/doyto/query/core/DataAccess.java) method in `UserService`:
 ```java
 @Service
 public class UserService extends AbstractCrudService<UserEntity, Long, UserQuery> {
@@ -92,7 +79,15 @@ public class UserService extends AbstractCrudService<UserEntity, Long, UserQuery
 }
 ```
 
-Please refer to the [demo](https://github.com/doytowin/doyto-query-demo) for more details.
+And a controller to support RESTful API:
+```java
+@RestController
+@RequestMapping("user")
+public class UserController extends AbstractEIQController<UserEntity, Integer, UserQuery> {
+}
+```
+
+Refer to the [demo](https://github.com/doytowin/doyto-query-demo) for more details.
 
 ## Architecture for 0.3.x and newer
 
@@ -111,28 +106,14 @@ Please refer to the [demo](https://github.com/doytowin/doyto-query-demo) for mor
 | doyto-query-web        | [![web-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-web/)               | [![web-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-web/)               |
 | doyto-query-dialect    | [![dialect-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-dialect/)       | [![dialect-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-dialect/)       |
 
-## Related Resources
-
-- Frameworks
-    - [doyto-query](https://github.com/doytowin/doyto-query)
-    - [doyto-query-reactive](https://github.com/doytowin/doyto-query-reactive)
-    - [doyto-query-mongodb](https://github.com/doytowin/doyto-query-mongodb)
-    - [doyto-query-language](https://github.com/doytowin/doyto-query-language)
-
-- DevOps
-    - [OSS](https://github.com/doytowin/doyto-oss-parent)
-    - [Workflows](https://github.com/doytowin/doyto-devops)
-    - [Templates](https://github.com/doytowin/doyto-query-template)
-    - [Images](https://github.com/doytowin/doyto-query-image)
-
-- Projects
-    - [Demo](https://github.com/doytowin/doyto-query-demo)
-    - [Idea plugin](https://github.com/doytowin/doyto-query-intellij-plugin)
-    - [I18n management service](https://github.com/doytowin/doyto-service-i18n)
-    - [Code generator service](https://github.com/doytowin/doyto-service-generator)
-
-- Documentation
-    - [https://query.doyto.win/](https://query.doyto.win/)
+## Supported Databases
+- MySQL
+- Oracle
+- SQL Server
+- PostgreSQL
+- SQLite
+- HSQLDB
+- MongoDB
 
 License
 -------
