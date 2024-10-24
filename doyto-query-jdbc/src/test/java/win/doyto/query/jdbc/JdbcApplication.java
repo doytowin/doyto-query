@@ -20,6 +20,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.AssociationService;
 import win.doyto.query.entity.UserIdProvider;
 
@@ -31,6 +32,11 @@ import win.doyto.query.entity.UserIdProvider;
 @SpringBootApplication
 @EnableTransactionManagement(proxyTargetClass = true)
 public class JdbcApplication {
+    static {
+        GlobalConfiguration.registerJoinTable("role", "user", "a_user_and_role");
+        GlobalConfiguration.registerJoinTable("perm", "role", "a_role_and_perm");
+    }
+
     public static void main(String[] args) {
         SpringApplication.run(JdbcApplication.class);
     }

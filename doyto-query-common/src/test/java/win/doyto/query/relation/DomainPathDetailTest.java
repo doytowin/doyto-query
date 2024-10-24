@@ -16,11 +16,13 @@
 
 package win.doyto.query.relation;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.config.GlobalConfiguration;
 
 import java.lang.reflect.Field;
 import java.util.stream.Stream;
@@ -34,6 +36,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @since 1.0.0
  */
 class DomainPathDetailTest {
+
+    @BeforeAll
+    static void beforeAll() {
+        GlobalConfiguration.registerJoinTable("role", "user", "a_user_and_role");
+        GlobalConfiguration.registerJoinTable("perm", "role", "a_role_and_perm");
+    }
+
     static Stream<Arguments> domainPathProvider() {
         return Stream.of(
                 Arguments.of(
@@ -49,13 +58,13 @@ class DomainPathDetailTest {
                         new String[]{"a_user_and_role", "a_role_and_perm"}
                 ),
                 Arguments.of(
-                        new String[]{"role", "~", "user"},
+                        new String[]{"role", "user"},
                         new String[]{"role", "user"},
                         new String[]{"role_id", "user_id"},
                         new String[]{"a_user_and_role"}
                 ),
                 Arguments.of(
-                        new String[]{"perm", "~", "role", "~", "user"},
+                        new String[]{"perm", "role", "user"},
                         new String[]{"perm", "role", "user"},
                         new String[]{"perm_id", "role_id", "user_id"},
                         new String[]{"a_role_and_perm", "a_user_and_role"}

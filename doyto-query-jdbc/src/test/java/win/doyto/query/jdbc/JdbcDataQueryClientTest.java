@@ -19,15 +19,14 @@ package win.doyto.query.jdbc;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import win.doyto.query.core.DataAccess;
 import win.doyto.query.core.PageList;
+import win.doyto.query.test.menu.MenuEntity;
 import win.doyto.query.test.menu.MenuQuery;
-import win.doyto.query.test.menu.MenuView;
-import win.doyto.query.test.menu.MenuViewQuery;
 import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.role.RoleEntity;
 import win.doyto.query.test.role.RoleQuery;
-import win.doyto.query.test.role.RoleView;
-import win.doyto.query.test.role.RoleViewQuery;
 import win.doyto.query.test.user.*;
 
 import javax.annotation.Resource;
@@ -44,20 +43,26 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
     @Resource
     private JdbcDataQueryClient jdbcDataQueryClient;
 
+    private DataAccess<RoleEntity, Integer, RoleQuery> roleDataAccess;
+
+    public JdbcDataQueryClientTest(@Autowired DatabaseOperations databaseOperations) {
+        this.roleDataAccess = new JdbcDataAccess<>(databaseOperations, RoleEntity.class);
+    }
+
     @Test
     void queryForJoin() {
         UserQuery usersQuery = UserQuery.builder().build();
-        RoleViewQuery roleQuery = RoleViewQuery.builder().user(usersQuery).withUsers(usersQuery).sort("id,asc").build();
-        List<RoleView> roleViews = jdbcDataQueryClient.query(roleQuery);
-        assertThat(roleViews)
-                .extracting(roleView -> roleView.getUsers().size())
+        RoleQuery roleQuery = RoleQuery.builder().user(usersQuery).withUsers(usersQuery).sort("id,asc").build();
+        List<RoleEntity> roleEntities = roleDataAccess.query(roleQuery);
+        assertThat(roleEntities)
+                .extracting(roleEntity -> roleEntity.getUsers().size())
                 .containsExactly(3, 2);
     }
 
     @Test
     void countForGroupBy() {
-        RoleViewQuery roleQuery = RoleViewQuery.builder().user(new UserQuery()).build();
-        long count = jdbcDataQueryClient.count(roleQuery);
+        RoleQuery roleQuery = RoleQuery.builder().user(new UserQuery()).build();
+        long count = roleDataAccess.count(roleQuery);
         assertThat(count).isEqualTo(2);
     }
 
@@ -74,7 +79,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
 
     @Test
     void pageForJoinWithSize10() {
-        PageList<MenuView> page = jdbcDataQueryClient.page(MenuQuery.builder().build(), MenuView.class);
+        PageList<MenuEntity> page = jdbcDataQueryClient.page(MenuQuery.builder().build(), MenuEntity.class);
         assertThat(page.getTotal()).isEqualTo(12);
         assertThat(page.getList()).hasSize(10);
     }
@@ -108,12 +113,12 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
 
     @Test
     void queryRoleWithUsersAndPerms() {
-        RoleViewQuery roleQuery = RoleViewQuery.builder()
-                                               .withUsers(new UserQuery())
-                                               .withPerms(new PermissionQuery())
-                                               .build();
+        RoleQuery roleQuery = RoleQuery.builder()
+                                       .withUsers(new UserQuery())
+                                       .withPerms(new PermissionQuery())
+                                       .build();
 
-        List<RoleEntity> roles = jdbcDataQueryClient.query(roleQuery, RoleEntity.class);
+        List<RoleEntity> roles = roleDataAccess.query(roleQuery);
 
         assertThat(roles)
                 .extracting("perms")
@@ -127,11 +132,11 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
 
     @Test
     void queryRoleWithCreateUser() {
-        RoleViewQuery roleQuery = RoleViewQuery.builder().withCreateUser(new UserQuery()).build();
+        RoleQuery roleQuery = RoleQuery.builder().withCreateUser(new UserQuery()).build();
 
-        List<RoleView> roles = jdbcDataQueryClient.query(roleQuery);
+        List<RoleEntity> roles = roleDataAccess.query(roleQuery);
 
-        assertThat(roles).map(RoleView::getCreateUser)
+        assertThat(roles).map(RoleEntity::getCreateUser)
                          .extracting(userView -> userView == null ? null : userView.getId())
                          .containsExactly(1L, 2L, 2L, null, null);
     }
@@ -183,14 +188,14 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
     @Test
     void queryParentMenuForMenu10WithParentAndValidChildrenMenu() {
         MenuQuery parentForMenu10 = MenuQuery.builder().id(10L).build();
-        MenuViewQuery menuQuery = MenuViewQuery.builder()
-                                               .children(parentForMenu10)
-                                               .withParent(new MenuQuery())
-                                               .withChildren(MenuQuery.builder().valid(true).build())
-                                               .build();
-        List<MenuView> menus = jdbcDataQueryClient.query(menuQuery);
+        MenuQuery menuQuery = MenuQuery.builder()
+                                       .children(parentForMenu10)
+                                       .withParent(new MenuQuery())
+                                       .withChildren(MenuQuery.builder().valid(true).build())
+                                       .build();
+        List<MenuEntity> menus = jdbcDataQueryClient.query(menuQuery, MenuEntity.class);
         assertThat(menus).hasSize(1);
-        MenuView menu = menus.get(0);
+        MenuEntity menu = menus.get(0);
         assertThat(menu.getId()).isEqualTo(4);
         assertThat(menu.getParent().getId()).isEqualTo(1);
         assertThat(menu.getChildren()).hasSize(3);

@@ -19,27 +19,24 @@ package win.doyto.query.test.perm;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.entity.Persistable;
-import win.doyto.query.test.user.UserView;
+import win.doyto.query.entity.AbstractPersistable;
+import win.doyto.query.test.user.UserEntity;
 
 import javax.persistence.Id;
 import java.util.List;
 
 /**
- * PermView
+ * PermEntity
  *
  * @author f0rb on 2022-03-26
  */
 @Getter
 @Setter
-public class PermView implements Persistable<Integer> {
-
-    @Id
-    private Integer id;
+public class PermEntity extends AbstractPersistable<Integer> {
     private String permName;
     private Boolean valid;
 
-    @DomainPath({"perm", "~", "role", "~", "user"})
-    private List<UserView> users;
+    @DomainPath({"perm", "role", "user"})
+    private List<UserEntity> users;
 
 }

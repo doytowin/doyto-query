@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.ComplexView;
 import win.doyto.query.annotation.CompositeView;
 import win.doyto.query.annotation.View;
+import win.doyto.query.annotation.*;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.*;
 import win.doyto.query.sql.field.FieldMapper;
@@ -73,7 +74,7 @@ public class BuildHelper {
 
     public static String resolveTableName(View... views) {
         return Arrays.stream(views)
-                     .filter(view -> !view.context())
+                     .filter(view -> view.type() != ViewType.NESTED && !view.context())
                      .map(view -> {
                          String tableName = BuildHelper.defaultTableName(view.value());
                          String alias = view.alias();
@@ -110,8 +111,7 @@ public class BuildHelper {
         Class<?> havingClass = having.getClass();
         Field[] fields = Arrays.stream(ColumnUtil.initFields(havingClass, FieldMapper::init))
                                .filter(f -> f.getDeclaringClass() == havingClass).toArray(Field[]::new);
-        String clause = buildCondition(fields, having, argList, EMPTY, AND);
-        return clause.isEmpty() ? clause : HAVING + clause;
+        return buildCondition(fields, having, argList, EMPTY, HAVING, AND);
     }
 
     public static String buildCondition(String prefix, Object query, List<Object> argList) {
@@ -128,12 +128,12 @@ public class BuildHelper {
             queryClass = queryClass.getSuperclass();
         }
         Field[] fields = ColumnUtil.initFields(queryClass, FieldMapper::init);
-        String clause = buildCondition(fields, query, argList, alias, AND);
-        return clause.isEmpty() ? clause : prefix + clause;
+        return buildCondition(fields, query, argList, alias, prefix, AND);
     }
 
-    public static String buildCondition(Field[] fields, Object query, List<Object> argList, String alias, String connector) {
-        StringJoiner conditionJoiner = new StringJoiner(connector);
+    public static String buildCondition(Field[] fields, Object query, List<Object> argList, String alias, String prefix, String connector) {
+        StringJoiner conditionJoiner = new StringJoiner(connector, prefix, EMPTY);
+        conditionJoiner.setEmptyValue(EMPTY);
         for (Field field : fields) {
             Object value = readFieldGetter(field, query);
             if (isValidValue(value, field)) {

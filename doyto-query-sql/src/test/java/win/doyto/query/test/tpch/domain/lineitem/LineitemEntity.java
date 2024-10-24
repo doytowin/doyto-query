@@ -22,6 +22,7 @@ import win.doyto.query.annotation.ForeignKey;
 import win.doyto.query.entity.AbstractPersistable;
 import win.doyto.query.test.tpch.domain.orders.OrdersEntity;
 import win.doyto.query.test.tpch.domain.part.PartEntity;
+import win.doyto.query.test.tpch.domain.partsupp.PartsuppEntity;
 import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
 
 import java.math.BigDecimal;
@@ -40,9 +41,11 @@ public class LineitemEntity extends AbstractPersistable<Long> {
     @ForeignKey(entity = OrdersEntity.class, field = "o_orderkey")
     private Integer l_orderkey;
 
+    @ForeignKey(entity = PartsuppEntity.class, field = "ps_suppkey")
     @ForeignKey(entity = SupplierEntity.class, field = "s_suppkey")
     private Integer l_suppkey;
 
+    @ForeignKey(entity = PartsuppEntity.class, field = "ps_partkey")
     @ForeignKey(entity = PartEntity.class, field = "p_partkey")
     private Integer l_partkey;
 

@@ -22,8 +22,7 @@ import win.doyto.query.util.ColumnUtil;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import static win.doyto.query.sql.Constant.CP;
-import static win.doyto.query.sql.Constant.OP;
+import static win.doyto.query.sql.Constant.*;
 
 /**
  * ConnectableFieldProcessor
@@ -43,7 +42,7 @@ public class ConnectableFieldProcessor implements FieldProcessor {
 
     @Override
     public String process(String alias, List<Object> argList, Object value) {
-        String clause = BuildHelper.buildCondition(fields, value, argList, alias, connector);
-        return clause.length() == 0 ? null : OP + clause + CP;
+        String clause = BuildHelper.buildCondition(fields, value, argList, alias, EMPTY, connector);
+        return clause.isEmpty() ? null : OP + clause + CP;
     }
 }

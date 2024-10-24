@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.tpch.q15;
+package win.doyto.query.sql.q15;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -44,3 +44,4 @@ public class RevenueView {
     @Column(name = "SUM(l_extendedprice * (1 - l_discount))")
     private BigDecimal total_revenue;
 }
+

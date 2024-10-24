@@ -26,6 +26,7 @@ import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
 import win.doyto.query.test.tpch.domain.part.PartEntity;
 import win.doyto.query.test.tpch.domain.part.PartQuery;
+import win.doyto.query.test.tpch.domain.partsupp.PartsuppEntity;
 
 /**
  * SuppkeyQuery
@@ -41,6 +42,6 @@ import win.doyto.query.test.tpch.domain.part.PartQuery;
 public class SuppkeyQuery extends PageQuery {
     @Subquery(select = "p_partkey", from = PartEntity.class)
     private PartQuery ps_partkeyIn;
-    @Subquery(select = "0.5 * SUM(l_quantity)", from = LineitemEntity.class)
+    @Subquery(select = "0.5 * SUM(l_quantity)", host = PartsuppEntity.class, from = LineitemEntity.class)
     private AvailableQtyQuery ps_availqtyGt;
 }

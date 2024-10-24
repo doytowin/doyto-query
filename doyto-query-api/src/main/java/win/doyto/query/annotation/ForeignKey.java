@@ -16,6 +16,7 @@
 
 package win.doyto.query.annotation;
 
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -30,6 +31,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target(FIELD)
 @Retention(RUNTIME)
+@Repeatable(ForeignKeys.class)
 public @interface ForeignKey {
 
     Class<?> entity();

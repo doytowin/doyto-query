@@ -72,6 +72,7 @@ public class UserQuery extends PageQuery {
     private PermissionQuery withPerms;
     private MenuQuery withMenus;
     private UserQuery withCreateUser;
+    private UserQuery withCreatedUsers;
     private RoleQuery withCreateRoles;
 
     public void setAccount(String account) {

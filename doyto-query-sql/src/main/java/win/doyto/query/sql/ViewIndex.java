@@ -20,6 +20,8 @@ import lombok.Getter;
 import win.doyto.query.annotation.View;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * ViewIndex
@@ -44,13 +46,17 @@ class ViewIndex {
     private int vote = 0; // entity is available for foreign key connection when vote >= 0
 
     static ViewIndex searchEntity(List<ViewIndex> viewList, Class<?> entity) {
-        for (ViewIndex viewIndex : viewList) {
-            if (viewIndex.lookup(entity)) {
-                viewIndex.voteDown();
-                return viewIndex;
-            }
+        List<ViewIndex> list = viewList.stream().filter(vi -> vi.entity == entity).collect(Collectors.toList());
+        if (list.size() > 1) {
+            Optional<ViewIndex> first = list.stream().filter(ViewIndex::valid).findFirst();
+            first.ifPresent(ViewIndex::voteDown);
+            return first.orElse(null);
         }
-        return null;
+        return list.size() == 1 ? list.get(0) : null;
+    }
+
+    boolean valid() {
+        return vote >= 0;
     }
 
     void voteUp() {
@@ -65,7 +71,4 @@ class ViewIndex {
         return alias.isEmpty() ? "" : alias + ".";
     }
 
-    private boolean lookup(Class<?> entity) {
-        return vote >= 0 && this.entity == entity;
-    }
 }

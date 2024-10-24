@@ -21,31 +21,31 @@ import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.entity.AbstractPersistable;
-import win.doyto.query.test.user.UserView;
+import win.doyto.query.test.user.UserEntity;
 
 import java.util.List;
 
 /**
- * MenuView
+ * MenuEntity
  *
  * @author f0rb on 2022-04-13
  */
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-public class MenuView extends AbstractPersistable<Integer> {
+public class MenuEntity extends AbstractPersistable<Integer> {
 
     private String menuName;
     private String platform;
 
-    @DomainPath({"menu", "~", "perm",  "~", "role", "~", "user"})
-    private List<UserView> users;
+    @DomainPath({"menu", "~", "perm", "~", "role", "~", "user"})
+    private List<UserEntity> users;
 
     // many-to-one
     @DomainPath(value = "menu", localField = "parent_id")
-    private MenuView parent;
+    private MenuEntity parent;
 
     // one-to-many
     @DomainPath(value = "menu", foreignField = "parent_id")
-    private List<MenuView> children;
+    private List<MenuEntity> children;
 }

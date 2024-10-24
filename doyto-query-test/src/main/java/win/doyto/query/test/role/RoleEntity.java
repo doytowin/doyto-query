@@ -20,8 +20,8 @@ import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.entity.AbstractCommonEntity;
-import win.doyto.query.test.perm.PermView;
-import win.doyto.query.test.user.UserView;
+import win.doyto.query.test.perm.PermEntity;
+import win.doyto.query.test.user.UserEntity;
 import win.doyto.query.validation.CreateGroup;
 
 import javax.validation.constraints.NotNull;
@@ -35,7 +35,6 @@ import java.util.List;
 @Getter
 @Setter
 public class RoleEntity extends AbstractCommonEntity<Integer, Long> {
-
     @NotNull(groups = CreateGroup.class)
     private String roleName;
 
@@ -45,14 +44,14 @@ public class RoleEntity extends AbstractCommonEntity<Integer, Long> {
     private Boolean valid;
 
     // many-to-many
-    @DomainPath({"role", "~", "user"})
-    private List<UserView> users;
+    @DomainPath({"role", "user"})
+    private List<UserEntity> users;
 
     // many-to-many
     @DomainPath({"role", "perm"})
-    private List<PermView> perms;
+    private List<PermEntity> perms;
 
     // many-to-one
-    @DomainPath(value = "user", localField = "create_user_id")
-    private UserView createUser;
+    @DomainPath(value = "user", localField = "createUserId")
+    private UserEntity createUser;
 }
