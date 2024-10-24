@@ -15,13 +15,15 @@ Each field defined in the query object is used to represent a query condition.
 When executing query, the query condition corresponding to the assigned field will be combined into the query clause, 
 thereby completing the dynamic construction of SQL statements with entity/view objects.
 
+Refer to the [docs](https://query.docs.doyto.win/) for more details.
+
 ## Quick Usage
 
 1. Initialize the project on Spring Initializer with the following 4 dependencies:
 * Lombok
 * Spring Web
 * Validation
-* \<A database driver>
+* \[A database driver]
 
 2. Add DoytoQuery dependencies in pom.xml:
 ```xml
@@ -71,9 +73,9 @@ Invoke the [`DataAccess#query(Q)`](https://github.com/doytowin/doyto-query/blob/
 @Service
 public class UserService extends AbstractCrudService<UserEntity, Long, UserQuery> {
     public List<UserEntity> findValidGmailUsers() {
-        UserQuery userQuery = UserQuery.builder().emailLike("@gmail.com").valid(true).pageSize(10).build();
-        // Executed SQL: SELECT username, email, valid, id FROM t_user WHERE email LIKE ? AND valid = ? LIMIT 10 OFFSET 0
-        // Parameters  : %@gmail.com%(java.lang.String), true(java.lang.Boolean)
+        UserQuery userQuery = UserQuery.builder().ageGe(20).valid(true).pageSize(10).build();
+        // Executed SQL: SELECT username, email, valid, id FROM t_user WHERE age >= ? AND valid = ? LIMIT 10 OFFSET 0
+        // Parameters  : 20(java.lang.Integer), true(java.lang.Boolean)
         return dataAccess.query(userQuery);
     }
 }
@@ -83,7 +85,7 @@ And a controller to support RESTful API:
 ```java
 @RestController
 @RequestMapping("user")
-public class UserController extends AbstractEIQController<UserEntity, Integer, UserQuery> {
+public class UserController extends AbstractEIQController<UserEntity, Long, UserQuery> {
 }
 ```
 
