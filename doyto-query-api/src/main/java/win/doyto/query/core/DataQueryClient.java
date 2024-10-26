@@ -41,20 +41,4 @@ public interface DataQueryClient {
         return new PageList<>(query(query, viewClass), count(query, viewClass));
     }
 
-    default <V extends Persistable<I>, I extends Serializable, Q extends RelationalQuery<V, I>>
-    List<V> query(Q query) {
-        return query(query, query.getDomainClass());
-    }
-
-    default <V extends Persistable<I>, I extends Serializable, Q extends RelationalQuery<V, I>>
-    long count(Q query) {
-        return count(query, query.getDomainClass());
-    }
-
-    default <V extends Persistable<I>, I extends Serializable, Q extends RelationalQuery<V, I>>
-    PageList<V> page(Q query) {
-        return page(query, query.getDomainClass());
-    }
-
-    <V> List<V> aggregate(DoytoQuery query, Class<V> viewClass);
 }

@@ -70,7 +70,4 @@ class ViewIndex {
         return alias.isEmpty() ? "" : alias + ".";
     }
 
-    private boolean lookup(Class<?> entity) {
-        return vote >= 0 && this.entity == entity;
-    }
 }

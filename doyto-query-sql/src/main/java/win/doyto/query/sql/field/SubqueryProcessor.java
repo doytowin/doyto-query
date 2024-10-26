@@ -18,7 +18,6 @@ package win.doyto.query.sql.field;
 
 import win.doyto.query.annotation.Subquery;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Having;
 import win.doyto.query.sql.BuildHelper;
@@ -128,11 +127,6 @@ public class SubqueryProcessor implements FieldProcessor {
         clause += groupBy;
         if (value instanceof Having having) {
             clause += buildHaving(having, argList);
-        } else if (value instanceof AggregationQuery aggregationQuery) {
-            Having having = aggregationQuery.getHaving();
-            if (having != null) {
-                clause += buildHaving(having, argList);
-            }
         }
         return String.format(clauseFormat, clause);
     }

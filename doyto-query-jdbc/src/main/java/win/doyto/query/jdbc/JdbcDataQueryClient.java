@@ -81,11 +81,6 @@ public class JdbcDataQueryClient implements DataQueryClient {
         return databaseOperations.count(sqlAndArgs);
     }
 
-    @Override
-    public <V> List<V> aggregate(DoytoQuery query, Class<V> viewClass) {
-        return new JdbcAggregateChain<>(databaseOperations, viewClass).filter(query).query();
-    }
-
     <V extends Persistable<I>, I extends Serializable, Q>
     void querySubEntities(List<V> mainEntities, Q query, EntityMetadata entityMetadata) {
         if (mainEntities.isEmpty()) {

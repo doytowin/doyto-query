@@ -17,7 +17,6 @@
 package win.doyto.query.jdbc;
 
 import jakarta.annotation.Resource;
-import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,8 @@ import win.doyto.query.test.menu.MenuQuery;
 import win.doyto.query.test.perm.PermissionQuery;
 import win.doyto.query.test.role.RoleEntity;
 import win.doyto.query.test.role.RoleQuery;
-import win.doyto.query.test.user.*;
+import win.doyto.query.test.user.UserEntity;
+import win.doyto.query.test.user.UserQuery;
 
 import java.util.List;
 
@@ -70,8 +70,8 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
     void pageForJoin() {
         RoleQuery roleQuery = RoleQuery.builder().roleName("vip").build();
         RoleQuery rolesQuery = RoleQuery.builder().roleNameLike("vip").build();
-        UserViewQuery userViewQuery = UserViewQuery.builder().role(roleQuery).withRoles(rolesQuery).build();
-        PageList<UserEntity> page = jdbcDataQueryClient.page(userViewQuery);
+        UserQuery userQuery = UserQuery.builder().role(roleQuery).withRoles(rolesQuery).build();
+        PageList<UserEntity> page = jdbcDataQueryClient.page(userQuery, UserEntity.class);
         assertThat(page.getTotal()).isEqualTo(2);
         assertThat(page.getList()).extracting(UserEntity::getUsername).containsExactly("f0rb", "user4");
         assertThat(page.getList()).extracting(it -> it.getRoles().size()).containsExactly(1, 1);
@@ -86,10 +86,10 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
 
     @Test
     void queryUserWithRoles() {
-        UserViewQuery userViewQuery = UserViewQuery
+        UserQuery userQuery = UserQuery
                 .builder().withRoles(new RoleQuery()).withPerms(new PermissionQuery()).build();
 
-        List<UserEntity> users = jdbcDataQueryClient.query(userViewQuery);
+        List<UserEntity> users = jdbcDataQueryClient.query(userQuery, UserEntity.class);
 
         assertThat(users).extracting("roles")
                          .extractingResultOf("size", Integer.class)
@@ -105,7 +105,7 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
 
     @Test
     void shouldNotQuerySubDomainWhenItsQueryFieldIsNull() {
-        List<UserEntity> users = jdbcDataQueryClient.query(UserViewQuery.builder().build());
+        List<UserEntity> users = jdbcDataQueryClient.query(UserQuery.builder().build(), UserEntity.class);
         assertThat(users).hasSize(4);
         assertThat(users).extracting("roles").containsOnlyNulls();
         assertThat(users).extracting("perms").containsOnlyNulls();
@@ -150,14 +150,14 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
      */
     @Test
     void queryUserWithGrantedMenusAndCreatedRolesAndCreateUser() {
-        UserViewQuery userViewQuery = UserViewQuery
+        UserQuery userQuery = UserQuery
                 .builder()
                 .withMenus(new MenuQuery())
                 .withCreateUser(new UserQuery())
                 .withCreateRoles(new RoleQuery())
                 .build();
 
-        List<UserEntity> users = jdbcDataQueryClient.query(userViewQuery);
+        List<UserEntity> users = jdbcDataQueryClient.query(userQuery, UserEntity.class);
 
         assertThat(users).extracting("menus")
                          .extractingResultOf("size", Integer.class)
@@ -168,20 +168,6 @@ class JdbcDataQueryClientTest extends JdbcApplicationTest {
         assertThat(users).extracting("createRoles")
                          .extractingResultOf("size", Integer.class)
                          .containsExactly(1, 2, 0, 0);
-    }
-
-    @Test
-    void supportAggregateQuery() {
-        UserLevelHaving having = new UserLevelHaving();
-        List<UserLevelCountView> userLevelCountViews = jdbcDataQueryClient.aggregate(having, UserLevelCountView.class);
-        assertThat(userLevelCountViews)
-                .hasSize(3)
-                .extracting("userLevel", "valid", "count")
-                .containsExactlyInAnyOrder(
-                        new Tuple(UserLevel.高级, true, 1L),
-                        new Tuple(UserLevel.普通, false, 1L),
-                        new Tuple(UserLevel.普通, true, 2L)
-                );
     }
 
     @DisplayName("An example for the combination of nested query and related query")

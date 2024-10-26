@@ -21,9 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import win.doyto.query.annotation.Join;
 import win.doyto.query.annotation.View;
-import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DoytoQuery;
-import win.doyto.query.core.Having;
 import win.doyto.query.core.Query;
 import win.doyto.query.util.CommonUtil;
 
@@ -46,11 +44,6 @@ import static win.doyto.query.sql.Constant.*;
 public class RelationalQueryBuilder {
 
     public static final String KEY_COLUMN = "MAIN_ENTITY_ID";
-
-    public static SqlAndArgs buildSelectAndArgs(DoytoQuery query, Class<?> viewClass) {
-        EntityMetadata entityMetadata = EntityMetadata.build(viewClass);
-        return SqlAndArgs.buildSqlWithArgs(argList -> buildSelect(query, entityMetadata, argList));
-    }
 
     public static SqlAndArgs buildSelectAndArgs(DoytoQuery query, EntityMetadata entityMetadata) {
         return SqlAndArgs.buildSqlWithArgs(argList -> buildSelect(query, entityMetadata, argList));
@@ -101,9 +94,6 @@ public class RelationalQueryBuilder {
             sqlBuilder.append(buildCondition(AND, query, argList));
         }
         sqlBuilder.append(entityMetadata.getGroupBySql());
-        if (query instanceof AggregationQuery aggregationQuery) {
-            sqlBuilder.append(buildHaving(aggregationQuery.getHaving(), argList));
-        }
         sqlBuilder.append(buildOrderBy(query));
         return buildPaging(sqlBuilder.toString(), query);
     }
@@ -127,13 +117,6 @@ public class RelationalQueryBuilder {
                   .append(hostTable)
                   .append(onConditions)
                   .append(andConditions);
-    }
-
-    static String buildHaving(Having having, List<Object> argList) {
-        if (having == null) {
-            return EMPTY;
-        }
-        return buildCondition(HAVING, having, argList);
     }
 
     public static SqlAndArgs buildCountAndArgs(DoytoQuery query, Class<?> entityClass) {
