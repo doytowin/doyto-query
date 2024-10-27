@@ -45,6 +45,7 @@ public class MenuQuery extends PageQuery {
     @DomainPath(value = "menu", foreignField = "parentId")
     private MenuQuery children;
 
+    private UserQuery withUsers;
     @DomainPath({"menu", "~", "perm",  "~", "role", "~", "user"})
     private UserQuery user;
 

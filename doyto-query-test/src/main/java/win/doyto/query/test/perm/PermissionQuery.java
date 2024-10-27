@@ -42,6 +42,7 @@ public class PermissionQuery extends PageQuery {
     private RoleQuery role;
     private RoleQuery roleQuery;
 
+    private UserQuery withUsers;
     @DomainPath({"perm", "role", "user"})
     private UserQuery user;
 
