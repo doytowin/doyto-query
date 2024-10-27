@@ -21,7 +21,10 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.*;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.core.*;
+import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.core.Having;
+import win.doyto.query.core.LockMode;
+import win.doyto.query.core.QuerySuffix;
 import win.doyto.query.sql.field.FieldMapper;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
@@ -99,7 +102,7 @@ public class BuildHelper {
         return SELECT + StringUtils.join(columns, SEPARATOR) + FROM + table + SPACE + TABLE_ALIAS;
     }
 
-    public static String buildWhere(Query query, List<Object> argList) {
+    public static String buildWhere(DoytoQuery query, List<Object> argList) {
         return buildCondition(WHERE, query, argList);
     }
 
