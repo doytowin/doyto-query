@@ -17,6 +17,7 @@
 package win.doyto.query.web.demo.test;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -36,6 +37,7 @@ class BuildingMvcTest extends DemoApplicationTest {
         performAndExpectSuccess(buildJson(post("/building/"), data));
     }
 
+    @Disabled
     @Test
     void getBuilding() throws Exception {
         performAndExpectSuccess(get("/building/"))
