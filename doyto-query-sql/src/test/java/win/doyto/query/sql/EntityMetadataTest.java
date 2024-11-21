@@ -64,7 +64,7 @@ class EntityMetadataTest {
     @Test
     void resolveSelectColumns() {
         String columns = EntityMetadata.buildViewColumns(MenuEntity.class);
-        assertEquals("id, menu_name AS menuName, platform", columns);
+        assertEquals("id, parent_id AS parentId, menu_name AS menuName, platform, memo, valid", columns);
     }
 
     /**

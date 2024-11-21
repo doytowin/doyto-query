@@ -101,14 +101,14 @@ class RelationalQueryBuilderTest {
 
         String expected = """
 
-                SELECT ? AS MAIN_ENTITY_ID, id, menuName, platform FROM t_menu
+                SELECT ? AS MAIN_ENTITY_ID, id, parentId, menuName, platform, memo, valid FROM t_menu
                 WHERE id IN (
                   SELECT menu_id FROM a_perm_and_menu WHERE perm_id IN (
                   SELECT perm_id FROM a_role_and_perm WHERE role_id IN (
                   SELECT role_id FROM a_user_and_role WHERE user_id = ?
                 )))
                 UNION ALL
-                SELECT ? AS MAIN_ENTITY_ID, id, menuName, platform FROM t_menu
+                SELECT ? AS MAIN_ENTITY_ID, id, parentId, menuName, platform, memo, valid FROM t_menu
                 WHERE id IN (
                   SELECT menu_id FROM a_perm_and_menu WHERE perm_id IN (
                   SELECT perm_id FROM a_role_and_perm WHERE role_id IN (
