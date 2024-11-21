@@ -37,6 +37,6 @@ import win.doyto.query.core.PageQuery;
 @AllArgsConstructor
 public class NationalMarketShareQuery extends PageQuery {
     @Transient
-    private String nationEq;
+    private String nation;
     private AllNationsQuery allNationsQuery;
 }

@@ -37,9 +37,9 @@ import java.util.List;
 @AllArgsConstructor
 public class ShippingModesAndOrderPriorityQuery extends PageQuery {
     @Transient
-    private String o_orderpriority1;
+    private List<String> o_orderpriorityOr;
     @Transient
-    private String o_orderpriority2;
+    private List<String> o_orderpriorityNeAnd;
 
     private List<String> l_shipmodeIn;
 

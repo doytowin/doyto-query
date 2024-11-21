@@ -381,7 +381,7 @@ class TpcHTest {
 
         NationalMarketShareQuery query = NationalMarketShareQuery
                 .builder()
-                .nationEq("BRAZIL")
+                .nation("BRAZIL")
                 .allNationsQuery(allNationsQuery).sort("o_year")
                 .build();
         SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, NationalMarketShareView.class);
@@ -498,7 +498,7 @@ class TpcHTest {
     @Test
     void q12ShippingModesAndOrderPriorityQuery() {
         String expected = "SELECT l_shipmode," +
-                " SUM(CASE WHEN o_orderpriority = ? OR o_orderpriority = ? THEN 1 ELSE 0 END) AS high_line_count," +
+                " SUM(CASE WHEN (o_orderpriority = ? OR o_orderpriority = ?) THEN 1 ELSE 0 END) AS high_line_count," +
                 " SUM(CASE WHEN o_orderpriority <> ? AND o_orderpriority <> ? THEN 1 ELSE 0 END) AS low_line_count" +
                 " FROM orders, lineitem" +
                 " WHERE l_orderkey = o_orderkey" +
@@ -513,8 +513,8 @@ class TpcHTest {
         LocalDate date = LocalDate.of(1994, 1, 1);
         ShippingModesAndOrderPriorityQuery query = ShippingModesAndOrderPriorityQuery
                 .builder()
-                .o_orderpriority1("1-URGENT")
-                .o_orderpriority2("2-HIGH")
+                .o_orderpriorityOr(Arrays.asList("1-URGENT", "2-HIGH"))
+                .o_orderpriorityNeAnd(Arrays.asList("1-URGENT", "2-HIGH"))
                 .l_shipmodeIn(Arrays.asList("MAIL", "SHIP"))
                 .l_receiptdateGe(Date.valueOf(date))
                 .l_receiptdateLt(Date.valueOf(date.plusYears(1)))

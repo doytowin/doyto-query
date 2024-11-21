@@ -187,9 +187,22 @@ public class EntityMetadata {
     public static String resolveColumn(Field field) {
         Column column = field.getAnnotation(Column.class);
         if (column != null && !column.name().isEmpty()) {
+            if (column.name().contains("@Case") && field.isAnnotationPresent(Case.class)) {
+                return resolveCases(column.name(), field.getAnnotation(Case.class));
+            }
             return column.name();
         }
         return resolveColumn(field.getName());
+    }
+
+    private static String resolveCases(String name, Case caseAnno) {
+        StringBuilder caseBuilder = new StringBuilder("CASE");
+        for (Case.Item item : caseAnno.value()) {
+            caseBuilder.append(" WHEN ").append("#{").append(item.when())
+                       .append("} THEN ").append(item.then());
+        }
+        caseBuilder.append(" ELSE ").append(caseAnno.end()).append(" END");
+        return name.replace("@Case", caseBuilder);
     }
 
     public static String resolveColumn(String fieldName) {

@@ -24,7 +24,6 @@ import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Having;
 import win.doyto.query.core.LockMode;
-import win.doyto.query.core.QuerySuffix;
 import win.doyto.query.sql.field.FieldMapper;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
@@ -190,17 +189,10 @@ public class BuildHelper {
         do {
             String fieldName = matcher.group(1);
             Object value = readFieldGetter(target, fieldName);
-
-            QuerySuffix suffix = QuerySuffix.resolve(BuildHelper.resolveFieldName(fieldName));
-            if (suffix == QuerySuffix.NONE) {
-                matcher.appendReplacement(sb, "?");
-                args.add(value);
-            } else {
-                Field field = getField(target, fieldName);
-                FieldMapper.init(field);
-                String ex = FieldMapper.execute(field, EMPTY, args, value);
-                matcher.appendReplacement(sb, ex);
-            }
+            Field field = getField(target, fieldName);
+            FieldMapper.init(field);
+            String ex = FieldMapper.execute(field, EMPTY, args, value);
+            matcher.appendReplacement(sb, ex);
         } while (matcher.find());
         return matcher.appendTail(sb).toString();
     }

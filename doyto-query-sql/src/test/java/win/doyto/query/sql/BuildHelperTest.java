@@ -69,17 +69,6 @@ class BuildHelperTest {
     }
 
     @Test
-    void givenExWithoutSuffixWhenReplaceShouldBePlaceholder() {
-        String input = "SELECT o_year, SUM(CASE WHEN nation = #{nation} THEN volume ELSE 0 END) / SUM(volume) AS mkt_share";
-
-        TestQuery query = TestQuery.builder().nation("BRAZIL").build();
-        String sql = BuildHelper.replaceExpressionInString(input,query, args);
-
-        assertThat(sql).isEqualTo("SELECT o_year, SUM(CASE WHEN nation = ? THEN volume ELSE 0 END) / SUM(volume) AS mkt_share");
-        assertThat(args).containsExactly("BRAZIL");
-    }
-
-    @Test
     void givenExWithSuffixWhenReplaceShouldBeExpression() {
         String input = "SELECT o_year, SUM(CASE WHEN #{nationEq} THEN volume ELSE 0 END) / SUM(volume) AS mkt_share";
 

@@ -18,6 +18,7 @@ package win.doyto.query.test.tpch.q8;
 
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.annotation.Case;
 import win.doyto.query.annotation.Column;
 import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.annotation.NestedView;
@@ -36,6 +37,8 @@ import java.math.BigDecimal;
 public class NationalMarketShareView {
     @GroupBy
     private String o_year;
-    @Column(name = "SUM(CASE WHEN #{nationEq} THEN volume ELSE 0 END) / SUM(volume)")
+
+    @Case(@Case.Item(when = "nation", then = "volume"))
+    @Column(name = "SUM(@Case) / SUM(volume)")
     private BigDecimal mkt_share;
 }
