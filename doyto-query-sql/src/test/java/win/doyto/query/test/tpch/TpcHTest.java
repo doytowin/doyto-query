@@ -468,25 +468,25 @@ class TpcHTest {
     void q11ImportantStockIdentificationQuery() {
         String expected = "SELECT" +
                 " ps_partkey," +
-                " SUM(ps_supplycost * ps_availqty) AS value" +
+                " SUM(ps_supplycost * ps_availqty) AS val" +
                 " FROM partsupp, supplier, nation" +
                 " WHERE ps_suppkey = s_suppkey" +
                 " AND s_nationkey = n_nationkey" +
                 " AND n_name = ?" +
                 " GROUP BY ps_partkey" +
-                " HAVING value > (SELECT SUM(ps_supplycost * ps_availqty) * 0.0001000000e-2" +
+                " HAVING val > (SELECT SUM(ps_supplycost * ps_availqty) * 0.0001000000e-2" +
                 " FROM partsupp, supplier, nation" +
                 " WHERE ps_suppkey = s_suppkey" +
                 " AND s_nationkey = n_nationkey" +
                 " AND n_name = ?" +
                 ")" +
-                " ORDER BY value DESC";
+                " ORDER BY val DESC";
 
         ImportantStockIdentificationHaving query = ImportantStockIdentificationHaving
                 .builder()
                 .n_name("GERMANY")
-                .valueGt(ValueQuery.builder().n_name("GERMANY").build())
-                .sort("value,DESC")
+                .valGt(ValueQuery.builder().n_name("GERMANY").build())
+                .sort("val,DESC")
                 .build();
 
         SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, ImportantStockIdentificationView.class);

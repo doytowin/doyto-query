@@ -42,6 +42,6 @@ public class ImportantStockIdentificationHaving extends ImportantStockIdentifica
 
     @Subquery(select = "SUM(ps_supplycost * ps_availqty) * 0.0001000000e-2",
             from = {PartsuppEntity.class, SupplierEntity.class, NationEntity.class})
-    private ValueQuery valueGt;
+    private ValueQuery valGt;
 
 }

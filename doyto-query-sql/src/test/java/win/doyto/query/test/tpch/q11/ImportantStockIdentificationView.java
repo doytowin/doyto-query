@@ -42,5 +42,5 @@ public class ImportantStockIdentificationView {
     private Integer ps_partkey;
 
     @Column(name = "SUM(ps_supplycost * ps_availqty)")
-    private BigDecimal value;
+    private BigDecimal val;
 }
