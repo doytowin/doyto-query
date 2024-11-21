@@ -19,7 +19,6 @@ package win.doyto.query.sql.field;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.*;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Having;
@@ -63,20 +62,18 @@ public final class FieldMapper {
 
         FieldProcessor processor;
         Class<?> fieldType = field.getType();
-        if (field.getName().endsWith("Or")) {
-            if (Collection.class.isAssignableFrom(field.getType())) {
-                processor = new OrCollectionProcessor(field);
-            } else if (Query.class.isAssignableFrom(field.getType())) {
-                processor = new ConnectableFieldProcessor(fieldType, OR);
-            } else {
-                processor = new SuffixFieldProcessor(StringUtils.removeEnd(field.getName(), "Or"), false);
-            }
+        if (field.getName().endsWith("Or") && Collection.class.isAssignableFrom(field.getType())) {
+            processor = new OrCollectionProcessor(field);
+        } else if (field.getName().endsWith("Or") && Query.class.isAssignableFrom(field.getType())) {
+            processor = new ConnectableFieldProcessor(fieldType, OR);
+        } else if (field.getName().endsWith("And") && Collection.class.isAssignableFrom(field.getType())) {
+            processor = new CollectionProcessor(field);
+        } else if (Query.class.isAssignableFrom(fieldType)) {
+            processor = new ConnectableFieldProcessor(fieldType, AND);
         } else if (OrFieldProcessor.support(field.getName())) {
             processor = new OrFieldProcessor(field);
         } else if (DoytoQuery.class.isAssignableFrom(fieldType)) {
             processor = initDoytoQueryField(field);
-        } else if (Query.class.isAssignableFrom(fieldType)) {
-            processor = new ConnectableFieldProcessor(fieldType, AND);
         } else if (field.isAnnotationPresent(QueryField.class)) {
             processor = new QueryFieldProcessor(field);
         } else if (ColumnComparisonProcessor.support(field)) {

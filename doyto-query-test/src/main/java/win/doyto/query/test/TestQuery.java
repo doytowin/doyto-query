@@ -62,6 +62,7 @@ public class TestQuery extends PageQuery {
     private String account;
 
     private Account accountOr;
+    private List<String> usernameNeAnd;
     private List<String> usernameContainOr;
     private List<Account> accountsOr;
 
