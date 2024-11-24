@@ -16,15 +16,14 @@
 
 package win.doyto.query.relation;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import win.doyto.query.annotation.DomainPath;
-import win.doyto.query.config.GlobalConfiguration;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,12 +35,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @since 1.0.0
  */
 class DomainPathDetailTest {
-
-    @BeforeAll
-    static void beforeAll() {
-        GlobalConfiguration.registerJoinTable("role", "user", "a_user_and_role");
-        GlobalConfiguration.registerJoinTable("perm", "role", "a_role_and_perm");
-    }
 
     static Stream<Arguments> domainPathProvider() {
         return Stream.of(
@@ -58,13 +51,13 @@ class DomainPathDetailTest {
                         new String[]{"a_user_and_role", "a_role_and_perm"}
                 ),
                 Arguments.of(
-                        new String[]{"role", "user"},
+                        new String[]{"role", "~", "user"},
                         new String[]{"role", "user"},
                         new String[]{"role_id", "user_id"},
                         new String[]{"a_user_and_role"}
                 ),
                 Arguments.of(
-                        new String[]{"perm", "role", "user"},
+                        new String[]{"perm",  "~", "role",  "~", "user"},
                         new String[]{"perm", "role", "user"},
                         new String[]{"perm_id", "role_id", "user_id"},
                         new String[]{"a_role_and_perm", "a_user_and_role"}
@@ -77,8 +70,13 @@ class DomainPathDetailTest {
     void shouldResolveDomainPath(String[] originDomainPath, String[] domainPath, String[] joinIds, String[] joinTables) {
         DomainPathDetail domainPathDetail = DomainPathDetail.buildBy(originDomainPath, "id", "id", s -> s);
         assertThat(domainPathDetail.getDomainPath()).isEqualTo(domainPath);
-        assertThat(domainPathDetail.getJoinIds()).isEqualTo(joinIds);
-        assertThat(domainPathDetail.getJoinTables()).isEqualTo(joinTables);
+        List<Relation> relations = domainPathDetail.getRelations();
+        for (int i = 0; i < relations.size(); i++) {
+            Relation relation = relations.get(i);
+            assertThat(relation.getAssociativeTable()).isEqualTo(joinTables[i]);
+            assertThat(relation.getFk1()).isEqualTo(joinIds[i]);
+            assertThat(relation.getFk2()).isEqualTo(joinIds[i+1]);
+        }
     }
 
     @Test
@@ -89,8 +87,6 @@ class DomainPathDetailTest {
         DomainPathDetail domainPathDetail = DomainPathDetail.buildBy(domainPathAnno, s -> s.equals("id") ? "_id" : s);
         assertThat(domainPathDetail.getLocalFieldColumn()).isEqualTo("_id");
         assertThat(domainPathDetail.getForeignFieldColumn()).isEqualTo("create_user_id");
-        assertThat(domainPathDetail.getJoinIds()[0]).isEqualTo("create_user_id");
-        assertThat(domainPathDetail.onlyOneDomain()).isTrue();
     }
 
 }

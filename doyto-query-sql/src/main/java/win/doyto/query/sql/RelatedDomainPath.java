@@ -20,8 +20,10 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.relation.DomainPathDetail;
+import win.doyto.query.relation.Relation;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import static win.doyto.query.sql.BuildHelper.resolveTableName;
 import static win.doyto.query.sql.Constant.*;
@@ -60,24 +62,23 @@ public class RelatedDomainPath {
     }
 
     public String buildNestedQuery() {
-        String[] joinIds = domainPathDetail.getJoinIds();
-        String[] joinTables = domainPathDetail.getJoinTables();
+        List<Relation> relations = domainPathDetail.getRelations();
         if (!domainPathDetail.getLocalFieldColumn().equals("id")) {// for many-to-one
-            joinIds = new String[]{domainPathDetail.getForeignFieldColumn(), joinIds[0]};
-            joinTables = new String[]{mainTableName};
+            relations.add(new Relation(domainPathDetail.getForeignFieldColumn(), mainTableName, domainPathDetail.getLocalFieldColumn()));
         }
 
-        int n = joinIds.length - 1;
+        int n = relations.size();
         StringBuilder sqlBuilder = new StringBuilder();
-        for (int i = n - 1; i >= 0; i--) {
+        for (int i = 1; i <= n; i++) {
+            Relation relation = relations.get(n - i);
             sqlBuilder.append(IN).append(OP).append(LF).append(SPACE + SPACE)
-                       .append(SELECT).append(joinIds[i + 1]).append(FROM).append(joinTables[i])
-                       .append(WHERE).append(joinIds[i]);
+                      .append(SELECT).append(relation.getFk2()).append(FROM).append(relation.getAssociativeTable())
+                      .append(WHERE).append(relation.getFk1());
         }
 
         sqlBuilder.append(EQUAL_HOLDER);
         if (n > 0) sqlBuilder.append(LF);
-        sqlBuilder.append(StringUtils.repeat(CP, Math.max(0, n)));
+        sqlBuilder.append(StringUtils.repeat(CP, n));
         return sqlBuilder.toString();
     }
 

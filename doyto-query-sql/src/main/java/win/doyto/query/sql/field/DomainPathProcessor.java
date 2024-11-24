@@ -21,6 +21,7 @@ import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.relation.DomainPathDetail;
+import win.doyto.query.relation.Relation;
 import win.doyto.query.sql.BuildHelper;
 import win.doyto.query.util.CommonUtil;
 
@@ -50,8 +51,6 @@ class DomainPathProcessor implements FieldProcessor {
     }
 
     private String buildClause(List<Object> argList, DoytoQuery query) {
-        String[] joinIds = domainPathDetail.getJoinIds();
-        String[] joinTables = domainPathDetail.getJoinTables();
         String[] domainPath = domainPathDetail.getDomainPath();
 
         StringBuilder subQueryBuilder = new StringBuilder(domainPathDetail.getLocalFieldColumn()).append(IN).append(OP);
@@ -63,9 +62,10 @@ class DomainPathProcessor implements FieldProcessor {
                 subQueryBuilder.append(SELECT).append(ID).append(FROM).append(table)
                                .append(where).append(INTERSECT);
             }
-            subQueryBuilder.append(SELECT).append(joinIds[i])
-                           .append(FROM).append(joinTables[i])
-                           .append(WHERE).append(joinIds[i + 1])
+            Relation relation = domainPathDetail.getRelations().get(i);
+            subQueryBuilder.append(SELECT).append(relation.getFk1())
+                           .append(FROM).append(relation.getAssociativeTable())
+                           .append(WHERE).append(relation.getFk2())
                            .append(IN).append(OP);
         }
 
