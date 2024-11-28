@@ -49,37 +49,32 @@ public class RelatedDomainPath {
 
 
     public StringBuilder buildQueryForEachMainDomain() {
-        String targetDomainTable = domainPathDetail.getTargetTable();
+        Relation baseRelation = domainPathDetail.getBaseRelation();
         // select columns from target domain `joinTables[n]`
         StringBuilder sqlBuilder = new StringBuilder();
         sqlBuilder.append(SELECT).append(PLACE_HOLDER).append(AS).append(KEY_COLUMN)
                   .append(SEPARATOR).append(targetColumns)
-                  .append(FROM).append(targetDomainTable)
-                  .append(WHERE_).append(domainPathDetail.getForeignFieldColumn());
-        // nested query for medium domains
-        sqlBuilder.append(buildNestedQuery());
-        return sqlBuilder;
-    }
+                  .append(FROM).append(baseRelation.getAssociativeTable())
+                  .append(WHERE_).append(baseRelation.getFk1());
 
-    public String buildNestedQuery() {
+        // build nested query for relations
         List<Relation> relations = domainPathDetail.getRelations();
-        if (!domainPathDetail.getLocalFieldColumn().equals("id")) {// for many-to-one
-            relations.add(new Relation(domainPathDetail.getForeignFieldColumn(), mainTableName, domainPathDetail.getLocalFieldColumn()));
+        if (!baseRelation.getFk2().equals("id") && relations.isEmpty()) {// for many-to-one
+            relations.add(new Relation(baseRelation.getFk1(), mainTableName, baseRelation.getFk2()));
         }
 
         int n = relations.size();
-        StringBuilder sqlBuilder = new StringBuilder();
         for (int i = 1; i <= n; i++) {
             Relation relation = relations.get(n - i);
             sqlBuilder.append(IN).append(OP).append(LF).append(SPACE + SPACE)
-                      .append(SELECT).append(relation.getFk2()).append(FROM).append(relation.getAssociativeTable())
+                      .append(SELECT).append(relation.getFk2())
+                      .append(FROM).append(relation.getAssociativeTable())
                       .append(WHERE).append(relation.getFk1());
         }
 
         sqlBuilder.append(EQUAL_HOLDER);
-        if (n > 0) sqlBuilder.append(LF);
-        sqlBuilder.append(StringUtils.repeat(CP, n));
-        return sqlBuilder.toString();
+        if (n > 0) sqlBuilder.append(LF).append(StringUtils.repeat(CP, n));
+        return sqlBuilder;
     }
 
 }

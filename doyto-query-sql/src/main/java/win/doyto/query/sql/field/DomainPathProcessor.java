@@ -52,8 +52,9 @@ class DomainPathProcessor implements FieldProcessor {
 
     private String buildClause(List<Object> argList, DoytoQuery query) {
         String[] domainPath = domainPathDetail.getDomainPath();
+        Relation baseRelation = domainPathDetail.getBaseRelation();
 
-        StringBuilder subQueryBuilder = new StringBuilder(domainPathDetail.getLocalFieldColumn()).append(IN).append(OP);
+        StringBuilder subQueryBuilder = new StringBuilder(baseRelation.getFk2()).append(IN).append(OP);
         for (int i = 0; i < domainPath.length - 1; i++) {
             String queryName = domainPath[i] + "Query";
             if (CommonUtil.readField(query, queryName) instanceof DoytoQuery domainQuery) {
@@ -70,8 +71,8 @@ class DomainPathProcessor implements FieldProcessor {
         }
 
         String where = BuildHelper.buildWhere(query, argList);
-        subQueryBuilder.append(SELECT).append(domainPathDetail.getForeignFieldColumn())
-                       .append(FROM).append(domainPathDetail.getTargetTable()).append(where)
+        subQueryBuilder.append(SELECT).append(baseRelation.getFk1())
+                       .append(FROM).append(baseRelation.getAssociativeTable()).append(where)
                        .append(StringUtils.repeat(')', domainPath.length));
         return subQueryBuilder.toString();
     }

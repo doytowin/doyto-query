@@ -53,9 +53,7 @@ public class DomainPathDetail {
     private static final String REVERSE_SIGN = "~";
 
     private final String[] domainPath;
-    private final String localFieldColumn;
-    private final String foreignFieldColumn;
-    private final String targetTable;
+    private Relation baseRelation;
     private List<Relation> relations;
 
     public static DomainPathDetail buildBy(DomainPath domainPathAnno) {
@@ -82,7 +80,8 @@ public class DomainPathDetail {
         for (int i = 0; i < domainPath.length - 1; i++) {
             relations.add(new Relation(domainPath[i], domainPath[i + 1]));
         }
-        return new DomainPathDetail(domainPath, localFieldColumn, foreignFieldColumn, targetTable, relations);
+        Relation relation = new Relation(foreignFieldColumn, targetTable, localFieldColumn);
+        return new DomainPathDetail(domainPath, relation, relations);
     }
 
     private static String prepareTargetTable(String[] domainPath) {

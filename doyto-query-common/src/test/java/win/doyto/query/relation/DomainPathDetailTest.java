@@ -85,8 +85,9 @@ class DomainPathDetailTest {
         DomainPath domainPathAnno = field.getAnnotation(DomainPath.class);
 
         DomainPathDetail domainPathDetail = DomainPathDetail.buildBy(domainPathAnno, s -> s.equals("id") ? "_id" : s);
-        assertThat(domainPathDetail.getLocalFieldColumn()).isEqualTo("_id");
-        assertThat(domainPathDetail.getForeignFieldColumn()).isEqualTo("create_user_id");
+        Relation baseRelation = domainPathDetail.getBaseRelation();
+        assertThat(baseRelation.getFk1()).isEqualTo("create_user_id");
+        assertThat(baseRelation.getFk2()).isEqualTo("_id");
     }
 
 }
