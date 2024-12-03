@@ -19,6 +19,8 @@ package win.doyto.query.sql;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.test.menu.MenuEntity;
@@ -71,7 +73,7 @@ class RelationalQueryBuilderTest {
         SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 2, 3), PermEntity.class);
 
         String expected = """
-
+                
                 SELECT ? AS MAIN_ENTITY_ID, id, permName, valid FROM t_perm
                 WHERE id IN (
                   SELECT perm_id FROM a_role_and_perm WHERE role_id IN (
@@ -100,7 +102,7 @@ class RelationalQueryBuilderTest {
         SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 3), MenuEntity.class);
 
         String expected = """
-
+                
                 SELECT ? AS MAIN_ENTITY_ID, id, parentId, menuName, platform, memo, valid FROM t_menu
                 WHERE id IN (
                   SELECT menu_id FROM a_perm_and_menu WHERE perm_id IN (
@@ -125,7 +127,7 @@ class RelationalQueryBuilderTest {
         SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 3), UserEntity.class);
 
         String expected = """
-
+                
                 SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, username, email, mobile, password, nickname, valid, memo, userLevel FROM t_user
                 WHERE id IN (
                   SELECT user_id FROM a_user_and_role WHERE role_id = ?
@@ -146,7 +148,7 @@ class RelationalQueryBuilderTest {
         SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 3), UserEntity.class);
 
         String expected = """
-
+                
                 SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, username, email, mobile, password, nickname, valid, memo, userLevel FROM t_user
                 WHERE id IN (
                   SELECT user_id FROM a_user_and_role WHERE role_id IN (
@@ -169,7 +171,7 @@ class RelationalQueryBuilderTest {
         SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 3, 4), UserEntity.class);
 
         String expected = """
-
+                
                 SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, username, email, mobile, password, nickname, valid, memo, userLevel FROM t_user
                 WHERE id IN (
                   SELECT user_id FROM a_user_and_role WHERE role_id IN (
@@ -206,7 +208,7 @@ class RelationalQueryBuilderTest {
         );
 
         String expected = """
-
+                
                 (SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, username, email, mobile, password, nickname, valid, memo, userLevel FROM t_user
                 WHERE id IN (
                   SELECT user_id FROM a_user_and_role WHERE role_id = ?
@@ -242,7 +244,7 @@ class RelationalQueryBuilderTest {
                 permissionQuery, PermEntity.class, field, Arrays.asList(1, 2, 3));
 
         String expected = """
-
+                
                 (SELECT ? AS MAIN_ENTITY_ID, id, permName, valid FROM t_perm
                 WHERE id IN (
                   SELECT perm_id FROM a_role_and_perm WHERE role_id IN (
@@ -275,7 +277,7 @@ class RelationalQueryBuilderTest {
                 new UserQuery(), UserEntity.class, field, Arrays.asList(1, 3));
 
         String expected = """
-
+                
                 SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, username, email, mobile, password, nickname, valid, memo, userLevel FROM t_user
                 WHERE id IN (
                   SELECT createUserId FROM t_role WHERE id = ?
@@ -298,7 +300,7 @@ class RelationalQueryBuilderTest {
                 userQuery, UserEntity.class, field, Arrays.asList(1, 3));
 
         String expected = """
-
+                
                 (SELECT ? AS MAIN_ENTITY_ID, id, createUserId, createTime, updateUserId, updateTime, username, email, mobile, password, nickname, valid, memo, userLevel FROM t_user
                 WHERE id IN (
                   SELECT createUserId FROM t_role WHERE id = ?
@@ -314,9 +316,10 @@ class RelationalQueryBuilderTest {
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, 3, 3);
     }
 
-    @Test
-    void buildSqlAndArgsForOneToMany() throws NoSuchFieldException {
-        Field field = UserEntity.class.getDeclaredField("createRoles");
+    @ParameterizedTest
+    @CsvSource(value = {"createRoles", "createRoles2"})
+    void buildSqlAndArgsForOneToMany(String fieldName) throws NoSuchFieldException {
+        Field field = UserEntity.class.getDeclaredField(fieldName);
 
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 new UserQuery(), RoleEntity.class, field, Arrays.asList(1, 3));
@@ -360,7 +363,7 @@ class RelationalQueryBuilderTest {
         SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 2, 3), RoleStatView.class);
 
         String expected = """
-
+                
                 SELECT ? AS MAIN_ENTITY_ID, count(*) AS count FROM t_role
                 WHERE id IN (
                   SELECT role_id FROM a_user_and_role WHERE user_id = ?

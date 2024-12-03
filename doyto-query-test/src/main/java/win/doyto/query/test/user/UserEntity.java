@@ -76,6 +76,9 @@ public class UserEntity extends AbstractCommonEntity<Long, Long> {
     @DomainPath(value = "role", foreignField = "createUserId")
     private List<RoleEntity> createRoles;
 
+    @DomainPath(value = {"user", "role<-createUserId"})
+    private List<RoleEntity> createRoles2;
+
     // many-to-many aggregation
     @DomainPath({"user", "role"})
     private RoleStatView roleStat;

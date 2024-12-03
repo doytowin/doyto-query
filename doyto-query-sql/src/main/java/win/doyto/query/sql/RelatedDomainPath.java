@@ -25,6 +25,7 @@ import win.doyto.query.relation.Relation;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import static win.doyto.query.relation.DomainPathDetail.buildBy;
 import static win.doyto.query.sql.BuildHelper.resolveTableName;
 import static win.doyto.query.sql.Constant.*;
 import static win.doyto.query.sql.RelationalQueryBuilder.KEY_COLUMN;
@@ -38,31 +39,40 @@ import static win.doyto.query.sql.RelationalQueryBuilder.KEY_COLUMN;
 public class RelatedDomainPath {
 
     private DomainPathDetail domainPathDetail;
-    private String mainTableName;
-    private String targetColumns;
+    private EntityMetadata em;
 
     public RelatedDomainPath(Field joinField, Class<?> joinEntityClass) {
-        this.domainPathDetail = DomainPathDetail.buildBy(joinField.getAnnotation(DomainPath.class));
-        this.mainTableName = resolveTableName(joinField.getDeclaringClass());
-        this.targetColumns = EntityMetadata.buildViewColumns(joinEntityClass);
+        this.domainPathDetail = buildDomainPath(joinField, resolveTableName(joinField.getDeclaringClass()));
+        this.em = EntityMetadata.build(joinEntityClass);
     }
 
+    public static DomainPathDetail buildDomainPath(Field joinField, String hostTableName) {
+        DomainPathDetail domainPathDetail = buildBy(joinField.getAnnotation(DomainPath.class));
+
+        List<Relation> relations = domainPathDetail.getRelations();
+        Relation relation = domainPathDetail.getBaseRelation();
+        if (relations.size() == 1 && relation.getAssociativeTable().equals(relations.get(0).getAssociativeTable())) {
+            // one-to-many/one-to-one
+            relation.setFk1(relations.get(0).getFk1());
+            relations.clear();
+        } else if (relations.isEmpty() && relation.getFk1().equals("id")) {// many-to-one
+            relation.setAssociativeTable(hostTableName);
+            relations.add(relation);
+        }
+        return domainPathDetail;
+    }
 
     public StringBuilder buildQueryForEachMainDomain() {
         Relation baseRelation = domainPathDetail.getBaseRelation();
-        // select columns from target domain `joinTables[n]`
+        // select columns from target entity
         StringBuilder sqlBuilder = new StringBuilder();
         sqlBuilder.append(SELECT).append(PLACE_HOLDER).append(AS).append(KEY_COLUMN)
-                  .append(SEPARATOR).append(targetColumns)
-                  .append(FROM).append(baseRelation.getAssociativeTable())
+                  .append(SEPARATOR).append(em.getColumnsForSelect())
+                  .append(FROM).append(em.getTableName())
                   .append(WHERE_).append(baseRelation.getFk1());
 
         // build nested query for relations
         List<Relation> relations = domainPathDetail.getRelations();
-        if (!baseRelation.getFk2().equals("id") && relations.isEmpty()) {// for many-to-one
-            relations.add(new Relation(baseRelation.getFk1(), mainTableName, baseRelation.getFk2()));
-        }
-
         int n = relations.size();
         for (int i = 1; i <= n; i++) {
             Relation relation = relations.get(n - i);
