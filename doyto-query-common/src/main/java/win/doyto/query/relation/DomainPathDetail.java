@@ -74,14 +74,28 @@ public class DomainPathDetail {
         String localFieldColumn = fieldConvertor.apply(localField);
         String[] domainPath = prepareDomainPath(originDomainPath);
         registerReverseJoinTable(originDomainPath);
-        String targetTable = prepareTargetTable(domainPath);
 
         List<Relation> relations = new ArrayList<>();
         for (int i = 0; i < domainPath.length - 1; i++) {
-            relations.add(new Relation(domainPath[i], domainPath[i + 1]));
+            relations.add(Relation.build(domainPath[i], domainPath[i + 1]));
         }
+        domainPath = cleanupDomainPath(domainPath);
+        String targetTable = prepareTargetTable(domainPath);
         Relation relation = new Relation(foreignFieldColumn, targetTable, localFieldColumn);
         return new DomainPathDetail(domainPath, relation, relations);
+    }
+
+    private static String[] cleanupDomainPath(String[] domainPath) {
+        return Arrays.stream(domainPath)
+                     .map(entity -> {
+                         if (entity.contains("<-")) {
+                             return entity.substring(0, entity.indexOf("<-"));
+                         } else if (entity.contains("->")) {
+                             return entity.substring(0, entity.indexOf("->"));
+                         }
+                         return entity;
+                     })
+                     .toArray(String[]::new);
     }
 
     private static String prepareTargetTable(String[] domainPath) {
