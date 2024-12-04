@@ -269,9 +269,10 @@ class RelationalQueryBuilderTest {
         assertThat(sqlAndArgs.getArgs()).containsExactly(1, 1, true, 2, 2, true, 3, 3, true);
     }
 
-    @Test
-    void buildSqlAndArgsForManyToOne() throws NoSuchFieldException {
-        Field field = RoleEntity.class.getDeclaredField("createUser");
+    @ParameterizedTest
+    @CsvSource(value = {"createUser", "createUser2"})
+    void buildSqlAndArgsForManyToOne(String fieldName) throws NoSuchFieldException {
+        Field field = RoleEntity.class.getDeclaredField(fieldName);
 
         SqlAndArgs sqlAndArgs = RelationalQueryBuilder.buildSqlAndArgsForSubDomain(
                 new UserQuery(), UserEntity.class, field, Arrays.asList(1, 3));

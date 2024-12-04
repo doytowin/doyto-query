@@ -54,4 +54,7 @@ public class RoleEntity extends AbstractCommonEntity<Integer, Long> {
     // many-to-one
     @DomainPath(value = "user", localField = "createUserId")
     private UserEntity createUser;
+
+    @DomainPath(value = {"role->createUserId", "user"})
+    private UserEntity createUser2;
 }
