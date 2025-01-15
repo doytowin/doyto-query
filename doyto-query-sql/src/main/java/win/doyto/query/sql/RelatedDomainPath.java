@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.relation.DomainPathDetail;
 import win.doyto.query.relation.Relation;
+import win.doyto.query.util.ColumnUtil;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -60,6 +61,12 @@ public class RelatedDomainPath {
             relations.add(relation);
         }
         return domainPathDetail;
+    }
+
+    public static String buildRelationSQL(Class<?> clazz, String... path) {
+        DomainPathDetail domainPathDetail = buildBy(path, "id", "id", ColumnUtil::convertColumn);
+        RelatedDomainPath relatedDomainPath = new RelatedDomainPath(domainPathDetail, EntityMetadata.build(clazz));
+        return relatedDomainPath.buildQueryForEachMainDomain().toString();
     }
 
     public StringBuilder buildQueryForEachMainDomain() {

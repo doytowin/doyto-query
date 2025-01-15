@@ -40,6 +40,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static win.doyto.query.sql.RelatedDomainPath.buildRelationSQL;
 
 /**
  * RelationalQueryBuilderTest
@@ -393,4 +394,14 @@ class RelationalQueryBuilderTest {
         assertThat(sqlAndArgs.getSql()).isEqualTo(expected);
     }
 
+    @Test
+    void buildRelationSQLFromAep() {
+        String sql = buildRelationSQL(PermEntity.class, "user", "role", "perm");
+        assertThat(sql).isEqualTo("""
+                SELECT ? AS MAIN_ENTITY_ID, id, permName, valid FROM t_perm
+                WHERE id IN (
+                  SELECT perm_id FROM a_role_and_perm WHERE role_id IN (
+                  SELECT role_id FROM a_user_and_role WHERE user_id = ?
+                ))""");
+    }
 }
