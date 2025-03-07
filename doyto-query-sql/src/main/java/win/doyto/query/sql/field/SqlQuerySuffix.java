@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 
 package win.doyto.query.sql.field;
 
-import static win.doyto.query.sql.Constant.CP;
-import static win.doyto.query.sql.Constant.EMPTY;
-import static win.doyto.query.sql.Constant.LIKE;
-import static win.doyto.query.sql.Constant.NOT_LIKE;
-import static win.doyto.query.sql.Constant.OP;
-import static win.doyto.query.sql.Constant.PLACE_HOLDER;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import win.doyto.query.annotation.EnumType;
+import win.doyto.query.annotation.Enumerated;
+import win.doyto.query.config.GlobalConfiguration;
+import win.doyto.query.sql.BuildHelper;
+import win.doyto.query.util.CommonUtil;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,15 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import win.doyto.query.annotation.EnumType;
-import win.doyto.query.annotation.Enumerated;
-import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.sql.BuildHelper;
-import win.doyto.query.util.CommonUtil;
+import static win.doyto.query.sql.Constant.*;
 
 /**
  * SqlQuerySuffix
