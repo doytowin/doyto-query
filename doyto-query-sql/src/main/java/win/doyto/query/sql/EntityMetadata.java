@@ -23,7 +23,6 @@ import win.doyto.query.core.AggregationPrefix;
 import win.doyto.query.core.Dialect;
 import win.doyto.query.util.ColumnUtil;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,57 +52,17 @@ public class EntityMetadata {
     private final List<View> withViews;
     private final List<View> nestedViews;
     private final List<Field> domainPathFields;
-    private EntityMetadata nested;
 
     public EntityMetadata(Class<?> viewClass) {
         this.viewClass = viewClass;
         this.nestedViews = collectViews(viewClass, ViewType.NESTED);
-        if (viewClass.isAnnotationPresent(NestedView.class)) {
-            NestedView anno = viewClass.getAnnotation(NestedView.class);
-            this.nestedViews.add(transformNestedView(anno));
-            Class<?> clazz = anno.value();
-            // We don't need to cache the nested EntityMetadata,
-            // since the host EntityMetadata is already cached.
-            this.nested = new EntityMetadata(clazz);
-            this.tableName = "";
-        } else {
-            this.tableName = BuildHelper.resolveTableName(viewClass);
-        }
+        this.tableName = BuildHelper.resolveTableName(viewClass);
         this.joinConditions = resolveJoinConditions(viewClass);
         this.columnsForSelect = buildViewColumns(viewClass);
         this.groupByColumns = resolveGroupByColumns(viewClass);
         this.groupBySql = buildGroupBySql(groupByColumns);
         this.withViews = collectViews(viewClass, ViewType.WITH);
         this.domainPathFields = ColumnUtil.resolveDomainPathFields(viewClass);
-    }
-
-    private static View transformNestedView(final NestedView anno) {
-        return new View() {
-            @Override
-            public Class<? extends Annotation> annotationType() {
-                return View.class;
-            }
-
-            @Override
-            public Class<?> value() {
-                return anno.value();
-            }
-
-            @Override
-            public String alias() {
-                return "";
-            }
-
-            @Override
-            public ViewType type() {
-                return ViewType.NESTED;
-            }
-
-            @Override
-            public boolean context() {
-                return false;
-            }
-        };
     }
 
     @SuppressWarnings("java:S6204")

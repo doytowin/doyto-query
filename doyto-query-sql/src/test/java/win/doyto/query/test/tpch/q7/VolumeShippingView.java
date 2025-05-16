@@ -20,7 +20,8 @@ import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.Column;
 import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.annotation.NestedView;
+import win.doyto.query.annotation.View;
+import win.doyto.query.annotation.ViewType;
 
 /**
  * VolumeShippingView
@@ -30,7 +31,7 @@ import win.doyto.query.annotation.NestedView;
  */
 @Getter
 @Setter
-@NestedView(ShippingView.class)
+@View(value = ShippingView.class, type = ViewType.NESTED)
 public class VolumeShippingView {
     @GroupBy
     private String supp_nation;

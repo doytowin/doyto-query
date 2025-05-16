@@ -18,10 +18,7 @@ package win.doyto.query.test.tpch.q8;
 
 import lombok.Getter;
 import lombok.Setter;
-import win.doyto.query.annotation.Case;
-import win.doyto.query.annotation.Column;
-import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.annotation.NestedView;
+import win.doyto.query.annotation.*;
 
 import java.math.BigDecimal;
 
@@ -33,7 +30,7 @@ import java.math.BigDecimal;
  */
 @Getter
 @Setter
-@NestedView(AllNationsView.class)
+@View(value = AllNationsView.class, type = ViewType.NESTED)
 public class NationalMarketShareView {
     @GroupBy
     private String o_year;
