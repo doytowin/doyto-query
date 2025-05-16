@@ -18,18 +18,21 @@ package win.doyto.query.sql;
 
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import win.doyto.query.annotation.Join;
 import win.doyto.query.annotation.View;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Having;
 import win.doyto.query.core.PageQuery;
 import win.doyto.query.util.CommonUtil;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import static win.doyto.query.sql.BuildHelper.*;
 import static win.doyto.query.sql.Constant.*;
-import static win.doyto.query.sql.RelationalQueryBuilder.buildJoinClauses;
 
 /**
  * RelationalQueryBuilder
@@ -122,4 +125,24 @@ public class AggregateQueryBuilder {
         return sqlBuilder;
     }
 
+    static void buildJoinClauses(StringBuilder sqlBuilder, DoytoQuery query, List<Object> argList) {
+        Field[] joinFields = FieldUtils.getFieldsWithAnnotation(query.getClass(), Join.class);
+        for (Field field : joinFields) {
+            Object joinObject = CommonUtil.readField(field, query);
+            buildJoinClause(sqlBuilder, joinObject, argList, field.getAnnotation(Join.class));
+        }
+    }
+
+    private static void buildJoinClause(StringBuilder sqlBuilder, Object joinQuery, List<Object> argList, Join join) {
+        String joinType = join.type().getValue();
+        View viewAnno = join.join();
+        String hostTable = BuildHelper.resolveTableName(viewAnno);
+        List<String> relations = EntityMetadata.resolveEntityRelations(new View[]{join.from(), viewAnno});
+        String onConditions = relations.stream().collect(Collectors.joining(AND, ON, EMPTY));
+        String andConditions = BuildHelper.buildCondition(AND, joinQuery, argList, viewAnno.alias());
+        sqlBuilder.append(joinType)
+                  .append(hostTable)
+                  .append(onConditions)
+                  .append(andConditions);
+    }
 }

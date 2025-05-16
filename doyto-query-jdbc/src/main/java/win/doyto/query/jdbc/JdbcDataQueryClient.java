@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static win.doyto.query.sql.RelatedDomainPath.KEY_COLUMN;
 import static win.doyto.query.sql.RelationalQueryBuilder.*;
 
 /**

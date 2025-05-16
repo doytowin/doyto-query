@@ -20,7 +20,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import win.doyto.query.sql.RelationalQueryBuilder;
+import win.doyto.query.sql.RelatedDomainPath;
 import win.doyto.query.util.ColumnUtil;
 
 import java.beans.BeanInfo;
@@ -76,7 +76,7 @@ public class BeanPropertyRowMapper<E> implements RowMapper<E> {
             String columnLabel = rsmd.getColumnLabel(i);
             PropertyDescriptor pd = fieldMap.get(columnLabel);
             if (pd == null) {
-                if (!RelationalQueryBuilder.KEY_COLUMN.equals(columnLabel)) {
+                if (!RelatedDomainPath.KEY_COLUMN.equals(columnLabel)) {
                     log.warn("Column [{}] not found in {}.", columnLabel, fieldMap.keySet());
                 }
                 continue;

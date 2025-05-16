@@ -29,7 +29,6 @@ import java.util.List;
 import static win.doyto.query.relation.DomainPathDetail.buildBy;
 import static win.doyto.query.sql.BuildHelper.resolveTableName;
 import static win.doyto.query.sql.Constant.*;
-import static win.doyto.query.sql.RelationalQueryBuilder.KEY_COLUMN;
 
 /**
  * RelatedDomainPath
@@ -39,6 +38,7 @@ import static win.doyto.query.sql.RelationalQueryBuilder.KEY_COLUMN;
 @AllArgsConstructor
 public class RelatedDomainPath {
 
+    public static final String KEY_COLUMN = "MAIN_ENTITY_ID";
     private DomainPathDetail domainPathDetail;
     private EntityMetadata em;
 
