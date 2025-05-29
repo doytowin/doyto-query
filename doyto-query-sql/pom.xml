@@ -28,10 +28,6 @@
     <name>doyto-query-sql</name>
     <description>The query object/SQL mapping layer</description>
 
-    <properties>
-        <maven.deploy.skip>false</maven.deploy.skip>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>win.doyto</groupId>

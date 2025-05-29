@@ -28,10 +28,6 @@
     <name>DoytoQueryDialect</name>
     <description>Dialect implementations for different databases</description>
 
-    <properties>
-        <maven.deploy.skip>false</maven.deploy.skip>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>win.doyto</groupId>

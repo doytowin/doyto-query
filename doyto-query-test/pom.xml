@@ -28,10 +28,6 @@
     <name>doyto-query-test</name>
     <description>The test package for DoytoQuery Library</description>
 
-    <properties>
-        <maven.deploy.skip>false</maven.deploy.skip>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>

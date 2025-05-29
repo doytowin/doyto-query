@@ -29,10 +29,6 @@
     <name>doyto-query-web-common</name>
     <description>The common web package for integration with spring-webmvc and spring-webflux</description>
 
-    <properties>
-        <maven.deploy.skip>false</maven.deploy.skip>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>win.doyto</groupId>

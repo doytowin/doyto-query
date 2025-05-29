@@ -29,10 +29,6 @@
     <name>doyto-query-web</name>
     <description>The web layer integrate with Spring Web</description>
 
-    <properties>
-        <maven.deploy.skip>false</maven.deploy.skip>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>win.doyto</groupId>

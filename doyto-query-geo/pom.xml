@@ -28,10 +28,6 @@
     <name>doyto-query-geo</name>
     <description>The geo package contains the basic data structure for Geo data storage and query</description>
 
-    <properties>
-        <maven.deploy.skip>false</maven.deploy.skip>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
