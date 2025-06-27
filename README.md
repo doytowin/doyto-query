@@ -17,7 +17,7 @@ thereby completing the dynamic construction of SQL statements with entity/view o
 
 Refer to the [docs](https://query.docs.doyto.win/) for more details.
 
-## Quick Usage
+## Quick Start
 
 1. Initialize the project on Spring Initializer with the following 4 dependencies:
 * Lombok
@@ -68,11 +68,11 @@ public class UserQuery extends PageQuery {
 }
 ```
 
-Invoke the [`DataAccess#query(Q)`](https://github.com/doytowin/doyto-query/blob/main/doyto-query-api/src/main/java/win/doyto/query/core/DataAccess.java) method in `UserService`:
+Invoking the method [`DataAccess#query(Q)`](https://github.com/doytowin/doyto-query/blob/main/doyto-query-api/src/main/java/win/doyto/query/core/DataAccess.java) in `UserService`:
 ```java
 @Service
 public class UserService extends AbstractCrudService<UserEntity, Long, UserQuery> {
-    public List<UserEntity> findValidGmailUsers() {
+    public List<UserEntity> findValidAdultUsers() {
         UserQuery userQuery = UserQuery.builder().ageGe(20).valid(true).pageSize(10).build();
         // Executed SQL: SELECT username, email, valid, id FROM t_user WHERE age >= ? AND valid = ? LIMIT 10 OFFSET 0
         // Parameters  : 20(java.lang.Integer), true(java.lang.Boolean)
@@ -81,12 +81,28 @@ public class UserService extends AbstractCrudService<UserEntity, Long, UserQuery
 }
 ```
 
-And a controller to support RESTful API:
+Define a controller to support RESTful API:
 ```java
 @RestController
 @RequestMapping("user")
 public class UserController extends AbstractEIQController<UserEntity, Long, UserQuery> {
 }
+```
+
+Set the log level of `logging.level.org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping` to `trace`, 
+and after starting the Spring Boot application, you can see in the console that the RESTful interface is ready for `/user/`:
+
+```
+s.w.s.m.m.a.RequestMappingHandlerMapping : 
+	w.d.q.d.m.u.UserController:
+	{PUT [/user/{id}]}: update(Persistable)
+	{DELETE [/user/{id}]}: remove(Serializable)
+	{GET [/user/{id}]}: get(Serializable)
+	{DELETE [/user/]}: delete(DoytoQuery)
+	{PATCH [/user/]}: patch(Object,DoytoQuery)
+	{GET [/user/]}: page(DoytoQuery)
+	{POST [/user/]}: create(List)
+	{PATCH [/user/{id}]}: patch(Object)
 ```
 
 Refer to the [demo](https://github.com/doytowin/doyto-query-demo) for more details.
@@ -97,16 +113,16 @@ Refer to the [demo](https://github.com/doytowin/doyto-query-demo) for more detai
 
 ## Versions
 
-| Module                 | Snapshot                                                                                                                 | Release                                                                                          |
-|------------------------|--------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| doyto-query-api        | [![api-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-api/)               | [![api-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-api/)               |
-| doyto-query-geo        | [![geo-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-geo/)               | [![geo-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-geo/)               |
-| doyto-query-common     | [![common-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-common/)         | [![common-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-common/)         |
-| doyto-query-sql        | [![sql-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-sql/)               | [![sql-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-sql/)               |
-| doyto-query-jdbc       | [![jdbc-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-jdbc/)             | [![jdbc-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-jdbc/)             |
-| doyto-query-web-common | [![web-common-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-web-common/) | [![web-common-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-web-common/) |
-| doyto-query-web        | [![web-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-web/)               | [![web-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-web/)               |
-| doyto-query-dialect    | [![dialect-snapshots-img]](https://oss.sonatype.org/content/repositories/snapshots/win/doyto/doyto-query-dialect/)       | [![dialect-release-img]](https://search.maven.org/artifact/win.doyto/doyto-query-dialect/)       |
+| Module                 | Snapshot                                                                                                                                     | Release                                                                                             |
+|------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| doyto-query-api        | [![api-snapshots-img]](https://central.sonatype.com/service/rest/repository/browse/maven-snapshots/win/doyto/doyto-query-api/)               | [![api-release-img]](https://central.sonatype.com/artifact/win.doyto/doyto-query-api)               |
+| doyto-query-geo        | [![geo-snapshots-img]](https://central.sonatype.com/service/rest/repository/browse/maven-snapshots/win/doyto/doyto-query-geo/)               | [![geo-release-img]](https://central.sonatype.com/artifact/win.doyto/doyto-query-geo)               |
+| doyto-query-common     | [![common-snapshots-img]](https://central.sonatype.com/service/rest/repository/browse/maven-snapshots/win/doyto/doyto-query-common/)         | [![common-release-img]](https://central.sonatype.com/artifact/win.doyto/doyto-query-common)         |
+| doyto-query-sql        | [![sql-snapshots-img]](https://central.sonatype.com/service/rest/repository/browse/maven-snapshots/win/doyto/doyto-query-sql/)               | [![sql-release-img]](https://central.sonatype.com/artifact/win.doyto/doyto-query-sql)               |
+| doyto-query-jdbc       | [![jdbc-snapshots-img]](https://central.sonatype.com/service/rest/repository/browse/maven-snapshots/win/doyto/doyto-query-jdbc/)             | [![jdbc-release-img]](https://central.sonatype.com/artifact/win.doyto/doyto-query-jdbc)             |
+| doyto-query-web-common | [![web-common-snapshots-img]](https://central.sonatype.com/service/rest/repository/browse/maven-snapshots/win/doyto/doyto-query-web-common/) | [![web-common-release-img]](https://central.sonatype.com/artifact/win.doyto/doyto-query-web-common) |
+| doyto-query-web        | [![web-snapshots-img]](https://central.sonatype.com/service/rest/repository/browse/maven-snapshots/win/doyto/doyto-query-web/)               | [![web-release-img]](https://central.sonatype.com/artifact/win.doyto/doyto-query-web)               |
+| doyto-query-dialect    | [![dialect-snapshots-img]](https://central.sonatype.com/service/rest/repository/browse/maven-snapshots/win/doyto/doyto-query-dialect/)       | [![dialect-release-img]](https://central.sonatype.com/artifact/win.doyto/doyto-query-dialect)       |
 
 ## Supported Databases
 - MySQL
@@ -115,7 +131,6 @@ Refer to the [demo](https://github.com/doytowin/doyto-query-demo) for more detai
 - PostgreSQL
 - SQLite
 - HSQLDB
-- MongoDB
 
 License
 -------
