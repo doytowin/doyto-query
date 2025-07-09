@@ -48,4 +48,9 @@ class BeanPropertyRowMapperTest {
         Object columnValue = rowMapper.getColumnValue(rs, pd, pd.getName());
         assertThat(columnValue).isEqualTo(TestEnum.NORMAL);
     }
+
+    @Test
+    void fixPkNameIsNotId() {
+        assertThat(new BeanPropertyRowMapper<>(RegionEntity.class)).isNotNull();
+    }
 }

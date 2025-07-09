@@ -26,6 +26,7 @@ import win.doyto.query.util.ColumnUtil;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -53,9 +54,10 @@ public class BeanPropertyRowMapper<E> implements RowMapper<E> {
         BeanInfo beanInfo = Introspector.getBeanInfo(mappedClass);
         PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
         Arrays.stream(propertyDescriptors)
-              .filter(pd -> pd.getWriteMethod() != null
-                      && ColumnUtil.filterForView(FieldUtils.getField(mappedClass, pd.getName(), true))
-              )
+              .filter(pd -> {
+                  Field field = FieldUtils.getField(mappedClass, pd.getName(), true);
+                  return pd.getWriteMethod() != null && field != null && ColumnUtil.filterForView(field);
+              })
               .forEach(pd -> {
                   this.fieldMap.put(pd.getName(), pd);
                   this.fieldMap.put(pd.getName().toUpperCase(), pd);
@@ -72,7 +74,7 @@ public class BeanPropertyRowMapper<E> implements RowMapper<E> {
         E entity = mappedClass.getDeclaredConstructor().newInstance();
 
         ResultSetMetaData rsmd = rs.getMetaData();
-        for (int i = 0; i++ < rsmd.getColumnCount();) {
+        for (int i = 0; i++ < rsmd.getColumnCount(); ) {
             String columnLabel = rsmd.getColumnLabel(i);
             PropertyDescriptor pd = fieldMap.get(columnLabel);
             if (pd == null) {
