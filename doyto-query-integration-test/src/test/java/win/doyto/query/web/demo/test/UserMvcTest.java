@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import win.doyto.query.web.response.PresetErrorCode;
 
 import static org.hamcrest.Matchers.containsInRelativeOrder;
@@ -132,20 +133,25 @@ class UserMvcTest extends DemoApplicationTest {
     @Test
     @Rollback
     void deleteByQuery() throws Exception {
-        performAndExpectFail(delete("/user/"), PresetErrorCode.ARGUMENT_VALIDATION_FAILED);
+        performAndExpectFail(delete("/user/"), PresetErrorCode.ARGUMENT_VALIDATION_FAILED)
+                .andExpect(jsonPath("$.hints.query").value("不能为空"));
+        performAndExpectFail(delete("/user/?username=test&sort=anyti;DROP database;"), PresetErrorCode.ARGUMENT_VALIDATION_FAILED)
+                .andExpect(jsonPath("$.hints.sort").exists());
         performAndExpectSuccess(delete("/user/?username=f0rb"))
-                .andExpect(jsonPath("$.data").value(1))
-        ;
+                .andExpect(jsonPath("$.data").value(1));
     }
 
     @Test
     @Rollback
     void patchUserByQuery() throws Exception {
-        RequestBuilder requestBuilder = patch("/user/?emailLike=qq.com&valid=true")
+        MockHttpServletRequestBuilder requestBuilder = patch("/user/?emailLike=qq.com&valid=true")
                 .content("{\"valid\":false}").contentType(MediaType.APPLICATION_JSON);
         performAndExpectSuccess(requestBuilder)
-                .andExpect(jsonPath("$.data").value(2))
-        ;
+                .andExpect(jsonPath("$.data").value(2));
+
+        requestBuilder.uri("/user/?username=test&sort=anyti;DROP database;");
+        performAndExpectFail(requestBuilder, PresetErrorCode.ARGUMENT_VALIDATION_FAILED)
+                .andExpect(jsonPath("$.hints.sort").exists());
     }
 
     @Test

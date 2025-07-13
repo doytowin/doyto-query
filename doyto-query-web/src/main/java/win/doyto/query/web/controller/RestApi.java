@@ -50,7 +50,7 @@ public interface RestApi<I, Q extends DoytoQuery, R, S> {
     S remove(I id);
 
     @DeleteMapping("/")
-    int delete(@NotEmptyQuery Q query);
+    int delete(@NotEmptyQuery @Validated(PageGroup.class) Q query);
 
     @PutMapping("{id}")
     void update(@RequestBody @Validated(UpdateGroup.class) R request);
@@ -59,7 +59,7 @@ public interface RestApi<I, Q extends DoytoQuery, R, S> {
     void patch(@RequestBody @Validated(PatchGroup.class) R request);
 
     @PatchMapping("/")
-    int patch(@RequestBody R request, @NotEmptyQuery Q query);
+    int patch(@RequestBody R request, @NotEmptyQuery @Validated(PageGroup.class) Q query);
 
     default void create(R request) {
         create(Collections.singletonList(request));
