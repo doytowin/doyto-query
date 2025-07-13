@@ -20,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.PageList;
+import win.doyto.query.validation.CreateGroup;
 import win.doyto.query.validation.PageGroup;
 import win.doyto.query.validation.PatchGroup;
 import win.doyto.query.validation.UpdateGroup;
@@ -65,6 +66,6 @@ public interface RestApi<I, Q extends DoytoQuery, R, S> {
     }
 
     @PostMapping("/")
-    void create(@RequestBody List<R> requests);
+    void create(@RequestBody @Validated(CreateGroup.class) List<R> requests);
 
 }

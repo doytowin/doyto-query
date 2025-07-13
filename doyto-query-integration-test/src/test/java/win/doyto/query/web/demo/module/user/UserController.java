@@ -80,7 +80,6 @@ public class UserController
 
     @Override
     public void create(List<UserRequest> requests) {
-        listValidator.validateList(requests);
         for (UserRequest request : requests) {
             UserEntity userEntity = userService.save(buildEntity(request));
             userDetailService.save(UserDetailEntity.build(userEntity.getId(), request));
