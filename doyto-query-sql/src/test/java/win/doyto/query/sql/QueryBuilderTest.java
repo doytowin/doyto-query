@@ -365,6 +365,28 @@ class QueryBuilderTest {
     }
 
     @Test
+    void buildOrClauseForQueryObjectNamedOr() {
+        TestQuery or = TestQuery.builder().username("f0rb").email("f0rb").build();
+        TestQuery testQuery = TestQuery.builder().or(or).build();
+
+        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
+
+        assertThat(sql).isEqualTo("SELECT * FROM t_user t WHERE (username = ? OR email = ?)");
+        assertThat(argList).containsExactly("f0rb", "f0rb");
+    }
+
+    @Test
+    void buildAndClauseForQueryObjectNamedAnd() {
+        TestQuery and = TestQuery.builder().username("f0rb").email("f0rb").build();
+        TestQuery testQuery = TestQuery.builder().and(and).build();
+
+        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
+
+        assertThat(sql).isEqualTo("SELECT * FROM t_user t WHERE (username = ? AND email = ?)");
+        assertThat(argList).containsExactly("f0rb", "f0rb");
+    }
+
+    @Test
     void buildOrClauseIgnoreNull() {
         Account accountOr = Account.builder().username("f0rb").email("f0rb").build();
         TestQuery testQuery = TestQuery.builder().accountOr(accountOr).build();
