@@ -43,7 +43,7 @@ class OrCollectionProcessor implements FieldProcessor {
     public OrCollectionProcessor(Field field) {
         Class<?> clazz = CommonUtil.resolveActualReturnClass(field);
         if (Query.class.isAssignableFrom(clazz)) {
-            fieldProcessor = new ConnectableFieldProcessor(clazz, AND);
+            fieldProcessor = new ConnectableFieldProcessor(clazz);
         } else {
             String orFieldName = StringUtils.removeEnd(field.getName(), "Or");
             fieldProcessor = new SuffixFieldProcessor(orFieldName, false);

@@ -24,7 +24,6 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static win.doyto.query.sql.Constant.OR;
 import static win.doyto.query.sql.field.SqlQuerySuffixTest.fieldInTestQuery;
 
 /**
@@ -37,7 +36,7 @@ class OrSuffixTest {
 
     @Test
     void buildOrConditionForFieldEndWithOr() {
-        FieldProcessor orSuffixProcessor = new ConnectableFieldProcessor(fieldInTestQuery("accountOr").getType(), OR);
+        FieldProcessor orSuffixProcessor = new OrSuffixFieldProcessor(fieldInTestQuery("accountOr").getType());
         Account accountOr = Account.builder().username("test").email("test@qq.com").build();
         String condition = orSuffixProcessor.process("", argList, accountOr);
         assertEquals("(username = ? OR email = ?)", condition);
@@ -46,17 +45,17 @@ class OrSuffixTest {
 
     @Test
     void buildOrConditionForNestedAND() {
-        FieldProcessor orSuffixProcessor = new ConnectableFieldProcessor(fieldInTestQuery("accountOr").getType(), OR);
+        FieldProcessor orSuffixProcessor = new OrSuffixFieldProcessor(fieldInTestQuery("accountOr").getType());
         Account account = Account.builder().username("test").mobile("18888888").build();
         Account accountOr = Account.builder().username("test").email("test@qq.com").accountAnd(account).build();
         String condition = orSuffixProcessor.process("", argList, accountOr);
-        assertEquals("(username = ? OR email = ? OR (username = ? AND mobile = ?))", condition);
+        assertEquals("(username = ? OR email = ? OR username = ? AND mobile = ?)", condition);
         assertThat(argList).containsExactly("test", "test@qq.com", "test", "18888888");
     }
 
     @Test
     void buildOrConditionForNestedOR() {
-        FieldProcessor orSuffixProcessor = new ConnectableFieldProcessor(fieldInTestQuery("accountOr").getType(), OR);
+        FieldProcessor orSuffixProcessor = new OrSuffixFieldProcessor(fieldInTestQuery("accountOr").getType());
         Account account = Account.builder().username("test").mobile("18888888").build();
         Account accountOr = Account.builder().username("test").email("test@qq.com").accountOr(account).build();
         String condition = orSuffixProcessor.process("", argList, accountOr);
@@ -70,7 +69,7 @@ class OrSuffixTest {
         Account account1 = Account.builder().username("test").mobile("18888888").build();
         Account account2 = Account.builder().username("test").email("test@qq.com").build();
         String condition = orSuffixProcessor.process("", argList, Arrays.asList(account1, account2));
-        assertEquals("((username = ? AND mobile = ?) OR (username = ? AND email = ?))", condition);
+        assertEquals("(username = ? AND mobile = ? OR username = ? AND email = ?)", condition);
         assertThat(argList).containsExactly("test", "18888888", "test", "test@qq.com");
     }
 }

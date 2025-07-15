@@ -382,7 +382,7 @@ class QueryBuilderTest {
 
         String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
 
-        assertThat(sql).isEqualTo("SELECT * FROM t_user t WHERE (username = ? AND email = ?)");
+        assertThat(sql).isEqualTo("SELECT * FROM t_user t WHERE username = ? AND email = ?");
         assertThat(argList).containsExactly("f0rb", "f0rb");
     }
 

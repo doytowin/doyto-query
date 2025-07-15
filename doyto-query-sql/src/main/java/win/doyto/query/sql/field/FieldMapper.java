@@ -31,9 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static win.doyto.query.sql.Constant.AND;
-import static win.doyto.query.sql.Constant.OR;
-
 /**
  * FieldMapper
  *
@@ -65,7 +62,7 @@ public final class FieldMapper {
         if (field.getName().endsWith("Or") && Collection.class.isAssignableFrom(field.getType())) {
             processor = new OrCollectionProcessor(field);
         } else if (field.getName().endsWith("Or") && Query.class.isAssignableFrom(field.getType())) {
-            processor = new ConnectableFieldProcessor(fieldType, OR);
+            processor = new OrSuffixFieldProcessor(fieldType);
         } else if (field.getName().endsWith("And") && Collection.class.isAssignableFrom(field.getType())) {
             processor = new CollectionProcessor(field);
         } else if (OrFieldProcessor.support(field.getName())) {
@@ -73,7 +70,7 @@ public final class FieldMapper {
         } else if (DoytoQuery.class.isAssignableFrom(fieldType)) {
             processor = initDoytoQueryField(field);
         } else if (Query.class.isAssignableFrom(fieldType)) {
-            processor = new ConnectableFieldProcessor(fieldType, AND);
+            processor = new ConnectableFieldProcessor(fieldType);
         } else if (field.isAnnotationPresent(QueryField.class)) {
             processor = new QueryFieldProcessor(field);
         } else if (ColumnComparisonProcessor.support(field)) {
@@ -89,9 +86,9 @@ public final class FieldMapper {
     private static FieldProcessor initDoytoQueryField(Field field) {
         FieldProcessor processor;
         if (field.getName().equals("or")) {
-            processor = new ConnectableFieldProcessor(field.getType(), OR);
+            processor = new OrSuffixFieldProcessor(field.getType());
         } else if (field.getName().equals("and")) {
-            processor = new ConnectableFieldProcessor(field.getType(), AND);
+            processor = new ConnectableFieldProcessor(field.getType());
         } else if (field.isAnnotationPresent(DomainPath.class)) {
             if (field.getName().endsWith(QuerySuffix.Exists.name())) {
                 processor = new ExistsProcessor(field);

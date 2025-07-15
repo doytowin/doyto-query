@@ -39,7 +39,7 @@ public class CollectionProcessor implements FieldProcessor {
     public CollectionProcessor(Field field) {
         Class<?> clazz = CommonUtil.resolveActualReturnClass(field);
         if (Query.class.isAssignableFrom(clazz)) {
-            fieldProcessor = new ConnectableFieldProcessor(clazz, AND);
+            fieldProcessor = new ConnectableFieldProcessor(clazz);
         } else {
             String orFieldName = StringUtils.removeEnd(field.getName(), "And");
             fieldProcessor = new SuffixFieldProcessor(orFieldName, false);
