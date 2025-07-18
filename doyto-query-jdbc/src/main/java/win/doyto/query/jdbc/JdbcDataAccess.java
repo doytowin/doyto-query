@@ -29,10 +29,7 @@ import win.doyto.query.jdbc.rowmapper.BeanPropertyRowMapper;
 import win.doyto.query.jdbc.rowmapper.ColumnMapRowMapper;
 import win.doyto.query.jdbc.rowmapper.RowMapper;
 import win.doyto.query.jdbc.rowmapper.SingleColumnRowMapper;
-import win.doyto.query.sql.EntityMetadata;
-import win.doyto.query.sql.SqlAndArgs;
-import win.doyto.query.sql.SqlBuilder;
-import win.doyto.query.sql.SqlBuilderFactory;
+import win.doyto.query.sql.*;
 import win.doyto.query.util.BeanUtil;
 import win.doyto.query.util.ColumnUtil;
 
@@ -98,7 +95,8 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     @Override
     public PageList<E> page(Q query) {
         query.forcePaging();
-        return new PageList<>(query(query), count(query));
+        WrappedQuery wq = new WrappedQuery(query);
+        return new PageList<>(query((Q) wq), count((Q) wq));
     }
 
     @Override

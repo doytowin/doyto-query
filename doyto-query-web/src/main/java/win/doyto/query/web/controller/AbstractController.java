@@ -111,7 +111,7 @@ abstract class AbstractController<
 
     public PageList<S> page(Q q) {
         q.forcePaging();
-        return new PageList<>(this.query(q), service.count(q));
+        return service.page(q, this::buildResponse);
     }
 
     public List<S> query(Q q) {
