@@ -16,7 +16,6 @@
 
 package win.doyto.query.web.component;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -25,6 +24,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.InitBinder;
+import win.doyto.query.validation.CreateGroup;
 import win.doyto.query.web.response.ErrorCode;
 import win.doyto.query.web.response.ErrorResponse;
 
@@ -36,7 +36,6 @@ import static win.doyto.query.web.response.PresetErrorCode.ARGUMENT_VALIDATION_F
 
 @ControllerAdvice
 public class CollectionValidator implements SmartValidator {
-    @Autowired
     protected LocalValidatorFactoryBean validator;
 
     public CollectionValidator(LocalValidatorFactoryBean validatorFactory) {
@@ -64,12 +63,12 @@ public class CollectionValidator implements SmartValidator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        this.validate(target, errors, new Class[0]);
+        this.validate(target, errors, CreateGroup.class);
     }
 
     @Override
     public void validate(Object target, Errors errors, Object... validationHints) {
-        Collection collection = (Collection) target;
+        Collection<?> collection = (Collection<?>) target;
         if (collection.size() == 1) {
             validator.validate(collection.toArray()[0], errors, validationHints);
         } else {
@@ -78,10 +77,8 @@ public class CollectionValidator implements SmartValidator {
             for (Object entry : collection) {
                 BindingResult bindingResult = new BeanPropertyBindingResult(entry, entry.getClass().getSimpleName());
                 validator.validate(entry, bindingResult, validationHints);
-                // if (bindingResult.getErrorCount() > 0) {
-                    bindingResults.add(bindingResult);
-                    errorCount += bindingResult.getErrorCount();
-                // }
+                bindingResults.add(bindingResult);
+                errorCount += bindingResult.getErrorCount();
             }
             ErrorCode.assertFalse(errorCount > 0, new ErrorResponse(ARGUMENT_VALIDATION_FAILED, bindingResults));
         }
