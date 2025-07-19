@@ -24,6 +24,7 @@ import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.test.menu.MenuEntity;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -97,5 +98,10 @@ class EntityMetadataTest {
         assertEquals("push(sales_amount)", EntityMetadata.resolveColumn("pushSalesAmount"));
         assertEquals("count(*)", EntityMetadata.resolveColumn("count"));
         assertEquals("count(id)", EntityMetadata.resolveColumn("countId"));
+    }
+
+    @Test
+    void supportConditionInCaseWhen() {
+        assertThat(EntityMetadata.resolveWhen("Type = 'Fixed'")).isEqualTo("Type = 'Fixed'");
     }
 }

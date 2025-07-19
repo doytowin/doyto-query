@@ -157,11 +157,15 @@ public class EntityMetadata {
     private static String resolveCases(String name, Case caseAnno) {
         StringBuilder caseBuilder = new StringBuilder("CASE");
         for (Case.Item item : caseAnno.value()) {
-            caseBuilder.append(" WHEN ").append("#{").append(item.when())
-                       .append("} THEN ").append(item.then());
+            caseBuilder.append(" WHEN ").append(resolveWhen(item.when()))
+                       .append(" THEN ").append(item.then());
         }
         caseBuilder.append(" ELSE ").append(caseAnno.end()).append(" END");
         return name.replace("@Case", caseBuilder);
+    }
+
+    static String resolveWhen(String when) {
+        return !when.contains(" ") ? "#{" + when + "}" : when;
     }
 
     public static String resolveColumn(String fieldName) {
