@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -309,8 +309,8 @@ class TpcHTest {
                 " AND l_suppkey = s_suppkey" +
                 " AND o_custkey = c_custkey" +
                 " AND c_nationkey = n2.n_nationkey" +
-                " AND ((n1.n_name = ? AND n2.n_name = ?)" +
-                " OR (n1.n_name = ? AND n2.n_name = ?))" +
+                " AND (n1.n_name = ? AND n2.n_name = ?" +
+                " OR n1.n_name = ? AND n2.n_name = ?)" +
                 " AND l_shipdate >= ? AND l_shipdate <= ?" +
                 ") AS shipping" +
                 " GROUP BY supp_nation, cust_nation, l_year" +
@@ -381,7 +381,7 @@ class TpcHTest {
 
         NationalMarketShareQuery query = NationalMarketShareQuery
                 .builder()
-                .nationEq("BRAZIL")
+                .nation("BRAZIL")
                 .allNationsQuery(allNationsQuery).sort("o_year")
                 .build();
         SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, NationalMarketShareView.class);
@@ -468,25 +468,25 @@ class TpcHTest {
     void q11ImportantStockIdentificationQuery() {
         String expected = "SELECT" +
                 " ps_partkey," +
-                " SUM(ps_supplycost * ps_availqty) AS value" +
+                " SUM(ps_supplycost * ps_availqty) AS val" +
                 " FROM partsupp, supplier, nation" +
                 " WHERE ps_suppkey = s_suppkey" +
                 " AND s_nationkey = n_nationkey" +
                 " AND n_name = ?" +
                 " GROUP BY ps_partkey" +
-                " HAVING value > (SELECT SUM(ps_supplycost * ps_availqty) * 0.0001000000e-2" +
+                " HAVING val > (SELECT SUM(ps_supplycost * ps_availqty) * 0.0001000000e-2" +
                 " FROM partsupp, supplier, nation" +
                 " WHERE ps_suppkey = s_suppkey" +
                 " AND s_nationkey = n_nationkey" +
                 " AND n_name = ?" +
                 ")" +
-                " ORDER BY value DESC";
+                " ORDER BY val DESC";
 
         ImportantStockIdentificationHaving query = ImportantStockIdentificationHaving
                 .builder()
                 .n_name("GERMANY")
-                .valueGt(ValueQuery.builder().n_name("GERMANY").build())
-                .sort("value,DESC")
+                .valGt(ValueQuery.builder().n_name("GERMANY").build())
+                .sort("val,DESC")
                 .build();
 
         SqlAndArgs sqlAndArgs = buildSelectAndArgs(query, ImportantStockIdentificationView.class);
@@ -498,7 +498,7 @@ class TpcHTest {
     @Test
     void q12ShippingModesAndOrderPriorityQuery() {
         String expected = "SELECT l_shipmode," +
-                " SUM(CASE WHEN o_orderpriority = ? OR o_orderpriority = ? THEN 1 ELSE 0 END) AS high_line_count," +
+                " SUM(CASE WHEN (o_orderpriority = ? OR o_orderpriority = ?) THEN 1 ELSE 0 END) AS high_line_count," +
                 " SUM(CASE WHEN o_orderpriority <> ? AND o_orderpriority <> ? THEN 1 ELSE 0 END) AS low_line_count" +
                 " FROM orders, lineitem" +
                 " WHERE l_orderkey = o_orderkey" +
@@ -513,8 +513,8 @@ class TpcHTest {
         LocalDate date = LocalDate.of(1994, 1, 1);
         ShippingModesAndOrderPriorityQuery query = ShippingModesAndOrderPriorityQuery
                 .builder()
-                .o_orderpriority1("1-URGENT")
-                .o_orderpriority2("2-HIGH")
+                .o_orderpriorityOr(Arrays.asList("1-URGENT", "2-HIGH"))
+                .o_orderpriorityNeAnd(Arrays.asList("1-URGENT", "2-HIGH"))
                 .l_shipmodeIn(Arrays.asList("MAIL", "SHIP"))
                 .l_receiptdateGe(Date.valueOf(date))
                 .l_receiptdateLt(Date.valueOf(date.plusYears(1)))
@@ -712,28 +712,28 @@ class TpcHTest {
                 " SUM(l_extendedprice * (1 - l_discount)) AS revenue" +
                 " FROM lineitem, part" +
                 " WHERE l_partkey = p_partkey" +
-                " AND ((p_brand = ?" +
+                " AND (p_brand = ?" +
                 " AND p_container IN (?, ?, ?, ?)" +
                 " AND l_quantity >= ?" +
                 " AND l_quantity <= ?" +
                 " AND p_size >= ?" +
                 " AND p_size <= ?" +
                 " AND l_shipmode IN (?, ?)" +
-                ") OR (p_brand = ?" +
+                " OR p_brand = ?" +
                 " AND p_container IN (?, ?, ?, ?)" +
                 " AND l_quantity >= ?" +
                 " AND l_quantity <= ?" +
                 " AND p_size >= ?" +
                 " AND p_size <= ?" +
                 " AND l_shipmode IN (?, ?)" +
-                ") OR (p_brand = ?" +
+                " OR p_brand = ?" +
                 " AND p_container IN (?, ?, ?, ?)" +
                 " AND l_quantity >= ?" +
                 " AND l_quantity <= ?" +
                 " AND p_size >= ?" +
                 " AND p_size <= ?" +
                 " AND l_shipmode IN (?, ?)" +
-                "))" +
+                ")" +
                 " AND l_shipinstruct = ?";
 
         LineitemFilter lineitemFilter1 = LineitemFilter

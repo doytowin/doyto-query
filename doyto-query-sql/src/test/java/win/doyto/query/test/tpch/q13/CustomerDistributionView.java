@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,8 @@ package win.doyto.query.test.tpch.q13;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.annotation.NestedView;
+import win.doyto.query.annotation.View;
+import win.doyto.query.annotation.ViewType;
 
 import javax.persistence.Column;
 
@@ -31,7 +32,7 @@ import javax.persistence.Column;
  */
 @Getter
 @Setter
-@NestedView(CustomerOrdersView.class)
+@View(value = CustomerOrdersView.class, type = ViewType.NESTED)
 public class CustomerDistributionView {
     @GroupBy
     private Long c_count;

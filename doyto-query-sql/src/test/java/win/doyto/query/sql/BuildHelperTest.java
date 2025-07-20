@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import win.doyto.query.test.TestQuery;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author f0rb on 2021-02-16
  */
 class BuildHelperTest {
+    List<Object> args = new ArrayList<>();
 
     @Test
     void buildOrderByForFieldSorting() {
@@ -67,26 +69,22 @@ class BuildHelperTest {
     }
 
     @Test
-    void givenExWithoutSuffixWhenReplaceShouldBePlaceholder() {
-        String input = "SELECT o_year, SUM(CASE WHEN nation = #{nation} THEN volume ELSE 0 END) / SUM(volume) AS mkt_share";
-        List<Object> args = new ArrayList<>();
-
-        TestQuery query = TestQuery.builder().nation("BRAZIL").build();
-        String sql = BuildHelper.replaceExpressionInString(input,query, args);
-
-        assertThat(sql).isEqualTo("SELECT o_year, SUM(CASE WHEN nation = ? THEN volume ELSE 0 END) / SUM(volume) AS mkt_share");
-        assertThat(args).containsExactly("BRAZIL");
-    }
-
-    @Test
     void givenExWithSuffixWhenReplaceShouldBeExpression() {
         String input = "SELECT o_year, SUM(CASE WHEN #{nationEq} THEN volume ELSE 0 END) / SUM(volume) AS mkt_share";
-        List<Object> args = new ArrayList<>();
 
         TestQuery query = TestQuery.builder().nationEq("BRAZIL").build();
         String sql = BuildHelper.replaceExpressionInString(input, query,  args);
 
         assertThat(sql).isEqualTo("SELECT o_year, SUM(CASE WHEN nation = ? THEN volume ELSE 0 END) / SUM(volume) AS mkt_share");
         assertThat(args).containsExactly("BRAZIL");
+    }
+
+    @Test
+    void buildAndClauseForBasicTypeCollection() {
+        TestQuery query = TestQuery.builder().usernameNeAnd(Arrays.asList("test1", "test2")).build();
+        String sql = BuildHelper.buildWhere(query, args);
+
+        assertThat(sql).isEqualTo(" WHERE username <> ? AND username <> ?");
+        assertThat(args).containsExactly("test1", "test2");
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-package win.doyto.query.test.user;
+package win.doyto.query.sql.field;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import win.doyto.query.core.RelationalQuery;
+import java.util.List;
 
-/**
- * UserViewQuery
- *
- * @author f0rb on 2022-03-26
- */
-@Getter
-@Setter
-@SuperBuilder
-public class UserViewQuery extends UserQuery implements RelationalQuery<UserEntity, Long> {
+import static win.doyto.query.sql.Constant.*;
+
+public class OrSuffixFieldProcessor extends ConnectableFieldProcessor {
+    public OrSuffixFieldProcessor(Class<?> fieldType) {
+        super(fieldType, OR);
+    }
+
     @Override
-    public Class<UserEntity> getDomainClass() {
-        return UserEntity.class;
+    public String process(String alias, List<Object> argList, Object value) {
+        String clause = super.process(alias, argList, value);
+        return clause == null ? null : OP + clause + CP;
     }
 }

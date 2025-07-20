@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,6 @@ public class UserController
 
     @Override
     public void create(List<UserRequest> requests) {
-        listValidator.validateList(requests);
         for (UserRequest request : requests) {
             UserEntity userEntity = userService.save(buildEntity(request));
             userDetailService.save(UserDetailEntity.build(userEntity.getId(), request));

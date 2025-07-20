@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,15 @@
  */
 package win.doyto.query.core;
 
+import java.io.Serializable;
+
 /**
  * DoytoQuery
  *
  * @author f0rb on 2021-12-02
  * @since 0.3.0
  */
-public interface DoytoQuery extends Query {
+public interface DoytoQuery extends Serializable {
 
     void forcePaging();
 
@@ -46,3 +48,4 @@ public interface DoytoQuery extends Query {
         return IdWrapper.build(null);
     }
 }
+

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import win.doyto.query.web.response.PresetErrorCode;
 
 import static org.hamcrest.Matchers.containsInRelativeOrder;
@@ -124,31 +125,34 @@ class UserMvcTest extends DemoApplicationTest {
     }
 
     @Test
-    void queryUsersWhoHaveRole1() throws Exception {
-        performAndExpectSuccess(get("/user/?perm.id=1"))
-                .andExpect(jsonPath("$.data.list").isArray())
-                .andExpect(jsonPath("$.data.list.size()").value(3))
-                .andExpect(jsonPath("$.data.list[*].id", containsInRelativeOrder(1, 3, 4)))
-        ;
+    void queryUsersWhoHavePerm5() throws Exception {
+        performAndExpectSuccess(get("/user/?perm.id=5"))
+                .andExpect(jsonPath("$.data.list[*].id", containsInRelativeOrder(1, 4)));
     }
 
     @Test
     @Rollback
     void deleteByQuery() throws Exception {
-        performAndExpectFail(delete("/user/"), PresetErrorCode.ARGUMENT_VALIDATION_FAILED);
+        performAndExpectFail(delete("/user/"), PresetErrorCode.ARGUMENT_VALIDATION_FAILED)
+                .andExpect(jsonPath("$.hints.query").value("不能为空"));
+        performAndExpectFail(delete("/user/?username=test&sort=anyti;DROP database;"), PresetErrorCode.ARGUMENT_VALIDATION_FAILED)
+                .andExpect(jsonPath("$.hints.sort").exists());
         performAndExpectSuccess(delete("/user/?username=f0rb"))
-                .andExpect(jsonPath("$.data").value(1))
-        ;
+                .andExpect(jsonPath("$.data").value(1));
     }
 
     @Test
     @Rollback
     void patchUserByQuery() throws Exception {
-        RequestBuilder requestBuilder = patch("/user/?emailLike=qq.com&valid=true")
+        MockHttpServletRequestBuilder requestBuilder = patch("/user/?emailLike=qq.com&valid=true")
                 .content("{\"valid\":false}").contentType(MediaType.APPLICATION_JSON);
         performAndExpectSuccess(requestBuilder)
-                .andExpect(jsonPath("$.data").value(2))
-        ;
+                .andExpect(jsonPath("$.data").value(2));
+
+        requestBuilder = patch("/user/?username=test&sort=anyti;DROP database;")
+                .content("{\"valid\":false}").contentType(MediaType.APPLICATION_JSON);
+        performAndExpectFail(requestBuilder, PresetErrorCode.ARGUMENT_VALIDATION_FAILED)
+                .andExpect(jsonPath("$.hints.sort").exists());
     }
 
     @Test

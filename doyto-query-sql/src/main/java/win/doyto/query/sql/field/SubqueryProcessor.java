@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package win.doyto.query.sql.field;
 
 import win.doyto.query.annotation.Subquery;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.Having;
 import win.doyto.query.sql.BuildHelper;
@@ -128,11 +127,6 @@ public class SubqueryProcessor implements FieldProcessor {
         clause += groupBy;
         if (value instanceof Having) {
             clause += buildHaving((Having) value, argList);
-        } else if (value instanceof AggregationQuery) {
-            Having having = ((AggregationQuery) value).getHaving();
-            if (having != null) {
-                clause += buildHaving(having, argList);
-            }
         }
         return String.format(clauseFormat, clause);
     }

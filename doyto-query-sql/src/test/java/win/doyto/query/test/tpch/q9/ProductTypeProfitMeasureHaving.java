@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import win.doyto.query.annotation.GroupBy;
-import win.doyto.query.annotation.NestedView;
-
-import javax.persistence.Column;
-import java.math.BigDecimal;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.core.Having;
 import win.doyto.query.core.PageQuery;

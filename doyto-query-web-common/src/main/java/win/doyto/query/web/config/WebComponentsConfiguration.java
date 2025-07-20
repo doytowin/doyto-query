@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import org.springframework.validation.Validator;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import win.doyto.query.geo.GeoShape;
 import win.doyto.query.web.component.ErrorCodeI18nService;
-import win.doyto.query.web.component.ListValidator;
 
 /**
  * WebComponentsConfiguration
@@ -64,11 +63,6 @@ public class WebComponentsConfiguration {
         initializer.setValidator(validator);
         initializer.setPropertyEditorRegistrar(r -> r.registerCustomEditor(GeoShape.class, new GeoShapeEditor()));
         return initializer;
-    }
-
-    @Bean
-    public ListValidator listValidator() {
-        return new ListValidator();
     }
 
     @Bean

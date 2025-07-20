@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.PageList;
+import win.doyto.query.validation.CreateGroup;
 import win.doyto.query.validation.PageGroup;
 import win.doyto.query.validation.PatchGroup;
 import win.doyto.query.validation.UpdateGroup;
@@ -49,7 +50,7 @@ public interface RestApi<I, Q extends DoytoQuery, R, S> {
     S remove(I id);
 
     @DeleteMapping("/")
-    int delete(@NotEmptyQuery Q query);
+    int delete(@NotEmptyQuery @Validated(PageGroup.class) Q query);
 
     @PutMapping("{id}")
     void update(@RequestBody @Validated(UpdateGroup.class) R request);
@@ -58,13 +59,13 @@ public interface RestApi<I, Q extends DoytoQuery, R, S> {
     void patch(@RequestBody @Validated(PatchGroup.class) R request);
 
     @PatchMapping("/")
-    int patch(@RequestBody R request, @NotEmptyQuery Q query);
+    int patch(@RequestBody R request, @NotEmptyQuery @Validated(PageGroup.class) Q query);
 
     default void create(R request) {
         create(Collections.singletonList(request));
     }
 
     @PostMapping("/")
-    void create(@RequestBody List<R> requests);
+    void create(@RequestBody @Validated(CreateGroup.class) List<R> requests);
 
 }

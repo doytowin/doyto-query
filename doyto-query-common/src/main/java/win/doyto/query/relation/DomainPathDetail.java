@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,15 +53,8 @@ public class DomainPathDetail {
     private static final String REVERSE_SIGN = "~";
 
     private final String[] domainPath;
-    private final String localFieldColumn;
-    private final String foreignFieldColumn;
-    private final String[] joinIds;
-    private final String[] joinTables;
-    private final String targetTable;
-
-    public boolean onlyOneDomain() {
-        return domainPath.length == 1;
-    }
+    private Relation baseRelation;
+    private List<Relation> relations;
 
     public static DomainPathDetail buildBy(DomainPath domainPathAnno) {
         return buildBy(domainPathAnno, ColumnUtil::convertColumn);
@@ -80,15 +73,29 @@ public class DomainPathDetail {
         String foreignFieldColumn = fieldConvertor.apply(foreignField);
         String localFieldColumn = fieldConvertor.apply(localField);
         String[] domainPath = prepareDomainPath(originDomainPath);
-        String[] joinIds = prepareJoinIds(domainPath);
-        if (domainPath.length == 1) {
-            joinIds[0] = foreignField.equals("id")
-                    ? localFieldColumn      // many-to-one
-                    : foreignFieldColumn;   // one-to-many
+        registerReverseJoinTable(originDomainPath);
+
+        List<Relation> relations = new ArrayList<>();
+        for (int i = 0; i < domainPath.length - 1; i++) {
+            relations.add(Relation.build(domainPath[i], domainPath[i + 1]));
         }
-        String[] joinTables = prepareJoinTablesWithReverseSign(originDomainPath);
+        domainPath = cleanupDomainPath(domainPath);
         String targetTable = prepareTargetTable(domainPath);
-        return new DomainPathDetail(domainPath, localFieldColumn, foreignFieldColumn, joinIds, joinTables, targetTable);
+        Relation relation = new Relation(foreignFieldColumn, targetTable, localFieldColumn);
+        return new DomainPathDetail(domainPath, relation, relations);
+    }
+
+    private static String[] cleanupDomainPath(String[] domainPath) {
+        return Arrays.stream(domainPath)
+                     .map(entity -> {
+                         if (entity.contains("<-")) {
+                             return entity.substring(0, entity.indexOf("<-"));
+                         } else if (entity.contains("->")) {
+                             return entity.substring(0, entity.indexOf("->"));
+                         }
+                         return entity;
+                     })
+                     .toArray(String[]::new);
     }
 
     private static String prepareTargetTable(String[] domainPath) {
@@ -101,28 +108,16 @@ public class DomainPathDetail {
                      .toArray(String[]::new);
     }
 
-    private static String[] prepareJoinIds(String[] domainPath) {
-        String joinIdFormat = GlobalConfiguration.instance().getJoinIdFormat();
-        return Arrays.stream(domainPath)
-                     .map(domain -> String.format(joinIdFormat, domain))
-                     .toArray(String[]::new);
-    }
-
-    private static String[] prepareJoinTablesWithReverseSign(String[] domainPath) {
+    private static void registerReverseJoinTable(String[] domainPath) {
         GlobalConfiguration config = GlobalConfiguration.instance();
-        List<String> joinTableList = new ArrayList<>();
         int i = 0;
         while (i < domainPath.length - 1) {
-            String domain = domainPath[i];
-            String nextDomain = domainPath[i + 1];
-            if (REVERSE_SIGN.equals(nextDomain)) {
-                nextDomain = domain;
-                domain = domainPath[i + 2];
+            if (REVERSE_SIGN.equals(domainPath[i + 1])) {
+                GlobalConfiguration.registerJoinTable(domainPath[i], domainPath[i + 2],
+                        config.formatJoinTable(domainPath[i + 2], domainPath[i]));
                 i++;
             }
-            joinTableList.add(config.formatJoinTable(domain, nextDomain));
             i++;
         }
-        return joinTableList.toArray(new String[0]);
     }
 }

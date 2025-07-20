@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright © 2019-2024 Forb Yuan
+  ~ Copyright © 2019-2025 DoytoWin, Inc.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -25,11 +25,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>doyto-query-jdbc</artifactId>
-    <name>doyto-query-jdbc</name>
-    <description>The SQL executed layer based on Spring JDBC</description>
+    <name>DoytoQueryJDBC</name>
+    <description>The SQL executed layer</description>
 
     <properties>
-        <maven.deploy.skip>false</maven.deploy.skip>
         <active.profiles>test</active.profiles>
         <junit.parallel>true</junit.parallel>
     </properties>
@@ -59,6 +58,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <!--test-->
@@ -71,12 +71,6 @@
             <groupId>win.doyto</groupId>
             <artifactId>doyto-query-dialect</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>${snakeyaml.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

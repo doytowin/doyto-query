@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,6 +75,9 @@ public class UserEntity extends AbstractCommonEntity<Long, Long> {
     // one-to-many
     @DomainPath(value = "role", foreignField = "createUserId")
     private List<RoleEntity> createRoles;
+
+    @DomainPath(value = {"user", "role<-createUserId"})
+    private List<RoleEntity> createRoles2;
 
     // many-to-many aggregation
     @DomainPath({"user", "role"})

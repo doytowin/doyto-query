@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,6 @@ import win.doyto.query.test.tpch.domain.lineitem.LineitemQuery;
 import win.doyto.query.test.user.MaxIdView;
 import win.doyto.query.test.user.UserLevelCountView;
 import win.doyto.query.test.user.UserLevelHaving;
-import win.doyto.query.test.user.UserLevelQuery;
-
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.Collections;
 
 import java.sql.Date;
 import java.time.LocalDate;

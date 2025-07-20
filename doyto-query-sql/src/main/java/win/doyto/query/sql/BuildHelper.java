@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,11 @@ import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.ComplexView;
 import win.doyto.query.annotation.CompositeView;
 import win.doyto.query.annotation.View;
-import win.doyto.query.annotation.*;
+import win.doyto.query.annotation.ViewType;
 import win.doyto.query.config.GlobalConfiguration;
-import win.doyto.query.core.*;
+import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.core.Having;
+import win.doyto.query.core.LockMode;
 import win.doyto.query.sql.field.FieldMapper;
 import win.doyto.query.util.ColumnUtil;
 import win.doyto.query.util.CommonUtil;
@@ -103,7 +105,7 @@ public class BuildHelper {
         return SELECT + StringUtils.join(columns, SEPARATOR) + FROM + table + SPACE + TABLE_ALIAS;
     }
 
-    public static String buildWhere(Query query, List<Object> argList) {
+    public static String buildWhere(DoytoQuery query, List<Object> argList) {
         return buildCondition(WHERE, query, argList);
     }
 
@@ -191,17 +193,10 @@ public class BuildHelper {
         do {
             String fieldName = matcher.group(1);
             Object value = readFieldGetter(target, fieldName);
-
-            QuerySuffix suffix = QuerySuffix.resolve(BuildHelper.resolveFieldName(fieldName));
-            if (suffix == QuerySuffix.NONE) {
-                matcher.appendReplacement(sb, "?");
-                args.add(value);
-            } else {
-                Field field = getField(target, fieldName);
-                FieldMapper.init(field);
-                String ex = FieldMapper.execute(field, EMPTY, args, value);
-                matcher.appendReplacement(sb, ex);
-            }
+            Field field = getField(target, fieldName);
+            FieldMapper.init(field);
+            String ex = FieldMapper.execute(field, EMPTY, args, value);
+            matcher.appendReplacement(sb, ex);
         } while (matcher.find());
         return matcher.appendTail(sb).toString();
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,8 @@ package win.doyto.query.jdbc;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
-import win.doyto.query.core.*;
+import win.doyto.query.core.AggregateChain;
+import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.sql.AggregateQueryBuilder;
 import win.doyto.query.sql.EntityMetadata;
 import win.doyto.query.sql.SqlAndArgs;

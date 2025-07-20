@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,14 +97,14 @@ class RelationalQueryBuilderTest {
 
         SqlAndArgs sqlAndArgs = buildSqlAndArgsForSubDomain(field, Arrays.asList(1, 3), MenuEntity.class);
 
-        String expected = "\nSELECT ? AS MAIN_ENTITY_ID, id, menuName, platform FROM t_menu\n" +
+        String expected = "\nSELECT ? AS MAIN_ENTITY_ID, id, parentId, menuName, platform, memo, valid FROM t_menu\n" +
                 "WHERE id IN (\n" +
                 "  SELECT menu_id FROM a_perm_and_menu WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM a_role_and_perm WHERE role_id IN (\n" +
                 "  SELECT role_id FROM a_user_and_role WHERE user_id = ?\n" +
                 ")))\n" +
                 "UNION ALL\n" +
-                "SELECT ? AS MAIN_ENTITY_ID, id, menuName, platform FROM t_menu\n" +
+                "SELECT ? AS MAIN_ENTITY_ID, id, parentId, menuName, platform, memo, valid FROM t_menu\n" +
                 "WHERE id IN (\n" +
                 "  SELECT menu_id FROM a_perm_and_menu WHERE perm_id IN (\n" +
                 "  SELECT perm_id FROM a_role_and_perm WHERE role_id IN (\n" +

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,20 +41,4 @@ public interface DataQueryClient {
         return new PageList<>(query(query, viewClass), count(query, viewClass));
     }
 
-    default <V extends Persistable<I>, I extends Serializable, Q extends RelationalQuery<V, I>>
-    List<V> query(Q query) {
-        return query(query, query.getDomainClass());
-    }
-
-    default <V extends Persistable<I>, I extends Serializable, Q extends RelationalQuery<V, I>>
-    long count(Q query) {
-        return count(query, query.getDomainClass());
-    }
-
-    default <V extends Persistable<I>, I extends Serializable, Q extends RelationalQuery<V, I>>
-    PageList<V> page(Q query) {
-        return page(query, query.getDomainClass());
-    }
-
-    <V> List<V> aggregate(DoytoQuery query, Class<V> viewClass);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ public class MenuQuery extends PageQuery {
     @DomainPath(value = "menu", foreignField = "parentId")
     private MenuQuery children;
 
+    private UserQuery withUsers;
     @DomainPath({"menu", "~", "perm",  "~", "role", "~", "user"})
     private UserQuery user;
 

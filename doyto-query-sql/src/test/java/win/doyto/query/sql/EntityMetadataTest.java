@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import win.doyto.query.test.menu.MenuEntity;
 
 import javax.persistence.Entity;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -65,7 +66,7 @@ class EntityMetadataTest {
     @Test
     void resolveSelectColumns() {
         String columns = EntityMetadata.buildViewColumns(MenuEntity.class);
-        assertEquals("id, menu_name AS menuName, platform", columns);
+        assertEquals("id, parent_id AS parentId, menu_name AS menuName, platform, memo, valid", columns);
     }
 
     /**
@@ -98,5 +99,10 @@ class EntityMetadataTest {
         assertEquals("push(sales_amount)", EntityMetadata.resolveColumn("pushSalesAmount"));
         assertEquals("count(*)", EntityMetadata.resolveColumn("count"));
         assertEquals("count(id)", EntityMetadata.resolveColumn("countId"));
+    }
+
+    @Test
+    void supportConditionInCaseWhen() {
+        assertThat(EntityMetadata.resolveWhen("Type = 'Fixed'")).isEqualTo("Type = 'Fixed'");
     }
 }

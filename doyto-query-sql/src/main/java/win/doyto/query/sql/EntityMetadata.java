@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package win.doyto.query.sql;
 
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
 import win.doyto.query.annotation.*;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.AggregationPrefix;
@@ -25,9 +24,11 @@ import win.doyto.query.core.Dialect;
 import win.doyto.query.util.ColumnUtil;
 
 import javax.persistence.Column;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -52,57 +53,17 @@ public class EntityMetadata {
     private final List<View> withViews;
     private final List<View> nestedViews;
     private final List<Field> domainPathFields;
-    private EntityMetadata nested;
 
     public EntityMetadata(Class<?> viewClass) {
         this.viewClass = viewClass;
         this.nestedViews = collectViews(viewClass, ViewType.NESTED);
-        if (viewClass.isAnnotationPresent(NestedView.class)) {
-            NestedView anno = viewClass.getAnnotation(NestedView.class);
-            this.nestedViews.add(transformNestedView(anno));
-            Class<?> clazz = anno.value();
-            // We don't need to cache the nested EntityMetadata,
-            // since the host EntityMetadata is already cached.
-            this.nested = new EntityMetadata(clazz);
-            this.tableName = "";
-        } else {
-            this.tableName = BuildHelper.resolveTableName(viewClass);
-        }
+        this.tableName = BuildHelper.resolveTableName(viewClass);
         this.joinConditions = resolveJoinConditions(viewClass);
         this.columnsForSelect = buildViewColumns(viewClass);
         this.groupByColumns = resolveGroupByColumns(viewClass);
         this.groupBySql = buildGroupBySql(groupByColumns);
         this.withViews = collectViews(viewClass, ViewType.WITH);
         this.domainPathFields = ColumnUtil.resolveDomainPathFields(viewClass);
-    }
-
-    private static View transformNestedView(final NestedView anno) {
-        return new View() {
-            @Override
-            public Class<? extends Annotation> annotationType() {
-                return View.class;
-            }
-
-            @Override
-            public Class<?> value() {
-                return anno.value();
-            }
-
-            @Override
-            public String alias() {
-                return "";
-            }
-
-            @Override
-            public ViewType type() {
-                return ViewType.NESTED;
-            }
-
-            @Override
-            public boolean context() {
-                return false;
-            }
-        };
     }
 
     @SuppressWarnings("java:S6204")
@@ -186,9 +147,26 @@ public class EntityMetadata {
     public static String resolveColumn(Field field) {
         Column column = field.getAnnotation(Column.class);
         if (column != null && !column.name().isEmpty()) {
+            if (column.name().contains("@Case") && field.isAnnotationPresent(Case.class)) {
+                return resolveCases(column.name(), field.getAnnotation(Case.class));
+            }
             return column.name();
         }
         return resolveColumn(field.getName());
+    }
+
+    private static String resolveCases(String name, Case caseAnno) {
+        StringBuilder caseBuilder = new StringBuilder("CASE");
+        for (Case.Item item : caseAnno.value()) {
+            caseBuilder.append(" WHEN ").append(resolveWhen(item.when()))
+                       .append(" THEN ").append(item.then());
+        }
+        caseBuilder.append(" ELSE ").append(caseAnno.end()).append(" END");
+        return name.replace("@Case", caseBuilder);
+    }
+
+    static String resolveWhen(String when) {
+        return !when.contains(" ") ? "#{" + when + "}" : when;
     }
 
     public static String resolveColumn(String fieldName) {

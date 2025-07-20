@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,23 +52,25 @@ class ExceptionTest extends DemoApplicationTest {
     void testMethodArgumentNotValidException() throws Exception {
         RequestBuilder requestBuilder = post("/role/").content("{}").contentType(MediaType.APPLICATION_JSON);
         performAndExpectFail("参数校验失败", requestBuilder)
-                .andExpect(jsonPath("$.hints[0].roleName").value("不能为null"))
-                .andExpect(jsonPath("$.hints[0].roleCode").value("不能为null"))
+                .andExpect(jsonPath("$.hints.roleName").value("不能为null"))
+                .andExpect(jsonPath("$.hints.roleCode").value("不能为null"))
         ;
     }
 
     @Test
     void testMethodArgumentNotValidExceptionWithList() throws Exception {
-        RequestBuilder requestBuilder = post("/role/").content("[{\"roleName\":\"test\"},{\"roleCode\":\"123456\"}]").contentType(MediaType.APPLICATION_JSON);
+        RequestBuilder requestBuilder = post("/role/")
+                .content("[{\"roleName\":\"test\"},{\"roleCode\":\"123456\", \"roleName\":\"test\"},{\"roleCode\":\"123456\"}]")
+                .contentType(MediaType.APPLICATION_JSON);
         performAndExpectFail("参数校验失败", requestBuilder)
                 .andExpect(jsonPath("$.hints[0].roleCode").value("不能为null"))
-                .andExpect(jsonPath("$.hints[1].roleName").value("不能为null"))
+                .andExpect(jsonPath("$.hints[2].roleName").value("不能为null"))
         ;
 
         RequestBuilder postRole = post("/role/").content("{}").contentType(MediaType.APPLICATION_JSON);
         performAndExpectFail("参数校验失败", postRole)
-                .andExpect(jsonPath("$.hints[0].roleName").value("不能为null"))
-                .andExpect(jsonPath("$.hints[0].roleCode").value("不能为null"))
+                .andExpect(jsonPath("$.hints.roleName").value("不能为null"))
+                .andExpect(jsonPath("$.hints.roleCode").value("不能为null"))
         ;
     }
 

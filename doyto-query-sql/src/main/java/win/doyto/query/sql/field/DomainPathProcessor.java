@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import win.doyto.query.annotation.DomainPath;
 import win.doyto.query.config.GlobalConfiguration;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.relation.DomainPathDetail;
+import win.doyto.query.relation.Relation;
 import win.doyto.query.sql.BuildHelper;
 import win.doyto.query.util.CommonUtil;
 
@@ -50,11 +51,10 @@ class DomainPathProcessor implements FieldProcessor {
     }
 
     private String buildClause(List<Object> argList, DoytoQuery query) {
-        String[] joinIds = domainPathDetail.getJoinIds();
-        String[] joinTables = domainPathDetail.getJoinTables();
         String[] domainPath = domainPathDetail.getDomainPath();
+        Relation baseRelation = domainPathDetail.getBaseRelation();
 
-        StringBuilder subQueryBuilder = new StringBuilder(domainPathDetail.getLocalFieldColumn()).append(IN).append(OP);
+        StringBuilder subQueryBuilder = new StringBuilder(baseRelation.getFk2()).append(IN).append(OP);
         for (int i = 0; i < domainPath.length - 1; i++) {
             String queryName = domainPath[i] + "Query";
             Object domainQuery = CommonUtil.readField(query, queryName);
@@ -64,15 +64,16 @@ class DomainPathProcessor implements FieldProcessor {
                 subQueryBuilder.append(SELECT).append(ID).append(FROM).append(table)
                                .append(where).append(INTERSECT);
             }
-            subQueryBuilder.append(SELECT).append(joinIds[i])
-                           .append(FROM).append(joinTables[i])
-                           .append(WHERE).append(joinIds[i + 1])
+            Relation relation = domainPathDetail.getRelations().get(i);
+            subQueryBuilder.append(SELECT).append(relation.getFk1())
+                           .append(FROM).append(relation.getAssociativeTable())
+                           .append(WHERE).append(relation.getFk2())
                            .append(IN).append(OP);
         }
 
         String where = BuildHelper.buildWhere(query, argList);
-        subQueryBuilder.append(SELECT).append(domainPathDetail.getForeignFieldColumn())
-                       .append(FROM).append(domainPathDetail.getTargetTable()).append(where)
+        subQueryBuilder.append(SELECT).append(baseRelation.getFk1())
+                       .append(FROM).append(baseRelation.getAssociativeTable()).append(where)
                        .append(StringUtils.repeat(')', domainPath.length));
         return subQueryBuilder.toString();
     }

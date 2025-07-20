@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package win.doyto.query.test.tpch.q12;
 
 import lombok.Getter;
 import lombok.Setter;
+import win.doyto.query.annotation.Case;
 import win.doyto.query.annotation.CompositeView;
 import win.doyto.query.annotation.GroupBy;
 import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
@@ -38,9 +39,11 @@ public class ShippingModesAndOrderPriorityView {
     @GroupBy
     private String l_shipmode;
 
-    @Column(name = "SUM(CASE WHEN o_orderpriority = #{o_orderpriority1} OR o_orderpriority = #{o_orderpriority2} THEN 1 ELSE 0 END)")
+    @Case(@Case.Item(when = "o_orderpriorityOr", then = "1"))
+    @Column(name = "SUM(@Case)")
     private Integer high_line_count;
 
-    @Column(name = "SUM(CASE WHEN o_orderpriority <> #{o_orderpriority1} AND o_orderpriority <> #{o_orderpriority2} THEN 1 ELSE 0 END)")
+    @Case(@Case.Item(when = "o_orderpriorityNeAnd", then = "1"))
+    @Column(name = "SUM(@Case)")
     private Integer low_line_count;
 }

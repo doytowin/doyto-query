@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,10 +38,12 @@ import win.doyto.query.test.user.UserQuery;
 @AllArgsConstructor
 public class PermissionQuery extends PageQuery {
 
+    private Integer id;
     @DomainPath({"perm", "role"})
     private RoleQuery role;
     private RoleQuery roleQuery;
 
+    private UserQuery withUsers;
     @DomainPath({"perm", "role", "user"})
     private UserQuery user;
 

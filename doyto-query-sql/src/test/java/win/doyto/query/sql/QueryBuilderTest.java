@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -359,6 +359,28 @@ class QueryBuilderTest {
 
         assertThat(sql).isEqualTo("SELECT * FROM t_user t WHERE (username = ? OR email = ? OR mobile = ?)");
         assertThat(argList).containsExactly("f0rb", "f0rb", "f0rb");
+    }
+
+    @Test
+    void buildOrClauseForQueryObjectNamedOr() {
+        TestQuery or = TestQuery.builder().username("f0rb").email("f0rb").build();
+        TestQuery testQuery = TestQuery.builder().or(or).build();
+
+        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
+
+        assertThat(sql).isEqualTo("SELECT * FROM t_user t WHERE (username = ? OR email = ?)");
+        assertThat(argList).containsExactly("f0rb", "f0rb");
+    }
+
+    @Test
+    void buildAndClauseForQueryObjectNamedAnd() {
+        TestQuery and = TestQuery.builder().username("f0rb").email("f0rb").build();
+        TestQuery testQuery = TestQuery.builder().and(and).build();
+
+        String sql = testQueryBuilder.buildSelectAndArgs(testQuery, argList);
+
+        assertThat(sql).isEqualTo("SELECT * FROM t_user t WHERE username = ? AND email = ?");
+        assertThat(argList).containsExactly("f0rb", "f0rb");
     }
 
     @Test

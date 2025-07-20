@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ class OrCollectionProcessor implements FieldProcessor {
     public OrCollectionProcessor(Field field) {
         Class<?> clazz = CommonUtil.resolveActualReturnClass(field);
         if (Query.class.isAssignableFrom(clazz)) {
-            fieldProcessor = new ConnectableFieldProcessor(clazz, AND);
+            fieldProcessor = new ConnectableFieldProcessor(clazz);
         } else {
             String orFieldName = StringUtils.removeEnd(field.getName(), "Or");
             fieldProcessor = new SuffixFieldProcessor(orFieldName, false);

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,9 +37,9 @@ import java.util.List;
 @AllArgsConstructor
 public class ShippingModesAndOrderPriorityQuery extends PageQuery {
     @Transient
-    private String o_orderpriority1;
+    private List<String> o_orderpriorityOr;
     @Transient
-    private String o_orderpriority2;
+    private List<String> o_orderpriorityNeAnd;
 
     private List<String> l_shipmodeIn;
 

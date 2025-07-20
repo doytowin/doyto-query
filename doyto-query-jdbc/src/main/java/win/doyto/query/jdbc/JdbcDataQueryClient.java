@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
-import win.doyto.query.core.AggregationQuery;
 import win.doyto.query.core.DataQueryClient;
 import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.entity.Persistable;
@@ -38,6 +37,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import static win.doyto.query.sql.RelatedDomainPath.KEY_COLUMN;
 import static win.doyto.query.sql.RelationalQueryBuilder.*;
 
 /**
@@ -80,11 +80,6 @@ public class JdbcDataQueryClient implements DataQueryClient {
     long count(Q query, Class<V> viewClass) {
         SqlAndArgs sqlAndArgs = buildCountAndArgs(query, viewClass);
         return databaseOperations.count(sqlAndArgs);
-    }
-
-    @Override
-    public <V> List<V> aggregate(DoytoQuery query, Class<V> viewClass) {
-        return new JdbcAggregateChain<>(databaseOperations, viewClass).filter(query).query();
     }
 
     <V extends Persistable<I>, I extends Serializable, Q>

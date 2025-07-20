@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,6 @@ import javax.persistence.Transient;
 @AllArgsConstructor
 public class NationalMarketShareQuery extends PageQuery {
     @Transient
-    private String nationEq;
+    private String nation;
     private AllNationsQuery allNationsQuery;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package win.doyto.query.annotation;
 
-package win.doyto.query.core;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * And
+ * Mark a field not used for statement mapping.
  *
- * @author f0rb on 2023/2/19
- * @since 1.0.1
- * @deprecated since 1.1.0, use {@link Query} instead
+ * @since Doyto Query API 2.0
  */
-@SuppressWarnings("java:S1133")
-@Deprecated
-public interface And extends Query {
+@Target({METHOD, FIELD})
+@Retention(RUNTIME)
+public @interface Transient {
 }

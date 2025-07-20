@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import win.doyto.query.core.PageList;
 import win.doyto.query.entity.Persistable;
 import win.doyto.query.service.DynamicService;
 import win.doyto.query.util.BeanUtil;
-import win.doyto.query.web.component.ListValidator;
 import win.doyto.query.web.response.ErrorCode;
 import win.doyto.query.web.response.JsonBody;
 import win.doyto.query.web.response.PresetErrorCode;
@@ -53,9 +52,6 @@ abstract class AbstractController<
         W extends IdWrapper<I>,
         C extends DynamicService<E, I, Q>
         > {
-
-    @Resource
-    protected ListValidator listValidator = new ListValidator();
 
     private final Class<E> entityClass;
     private final TypeReference<W> typeReference;
@@ -116,7 +112,7 @@ abstract class AbstractController<
 
     public PageList<S> page(Q q) {
         q.forcePaging();
-        return new PageList<>(this.query(q), service.count(q));
+        return service.page(q, this::buildResponse);
     }
 
     public List<S> query(Q q) {
@@ -142,7 +138,6 @@ abstract class AbstractController<
     }
 
     public void create(List<R> requests) {
-        listValidator.validateList(requests);
         if (requests.size() == 1) {
             service.create(buildEntity(requests.get(0)));
         } else {

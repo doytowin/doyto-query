@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package win.doyto.query.core;
+package win.doyto.query.sql;
 
-/**
- * Or
- *
- * @author f0rb on 2021-12-24
- * @since 0.3.0
- * @deprecated since 1.1.0, use {@link Query} instead
- */
-@SuppressWarnings("java:S1133")
-@Deprecated
-public interface Or extends Query {
+import lombok.Data;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
+import win.doyto.query.core.DoytoQuery;
+
+@Data
+@RequiredArgsConstructor
+public class WrappedQuery implements DoytoQuery {
+    @Delegate
+    @NonNull
+    private DoytoQuery deleget;
+    private transient SqlAndArgs saa;
 }

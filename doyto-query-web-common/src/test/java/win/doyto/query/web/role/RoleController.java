@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,15 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import win.doyto.query.test.role.RoleEntity;
 import win.doyto.query.test.role.RoleQuery;
+import win.doyto.query.validation.CreateGroup;
 import win.doyto.query.validation.PatchGroup;
 import win.doyto.query.validation.UpdateGroup;
-import win.doyto.query.web.component.ListValidator;
 import win.doyto.query.web.component.NotEmptyQuery;
 import win.doyto.query.web.response.ErrorCode;
 import win.doyto.query.web.response.JsonBody;
 import win.doyto.query.web.response.JsonResponse;
 import win.doyto.query.web.response.PresetErrorCode;
 
-import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
@@ -46,17 +45,13 @@ import java.util.List;
 @RequestMapping("role")
 public class RoleController {
 
-    @Resource
-    private ListValidator listValidator;
-
     @GetMapping("/roleName")
     public JsonResponse<RoleEntity> getByRoleName(@Size(min = 4, max = 20) @NotNull String roleName) {
         return ErrorCode.build((RoleEntity) null);
     }
 
     @PostMapping("/")
-    public void create(@RequestBody List<RoleEntity> requests) {
-        listValidator.validateList(requests);
+    public void create(@RequestBody @Validated(CreateGroup.class) List<RoleEntity> requests) {
         throw new DuplicateKeyException("");
     }
 

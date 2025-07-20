@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,13 +63,24 @@ public class QueryBuilder {
         return resolveTableNameFunc.apply(idWrapper, tableName);
     }
 
-    @SuppressWarnings("java:S4973")
     protected String build(DoytoQuery query, List<Object> argList, String... columns) {
         String sql = BuildHelper.buildStart(columns, resolveTableName(query.toIdWrapper()));
         sql = replaceHolderInString(query, sql);
-        sql += buildWhere(query, argList);
-        // intentionally use ==
-        if (!(columns.length == 1 && COUNT == columns[0])) {
+        if (query instanceof WrappedQuery) {
+            WrappedQuery wq = (WrappedQuery) query;
+            SqlAndArgs saa = wq.getSaa();
+            if (saa != null) {
+                sql += saa.getSql();
+                argList.addAll(Arrays.asList(saa.getArgs()));
+            } else {
+                String where = buildWhere(wq.getDeleget(), argList);
+                sql += where;
+                wq.setSaa(new SqlAndArgs(where, argList));
+            }
+        } else {
+            sql += buildWhere(query, argList);
+        }
+        if (!(columns.length == 1 && COUNT.equals(columns[0]))) {
             // not SELECT COUNT(*)
             sql += BuildHelper.buildOrderBy(query);
             sql += BuildHelper.buildLock(query);

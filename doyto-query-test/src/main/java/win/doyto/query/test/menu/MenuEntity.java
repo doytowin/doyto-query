@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import win.doyto.query.annotation.DomainPath;
+import win.doyto.query.annotation.ForeignKey;
 import win.doyto.query.entity.AbstractPersistable;
 import win.doyto.query.test.user.UserEntity;
 
@@ -35,8 +36,12 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class MenuEntity extends AbstractPersistable<Integer> {
 
+    @ForeignKey(entity = MenuEntity.class, field = "id")
+    private Integer parentId;
     private String menuName;
     private String platform;
+    private String memo;
+    private Boolean valid;
 
     @DomainPath({"menu", "~", "perm", "~", "role", "~", "user"})
     private List<UserEntity> users;

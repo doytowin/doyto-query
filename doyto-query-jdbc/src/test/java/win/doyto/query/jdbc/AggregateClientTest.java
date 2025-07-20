@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,10 @@ package win.doyto.query.jdbc;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.RowMapper;
-import win.doyto.query.core.*;
+import win.doyto.query.core.AggregateChain;
+import win.doyto.query.core.AggregateClient;
+import win.doyto.query.core.DoytoQuery;
+import win.doyto.query.core.PageList;
 import win.doyto.query.test.user.UserLevel;
 import win.doyto.query.test.user.UserLevelCountView;
 import win.doyto.query.test.user.UserLevelHaving;

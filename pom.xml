@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright © 2019-2024 Forb Yuan
+  ~ Copyright © 2019-2025 DoytoWin, Inc.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
     <parent>
         <groupId>win.doyto</groupId>
         <artifactId>doyto-oss-parent</artifactId>
-        <version>5</version>
+        <version>6</version>
     </parent>
 
     <artifactId>doyto-query-parent</artifactId>
@@ -31,12 +31,12 @@
     <url>https://query.doyto.win/</url>
 
     <properties>
-        <spring-boot.version>2.7.12</spring-boot.version>
-        <snakeyaml.version>2.0</snakeyaml.version>
+        <java.version>1.8</java.version>
+        <spring-boot.version>2.7.18</spring-boot.version>
 
         <jacoco.destFile>${user.dir}/target/jacoco.exec</jacoco.destFile>
         <jacoco.dataFile>${user.dir}/target/jacoco.exec</jacoco.dataFile>
-        <maven.deploy.skip>true</maven.deploy.skip>
+        <excludeArtifacts>doyto-query-parent,doyto-query-integration-test</excludeArtifacts>
 
         <sonar.exclusions>doyto-query-test/**,doyto-query-integration-test/**,**/pom.xml</sonar.exclusions>
     </properties>
@@ -83,11 +83,6 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-launcher</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

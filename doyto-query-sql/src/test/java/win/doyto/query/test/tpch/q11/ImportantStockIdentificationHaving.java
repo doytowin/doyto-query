@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import win.doyto.query.annotation.CompositeView;
-import win.doyto.query.test.tpch.domain.lineitem.LineitemEntity;
 import lombok.experimental.SuperBuilder;
 import win.doyto.query.annotation.Subquery;
 import win.doyto.query.core.Having;
 import win.doyto.query.test.tpch.domain.nation.NationEntity;
 import win.doyto.query.test.tpch.domain.partsupp.PartsuppEntity;
 import win.doyto.query.test.tpch.domain.supplier.SupplierEntity;
-
-import javax.persistence.Column;
-import java.math.BigDecimal;
 
 /**
  * ImportantStockIdentificationHaving
@@ -47,6 +42,6 @@ public class ImportantStockIdentificationHaving extends ImportantStockIdentifica
 
     @Subquery(select = "SUM(ps_supplycost * ps_availqty) * 0.0001000000e-2",
             from = {PartsuppEntity.class, SupplierEntity.class, NationEntity.class})
-    private ValueQuery valueGt;
+    private ValueQuery valGt;
 
 }

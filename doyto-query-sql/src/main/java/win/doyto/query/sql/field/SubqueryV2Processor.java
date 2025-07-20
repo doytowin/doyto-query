@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,8 @@ package win.doyto.query.sql.field;
 
 import win.doyto.query.annotation.SubqueryV2;
 import win.doyto.query.core.DoytoQuery;
-import win.doyto.query.core.Having;
 import win.doyto.query.sql.AggregateQueryBuilder;
 import win.doyto.query.sql.EntityMetadata;
-import win.doyto.query.sql.RelationalQueryBuilder;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -48,11 +46,7 @@ public class SubqueryV2Processor implements FieldProcessor {
 
     @Override
     public String process(String alias, List<Object> argList, Object value) {
-        if (value instanceof Having) {
-            StringBuilder sql = AggregateQueryBuilder.buildSelect(entityMetadata, (DoytoQuery) value, argList);
-            return cond + OP + sql + CP;
-        }
-        String sql = RelationalQueryBuilder.buildSelect((DoytoQuery) value, entityMetadata, argList);
+        StringBuilder sql = AggregateQueryBuilder.buildSelect(entityMetadata, (DoytoQuery) value, argList);
         return cond + OP + sql + CP;
     }
 }

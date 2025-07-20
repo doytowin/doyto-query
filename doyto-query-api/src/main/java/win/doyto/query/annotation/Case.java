@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,39 @@ package win.doyto.query.annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * NestedView
+ * To build a CASE clause to replace token {@code @Case}
+ * in {@link Column#name()}.
  *
- * @author f0rb on 2023/2/20
- * @since 1.0.1
+ * @author f0rb on 2024/11/20
  */
-@Target(TYPE)
+@Target({FIELD})
 @Retention(RUNTIME)
-public @interface NestedView {
-    Class<?> value();
+public @interface Case {
+    /**
+     * WHEN ... THEN ... item
+     */
+    Item[] value();
+
+    /**
+     * @return an expression
+     */
+    String end() default "0";
+
+    @interface Item {
+        /**
+         * A field of the query object to be resolved as a condition.
+         *
+         * @return a field name
+         */
+        String when();
+
+        /**
+         * @return an expression
+         */
+        String then();
+    }
 }

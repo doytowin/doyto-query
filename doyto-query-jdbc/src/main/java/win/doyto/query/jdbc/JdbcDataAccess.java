@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2024 Forb Yuan
+ * Copyright © 2019-2025 DoytoWin, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,7 @@ import win.doyto.query.core.DoytoQuery;
 import win.doyto.query.core.IdWrapper;
 import win.doyto.query.core.PageList;
 import win.doyto.query.entity.Persistable;
-import win.doyto.query.sql.EntityMetadata;
-import win.doyto.query.sql.SqlAndArgs;
-import win.doyto.query.sql.SqlBuilder;
-import win.doyto.query.sql.SqlBuilderFactory;
+import win.doyto.query.sql.*;
 import win.doyto.query.util.BeanUtil;
 import win.doyto.query.util.ColumnUtil;
 
@@ -98,7 +95,8 @@ public final class JdbcDataAccess<E extends Persistable<I>, I extends Serializab
     @Override
     public PageList<E> page(Q query) {
         query.forcePaging();
-        return new PageList<>(query(query), count(query));
+        WrappedQuery wq = new WrappedQuery(query);
+        return new PageList<>(query((Q) wq), count((Q) wq));
     }
 
     @Override
