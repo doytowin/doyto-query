@@ -63,7 +63,7 @@ jobs:
       - build
       - test
       - javadoc
-    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/springboot3/'))
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/v1/main')
     uses: doytowin/doyto-devops/.github/workflows/deploy.yml@main
     secrets: inherit
     with:
